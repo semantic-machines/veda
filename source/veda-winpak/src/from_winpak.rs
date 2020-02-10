@@ -159,7 +159,7 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
         indv.add_string("v-s:errorMessage", "Карта не найдена", Lang::RU);
         indv.add_string("v-s:errorMessage", "Card not found", Lang::EN);
     }
-    indv.set_uri("v-s:lastEditor", "cfg:VedaSystem");
+    indv.set_uri("v-s:lastEditor", "cfg:VedaSystemAppointment");
 
     let res = module.api.update(systicket, IndvOp::Put, indv);
     if res.result != ResultCode::Ok {

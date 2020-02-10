@@ -12,8 +12,8 @@ use serde_json::json;
 use serde_json::value::Value as JSONValue;
 use std::collections::HashMap;
 use uuid::*;
-use v_api::*;
 use v_api::app::ResultCode;
+use v_api::*;
 use v_authorization::Trace;
 use v_az_lmdb::_authorize;
 use v_module::module::{create_new_ticket, create_sys_ticket, get_ticket_from_db, init_log, Module};
@@ -27,7 +27,11 @@ const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934
 const DEFAULT_DURATION: i32 = 40000;
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 const MAX_COUNT_FAILED_ATTEMPTS: i32 = 5;
-const BLOCKING_PERIOD: i64 = 60 * 25;
+
+const FAILED_AUTH_LOCK_PERIOD: i64 = 30 * 60;
+const FAILED_PASS_CHANGE_LOCK_PERIOD: i64 = 30 * 60;
+const SUCCESS_PASS_CHANGE_LOCK_PERIOD: i64 = 24 * 60 * 60;
+const SECRET_LIFETIME: i64 = 12 * 60 * 60;
 
 fn main() -> std::io::Result<()> {
     init_log();
@@ -236,7 +240,7 @@ fn authenticate(
 
     if let Some((wrong_count, time)) = suspicious.get_mut(login) {
         if *wrong_count > MAX_COUNT_FAILED_ATTEMPTS {
-            if Utc::now().timestamp() - *time < BLOCKING_PERIOD {
+            if Utc::now().timestamp() - *time < FAILED_AUTH_LOCK_PERIOD {
                 ticket.result = ResultCode::TooManyRequests;
                 return ticket;
             } else {
@@ -333,7 +337,7 @@ fn authenticate(
                     }
 
                     let prev_secret_date = uses_credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
-                    if now - prev_secret_date > 12 * 60 * 60 {
+                    if now - prev_secret_date > SECRET_LIFETIME {
                         ticket.result = ResultCode::SecretExpired;
                         error!("request new password, secret expired, login={} password={} secret={}", login, password, secret);
                         return ticket;
@@ -353,10 +357,17 @@ fn authenticate(
                         return ticket;
                     }
 
+                    if now - prev_secret_date < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
+                        ticket.result = ResultCode::TooManyRequests;
+                        error!("request new password: too many requests, login={} password={} secret={}", login, password, secret);
+                        return ticket;
+                    }
+
                     // update password
                     uses_credential.set_string("v-s:password", &password, Lang::NONE);
                     uses_credential.set_datetime("v-s:dateFrom", edited);
                     uses_credential.remove("v-s:secret");
+                    uses_credential.remove("v-s:SecretDateFrom");
 
                     let res = module.api.update(&systicket, IndvOp::Put, &uses_credential);
                     if res.result != ResultCode::Ok {
@@ -387,8 +398,8 @@ fn authenticate(
                         let n_secret = thread_rng().gen_range(100_000, 999_999).to_string();
                         if !n_secret.is_empty() {
                             let prev_secret_date = uses_credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
-                            if now - prev_secret_date < 10 * 60 {
-                                ticket.result = ResultCode::TooManyRequests;
+                            if now - prev_secret_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
+                                ticket.result = ResultCode::Locked;
                                 error!("request new password, to many request, login={} password={} secret={}", login, password, secret);
                                 return ticket;
                             }
@@ -414,6 +425,8 @@ fn authenticate(
                             mail_with_secret.add_uri("rdf:type", "v-s:Email");
                             mail_with_secret.add_string("v-s:recipientMailbox", &mailbox, Lang::NONE);
                             mail_with_secret.add_datetime("v-s:created", now);
+                            mail_with_secret.add_uri("v-s:creator", "cfg:VedaSystemAppointment");
+                            mail_with_secret.add_uri("v-wf:from", "cfg:VedaSystemAppointment");
                             mail_with_secret.add_string("v-s:messageBody", &("your secret code is ".to_owned() + &n_secret), Lang::NONE);
 
                             let res = module.api.update(&systicket, IndvOp::Put, &mail_with_secret);

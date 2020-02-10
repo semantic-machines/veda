@@ -394,5 +394,10 @@ v-s:FindBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Найти"@ru ;  
   rdfs:label "Find"@en ;
-. 
+.
+v-s:ChangeSizeBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Изменить размер"@ru ;  
+  rdfs:label "Change size"@en ;
+.
 

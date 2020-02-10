@@ -457,6 +457,51 @@ v-s:TransportKind
 .
 # --------------- System properties template ------------------
 
+v-ui:ExitButtonTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон кнопки выхода"@ru ;
+  rdfs:label "Exit button template"@en ;
+  v-ui:template """
+<script>
+  template.tooltip({
+    container: template,
+    placement: "bottom",
+    trigger: "hover",
+    title: individual["rdfs:label"].join(" ")
+  });
+  //# sourceURL=v-ui:ExitButtonTemplate_pre
+</script>
+<a data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="glyphicon glyphicon-log-out"></span> <span class="label label-default"></span>
+</a>
+  """
+.
+
+v-ui:AdministrationIconTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон иконки панели администратора"@ru ;
+  rdfs:label "Administration button template"@en ;
+  v-ui:template """
+<script>
+  template.tooltip({
+    container: template,
+    placement: "bottom",
+    trigger: "hover",
+    title: individual["rdfs:label"].join(" ")
+  });
+  //# sourceURL=v-ui:AdministrationIconTemplate_pre
+</script>
+<a href="#/v-s:AdministrationAspect" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-cog fa-lg"></span> <span class="label label-default"></span>
+</a>
+<script>
+
+  //# sourceURL=v-ui:AdministrationIconTemplate_post
+</script>
+  """
+.
+
+
 v-ui:LanguageSwitchTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон переключения языка"@ru ;
@@ -541,6 +586,14 @@ v-ui:FullWidthSwitchTemplate
       template.addClass("btn-default").removeClass("btn-success active");
     }
   }
+  return new veda.IndividualModel("v-s:ChangeSizeBundle").load().then(function(changeSizeBundle) {
+    template.tooltip({
+      container: template,
+      placement: "bottom",
+      trigger: "hover",
+      title: changeSizeBundle["rdfs:label"].join(" ")
+    });
+  })
   //# sourceURL=v-ui:FullWidthSwitchTemplate
 </script>
 <button class="btn btn-xs btn-default navbar-btn">
@@ -1012,6 +1065,14 @@ v-ui:IconPersonTemplate
   if (individual.hasValue("v-s:hasAspect")) {
     template.attr("href", "#/" + individual["v-s:hasAspect"][0].id);
   }
+  return new veda.IndividualModel("v-s:PersonalInfo").load().then(function(personalInfo) {
+    template.tooltip({
+      container: template,
+      placement: "bottom",
+      trigger: "hover",
+      title: personalInfo["rdfs:label"].join(" ")
+    });
+  })
 </script>
 <a href="#/@" about="@" property="rdfs:label"></a>
 """ ;
@@ -1038,7 +1099,9 @@ v-ui:AppointmentPopoverTemplate
   </div>
   <div class="media-body" style="width:auto;">
     <strong class="media-heading" about="@" rel="v-s:employee">
-      <span about="@" property="rdfs:label"></span>
+      <span about="@" property="v-s:lastName"></span>
+      <span about="@" property="v-s:firstName"></span>
+      <span about="@" property="v-s:middleName"></span>
     </strong>
     <hr class="no-margin">
     <div about="@" rel="v-s:occupation">

@@ -200,9 +200,8 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
             if let Some(types) = new_state_indv.get_literals("rdf:type") {
                 for itype in types {
                     if itype == "mnd-s:SourceDataRequestForPass" {
-                        //v-s:creator", "cfg:VedaSystem"
                         if let Some(v) = new_state_indv.get_first_literal("v-s:lastEditor") {
-                            if v == "cfg:VedaSystem" {
+                            if v == "cfg:VedaSystemAppointment" {
                                 return Ok(());
                             }
                         }
@@ -212,9 +211,8 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
                             return Err(res);
                         }
                     } else if itype == "v-s:ExternalModuleHandler" {
-                        //v-s:creator", "cfg:VedaSystem"
                         if let Some(v) = new_state_indv.get_first_literal("v-s:lastEditor") {
-                            if v == "cfg:VedaSystem" {
+                            if v == "cfg:VedaSystemAppointment" {
                                 return Ok(());
                             }
                         }

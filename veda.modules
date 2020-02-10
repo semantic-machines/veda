@@ -10,7 +10,7 @@ ft-indexer
 
 ft-query
 
-fanout-email
+#fanout-email
 
 search-index-wt
 
