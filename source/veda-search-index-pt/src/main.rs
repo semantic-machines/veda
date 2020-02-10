@@ -26,6 +26,8 @@ type BatchElement = (Individual, i8);
 
 const BATCH_SIZE: u32 = 100_000;
 const BLOCK_LIMIT: usize = 10_000;
+const EXPORTED_TYPE: [&str; 1] = ["v-s:Document"];
+const DB: &str = "veda_pt_docs";
 
 pub struct Stats {
     total_prepare_duration: usize,
@@ -67,34 +69,36 @@ impl Context {
         let mut prev_state = Individual::default();
         let is_new = !get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
         if !is_new {
-            if let Some(type_resources) = prev_state.get_resources("rdf:type") {
-                for type_resource in type_resources {
-                    if let Value::Uri(type_name)  = type_resource.value {
-                        let mut prev_state = Individual::default();
-                        get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
-                        if !self.typed_batch.contains_key(&type_name) {
-                            let new_batch = Batch::new();
-                            self.typed_batch.insert(type_name.clone(), new_batch);
-                        }
-                        let batch = self.typed_batch.get_mut(&type_name).unwrap();
-                        batch.push((prev_state, -1));
+            if let Some(types) = prev_state.get_literals("rdf:type") {
+                for type_name in types {
+                    if !self.onto.is_some_entered(&type_name, &EXPORTED_TYPE) {
+                        continue;
                     }
-                }
-            }
-        }
-
-        if let Some(type_resources) = new_state.get_resources("rdf:type") {
-            for type_resource in type_resources {
-                if let Value::Uri(type_name)  = type_resource.value {
-                    let mut new_state = Individual::default();
-                    get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+                    let mut prev_state = Individual::default();
+                    get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
                     if !self.typed_batch.contains_key(&type_name) {
                         let new_batch = Batch::new();
                         self.typed_batch.insert(type_name.clone(), new_batch);
                     }
                     let batch = self.typed_batch.get_mut(&type_name).unwrap();
-                    batch.push((new_state, 1));
+                    batch.push((prev_state, -1));
                 }
+            }
+        }
+
+        if let Some(types) = new_state.get_literals("rdf:type") {
+            for type_name in types {
+                if !self.onto.is_some_entered(&type_name, &EXPORTED_TYPE) {
+                    continue;
+                }
+                let mut new_state = Individual::default();
+                get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+                if !self.typed_batch.contains_key(&type_name) {
+                    let new_batch = Batch::new();
+                    self.typed_batch.insert(type_name.clone(), new_batch);
+                }
+                let batch = self.typed_batch.get_mut(&type_name).unwrap();
+                batch.push((new_state, 1));
             }
         }
     }
@@ -149,7 +153,7 @@ impl Context {
 
             //info!("`{}` block = {:?}", predicate, block);
 
-            let table = format!("veda_pt.`{}`", predicate);
+            let table = format!("{}.`{}`", DB, predicate);
 
             client.insert(table, block).await?;
         }
@@ -393,13 +397,13 @@ impl Context {
 async fn main() ->  Result<(), Error> {
     init_log();
 
-    //return test().await;
-
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
         wait_module("fulltext_indexer", wait_load_ontology());
     }
 
-    let mut queue_consumer = Consumer::new("./data/queue", "search_index_pt", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let consumer_name = format!("search_index_pt_{}", DB);
+
+    let mut queue_consumer = Consumer::new("./data/queue", &consumer_name, "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let module_info = ModuleInfo::new("./data", "search_index_pt", true);
     if module_info.is_err() {
         error!("{:?}", module_info.err());
@@ -407,7 +411,15 @@ async fn main() ->  Result<(), Error> {
     }
     let mut module = Module::default();
 
-    let mut pool = match connect_to_clickhouse(&mut module) {
+    let mut config = match get_config(&mut module) {
+        Err(e) => {
+            error!("Failed to read configuration to connect to clickhouse: {}", e);
+            process::exit(101)
+        },
+        Ok(config) => config,
+    };
+
+    let mut pool = match connect_to_clickhouse(&mut config) {
         Err(e) => {
             error!("Failed to connect to clickhouse: {}", e);
             process::exit(101)
@@ -485,7 +497,7 @@ async fn create_predicate_table(predicate_name: &str, client: &mut ClientHandle,
         return Ok(());
     }
     let query = format!(r"
-        CREATE TABLE IF NOT EXISTS veda_pt.`{}` (
+        CREATE TABLE IF NOT EXISTS {}.`{}` (
             id String,
             sign Int8 DEFAULT 1,
             version UInt32,
@@ -495,7 +507,7 @@ async fn create_predicate_table(predicate_name: &str, client: &mut ClientHandle,
         ENGINE = VersionedCollapsingMergeTree(sign, version)
         ORDER BY (`rdf_type_str`, `v_s_created_date`, id)
         PARTITION BY (`rdf_type_str`)
-    ", predicate_name);
+    ", DB, predicate_name);
     client.execute(query).await?;
     let mut table_columns: HashMap<String, String> = HashMap::new();
     table_columns.insert("id".to_owned(), "String".to_owned());
@@ -515,7 +527,7 @@ async fn create_predicate_value_column(predicate_name: &str, column_name: &str, 
         if let Some(_) = table_columns.get(column_name) {
             return Ok(());
         } else {
-            let query = format!("ALTER TABLE veda_pt.`{}` ADD COLUMN IF NOT EXISTS `{}` {}", predicate_name, column_name, column_type);
+            let query = format!("ALTER TABLE {}.`{}` ADD COLUMN IF NOT EXISTS `{}` {}", DB, predicate_name, column_name, column_type);
             client.execute(query).await?;
             table_columns.insert(column_name.to_owned(), column_type.to_owned());
         }
@@ -524,13 +536,13 @@ async fn create_predicate_value_column(predicate_name: &str, column_name: &str, 
 }
 
 async fn read_predicate_tables(pool: &mut Pool) -> Result<HashMap<String, HashMap<String, String>>, Error> {
-    let read_tables_query = "SELECT name from system.tables where database = 'veda_pt'";
+    let read_tables_query = format!("SELECT name from system.tables where database = '{}'", DB);
     let mut tables: HashMap<String, HashMap<String, String>> = HashMap::new();
     let mut client = pool.get_handle().await?;
     let tables_block = client.query(read_tables_query).fetch_all().await?;
     for row_table in tables_block.rows() {
         let table_name: String = row_table.get("name")?;
-        let read_columns = format!("DESCRIBE veda_pt.`{}`", table_name);
+        let read_columns = format!("DESCRIBE {}.`{}`", DB, table_name);
         let mut table_columns: HashMap<String, String> = HashMap::new();
         let columns_block = client.query(read_columns).fetch_all().await?;
         for row_column in columns_block.rows() {
@@ -543,24 +555,16 @@ async fn read_predicate_tables(pool: &mut Pool) -> Result<HashMap<String, HashMa
     Ok(tables)
 }
 
-fn connect_to_clickhouse(module: &mut Module) -> Result<Pool, &'static str> {
+fn get_config(module: &mut Module) -> Result<Individual, &'static str> {
     if let Some(node) = module.get_individual("cfg:standart_node", &mut Individual::default()) {
         if let Some(v) = node.get_literals("v-s:push_individual_by_event") {
             for el in v {
-                let mut connection = Individual::default();
-                if module.storage.get_individual(&el, &mut connection) && !connection.is_exists_bool("v-s:deleted", true) {
-                    if let Some(transport) = connection.get_first_literal("v-s:transport") {
+                let mut config = Individual::default();
+                if module.storage.get_individual(&el, &mut config) && !config.is_exists_bool("v-s:deleted", true) {
+                    if let Some(transport) = config.get_first_literal("v-s:transport") {
                         if transport == "clickhouse" {
-                            info!("Found configuration to connect to Clickhouse: {}", connection.get_id());
-                            let host = connection.get_first_literal("v-s:host").unwrap_or(String::from("127.0.0.1"));
-                            let port = connection.get_first_integer("v-s:port").unwrap_or(9000) as u16;
-                            let user = connection.get_first_literal("v-s:login").unwrap_or(String::from("default"));
-                            let pass = connection.get_first_literal("v-s:password").unwrap_or(String::from(""));
-                            let url = format!("tcp://{}:{}@{}:{}/", user, pass, host, port);
-                            info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
-                            info!("Connection url: {}", url);
-                            let pool = Pool::new(url);
-                            return Ok(pool);
+                            info!("Found configuration to connect to Clickhouse: {}", config.get_id());
+                            return Ok(config);
                         }
                     }
                 }
@@ -570,8 +574,20 @@ fn connect_to_clickhouse(module: &mut Module) -> Result<Pool, &'static str> {
     Err("Configuration to connect to Clickhouse not found")
 }
 
+fn connect_to_clickhouse(config: &mut Individual) -> Result<Pool, &'static str> {
+    let host = config.get_first_literal("v-s:host").unwrap_or(String::from("127.0.0.1"));
+    let port = config.get_first_integer("v-s:port").unwrap_or(9000) as u16;
+    let user = config.get_first_literal("v-s:login").unwrap_or(String::from("default"));
+    let pass = config.get_first_literal("v-s:password").unwrap_or(String::from(""));
+    let url = format!("tcp://{}:{}@{}:{}/", user, pass, host, port);
+    info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
+    info!("Connection url: {}", url);
+    let pool = Pool::new(url);
+    return Ok(pool);
+}
+
 async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
-    let init_veda_db = "CREATE DATABASE IF NOT EXISTS veda_pt";
+    let init_veda_db = format!("CREATE DATABASE IF NOT EXISTS {}", DB);
     let mut client = pool.get_handle().await?;
     client.execute(init_veda_db).await?;
     Ok(())
