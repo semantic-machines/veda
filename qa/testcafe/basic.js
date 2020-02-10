@@ -39,7 +39,7 @@ export default class basic {
 
   async fullTextSearch(query, eql) {
     await t
-      .click('ul.nav.navbar-nav.navbar-right li[about="v-fs:FulltextSearch"]')
+      .click('ul.nav.navbar-nav.navbar-right li[about="v-fs:MultiFunctionalSearch"]')
       .click('div.input-group input[name="v_s_userthing_*"]')
       .pressKey('ctrl+a delete')
       .typeText('div.input-group input[name="v_s_userthing_*"]', query)

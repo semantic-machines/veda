@@ -632,6 +632,16 @@ impl IndividualObj {
     //        self.resources.iter().map(|(key, _)| key.clone()).collect()
     //    }
 
+    //    pub fn crawl<T>(&mut self, ctx: &mut T, crawler: fn(predicate : &String, value: &Vec<Resource>, ctx: &mut T)) {
+    //        for (k, v) in &self.resources {
+    //            crawler (k, v, ctx);
+    //        }
+    //    }
+
+    pub fn get_resources(&self) -> &HashMap<String, Vec<Resource>> {
+        &self.resources
+    }
+
     pub fn remove(&mut self, predicate: &str) -> bool {
         self.resources.remove(predicate).is_some()
     }

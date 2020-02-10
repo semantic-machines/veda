@@ -55,12 +55,12 @@ v-s:LayoutTemplate
             </script>
             <a href="#/@"><span class="fa fa-lg fa-user-o"></span></a>
           </li>
-          <li about="v-fs:FulltextSearch">
+          <li about="v-fs:MultiFunctionalSearch">
             <script>
               template.tooltip({
                 container: template,
-                placement: "bottom",
                 trigger: "hover",
+                placement: "bottom",
                 title: individual["rdfs:label"].join(" ")
               });
             </script>
@@ -70,6 +70,7 @@ v-s:LayoutTemplate
           <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
           <li id="user-info"></li>
           <li id="menu" class="dropdown" about="v-s:MainMenu" data-template="v-s:MenuTemplate"></li>
+          <li id="log-out" about="v-s:Exit" data-template="v-ui:ExitButtonTemplate"></li>
           <li about="v-ui:AvailableLanguage" data-template="v-ui:LanguageSwitchTemplate"></li>
           <li style="padding-left:10px; margin-left:10px; border-left:1px solid #ddd;" about="@" data-template="v-ui:FullWidthSwitchTemplate"></li>
         </ul>
@@ -95,13 +96,17 @@ v-s:LayoutTemplate
     document.title = vedaInfo.toString();
   });
 
+  $("#log-out", template).click(function(){
+    veda.logout();
+  })
+
   // Render user
   var userInfo = $("#user-info", template);
   var userInfoTmpl = "v-ui:IconPersonTemplate";
   userInfo.empty();
   veda.user.present(userInfo, userInfoTmpl);
 
-  //# sourceURL=v-s:MainPageTemplate
+  //# sourceURL=v-s:LayoutTemplate_post
 </script>
   """ ;
 .

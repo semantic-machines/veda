@@ -56,6 +56,7 @@
         <button id="reject-install-btn" class="btn btn-sm btn-link" style="margin-left:0;padding-left:0;">Отказаться</button>
       </div>
     </div>
+
     <!-- Login form -->
     <form style="display:none;" class="login-form" role="form" target="autocomplete-frame" method="post" action="about:invalid">
       <h3>Войдите / Sign in</h3>
@@ -68,17 +69,33 @@
         <p><strong>Ошибка!</strong> Истекло время действия пароля.</p>
         <p><strong>Error!</strong> Password expired.</p>
       </div>
-      <div id="invalid-secret-error" style="display:none;" class="alert alert-danger">
-        <p><strong>Ошибка!</strong> Неверный код. Повторите попытку с новым кодом.</p>
-        <p><strong>Error!</strong> Invalid secret code. Try with new secret code.</p>
+      <div id="invalid-secret-error" style="display:none;" class="alert alert-warning">
+        <p>Неверный код.</p>
+        <p>Invalid secret code.</p>
       </div>
-      <div id="invalid-password-error" style="display:none;" class="alert alert-danger">
-        <p><strong>Ошибка!</strong> Новый пароль не принят. Введите другой пароль.</p>
-        <p><strong>Error!</strong> New password was not accepted. Enter another password.</p>
+      <div id="empty-password-warning" style="display:none;" class="alert alert-warning">
+        <p>Вы ввели пустой пароль.</p>
+        <p>You have entered empty password.</p>
       </div>
-      <div id="locked-error" style="display:none;" class="alert alert-danger">
-        <p><strong>Ошибка!</strong> Слишком много неудачных попыток. Учетная запись заблокирована на 30 минут.</p>
-        <p><strong>Error!</strong> Too many fails. Account is blocked for 30 minutes.</p>
+      <div id="equal-password-warning" style="display:none;" class="alert alert-warning">
+        <p>Новый пароль совпадает с предыдущим.</p>
+        <p>New password is equal to previous.</p>
+      </div>
+      <div id="invalid-password-warning" style="display:none;" class="alert alert-warning">
+        <p>Новый пароль не принят.</p>
+        <p>New password was not accepted.</p>
+      </div>
+      <div id="frequent-pass-change-warning" style="display:none;" class="alert alert-warning">
+        <p>Пароль можно менять не чаще 1 раза в сутки.</p>
+        <p>Password may be changed only once a day.</p>
+      </div>
+      <div id="auth-locked-error" style="display:none;" class="alert alert-danger">
+        <p><strong>Ошибка!</strong> Слишком много неудачных попыток аутентификации. Учетная запись заблокирована на 30 минут.</p>
+        <p><strong>Error!</strong> Too many authentication fails. Account is locked for 30 minutes.</p>
+      </div>
+      <div id="pass-change-locked-error" style="display:none;" class="alert alert-danger">
+        <p><strong>Ошибка!</strong> Попытка изменения пароля не удалась. Учетная запись заблокирована на 30 минут.</p>
+        <p><strong>Error!</strong> An attempt to change password failed. Account is locked for 30 minutes.</p>
       </div>
       <div id="secret-request-info" style="display:none;" class="alert alert-info">
         <p><strong>Инфо!</strong> Вам выслан новый код для смены пароля.</p>

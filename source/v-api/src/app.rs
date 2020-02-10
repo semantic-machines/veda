@@ -25,6 +25,9 @@ pub enum ResultCode {
     /// 422
     UnprocessableEntity = 422,
 
+    /// 423
+    Locked = 423,
+
     /// 429
     TooManyRequests = 429,
 
