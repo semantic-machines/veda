@@ -90,6 +90,7 @@ export default class basic {
       .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', comment)
       .wait(1000)
       .hover('em[about="v-ui:testFile"]')
+      .hover('em[about="v-s:hasTransportKind"]')
       .typeText('veda-control[property="v-ui:testString"]', testString)
       .wait(1000)
       .click('veda-control[data-type="select"][property="v-ui:testInteger"]')
