@@ -31,8 +31,8 @@ type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
 type BatchElement = (Individual, i8);
 
-const BATCH_SIZE: u32 = 100_000;
-const BLOCK_LIMIT: usize = 10_000;
+const BATCH_SIZE: u32 = 3_000_000;
+const BLOCK_LIMIT: usize = 20_000;
 
 pub struct Stats {
     total_prepare_duration: usize,
@@ -139,10 +139,12 @@ impl Context {
 
         let mut version_column: Vec<u32> = Vec::new();
 
+        let mut text_column: Vec<String> = Vec::new();
+
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
 
         for (individual, sign) in batch {
-            Context::add_to_table(individual, *sign, &mut id_column, &mut sign_column, &mut version_column, &mut columns);
+            Context::add_to_table(individual, *sign, &mut id_column, &mut sign_column, &mut version_column, &mut text_column,  &mut columns);
         }
 
         info!("Batch prepared in {} us", now.elapsed().as_micros());
@@ -153,7 +155,7 @@ impl Context {
 
         let rows= id_column.len();
 
-        let block = Context::mk_block(type_name, id_column, sign_column, version_column, &mut columns, client, db_type_tables).await?;
+        let block = Context::mk_block(type_name, id_column, sign_column, version_column, text_column, &mut columns, client, db_type_tables).await?;
 
         //info!("Block {:?}", block);
 
@@ -196,6 +198,7 @@ impl Context {
         id_column: &mut Vec<String>,
         sign_column: &mut Vec<i8>,
         version_column: &mut Vec<u32>,
+        text_column: &mut Vec<String>,
         columns: &mut HashMap<String, ColumnData>
     ) {
 
@@ -210,6 +213,8 @@ impl Context {
         version_column.push(version);
 
         sign_column.push(sign);
+
+        let mut text_content: Vec<String> = Vec::new();
 
         for predicate in individual.get_predicates() {
             if let Some(resources) = individual.get_resources(&predicate) {
@@ -239,6 +244,9 @@ impl Context {
                         column_name.push_str("_str");
                         let column_value: Vec<String> = resources.iter().map(|resource| {
                             let str_value = resource.get_str();
+
+                            text_content.push(str_value.trim().to_owned());
+
                             let lang = match resource.get_lang() {
                                 Lang::NONE => String::from(""),
                                 lang => format!("@{}", lang.to_string()),
@@ -338,6 +346,8 @@ impl Context {
                 }
             }
         }
+
+        text_column.push(text_content.join(" "));
     }
 
     async fn mk_block(
@@ -345,6 +355,7 @@ impl Context {
         id_column: Vec<String>,
         sign_column: Vec<i8>,
         version_column: Vec<u32>,
+        text_column: Vec<String>,
         columns: &mut HashMap<String, ColumnData>,
         client: &mut ClientHandle,
         db_type_tables: &mut HashMap<String, HashMap<String, String>>
@@ -355,7 +366,8 @@ impl Context {
         let mut block = Block::new()
             .column("id", id_column)
             .column("sign", sign_column)
-            .column("version", version_column);
+            .column("version", version_column)
+            .column("text", text_column);
 
         for (column_name, column_data) in columns.iter_mut() {
             let mut column_type = "Array(String)";
@@ -512,6 +524,7 @@ async fn create_type_table(type_name: &str, client: &mut ClientHandle, db_type_t
             id String,
             sign Int8 DEFAULT 1,
             version UInt32,
+            text String,
             `v_s_created_date` Array(DateTime) DEFAULT [toDateTime(0)]
         )
         ENGINE = VersionedCollapsingMergeTree(sign, version)
