@@ -12,7 +12,15 @@ ft-query
 
 #fanout-email
 
-#fanout-sql
+search-index-tt
+
+search-index-pt
+
+fanout-sql
+
+#fanout-sql-lp
+
+#fanout-sql-np
 
 #ltr-scripts
     module = scripts
