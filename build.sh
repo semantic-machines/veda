@@ -211,14 +211,6 @@ if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-fanout-sql $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "search-index-wt" ] || [ $1 == "veda-search-index-wt" ] || [ $1 == "mv2" ]; then
-    echo BUILD WT
-    cd source/veda-search-index-wt
-    cargo build --release
-    cd $BUILD_PATH
-    cp $CARGO_TARGET_DIR/release/veda-search-index-wt $PWD
-fi
-
 if [ -z $1 ] || [ $1 == "search-index-tt" ] || [ $1 == "veda-search-index-tt" ] || [ $1 == "mv2" ]; then
     echo BUILD TT
     cd source/veda-search-index-tt
