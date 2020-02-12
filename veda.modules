@@ -12,8 +12,6 @@ ft-query
 
 #fanout-email
 
-search-index-wt
-
 search-index-tt
 
 search-index-pt
