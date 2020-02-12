@@ -52,7 +52,7 @@ import { Selector, t } from 'testcafe';
       .click(fulltextSearch)
       .click(fulltextQueryInput)
       .pressKey('ctrl+a delete')
-      .typeText(fulltextQueryInput, timeStamp)
+      .typeText(fulltextQueryInput, queryStartForm)
       .click(searchBtn)
       .wait(2000)
       .expect(estimatedResults.innerText).eql('1');
