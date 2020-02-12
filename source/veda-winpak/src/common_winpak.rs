@@ -57,7 +57,7 @@ const INSERT_CARD: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[Card]
 (AccountID,TimeStamp,UserID,NodeId,Deleted,UserPriority,CardNumber,Issue,CardHolderID,AccessLevelID,ActivationDate,ExpirationDate,NoOfUsesLeft,CMDFileID,
 CardStatus,Display,BackDrop1ID,BackDrop2ID,ActionGroupID,LastReaderHID,PrintStatus,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
-VALUES (1,@P1,0,0,0,0,@P2,0,@P5,-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
+VALUES (1,@P1,0,0,0,0,@P2,0,@P5,-1,@P3,@P4,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
 
 pub fn insert_card<I: BoxableIo + 'static>(
     now: NaiveDateTime,
@@ -94,6 +94,9 @@ INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
 (Note20,AccountID,TimeStamp,UserId,NodeId,Deleted,UserPriority,FirstName,LastName,Note1,Note2,Note3,Note4,Note5,Note6,
 Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32,Note13,Note14,Note24,Note31)
 VALUES(@P1,@P2,@P3,@P4,@P5,@P6,@P7,@P8,@P9,@P10,@P11,@P12,@P13,@P14,@P15,@P16,@P17,@P18,@P19,@P20,@P21,@P22,@P23,@P24,@P25,@P26,@P27,@P28)";
+
+// @P1,@P2,@P3,@P4,@P5,@P6,@P7,@P8,@P9,@P10,@P11,@P12,@P13,@P14,   @P15, @P16, @P17, @P18,  @P19,  @P20,  @P21,  @P22,  @P23,  @P24,  @P25,  @P26,  @P27,  @P28
+//Note1,Note2,Note3,Note4,Note5,                                   Note6,Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32,Note13,Note14,Note24,Note31
 
 pub fn insert_card_holder<I: BoxableIo + 'static>(
     id: &str,
@@ -187,8 +190,11 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
             first_name = indv.get_first_literal("mnd-s:passFirstName").unwrap_or_default();
             last_name = indv.get_first_literal("mnd-s:passLastName").unwrap_or_default();
             middle_name = indv.get_first_literal("mnd-s:passMiddleName").unwrap_or_default();
-            birthday = indv.get_first_datetime("v-s:birthday").unwrap_or_default();
             occupation = indv.get_first_literal("mnd-s:passPosition").unwrap_or_default();
+        }
+
+        if birthday == 0 {
+            birthday = indv.get_first_datetime("v-s:birthday").unwrap_or_default();
         }
 
         Box::new(
@@ -244,7 +250,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
 
 pub const UPDATE_CARD_DATE: &str = "\
 UPDATE [WIN-PAK PRO].[dbo].[Card]
-    SET [ActivationDate]=@P1, [ExpirationDate]=@P2, [CardStatus]=1
+    SET [ActivationDate]=@P1, [ExpirationDate]=@P2
     WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
 
 pub fn update_card_date<I: BoxableIo + 'static>(
