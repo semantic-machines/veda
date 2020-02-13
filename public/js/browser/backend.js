@@ -52,6 +52,7 @@ veda.Module(function Backend(veda) { "use strict";
       policy = "cache";
     }
     console.log("Backend policy =", policy);
+    veda.Backend.policy = policy;
   }
   veda.on("online offline ccus-online ccus-offline", setPolicy);
 
@@ -126,12 +127,16 @@ veda.Module(function Backend(veda) { "use strict";
   BackendError.prototype = Object.create(Error.prototype);
   BackendError.prototype.constructor = BackendError;
 
+  var default_timeout = 10000;
+  var query_timeout = 120000;
+
   // Common server call function
   function call_server(params) {
     var method = params.method,
         url = params.url,
         data = params.data,
         ticket = params.ticket,
+        timeout = params.timeout || default_timeout,
         queryParams = [],
         payload = null;
     return new Promise( function (resolve, reject) {
@@ -156,7 +161,7 @@ veda.Module(function Backend(veda) { "use strict";
         queryParams = queryParams.join("&");
       }
       xhr.open(method, url + "?" + queryParams, true);
-      xhr.timeout = 120000;
+      xhr.timeout = timeout;
       if (method !== "GET") {
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         payload = JSON.stringify(data, function (key, value) {
@@ -174,6 +179,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "GET",
       url: "get_rights",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "uri": isObj ? arg.uri : uri
       }
@@ -201,6 +207,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "GET",
       url: "get_rights_origin",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "uri": isObj ? arg.uri : uri
       }
@@ -221,6 +228,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "GET",
       url: "get_membership",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "uri": isObj ? arg.uri : uri
       }
@@ -248,6 +256,7 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "authenticate",
+      timeout: default_timeout,
       data: {
         "login": isObj ? arg.login : login,
         "password": isObj ? arg.password : password,
@@ -275,6 +284,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "GET",
       url: "get_ticket_trusted",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "login": isObj ? arg.login : login
       }
@@ -289,6 +299,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "GET",
       url: "is_ticket_valid",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {}
     };
     return call_server(params).catch(function (backendError) {
@@ -306,6 +317,7 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "get_operation_state",
+      timeout: default_timeout,
       data: {
         "module_id": isObj ? arg.module_id : module_id,
         "wait_op_id": isObj ? arg.wait_op_id : wait_op_id
@@ -333,6 +345,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "POST",
       url: "query",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: query_timeout,
       data: {
         "query": isObj ? arg.query : queryStr,
         "sort": isObj ? arg.sort : sort,
@@ -381,6 +394,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "GET",
       url: "get_individual",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "uri": isObj ? arg.uri : uri,
         "reopen" : (isObj ? arg.reopen : reopen) || false
@@ -412,6 +426,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "GET",
       url: "get_individual",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "uri": isObj ? arg.uri : uri,
         "reopen" : (isObj ? arg.reopen : reopen) || false
@@ -448,6 +463,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "POST",
       url: "get_individuals",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "uris": isObj ? arg.uris : uris
       }
@@ -544,6 +560,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "PUT",
       url: "remove_individual",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "uri": isObj ? arg.uri : uri,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
@@ -562,6 +579,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "PUT",
       url: "put_individual",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
@@ -580,6 +598,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "PUT",
       url: "add_to_individual",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
@@ -598,6 +617,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "PUT",
       url: "set_in_individual",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
@@ -616,6 +636,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "PUT",
       url: "remove_from_individual",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
@@ -634,6 +655,7 @@ veda.Module(function Backend(veda) { "use strict";
       method: "PUT",
       url: "put_individuals",
       ticket: isObj ? arg.ticket : ticket,
+      timeout: default_timeout,
       data: {
         "individuals": isObj ? arg.individuals : individuals,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
