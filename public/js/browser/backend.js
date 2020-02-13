@@ -43,6 +43,8 @@ veda.Module(function Backend(veda) { "use strict";
   veda.on("ccus-online ccus-offline", setCCUS);
 
   var policy = "cache";
+  veda.Backend.policy = policy;
+
   function setPolicy() {
     if (line === "online" && ccus === "online") {
       policy = "cache";
