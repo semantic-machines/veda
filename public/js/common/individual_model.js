@@ -26,6 +26,7 @@ veda.Module(function (veda) { "use strict";
       isNew: typeof uri === "undefined",
       isSync: typeof uri === "object",
       isLoaded: typeof uri === "object",
+      pending: {},
       uri: uri
     };
     this.properties = typeof uri === "object" ? uri : {};
@@ -305,14 +306,21 @@ veda.Module(function (veda) { "use strict";
    * @param {String} uri individual uri
    */
   proto.load = function () {
-    this.trigger("beforeLoad");
-    if ( this.isLoaded() ) {
-      this.trigger("afterLoad", this);
-      return Promise.resolve( this );
-    } else if ( this.isLoading() ) {
+    if ( this.isLoading() ) {
       return this.isLoading();
     }
     var self = this;
+    this.trigger("beforeLoad");
+    if ( this.isLoaded() && veda.Backend.policy === "cache" ) {
+      this.trigger("afterLoad", this);
+      return Promise.resolve( this );
+    } else if ( this.isLoaded() && veda.Backend.policy === "fetch" ) {
+      this.trigger("afterLoad", this);
+      this.is("v-s:UserThing").then(function (isUserThing) {
+        if (isUserThing) self.reset();
+      });
+      return Promise.resolve( this );
+    }
     var uri = this._.uri ;
     if (typeof uri === "string") {
       var loadingPromise = veda.Backend.get_individual(veda.ticket, uri).then(function (individualJson) {
@@ -408,6 +416,9 @@ veda.Module(function (veda) { "use strict";
    * Save current individual to database
    */
   proto.save = function() {
+    if ( this.isSaving() ) {
+      return this.isSaving();
+    }
     // Do not save rdfs:Resource
     if ( this.hasValue("rdf:type", "rdfs:Resource") ) {
       var notify = veda.Notify ? new veda.Notify() : console.log;
@@ -427,13 +438,15 @@ veda.Module(function (veda) { "use strict";
       return acc;
     }, this.properties);
 
-    return veda.Backend.put_individual(veda.ticket, this.properties).then(function () {
+    var promise = veda.Backend.put_individual(veda.ticket, this.properties).then(function () {
+      self.isSaving(false);
       self.isNew(false);
       self.isSync(true);
       self.isLoaded(true);
       self.trigger("afterSave");
       return self;
     });
+    return this.isSaving(promise);
   }
 
   /**
@@ -441,6 +454,9 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to  database
    */
   proto.reset = function (original) {
+    if ( this.isResetting() ) {
+      return this.isResetting();
+    }
     this.trigger("beforeReset");
     if (this.isNew()) {
       return Promise.resolve(this).then(function (self) {
@@ -450,12 +466,13 @@ veda.Module(function (veda) { "use strict";
     }
     var self = this;
     self.filtered = {};
-    return (original ? Promise.resove(original) : veda.Backend.reset_individual(veda.ticket, self.id))
+    var promise = (original ? Promise.resove(original) : veda.Backend.reset_individual(veda.ticket, self.id))
       .then(processOriginal)
       .catch(function (error) {
         console.log("reset individual error", error);
         self.trigger("afterReset");
       });
+    return self.isResetting(promise);
 
     function processOriginal(original) {
       var self_property_uris = Object.keys(self.properties);
@@ -483,6 +500,7 @@ veda.Module(function (veda) { "use strict";
           self.trigger(property_uri, self.get(property_uri));
         }
       });
+      self.isResetting(false);
       self.isNew(false);
       self.isSync(true);
       self.isLoaded(true);
@@ -712,19 +730,17 @@ veda.Module(function (veda) { "use strict";
     }
 
     function isSub(type) {
-      return type.load().then(function (type) {
-        if (is) { return is; }
-        if (!type.hasValue("rdfs:subClassOf")) {
-          return (is = is || false);
-        } else if (type.hasValue("rdfs:subClassOf", _class.id)) {
-          return (is = is || true);
-        } else {
-          var types = type.get("rdfs:subClassOf");
-          return Promise.all(types.map(isSub)).then(function (results) {
-            return eval(results.join("||"));
-          });
-        }
-      });
+      if (is) { return is; }
+      if (!type.hasValue("rdfs:subClassOf")) {
+        return (is = is || false);
+      } else if (type.hasValue("rdfs:subClassOf", _class.id)) {
+        return (is = is || true);
+      } else {
+        var types = type.get("rdfs:subClassOf");
+        return Promise.all(types.map(isSub)).then(function (results) {
+          return eval(results.join("||"));
+        });
+      }
     }
   };
 
@@ -812,8 +828,18 @@ veda.Module(function (veda) { "use strict";
     return ( typeof value !== "undefined" ? this._.isLoaded = value : this._.isLoaded );
   };
 
+  proto.isPending = function(operation, value) {
+    return ( typeof value !== "undefined" ? this._.pending[operation] = value : this._.pending[operation] );
+  }
+
   proto.isLoading = function (value) {
-    return ( typeof value !== "undefined" ? this._.isLoading = value : this._.isLoading );
+    return this.isPending("load", value);
+  };
+  proto.isSaving = function (value) {
+    return this.isPending("save", value);
+  };
+  proto.isResetting = function (value) {
+    return this.isPending("reset", value);
   };
 
   /**
