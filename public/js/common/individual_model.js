@@ -416,7 +416,9 @@ veda.Module(function (veda) { "use strict";
    * Save current individual to database
    */
   proto.save = function() {
-    if ( this.isSaving() ) {
+    // Do not save individual to server if nothing changed
+    if (this.isSync()) { return Promise.resolve(this); }
+    if ( this.isSaving() && this.isSync() ) {
       return this.isSaving();
     }
     // Do not save rdfs:Resource
@@ -425,8 +427,6 @@ veda.Module(function (veda) { "use strict";
       notify("danger", { message: "Не могу сохранить объект типа rdfs:Resource" });
       return this;
     }
-    // Do not save individual to server if nothing changed
-    if (this.isSync()) { return Promise.resolve(this); }
     var self = this;
     this.trigger("beforeSave");
     Object.keys(this.properties).reduce(function (acc, property_uri) {
