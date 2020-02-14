@@ -39,15 +39,17 @@ impl Storage for TTStorage {
         let key = (uri,);
         let resp = self.client.select(space, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
 
-        if let Ok(v) = self.rt.block_on(resp) {
-            iraw.set_raw(&v[5..]);
+        match self.rt.block_on(resp) {
+            Ok(v) => {
+                iraw.set_raw(&v[5..]);
 
-            if parse_raw(iraw).is_ok() {
-                return true;
+                if parse_raw(iraw).is_ok() {
+                    return true;
+                }
             }
-            //else {
-            //    error!("TTStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
-            //}
+            Err(e) => {
+                error!("TTStorage: fail get [{}] from tarantool, err={:?}", uri, e);
+            }
         }
 
         false
