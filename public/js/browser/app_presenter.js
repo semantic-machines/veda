@@ -267,21 +267,30 @@ veda.Module(function (veda) { "use strict";
   var lineHandler = function (status) {
     var lineStatus = document.getElementById("line-status");
     lineStatus.style.display = "block";
-    if ( status === "online" ) {
+    if ( status.line && status.ccus ) {
       setOnline();
+    } else if ( status.line && !status.ccus) {
+      setLimited();
     } else {
       setOffline();
     }
     function setOnline () {
       lineStatus.classList.add("online");
       lineStatus.classList.remove("offline");
+      lineStatus.classList.remove("limited");
     }
     function setOffline () {
       lineStatus.classList.remove("online");
       lineStatus.classList.add("offline");
+      lineStatus.classList.remove("limited");
+    }
+    function setLimited () {
+      lineStatus.classList.remove("online");
+      lineStatus.classList.remove("offline");
+      lineStatus.classList.add("limited");
     }
   }
-  veda.on("online offline", lineHandler);
+  veda.on("status", lineHandler);
 
   // Service worker
   if ("serviceWorker" in navigator) {

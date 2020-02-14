@@ -797,16 +797,18 @@ v-ui:StandardButtonsTemplate
     });
   });
 
-  function policyHandler(policy) {
-    if (policy === "fetch") {
+  function statusHandler(status) {
+    if ( status.line && status.ccus ) {
+      $("#refresh", template).addClass("hidden");
+    } else if ( status.line && !status.ccus ) {
       $("#refresh", template).removeClass("hidden");
     } else {
       $("#refresh", template).addClass("hidden");
     }
   }
-  veda.on("policy", policyHandler);
+  veda.on("status", statusHandler);
   template.one("remove", function () {
-    veda.off("policy", policyHandler);
+    veda.off("status", statusHandler);
   });
 
   // Standard tasks

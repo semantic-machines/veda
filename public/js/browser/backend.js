@@ -22,39 +22,30 @@ veda.Module(function Backend(veda) { "use strict";
     });
   };
 
-  var line = "offline";
-  function setLine(status) {
-    if (status === "online") {
-      line = "online";
-    } else {
-      line = "offline";
-    }
+  var status = {
+    line: 0,
+    ccus: 0
+  };
+  veda.Backend.status = status;
+  function setStatus(state) {
+    status.line = state === "online" ? 1 : state === "offline" ? 0 : status.line;
+    status.ccus = state === "ccus-online" ? 1 : state === "ccus-offline" ? 0 : status.ccus;
+    this.trigger("status", status);
   }
-  veda.on("online offline", setLine);
-
-  var ccus = "offline";
-  function setCCUS(status) {
-    if (status === "ccus-online") {
-      ccus = "online";
-    } else {
-      ccus = "offline";
-    }
-  }
-  veda.on("ccus-online ccus-offline", setCCUS);
+  veda.on("online offline ccus-online ccus-offline", setStatus);
 
   veda.Backend.policy = "cache";
-  function setPolicy() {
-    if (line === "online" && ccus === "online") {
+  function setPolicy(status) {
+    if ( status.line && status.ccus ) {
       veda.Backend.policy = "cache";
-    } else if (line === "online") {
+    } else if ( status.line && !status.ccus ) {
       veda.Backend.policy = "fetch";
     } else {
       veda.Backend.policy = "cache";
     }
     console.log("Backend policy =", veda.Backend.policy);
-    veda.trigger("policy", veda.Backend.policy);
   }
-  veda.on("online offline ccus-online ccus-offline", setPolicy);
+  veda.on("status", setPolicy);
 
   var interval;
   var duration = 5000;

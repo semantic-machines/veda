@@ -1516,9 +1516,8 @@ svg.process-path-highlight path
   font-size: 0.7em;
   margin: 0.7em 0 -2em;
 }
-#line-status.online > .offline {
-  display: none;
-}
-#line-status.offline > .online {
+#line-status.online > *:not(.online),
+#line-status.offline > *:not(.offline),
+#line-status.limited > *:not(.limited) {
   display: none;
 }
