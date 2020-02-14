@@ -21,6 +21,9 @@ veda.Module(function (veda) { "use strict";
     var reconnectDelay = reconnectDelayInitial;
     var reconnectDelayFactor = 1.1;
     var reconnectDelayLimit = 5 * 60 * 1000; // 5 min
+    var lastPing = Date.now();
+    var pingTimeout = 10000;
+    var pingInterval;
 
     return veda.UpdateService.prototype._singletonInstance = initSocket();
 
@@ -34,6 +37,7 @@ veda.Module(function (veda) { "use strict";
 
         socket.onopen = openedHandler;
         socket.onclose = closedHandler;
+        socket.onerror = errorHandler;
         socket.onmessage = messageHandler;
         socket.receiveMessage = receiveMessage;
         socket.sendMessage = sendMessage;
@@ -67,6 +71,10 @@ veda.Module(function (veda) { "use strict";
 
     function receiveMessage(msg) {
       //console.log("server -> client:", msg);
+      if (msg === "") {
+        lastPing = Date.now();
+        return;
+      }
       var uris = msg.indexOf("=") === 0 ? msg.substr(1) : msg;
       if (uris.length === 0) {
         return;
@@ -102,6 +110,15 @@ veda.Module(function (veda) { "use strict";
       this.sendMessage("ccus=" + veda.ticket);
       self.restore();
       veda.trigger("ccus-online");
+
+      pingInterval = setInterval(function (that) {
+        if (Date.now() - lastPing > pingTimeout) {
+          console.log("client: ping missed, close socket");
+          clearInterval(pingInterval);
+          that.close();
+          return;
+        }
+      }, pingTimeout / 2, this);
     }
 
     function messageHandler(event) {
@@ -109,11 +126,17 @@ veda.Module(function (veda) { "use strict";
       this.receiveMessage(msg);
     }
 
+    function errorHandler(event) {
+      console.log("client: ccus error", event);
+      this.close();
+    }
+
     function closedHandler(event) {
       reconnectDelay = reconnectDelay < reconnectDelayLimit ? reconnectDelay * reconnectDelayFactor : reconnectDelayLimit ;
       console.log("client: websocket closed", event.target.url, "| re-connect in", reconnectDelay / 1000, "sec");
       setTimeout(initSocket, reconnectDelay);
       veda.trigger("ccus-offline");
+      clearInterval(pingInterval);
     }
 
   };
