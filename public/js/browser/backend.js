@@ -42,19 +42,17 @@ veda.Module(function Backend(veda) { "use strict";
   }
   veda.on("ccus-online ccus-offline", setCCUS);
 
-  var policy = "cache";
-  veda.Backend.policy = policy;
-
+  veda.Backend.policy = "cache";
   function setPolicy() {
     if (line === "online" && ccus === "online") {
-      policy = "cache";
+      veda.Backend.policy = "cache";
     } else if (line === "online") {
-      policy = "fetch";
+      veda.Backend.policy = "fetch";
     } else {
-      policy = "cache";
+      veda.Backend.policy = "cache";
     }
-    console.log("Backend policy =", policy);
-    veda.Backend.policy = policy;
+    console.log("Backend policy =", veda.Backend.policy);
+    veda.trigger("policy", veda.Backend.policy);
   }
   veda.on("online offline ccus-online ccus-offline", setPolicy);
 
@@ -402,7 +400,7 @@ veda.Module(function Backend(veda) { "use strict";
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
     };
-    if (policy === "cache") {
+    if (veda.Backend.policy === "cache") {
       // Cache first
       return localDB.then(function (db) {
         return db.get(params.data.uri);
@@ -470,7 +468,7 @@ veda.Module(function Backend(veda) { "use strict";
         "uris": isObj ? arg.uris : uris
       }
     };
-    if (policy === "cache") {
+    if (veda.Backend.policy === "cache") {
       // Cache first
       return localDB.then(function (db) {
         var results = [];
