@@ -18,6 +18,7 @@ veda.Module(function Backend(veda) { "use strict";
       };
       xhr.onerror = reject;
       xhr.open("GET", "ping");
+      xhr.timeout = 5000;
       xhr.send();
     });
   };
