@@ -331,19 +331,19 @@ fn operation_prepare(
 
     if is_need_authorize {
         if cmd == IndvOp::Remove {
-            if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
+            if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, Some (&mut trace)).unwrap_or(0) != Access::CanDelete as u8 {
                 error!("operation [Remove], Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
                 //return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
             }
         } else {
             if !prev_state.is_empty() {
                 if let Some(is_deleted) = new_indv.get_first_bool("v-s:deleted") {
-                    if is_deleted && _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
+                    if is_deleted && _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, Some (&mut trace)).unwrap_or(0) != Access::CanDelete as u8 {
                         error!("fail update, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
                         return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
                     }
                 } else {
-                    if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0) != Access::CanUpdate as u8 {
+                    if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, Some (&mut trace)).unwrap_or(0) != Access::CanUpdate as u8 {
                         error!("fail update, Not Authorized, user {} request [can update] {} ", ticket.user_uri, new_indv.get_id());
                         return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
                     }
@@ -374,7 +374,7 @@ fn operation_prepare(
                 }
 
                 for type_id in added_types.iter() {
-                    if _authorize(type_id, &ticket.user_uri, Access::CanCreate as u8, true, &mut trace).unwrap_or(0) != Access::CanCreate as u8 {
+                    if _authorize(type_id, &ticket.user_uri, Access::CanCreate as u8, true, Some (&mut trace)).unwrap_or(0) != Access::CanCreate as u8 {
                         error!("fail update, Not Authorized, user {} request [can create] for {} ", ticket.user_uri, type_id);
                         return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
                     }

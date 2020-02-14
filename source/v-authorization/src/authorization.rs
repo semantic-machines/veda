@@ -302,7 +302,6 @@ fn authorize_obj_group(
                             format!("EXIT? request_access={}, res={}\n", access_to_pretty_string(req_acs), access_to_pretty_string(crr_acs)),
                         );
             */
-
         }
 
         if !trace.is_info && !trace.is_group && !trace.is_acl {
