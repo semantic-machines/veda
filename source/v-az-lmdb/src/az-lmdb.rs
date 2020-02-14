@@ -82,7 +82,7 @@ impl<'a> Storage for LMDBStorage<'a> {
     fn fiber_yield(&self) {}
 }
 
-pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, trace: &mut Trace) -> Result<u8, i64> {
+pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, trace: Option<&mut Trace>) -> Result<u8, i64> {
     if _is_check_for_reload {
         if let Ok(true) = check_for_reload() {
             //eprintln!("INFO: Authorize: reopen db");
@@ -177,5 +177,19 @@ pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_r
         }
     }
 
-    authorize(uri, user_uri, request_access, &filter_value, filter_allow_access_to_other, &storage, trace)
+    if let Some(t) = trace {
+        authorize(uri, user_uri, request_access, &filter_value, filter_allow_access_to_other, &storage, t)
+    } else {
+        let mut t = Trace {
+            acl: &mut String::new(),
+            is_acl: false,
+            group: &mut String::new(),
+            is_group: false,
+            info: &mut String::new(),
+            is_info: false,
+            str_num: 0,
+        };
+
+        authorize(uri, user_uri, request_access, &filter_value, filter_allow_access_to_other, &storage, &mut t)
+    }
 }

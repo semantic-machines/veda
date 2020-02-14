@@ -2,8 +2,8 @@ use std::ffi::CStr;
 use std::ffi::CString;
 use std::os::raw::c_char;
 use std::ptr;
-use v_az_lmdb::_authorize;
 use v_authorization::Trace;
+use v_az_lmdb::_authorize;
 
 const TRACE_ACL: u8 = 0;
 const TRACE_GROUP: u8 = 1;
@@ -50,7 +50,7 @@ pub unsafe extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char
         str_num: 0,
     };
 
-    if _authorize(&uri, &user_uri, _request_access, _is_check_for_reload, &mut trace).is_ok() {};
+    if _authorize(&uri, &user_uri, _request_access, _is_check_for_reload, Some(&mut trace)).is_ok() {};
 
     let mut trace_res = &mut String::new();
 
@@ -114,11 +114,10 @@ pub unsafe extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_ch
             eprintln!("ERR! AZ: attempt {:?}", attempt)
         }
 
-        match _authorize(uri, user_uri, request_access, is_check_for_reload, &mut trace) {
+        match _authorize(uri, user_uri, request_access, is_check_for_reload, Some(&mut trace)) {
             Ok(res) => return res,
             Err(_e) => {}
         }
     }
     0
 }
-
