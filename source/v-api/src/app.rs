@@ -1,4 +1,7 @@
-#[derive(PartialEq, Debug, Clone)]
+use serde::Serialize;
+use serde::Serializer;
+
+#[derive(PartialEq, Debug, Clone, Copy)]
 #[repr(u16)]
 pub enum ResultCode {
     /// 0
@@ -98,6 +101,15 @@ pub enum ResultCode {
 
     /// 4000
     ConnectError = 4000,
+}
+
+impl Serialize for ResultCode {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_u16(*self as u16)
+    }
 }
 
 impl ResultCode {
