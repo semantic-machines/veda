@@ -27,11 +27,11 @@ const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934
 const DEFAULT_DURATION: i32 = 40000;
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 
-const MAX_COUNT_FAILED_ATTEMPTS: i32 = 3;
-const FAILED_AUTH_LOCK_PERIOD: i64 = 1 * 60;
-const FAILED_PASS_CHANGE_LOCK_PERIOD: i64 = 30;
-const SUCCESS_PASS_CHANGE_LOCK_PERIOD: i64 =  2 * 60;
-const SECRET_LIFETIME: i64 = 5 * 60;
+const MAX_COUNT_FAILED_ATTEMPTS: i32 = 5;
+const FAILED_AUTH_LOCK_PERIOD: i64 = 30 * 60;
+const FAILED_PASS_CHANGE_LOCK_PERIOD: i64 = 30 * 60;
+const SUCCESS_PASS_CHANGE_LOCK_PERIOD: i64 = 24 * 60 * 60;
+const SECRET_LIFETIME: i64 = 12 * 60 * 60;
 
 fn main() -> std::io::Result<()> {
     init_log();
