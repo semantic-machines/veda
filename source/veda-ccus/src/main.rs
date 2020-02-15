@@ -165,6 +165,7 @@ impl WsCCUSSession {
                 return;
             }
             ctx.ping("");
+            ctx.text("");
         });
     }
 }
