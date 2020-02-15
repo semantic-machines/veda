@@ -8,6 +8,7 @@ before_install:
   - sudo apt-get clean
   - sudo apt-get update
   - sudo apt-get install dpkg
+  - sudo apt-get install -y xvfb
   - stty cols 80
   - sudo apt-get install nodejs-legacy
   - npm install -g grunt-cli
