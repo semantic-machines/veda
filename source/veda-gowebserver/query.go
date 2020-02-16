@@ -6,6 +6,7 @@ import (
   "github.com/op/go-nanomsg"
   "log"
   "time"
+  "strings"
 )
 
 //query function handle query request with fulltext search
@@ -145,6 +146,12 @@ func query(ctx *fasthttp.RequestCtx) {
   request[6] = limit
   request[7] = from
 
+
+  var is_search_query = false
+  if strings.Contains(strings.ToLower(query), "select") && strings.Contains(strings.ToLower(query), "from") {
+        is_search_query = true
+  }
+
   defer func() {
     if r := recover(); r != nil {
       log.Printf("ERR! fail execute(%s) request=%v\n", queryServiceURL, request)
@@ -178,12 +185,22 @@ func query(ctx *fasthttp.RequestCtx) {
   }
 
   //log.Println("use query service url: ", queryServiceURL)
-  _, err = querySocket.Connect(queryServiceURL)
-  if err != nil {
-    log.Printf("ERR! ON CONNECT TO QUERY SOCKET, url=%s, query=%s", queryServiceURL, string(jsonRequest))
-    ctx.Response.SetStatusCode(int(InternalServerError))
-    return
-  }
+    if is_search_query {
+        _, err = querySocket.Connect(searchQueryURL)
+        if err != nil {
+            log.Printf("ERR! ON CONNECT TO SEARCH QUERY SOCKET, url=%s, query=%s", searchQueryURL, string(jsonRequest))
+            ctx.Response.SetStatusCode(int(InternalServerError))
+            return
+        }
+    } else {
+        _, err = querySocket.Connect(queryServiceURL)
+        if err != nil {
+            log.Printf("ERR! ON CONNECT TO FT QUERY SOCKET, url=%s, query=%s", queryServiceURL, string(jsonRequest))
+            ctx.Response.SetStatusCode(int(InternalServerError))
+            return
+        }
+    }
+
 
   cb, err1 := NmCSend(querySocket, jsonRequest, 0)
   if err1 != nil || cb <= 0 {

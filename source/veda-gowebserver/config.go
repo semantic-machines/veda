@@ -60,6 +60,8 @@ func configWebServer() {
 				roStorageURL = paramVal
 			case "ft_query_service_url":
 				queryServiceURL = paramVal
+			case "search_query_url":
+				searchQueryURL = paramVal
 			case "webserver_trace":
 				boolVal, err := strconv.ParseBool(paramVal)
 				if err != nil {
