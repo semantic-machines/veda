@@ -20,19 +20,11 @@ before_install:
   - npm install -g grunt-cli
   - npm install grunt-contrib-qunit --save-dev
   - npm install grunt --save-dev
-#  - sudo -E apt-get -yq --allow-unauthenticated --no-install-suggests --no-install-recommends $(travis_apt_get_options) install google-chrome-stable fluxbox
-
-#addons:
-#  apt:
-#    sources:
-#     - google-chrome
-#    packages:
-#     - google-chrome-stable fluxbox
 
 # Build
 install:
   - ./tools/install-tarantool.sh
-#  - ./tools/install-clickhouse.sh
+  - ./tools/install-clickhouse.sh
   - ./control-install.sh
 #&>install.log
 #  - ./tools/send-to-chunk-io.sh
