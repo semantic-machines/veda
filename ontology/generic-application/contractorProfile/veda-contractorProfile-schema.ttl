@@ -29,6 +29,7 @@ v-s:ContractorProfile
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Labeled;
   rdfs:subClassOf v-s:Document;
+  rdfs:subClassOf v-s:UserSearchableDocument;
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:shortLabel}"^^xsd:string;
   rdfs:label "Досье контрагента"@ru ;
   rdfs:label "Contractor profile"@en ;
