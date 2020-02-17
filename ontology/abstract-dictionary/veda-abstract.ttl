@@ -1475,6 +1475,13 @@ v-s:Document
   rdfs:label "Document"@en ;
 .
 #------------------------------------------------------
+v-s:UserSearchableDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Документы, доступные для поиска пользователю"@ru ;
+  rdfs:label "User searchable document"@en ;
+.
+#------------------------------------------------------
 v-s:Dictionary
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
