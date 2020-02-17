@@ -58,6 +58,8 @@ v-s:Organization
   rdfs:subClassOf v-s:ClassifiedRus ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:UserSearchableDocument;
   rdfs:label "Организация"@ru ;
   rdfs:label "Organization"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
