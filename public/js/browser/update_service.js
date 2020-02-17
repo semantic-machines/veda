@@ -22,7 +22,7 @@ veda.Module(function (veda) { "use strict";
     var reconnectDelayFactor = 1.1;
     var reconnectDelayLimit = 5 * 60 * 1000; // 5 min
     var lastPing = Date.now();
-    var pingTimeout = 10000;
+    var pingTimeout = 5000;
     var pingInterval;
 
     return veda.UpdateService.prototype._singletonInstance = initSocket();
@@ -118,7 +118,7 @@ veda.Module(function (veda) { "use strict";
           that.close();
           return;
         }
-      }, pingTimeout / 2, this);
+      }, pingTimeout * 2, this);
     }
 
     function messageHandler(event) {
