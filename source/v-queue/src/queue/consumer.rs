@@ -233,6 +233,16 @@ impl Consumer {
     }
 
     pub fn pop_header(&mut self) -> bool {
+        let res = self.read_header();
+
+        if !res {
+            self.sync_and_set_cur_pos();
+        }
+
+        res
+    }
+
+    fn read_header(&mut self) -> bool {
         if self.count_popped >= self.queue.count_pushed {
             if let Err(e) = self.queue.get_info_of_part(self.id, false) {
                 error!("{}, queue:consumer({}):pop, queue {}{} not ready", e.as_str(), self.name, self.queue.name, self.id);
@@ -277,7 +287,6 @@ impl Consumer {
                 }
             }
         }
-        //self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record));
 
         let mut buf = vec![0; HEADER_SIZE];
         match self.queue.ff_queue.read(&mut buf[..]) {
@@ -298,6 +307,16 @@ impl Consumer {
 
         let header = Header::create_from_buf(&buf);
 
+        if header.count_pushed > self.queue.count_pushed {
+            error!("readed header is invalid: record header count_pushed {} > queue count pushed {}", header.count_pushed, self.queue.count_pushed);
+            return false;
+        }
+
+        if header.start_pos >= self.queue.right_edge {
+            error!("readed header is invalid");
+            return false;
+        }
+
         buf[21] = 0;
         buf[22] = 0;
         buf[23] = 0;
@@ -308,6 +327,15 @@ impl Consumer {
 
         self.header = header;
         true
+    }
+
+    fn sync_and_set_cur_pos(&mut self) {
+        if let Err(e) = self.queue.ff_queue.sync_data() {
+            error!("fail sync data, err={:?}", e);
+        }
+        if let Err(e) = self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)) {
+            error!("fail seek in queue, err={:?}", e);
+        }
     }
 
     pub fn pop_body(&mut self, msg: &mut [u8]) -> Result<usize, ErrorQueue> {
