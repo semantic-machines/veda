@@ -1983,17 +1983,19 @@
           xhr = new XMLHttpRequest(),
           fd = new FormData();
       xhr.open("POST", url, true);
+      xhr.timeout = 10 * 60 * 1000;
       xhr.upload.onprogress = progress;
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            resolve(params);
-          } else {
-            reject( new Error("File upload error") );
-          }
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          resolve(params);
+        } else {
+          reject( new Error("File upload error") );
         }
       };
       xhr.onerror = function() {
+        reject( new Error("File upload error") );
+      };
+      xhr.ontimeout = function() {
         reject( new Error("File upload error") );
       };
       fd.append("path", path);
