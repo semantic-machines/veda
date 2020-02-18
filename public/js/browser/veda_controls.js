@@ -911,12 +911,14 @@
       });
     }
 
-    fulltext.on("input keyup focus", function (e) {
-      var value = e.target.value;
+    fulltext.on("input change focus blur", function (e) {
+      var fulltext = $(e.target);
+      var value = fulltext.val();
       if (value) {
-        e.target.setAttribute("rows", value.split("\n").length);
+        var rows = value.split("\n").length;
+        fulltext.prop("rows", rows);
       } else {
-        e.target.setAttribute("rows", 1);
+        fulltext.prop("rows", 1);
       }
     });
 
@@ -2388,12 +2390,14 @@
         });
       }
 
-      fulltext.on("input keyup focus", function (e) {
-        var value = e.target.value;
+      fulltext.on("input change focus blur", function (e) {
+        var fulltext = $(e.target);
+        var value = fulltext.val();
         if (value) {
-          e.target.setAttribute("rows", value.split("\n").length);
+          var rows = value.split("\n").length;
+          fulltext.prop("rows", rows);
         } else {
-          e.target.setAttribute("rows", 1);
+          fulltext.prop("rows", 1);
         }
       });
 
