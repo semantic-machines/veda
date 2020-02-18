@@ -354,6 +354,17 @@ for (i = 0; i < 1; i++) {
         });
 
     QUnit.test(
+        "#100 SearchQuery",
+        function (assert) {
+            var ticket = get_user1_ticket();
+            var data = Backend.query(ticket.id, "SELECT id FROM veda_tt.`owl:Class` WHERE id LIKE 'owl:%'").result;
+
+            //#1
+            assert.ok(data.indexOf("owl:Thing") >= 0);
+            assert.ok(data.indexOf("owl:Nothing") >= 0);
+        });
+
+    QUnit.test(
         "#004 search form test",
         function (assert) {
             var res;

@@ -12,9 +12,11 @@ ft-query
 
 #fanout-email
 
-#search-index-tt
+search-index-tt
 
-#search-index-pt
+search-index-pt
+
+search-query
 
 #fanout-sql
 
