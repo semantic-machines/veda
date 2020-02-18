@@ -50,10 +50,9 @@ veda.Module(function (veda) { "use strict";
       .catch(handleLoginError);
   });
 
-  $("#new-password, #confirm-new-password", loginForm).change(validateNewPassword);
-  $("#secret", loginForm).keyup(validateNewPassword);
+  $("#new-password, #confirm-new-password, #secret", loginForm).on("input", validateNewPassword);
+  var re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
   function validateNewPassword() {
-    var re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
     var submit = $("#submit-new-password", loginForm);
     var newPasswordGroup = $("#new-password-group", loginForm);
     var newPassword = $("#new-password", loginForm);
@@ -149,18 +148,18 @@ veda.Module(function (veda) { "use strict";
     var equalPasswordWarning = $("#equal-password-warning", loginForm).hide();
     var invalidPasswordWarning = $("#invalid-password-warning", loginForm).hide();
     var frequentPassChangeWarning = $("#frequent-pass-change-warning", loginForm).hide();
+    var passChangeNotAllowedWarning = $("#pass-change-not-allowed-warning", loginForm).hide();
+    var secretExpiredWarning = $("#secret-expired-warning", loginForm).hide();
     var authLockedError = $("#auth-locked-error", loginForm).hide();
     var passChangeLockedError = $("#pass-change-locked-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
     switch (error.code) {
       case 423: // Password change is allowed once a day
         frequentPassChangeWarning.show();
-        passChangeLockedError.show();
         setTimeout(function () {
           frequentPassChangeWarning.hide();
-          passChangeLockedError.hide();
           enterLoginPassword.show();
-        }, 30 * 60 * 1000);
+        }, 10 * 1000);
         break;
       case 429: // Too many auth fails
         authLockedError.show();
@@ -169,41 +168,54 @@ veda.Module(function (veda) { "use strict";
           enterLoginPassword.show();
         }, 30 * 60 * 1000);
         break;
-      case 465: // Empty password
-        emptyPasswordWarning.show();
+      case 430: // Too many pass change fails
         passChangeLockedError.show();
         setTimeout(function () {
-          emptyPasswordWarning.hide();
           passChangeLockedError.hide();
-          enterNewPassword.show();
+          enterLoginPassword.show();
         }, 30 * 60 * 1000);
+        break;
+      case 463: // Password change not allowed
+        passChangeNotAllowedWarning.show();
+        setTimeout(function () {
+          passChangeNotAllowedWarning.hide();
+          enterLoginPassword.show();
+        }, 10 * 1000);
+        break;
+      case 464: // Secret expired
+        secretExpiredWarning.show();
+        setTimeout(function () {
+          secretExpiredWarning.hide();
+          enterNewPassword.show();
+        }, 10 * 1000);
+        break;
+      case 465: // Empty password
+        emptyPasswordWarning.show();
+        setTimeout(function () {
+          emptyPasswordWarning.hide();
+          enterNewPassword.show();
+        }, 10 * 1000);
         break;
       case 466: // New password is equal to old
         equalPasswordWarning.show();
-        passChangeLockedError.show();
         setTimeout(function () {
           equalPasswordWarning.hide();
-          passChangeLockedError.hide();
           enterNewPassword.show();
-        }, 30 * 60 * 1000);
+        }, 10 * 1000);
         break;
       case 467: // Invalid password
         invalidPasswordWarning.show();
-        passChangeLockedError.show();
         setTimeout(function () {
           invalidPasswordWarning.hide();
-          passChangeLockedError.hide();
           enterNewPassword.show();
-        }, 30 * 60 * 1000);
+        }, 10 * 1000);
         break;
       case 468: // Invalid secret
         invalidSecretWarning.show();
-        passChangeLockedError.show();
         setTimeout(function () {
           invalidSecretWarning.hide();
-          passChangeLockedError.hide();
           enterNewPassword.show();
-        }, 30 * 60 * 1000);
+        }, 10 * 1000);
         break;
       case 469: // Password expired
         enterNewPassword.show();
