@@ -15,7 +15,7 @@ pub struct Queue {
     pub ff_queue: File,
     ff_info_push: File,
     ff_info_queue: File,
-    right_edge: u64,
+    pub(crate) right_edge: u64,
     pub count_pushed: u32,
     pub id: u32,
 }
