@@ -227,6 +227,14 @@ if [ -z $1 ] || [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] 
     cp $CARGO_TARGET_DIR/release/veda-search-index-pt $PWD
 fi
 
+if [ -z $1 ] || [ $1 == "search-query" ] || [ $1 == "veda-search-query" ] || [ $1 == "mv2" ]; then
+    echo BUILD TT
+    cd source/veda-search-query
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-search-query $PWD
+fi
+
 if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "mv1" ]; then
     rm ./veda-scripts-main
     rm ./veda-scripts-lp
