@@ -24,6 +24,7 @@ func query(ctx *fasthttp.RequestCtx) {
   timestamp := time.Now()
 
   var query string
+  var sql string
   var ticketKey string
   var sort string
   var databases string
@@ -39,6 +40,7 @@ func query(ctx *fasthttp.RequestCtx) {
 
   if ctx.IsGet() == true {
     query = string(ctx.QueryArgs().Peek("query")[:])
+    sql = string(ctx.QueryArgs().Peek("sql")[:])
     sort = string(ctx.QueryArgs().Peek("sort")[:])
     databases = string(ctx.QueryArgs().Peek("databases")[:])
     reopen = ctx.QueryArgs().GetBool("reopen")
@@ -65,6 +67,10 @@ func query(ctx *fasthttp.RequestCtx) {
 
     if jsonData["query"] != nil {
       query = jsonData["query"].(string)
+    }
+
+    if jsonData["sql"] != nil {
+      query = jsonData["sql"].(string)
     }
 
     if jsonData["sort"] != nil {
@@ -137,20 +143,26 @@ func query(ctx *fasthttp.RequestCtx) {
   request := make([]interface{}, 8)
   //fills request map with parametrs
 
+  var is_search_query = false
+
+  if sql != "" || (strings.Contains(strings.ToLower(query), "select") && strings.Contains(strings.ToLower(query), "from")) {
+        is_search_query = true
+  }
+
   request[0] = ticketKey
-  request[1] = query
+
+  if is_search_query == true {
+    request[1] = sql
+  } else {
+    request[1] = query
+  }
+
   request[2] = sort
   request[3] = databases
   request[4] = reopen
   request[5] = top
   request[6] = limit
   request[7] = from
-
-
-  var is_search_query = false
-  if strings.Contains(strings.ToLower(query), "select") && strings.Contains(strings.ToLower(query), "from") {
-        is_search_query = true
-  }
 
   defer func() {
     if r := recover(); r != nil {
