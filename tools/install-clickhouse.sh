@@ -5,5 +5,8 @@ echo "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/" | sudo tee /etc/ap
 sudo apt-get -y install dirmngr    # optional
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E0C56BD4    # optional
 sudo apt-get -y update
-export DEBIAN_FRONTEND=noninteractive
-sudo apt-get -yq install clickhouse-client clickhouse-server
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install clickhouse-client clickhouse-server
+
+sudo cp clickhouse/users.xml /etc/clickhouse-server/users.xml
+
+sudo service clickhouse-server restart
