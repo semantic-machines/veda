@@ -54,7 +54,7 @@ enum ColumnData {
     Str(Vec<Vec<String>>),
     Date(Vec<Vec<DateTime<Tz>>>),
     Int(Vec<Vec<i64>>),
-    Num(Vec<Vec<f64>>),
+    Dec(Vec<Vec<f64>>),
 }
 
 impl Context {
@@ -307,16 +307,16 @@ impl Context {
                         }
                     },
                     DataType::Decimal => {
-                        column_name.push_str("_num");
+                        column_name.push_str("_dec");
                         let column_value: Vec<f64> = resources.iter().map(|resource| resource.get_float()).collect();
 
                         if !columns.contains_key(&column_name) {
-                            let new_column = ColumnData::Num(Vec::new());
+                            let new_column = ColumnData::Dec(Vec::new());
                             columns.insert(column_name.clone(), new_column);
                         }
 
                         let column_data = columns.get_mut(&column_name).unwrap();
-                        if let ColumnData::Num(column) = column_data {
+                        if let ColumnData::Dec(column) = column_data {
                             let column_size = column.len();
                             let mut empty = vec![vec![0 as f64]; rows - column_size];
                             column.append(&mut empty);
@@ -385,7 +385,7 @@ impl Context {
                 //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
                 block = block.column(&column_name, column.to_owned());
             }
-            if let ColumnData::Num(column) = column_data {
+            if let ColumnData::Dec(column) = column_data {
                 column_type = "Array(Float64)";
                 let mut empty = vec![vec![0 as f64]; rows - column.len()];
                 column.append(&mut empty);
