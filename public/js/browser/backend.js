@@ -17,6 +17,7 @@ veda.Module(function Backend(veda) { "use strict";
         }
       };
       xhr.onerror = reject;
+      xhr.ontimeout = reject;
       xhr.open("GET", "ping");
       xhr.timeout = 5000;
       xhr.send();
@@ -110,6 +111,7 @@ veda.Module(function Backend(veda) { "use strict";
     this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
     if (result.status === 0 || result.status === 503 || result.status === 4000) {
+      veda.trigger("offline");
       veda.Backend.check();
     }
     if (result.status === 470 || result.status === 471) {
@@ -141,6 +143,9 @@ veda.Module(function Backend(veda) { "use strict";
         }
       };
       xhr.onerror = function () {
+        reject( new BackendError(this) );
+      };
+      xhr.ontimeout = function () {
         reject( new BackendError(this) );
       };
       if (ticket) { queryParams.push("ticket=" + ticket); }

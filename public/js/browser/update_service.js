@@ -114,6 +114,7 @@ veda.Module(function (veda) { "use strict";
       pingInterval = setInterval(function (that) {
         if (Date.now() - lastPing > pingTimeout) {
           console.log("client: ping missed, close socket");
+          veda.trigger("ccus-offline");
           clearInterval(pingInterval);
           that.close();
           return;
