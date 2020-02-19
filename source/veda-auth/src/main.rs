@@ -27,7 +27,7 @@ const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934
 const DEFAULT_DURATION: i32 = 40000;
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 
-const MAX_COUNT_FAILED_ATTEMPTS: i32 = 5;
+const MAX_COUNT_FAILED_ATTEMPTS: i32 = 2;
 const FAILED_AUTH_LOCK_PERIOD: i64 = 30 * 60;
 const FAILED_PASS_CHANGE_LOCK_PERIOD: i64 = 30 * 60;
 const SUCCESS_PASS_CHANGE_LOCK_PERIOD: i64 = 24 * 60 * 60;
@@ -59,7 +59,7 @@ fn main() -> std::io::Result<()> {
 
     let pass_lifetime = get_password_lifetime(&mut module);
 
-    let mut suspicious: HashMap<String, (i32, i64)> = HashMap::new();
+    let mut suspicious: HashMap<String, UserStat> = HashMap::new();
 
     loop {
         if let Ok(recv_msg) = server.recv() {
@@ -71,7 +71,7 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lifetime: Option<i64>, suspicious: &mut HashMap<String, (i32, i64)>) -> Message {
+fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lifetime: Option<i64>, suspicious: &mut HashMap<String, UserStat>) -> Message {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
@@ -82,6 +82,8 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
         "authenticate" => {
             let ticket =
                 authenticate(v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, pass_lifetime.unwrap_or_default(), suspicious);
+
+            info!("{:?}", ticket);
 
             let mut res = JSONValue::default();
             res["type"] = json!("ticket");
@@ -142,7 +144,7 @@ fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket
             str_num: 0,
         };
 
-        match _authorize(&tr_ticket.user_uri, &tr_ticket.user_uri, 15, true, Some (&mut trace)) {
+        match _authorize(&tr_ticket.user_uri, &tr_ticket.user_uri, 15, true, Some(&mut trace)) {
             Ok(_res) => {
                 for gr in trace.group.split('\n') {
                     if gr == ALLOW_TRUSTED_GROUP {
@@ -202,6 +204,14 @@ fn get_candidate_users_of_login(login: &str, module: &mut Module, systicket: &st
     module.fts.query(FTQuery::new_with_ticket(systicket, &query))
 }
 
+#[derive(Default, Debug)]
+struct UserStat {
+    wrong_count_login: i32,
+    last_wrong_login_date: i64,
+    attempt_change_pass: i32,
+    last_attempt_change_pass_date: i64,
+}
+
 fn authenticate(
     login: Option<&str>,
     password: Option<&str>,
@@ -209,7 +219,7 @@ fn authenticate(
     systicket: &str,
     module: &mut Module,
     pass_lifetime: i64,
-    suspicious: &mut HashMap<String, (i32, i64)>,
+    suspicious: &mut HashMap<String, UserStat>,
 ) -> Ticket {
     let mut ticket = Ticket::default();
 
@@ -238,15 +248,17 @@ fn authenticate(
         return ticket;
     }
 
-    if let Some((wrong_count, time)) = suspicious.get_mut(login) {
-        if *wrong_count > MAX_COUNT_FAILED_ATTEMPTS {
-            if Utc::now().timestamp() - *time < FAILED_AUTH_LOCK_PERIOD {
-                ticket.result = ResultCode::TooManyRequests;
-                return ticket;
-            } else {
-                *wrong_count = 0;
-                *time = Utc::now().timestamp();
-            }
+    let user_stat = suspicious.entry(login.to_owned()).or_insert(UserStat::default());
+    info!("login={:?}, stat: {:?}", login, user_stat);
+
+    if user_stat.wrong_count_login > MAX_COUNT_FAILED_ATTEMPTS {
+        if Utc::now().timestamp() - user_stat.last_wrong_login_date < FAILED_AUTH_LOCK_PERIOD {
+            ticket.result = ResultCode::TooManyRequests;
+            error!("too many attempt of login");
+            return ticket;
+        } else {
+            user_stat.wrong_count_login = 0;
+            user_stat.last_wrong_login_date = Utc::now().timestamp();
         }
     }
 
@@ -321,6 +333,7 @@ fn authenticate(
                 //let origin = person.get_first_literal("v-s:origin");
                 let old_secret = uses_credential.get_first_literal("v-s:secret").unwrap_or_default();
 
+                // PREPARE SECRET CODE
                 if !secret.is_empty() && secret.len() > 5 {
                     if old_secret.is_empty() {
                         error!("update password: secret not found, user={}", person.get_id());
@@ -357,8 +370,8 @@ fn authenticate(
                         return ticket;
                     }
 
-                    if now - prev_secret_date < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
-                        ticket.result = ResultCode::TooManyRequests;
+                    if now - edited < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
+                        ticket.result = ResultCode::ChangePasswordForbidden;
                         error!("request new password: too many requests, login={} password={} secret={}", login, password, secret);
                         return ticket;
                     }
@@ -379,6 +392,8 @@ fn authenticate(
                     }
                     return ticket;
                 } else {
+                    // ATTEMPT AUTHENTICATION
+
                     let mut is_request_new_password = if pass_lifetime > 0 && now - edited > pass_lifetime {
                         error!("password is old, lifetime > {} days, user={}", pass_lifetime / 60 / 60 / 24, account.get_id());
                         true
@@ -395,15 +410,31 @@ fn authenticate(
                         error!("request new password, login={} password={} secret={}", login, password, secret);
                         ticket.result = ResultCode::PasswordExpired;
 
-                        let n_secret = thread_rng().gen_range(100_000, 999_999).to_string();
-                        if !n_secret.is_empty() {
+                        if user_stat.attempt_change_pass > MAX_COUNT_FAILED_ATTEMPTS {
                             let prev_secret_date = uses_credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
                             if now - prev_secret_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
-                                ticket.result = ResultCode::Locked;
+                                ticket.result = ResultCode::TooManyRequestsChangePassword;
+                                user_stat.wrong_count_login = MAX_COUNT_FAILED_ATTEMPTS + 1;
+                                user_stat.last_wrong_login_date = Utc::now().timestamp();
                                 error!("request new password, to many request, login={} password={} secret={}", login, password, secret);
                                 return ticket;
                             }
+
+                            if now - user_stat.last_attempt_change_pass_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
+                                error!("too many requests of change password");
+                                ticket.result = ResultCode::TooManyRequestsChangePassword;
+                                user_stat.wrong_count_login = MAX_COUNT_FAILED_ATTEMPTS + 1;
+                                user_stat.last_wrong_login_date = Utc::now().timestamp();
+                                return ticket;
+                            } else {
+                                user_stat.attempt_change_pass = 0;
+                            }
                         }
+
+                        user_stat.attempt_change_pass += 1;
+                        user_stat.last_attempt_change_pass_date = Utc::now().timestamp();
+
+                        let n_secret = thread_rng().gen_range(100_000, 999_999).to_string();
 
                         uses_credential.set_string("v-s:secret", &n_secret, Lang::NONE);
                         uses_credential.set_datetime("v-s:SecretDateFrom", now);
@@ -445,15 +476,12 @@ fn authenticate(
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
                         create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, &mut module.storage);
-                        suspicious.remove(login);
+                        user_stat.wrong_count_login = 0;
+                        user_stat.last_wrong_login_date = 0;
                         return ticket;
                     } else {
-                        if let Some((wrong_count, time)) = suspicious.get_mut(login) {
-                            *wrong_count += 1;
-                            *time = Utc::now().timestamp();
-                        } else {
-                            suspicious.insert(login.to_string(), (0, Utc::now().timestamp()));
-                        }
+                        user_stat.wrong_count_login += 1;
+                        user_stat.last_wrong_login_date = Utc::now().timestamp();
                         warn!("request passw not equal with exist, user={}", account.get_id());
                     }
                 }

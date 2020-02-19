@@ -34,6 +34,12 @@ pub enum ResultCode {
     /// 429
     TooManyRequests = 429,
 
+    /// 430
+    TooManyRequestsChangePassword = 430,
+
+    /// 463
+    ChangePasswordForbidden = 463,
+
     /// 464
     SecretExpired = 464,
 
