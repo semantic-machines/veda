@@ -266,7 +266,7 @@ veda.Module(function (veda) { "use strict";
   veda.Util.queryFromIndividualPT = function (individual) {
     var flat = flattenIndividual(individual.properties);
     if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-      return individual.get("*")[0];
+      return;
     }
     var tables = [];
     var allProps = Object.getOwnPropertyNames(flat)
@@ -285,7 +285,7 @@ veda.Module(function (veda) { "use strict";
             oneProp = "p" + i + ".int[1] >= " + values[0].data + " AND p" + i + ".int[1] <= " + values[values.length-1].data;
             break;
           case "Decimal":
-            oneProp = "p" + i + ".num[1] >= " + values[0].data + " AND p" + i + ".num[1] <= " + values[values.length-1].data;
+            oneProp = "p" + i + ".dec[1] >= " + values[0].data + " AND p" + i + ".dec[1] <= " + values[values.length-1].data;
             break;
           // Date
           case "Datetime":
@@ -343,7 +343,7 @@ veda.Module(function (veda) { "use strict";
   veda.Util.queryFromIndividualTT = function (individual) {
     var flat = flattenIndividual(individual.properties);
     if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-      return individual.get("*")[0];
+      return;
     }
     var from;
     var allProps = Object.getOwnPropertyNames(flat)
@@ -362,7 +362,7 @@ veda.Module(function (veda) { "use strict";
             oneProp = prop + "_int[1] >= " + values[0].data + " AND " + prop + "_int[1] <= " + values[values.length-1].data;
             break;
           case "Decimal":
-            oneProp = prop + "_num[1] >= " + values[0].data + " AND " + prop + "_num[1] <= " + values[values.length-1].data;
+            oneProp = prop + "_dec[1] >= " + values[0].data + " AND " + prop + "_dec[1] <= " + values[values.length-1].data;
             break;
           // Date
           case "Datetime":
