@@ -141,8 +141,6 @@ veda.Module(function (veda) { "use strict";
   function handleLoginError(error) {
     var enterLoginPassword = $("#enter-login-password", loginForm).hide();
     var enterNewPassword = $("#enter-new-password", loginForm).hide();
-    var loginFailedError = $("#login-failed-error", loginForm).hide();
-    var passwordExpiredError = $("#password-expired-error", loginForm).hide();
     var invalidSecretWarning = $("#invalid-secret-warning", loginForm).hide();
     var emptyPasswordWarning = $("#empty-password-warning", loginForm).hide();
     var equalPasswordWarning = $("#equal-password-warning", loginForm).hide();
@@ -150,6 +148,8 @@ veda.Module(function (veda) { "use strict";
     var frequentPassChangeWarning = $("#frequent-pass-change-warning", loginForm).hide();
     var passChangeNotAllowedWarning = $("#pass-change-not-allowed-warning", loginForm).hide();
     var secretExpiredWarning = $("#secret-expired-warning", loginForm).hide();
+    var passwordExpiredError = $("#password-expired-error", loginForm).hide();
+    var loginFailedError = $("#login-failed-error", loginForm).hide();
     var authLockedError = $("#auth-locked-error", loginForm).hide();
     var passChangeLockedError = $("#pass-change-locked-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
