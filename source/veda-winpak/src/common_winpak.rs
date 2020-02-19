@@ -57,7 +57,7 @@ const INSERT_CARD: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[Card]
 (AccountID,TimeStamp,UserID,NodeId,Deleted,UserPriority,CardNumber,Issue,CardHolderID,AccessLevelID,ActivationDate,ExpirationDate,NoOfUsesLeft,CMDFileID,
 CardStatus,Display,BackDrop1ID,BackDrop2ID,ActionGroupID,LastReaderHID,PrintStatus,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
-VALUES (1,@P1,0,0,0,0,@P2,0,@P5,-1,@P3,@P4,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
+VALUES (1,@P1,0,0,0,0,@P2,0,@P5,-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
 
 pub fn insert_card<I: BoxableIo + 'static>(
     now: NaiveDateTime,
@@ -184,7 +184,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                     tab_number = employee.get_first_literal("v-s:tabNumber").unwrap_or_default();
                     birthday = employee.get_first_datetime("v-s:birthday").unwrap_or_default();
                 }
-                occupation = module.get_literal_of_link(&mut icp, "v-s:occupation", "v-s:title", &mut Individual::default()).unwrap_or_default();
+                occupation = module.get_literal_of_link(&mut icp, "v-s:occupation", "rdfs:label", &mut Individual::default()).unwrap_or_default();
             }
         } else {
             first_name = indv.get_first_literal("mnd-s:passFirstName").unwrap_or_default();
@@ -250,7 +250,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
 
 pub const UPDATE_CARD_DATE: &str = "\
 UPDATE [WIN-PAK PRO].[dbo].[Card]
-    SET [ActivationDate]=@P1, [ExpirationDate]=@P2
+    SET [ActivationDate]=@P1, [ExpirationDate]=@P2, [CardStatus]=1
     WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
 
 pub fn update_card_date<I: BoxableIo + 'static>(
@@ -277,6 +277,30 @@ pub fn update_card_date<I: BoxableIo + 'static>(
     }
 }
 
+// BLOCK CARD
+
+pub const BLOCK_CARD: &str = "\
+UPDATE [WIN-PAK PRO].[dbo].[Card]
+    SET [ActivationDate]=@P1, [ExpirationDate]=@P2
+    WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
+
+pub fn block_card<I: BoxableIo + 'static>(
+    is_need_block: bool,
+    date_from: Option<i64>,
+    date_to: NaiveDateTime,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if is_need_block && date_from.is_some() {
+        Box::new(
+            transaction
+                .exec(BLOCK_CARD, &[&NaiveDateTime::from_timestamp(date_from.unwrap(), 0).add(Duration::hours(WINPAK_TIMEZONE)), &date_to, &card_number.as_str()])
+                .and_then(|(_result, trans)| Ok(trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
 // CLEAR ACCESS LEVEL
 
 pub const CLEAR_ACCESS_LEVEL: &str = "\
