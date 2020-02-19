@@ -6,11 +6,11 @@ use std::ops::Sub;
 use tiberius::SqlConnection;
 use time::Duration;
 use tokio::runtime::current_thread;
+use v_api::app::ResultCode;
 use v_api::*;
 use v_module::module::*;
 use v_onto::datatype::Lang;
 use v_onto::individual::*;
-use v_api::app::ResultCode;
 
 pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
@@ -112,7 +112,7 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
 
         if let Some(s) = card_data.6 {
             if let Ok(d) = NaiveDate::parse_from_str(&s, "%d.%m.%Y") {
-                indv.set_datetime("v-s:birthday", d.and_hms (0,0,0).timestamp());
+                indv.set_datetime("v-s:birthday", d.and_hms(0, 0, 0).timestamp());
             } else {
                 error!("fail parse date, v-s:birthday={}", &s);
             }

@@ -5,11 +5,11 @@ use futures_state_stream::StateStream;
 use std::cell::Cell;
 use tiberius::SqlConnection;
 use tokio::runtime::current_thread;
+use v_api::app::ResultCode;
 use v_api::*;
 use v_module::module::*;
 use v_onto::datatype::Lang;
 use v_onto::individual::*;
-use v_api::app::ResultCode;
 
 pub fn insert_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let (sync_res, info) = sync_data_to_winpak(module, conn_str, indv);

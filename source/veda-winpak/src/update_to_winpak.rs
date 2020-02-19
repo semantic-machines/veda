@@ -3,11 +3,11 @@ use chrono::Utc;
 use futures::Future;
 use tiberius::SqlConnection;
 use tokio::runtime::current_thread;
+use v_api::app::ResultCode;
 use v_api::*;
 use v_module::module::*;
 use v_onto::datatype::Lang;
 use v_onto::individual::*;
-use v_api::app::ResultCode;
 
 pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let (sync_res, info) = sync_data_to_winpak(module, conn_str, indv);
@@ -73,6 +73,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut access_levels: Vec<i64> = Vec::new();
     let mut is_update_access_levels = false;
     let mut is_update_equipment = false;
+    let mut is_need_block_card = false;
 
     if btype == "mnd-s:Pass" {
         is_update_equipment = true;
@@ -94,8 +95,11 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
                 date_from = indv_b.get_first_datetime("v-s:dateFromFact");
                 date_to = indv_b.get_first_datetime("v-s:dateToFact");
-            } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" || has_change_kind_for_pass == "d:e8j2tpz9r613hxq4g4rbbxtfqe" {
+            } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
                 is_update_access_levels = true;
+            } else if has_change_kind_for_pass == "d:e8j2tpz9r613hxq4g4rbbxtfqe" {
+                date_from = indv_b.get_first_datetime("v-s:dateFromFact");
+                is_need_block_card = true;
             }
         }
     }
@@ -110,6 +114,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         .and_then(|conn| conn.transaction())
         .and_then(|trans| update_equipment(is_update_equipment, equipment_list, card_number.to_string(), trans))
         .and_then(|trans| update_card_date(date_from, date_to, card_number.to_string(), trans))
+        .and_then(|trans| block_card(is_need_block_card, date_from, now, card_number.to_string(), trans))
         .and_then(|trans| clear_access_level(is_update_access_levels, card_number.to_string(), trans))
         .and_then(|trans| update_access_level(is_update_access_levels, now, 0, access_levels, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
