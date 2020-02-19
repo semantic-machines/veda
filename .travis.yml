@@ -43,7 +43,7 @@ before_script:
   - sleep 60
 
 script:
-  - travis_wait 20 grunt test --stack --verbose
+  - travis_wait 10 grunt test --stack --verbose
   - testcafe chrome qa/testcafe/testLogin.js
   - testcafe chrome qa/testcafe/testLanguage.js
   - testcafe chrome qa/testcafe/testSearch.js
