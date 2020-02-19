@@ -51,9 +51,11 @@
                  How to generate double SHA1:
                  Execute: PASSWORD=$(base64 < /dev/urandom | head -c8); echo "$PASSWORD"; echo -n "$PASSWORD" | openssl dgst -sha1 -binary | openssl dgst -sha1
                  In first line will be password and in second - corresponding double SHA1.
-            -->
             <password_sha256_hex>a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3</password_sha256_hex>
+            -->
 
+           <password>123</password>
+ 
             <!-- List of networks with open access.
 
                  To open access from everywhere, specify:
