@@ -102,10 +102,10 @@ veda.Module(function (veda) { "use strict";
       .catch(handleLoginError);
   });
 
-  var forgotPasswordPressed;
-  $("#forgot-password, #request-secret", loginForm).click( function (e) {
+  var changePasswordPressed;
+  $("#change-password", loginForm).click( function (e) {
     e.preventDefault();
-    forgotPasswordPressed = true;
+    changePasswordPressed = true;
     var login = $("#login", loginForm).val(),
       secret = "?";
 
@@ -186,43 +186,49 @@ veda.Module(function (veda) { "use strict";
         secretExpiredWarning.show();
         setTimeout(function () {
           secretExpiredWarning.hide();
-          enterNewPassword.show();
+          enterLoginPassword.show();
         }, 10 * 1000);
         break;
       case 465: // Empty password
         emptyPasswordWarning.show();
         setTimeout(function () {
           emptyPasswordWarning.hide();
-          enterNewPassword.show();
+          enterLoginPassword.show();
         }, 10 * 1000);
         break;
       case 466: // New password is equal to old
         equalPasswordWarning.show();
         setTimeout(function () {
           equalPasswordWarning.hide();
-          enterNewPassword.show();
+          enterLoginPassword.show();
         }, 10 * 1000);
         break;
       case 467: // Invalid password
         invalidPasswordWarning.show();
         setTimeout(function () {
           invalidPasswordWarning.hide();
-          enterNewPassword.show();
+          enterLoginPassword.show();
         }, 10 * 1000);
         break;
       case 468: // Invalid secret
         invalidSecretWarning.show();
         setTimeout(function () {
           invalidSecretWarning.hide();
-          enterNewPassword.show();
+          enterLoginPassword.show();
         }, 10 * 1000);
         break;
       case 469: // Password expired
-        enterNewPassword.show();
-        if ( !forgotPasswordPressed ) {
+        if ( !changePasswordPressed ) {
           passwordExpiredError.show();
+          setTimeout(function () {
+            passwordExpiredError.hide();
+            enterNewPassword.show();
+            secretRequestInfo.show();
+          }, 10 * 1000);
+        } else {
+          enterNewPassword.show();
+          secretRequestInfo.show();
         }
-        secretRequestInfo.show();
         break;
       case 473: // Authentication failed
       default:
