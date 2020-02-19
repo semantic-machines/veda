@@ -66,11 +66,7 @@
         <p><strong>Error!</strong> Wrong login or password.</p>
         <div id="recaptcha" style="width:300px; margin: 1em auto 0 auto;"></div>
       </div>
-      <div id="password-expired-error" style="display:none;" class="alert alert-danger">
-        <p><strong>Ошибка!</strong> Истекло время действия пароля.</p>
-        <p><strong>Error!</strong> Password expired.</p>
-      </div>
-      <div id="invalid-secret-error" style="display:none;" class="alert alert-warning">
+      <div id="invalid-secret-warning" style="display:none;" class="alert alert-warning">
         <p>Неверный код.</p>
         <p>Invalid secret code.</p>
       </div>
@@ -97,6 +93,10 @@
       <div id="secret-expired-warning" style="display:none;" class="alert alert-warning">
         <p>Код просрочен.</p>
         <p>Secret code expired.</p>
+      </div>
+      <div id="password-expired-error" style="display:none;" class="alert alert-danger">
+        <p><strong>Ошибка!</strong> Истекло время действия пароля.</p>
+        <p><strong>Error!</strong> Password expired.</p>
       </div>
       <div id="auth-locked-error" style="display:none;" class="alert alert-danger">
         <p><strong>Ошибка!</strong> Слишком много неудачных попыток аутентификации. Учетная запись заблокирована на 30 минут.</p>
@@ -517,7 +517,7 @@
     <script type="text/javascript" src="./js/browser/individual_presenter.js?v=2"></script>
     <script type="text/javascript" src="./modules/docflow/js/browser/veda_workflow_editor.js"></script>
     <script type="text/javascript" src="./js/browser/app_presenter.js"></script>
-    <script type="text/javascript" src="./js/browser/auth.js?v=8"></script>
+    <script type="text/javascript" src="./js/browser/auth.js?v=10"></script>
 
     <script type="text/javascript">
       $(function(){
