@@ -1973,7 +1973,8 @@
   };
 
   // FILE UPLOAD CONTROL
-  function uploadFile(params) {
+  function uploadFile(params, tries) {
+    tries = typeof tries === "number" ? tries : 5;
     return new Promise(function (resolve, reject) {
       var file     = params.file,
           path     = params.path,
@@ -2006,6 +2007,12 @@
         fd.append("content", file.src);
       }
       xhr.send(fd);
+    })
+    .catch(function (error) {
+      if (tries > 0) {
+        return uploadFile(params, --tries);
+      }
+      throw error;
     });
   }
 
