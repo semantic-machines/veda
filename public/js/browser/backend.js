@@ -536,7 +536,7 @@ veda.Module(function Backend(veda) { "use strict";
     }
   };
 
-//////////////////////////
+////////////////////////////////////////////////////////////////////////
 
   function call_server_put(params) {
     return call_server(params).catch(function (backendError) {
@@ -667,6 +667,54 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server_put(params);
   };
+
+////////////////////////////////////////////////////////////////////////
+
+  veda.Backend.uploadFile = function (params, tries) {
+    tries = typeof tries === "number" ? tries : 5;
+    return new Promise(function (resolve, reject) {
+      var file     = params.file,
+          path     = params.path,
+          uri      = params.uri,
+          progress = params.progress,
+          url = "/files",
+          xhr = new XMLHttpRequest(),
+          fd = new FormData();
+      xhr.open("POST", url, true);
+      xhr.timeout = 10 * 60 * 1000;
+      xhr.upload.onprogress = progress;
+      xhr.onload = done;
+      xhr.onerror = fail;
+      xhr.onabort = fail;
+      xhr.ontimeout = fail;
+      fd.append("path", path);
+      fd.append("uri", uri);
+      if (file instanceof File) {
+        fd.append("file", file);
+      } else if (file instanceof Image) {
+        fd.append("content", file.src);
+      }
+      xhr.send(fd);
+      function done() {
+        if (xhr.status === 200) {
+          resolve(params);
+        } else {
+          reject( new Error("File upload error") );
+        }
+      }
+      function fail() {
+        reject( new Error("File upload error") );
+      }
+    })
+    .catch(function (error) {
+      if (tries > 0) {
+        return veda.Backend.uploadFile(params, --tries);
+      }
+      throw error;
+    });
+  };
+
+////////////////////////////////////////////////////////////////////////
 
   // Offline PUT queue
   function enqueueCall(params) {
