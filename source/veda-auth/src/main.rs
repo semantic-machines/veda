@@ -266,6 +266,7 @@ fn authenticate(
     if candidate_account_ids.result_code == 200 && candidate_account_ids.count > 0 {
         for account_id in &candidate_account_ids.result {
             if let Some(account) = module.get_individual(&account_id, &mut Individual::default()) {
+                account.parse_all();
                 let user_id = account.get_first_literal("v-s:owner").unwrap_or_default();
                 if user_id.is_empty() {
                     error!("user id is null, user_indv={}", account);
@@ -291,65 +292,50 @@ fn authenticate(
 
                 let now = Utc::now().naive_utc().timestamp();
                 let mut exist_password = String::default();
-                let mut edited = now;
-                let mut uses_credential = Individual::default();
+                let mut edited = 0;
+                let mut credential = Individual::default();
 
                 match account.get_first_literal("v-s:usesCredential") {
                     Some(uses_credential_uri) => {
-                        if let Some(uses_credential) = module.get_individual(&uses_credential_uri, &mut uses_credential) {
-                            exist_password = uses_credential.get_first_literal("v-s:password").unwrap_or_default();
-                            edited = uses_credential.get_first_datetime("v-s:dateFrom").unwrap_or_default();
+                        if let Some(_credential) = module.get_individual(&uses_credential_uri, &mut credential) {
+                            _credential.parse_all();
+                            exist_password = _credential.get_first_literal("v-s:password").unwrap_or_default();
+                            edited = _credential.get_first_datetime("v-s:dateFrom").unwrap_or_default();
+                        } else {
+                            error!("fail read credential: {}", uses_credential_uri);
+//                            edited = now;
+                            create_new_credential(systicket, module, &mut credential, account);
                         }
                     }
                     None => {
+                        warn!("credential not found, create new");
                         exist_password = account.get_first_literal("v-s:password").unwrap_or_default();
-                        edited = now;
+//                        edited = now;
 
-                        uses_credential.set_id(&(account_id.to_owned() + "-crdt"));
-                        uses_credential.set_uri("rdf:type", "v-s:Credential");
-                        uses_credential.set_string("v-s:password", &exist_password, Lang::NONE);
-                        uses_credential.set_datetime("v-s:dateFrom", edited);
-
-                        let res = module.api.update(&systicket, IndvOp::Put, &uses_credential);
-                        if res.result != ResultCode::Ok {
-                            error!("fail update, uri={}, result_code={:?}", uses_credential.get_id(), res.result);
-                            continue;
-                        } else {
-                            info!("create v-s:Credential {}, res={:?}", uses_credential.get_id(), res);
-
-                            account.remove("v-s:password");
-                            account.set_uri("v-s:usesCredential", uses_credential.get_id());
-
-                            let res = module.api.update(&systicket, IndvOp::Put, account);
-                            if res.result != ResultCode::Ok {
-                                error!("fail update, uri={}, res={:?}", account.get_id(), res);
-                                continue;
-                            }
-                            info!("update user {}, res={:?}", account.get_id(), res);
-                        }
+                        create_new_credential(systicket, module, &mut credential, account);
                     }
                 }
 
                 //let origin = person.get_first_literal("v-s:origin");
-                let old_secret = uses_credential.get_first_literal("v-s:secret").unwrap_or_default();
+                let old_secret = credential.get_first_literal("v-s:secret").unwrap_or_default();
 
                 // PREPARE SECRET CODE
                 if !secret.is_empty() && secret.len() > 5 {
                     if old_secret.is_empty() {
                         error!("update password: secret not found, user={}", person.get_id());
                         ticket.result = ResultCode::InvalidSecret;
-                        remove_secret(&mut uses_credential, person.get_id(), module, systicket);
+                        remove_secret(&mut credential, person.get_id(), module, systicket);
                         return ticket;
                     }
 
                     if secret != old_secret {
                         error!("request for update password: send secret not equal request secret {}, user={}", secret, person.get_id());
                         ticket.result = ResultCode::InvalidSecret;
-                        remove_secret(&mut uses_credential, person.get_id(), module, systicket);
+                        remove_secret(&mut credential, person.get_id(), module, systicket);
                         return ticket;
                     }
 
-                    let prev_secret_date = uses_credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
+                    let prev_secret_date = credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
                     if now - prev_secret_date > SECRET_LIFETIME {
                         ticket.result = ResultCode::SecretExpired;
                         error!("request new password, secret expired, login={} password={} secret={}", login, password, secret);
@@ -359,65 +345,66 @@ fn authenticate(
                     if exist_password == password {
                         error!("update password: now password equal previous password, reject. user={}", person.get_id());
                         ticket.result = ResultCode::NewPasswordIsEqualToOld;
-                        remove_secret(&mut uses_credential, person.get_id(), module, systicket);
+                        remove_secret(&mut credential, person.get_id(), module, systicket);
                         return ticket;
                     }
 
                     if password == EMPTY_SHA256_HASH {
                         error!("update password: now password is empty, reject. user={}", person.get_id());
                         ticket.result = ResultCode::EmptyPassword;
-                        remove_secret(&mut uses_credential, person.get_id(), module, systicket);
+                        remove_secret(&mut credential, person.get_id(), module, systicket);
                         return ticket;
                     }
 
-                    if now - edited < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
-                        ticket.result = ResultCode::ChangePasswordForbidden;
+                    if (now - edited > 0) && now - edited < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
+                        ticket.result = ResultCode::Locked;
                         error!("request new password: too many requests, login={} password={} secret={}", login, password, secret);
                         return ticket;
                     }
 
                     // update password
-                    uses_credential.set_string("v-s:password", &password, Lang::NONE);
-                    uses_credential.set_datetime("v-s:dateFrom", edited);
-                    uses_credential.remove("v-s:secret");
-                    uses_credential.remove("v-s:SecretDateFrom");
+                    credential.set_string("v-s:password", &password, Lang::NONE);
+                    credential.set_datetime("v-s:dateFrom", now);
+                    credential.remove("v-s:secret");
+                    credential.remove("v-s:SecretDateFrom");
 
-                    let res = module.api.update(&systicket, IndvOp::Put, &uses_credential);
+                    let res = module.api.update(&systicket, IndvOp::Put, &credential);
                     if res.result != ResultCode::Ok {
                         ticket.result = ResultCode::AuthenticationFailed;
                         error!("fail store new password {} for user, user={}", password, person.get_id());
                     } else {
                         create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, &mut module.storage);
+                        user_stat.attempt_change_pass = 0;
                         info!("update password {} for user, user={}", password, person.get_id());
                     }
                     return ticket;
                 } else {
                     // ATTEMPT AUTHENTICATION
 
-                    let mut is_request_new_password = if pass_lifetime > 0 && now - edited > pass_lifetime {
-                        error!("password is old, lifetime > {} days, user={}", pass_lifetime / 60 / 60 / 24, account.get_id());
+                    let mut is_request_new_password = if pass_lifetime > 0 && edited > 0 && now - edited > pass_lifetime * 60 * 60 * 24 {
+                        error!("password is old, lifetime > {} days, user={}", pass_lifetime, account.get_id());
                         true
                     } else {
                         false
                     };
 
                     if secret == "?" {
-                        error!("request for new password, user={}", account.get_id());
+                        warn!("request for new password, user={}", account.get_id());
                         is_request_new_password = true;
                     }
 
                     if is_request_new_password {
-                        error!("request new password, login={} password={} secret={}", login, password, secret);
+                        warn!("request new password, login={} password={} secret={}", login, password, secret);
                         ticket.result = ResultCode::PasswordExpired;
 
                         if (now - edited > 0) && now - edited < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
-                            ticket.result = ResultCode::ChangePasswordForbidden;
+                            ticket.result = ResultCode::Locked;
                             error!("request new password: too many requests, login={} password={} secret={}", login, password, secret);
                             return ticket;
                         }
 
                         if user_stat.attempt_change_pass > MAX_COUNT_FAILED_ATTEMPTS {
-                            let prev_secret_date = uses_credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
+                            let prev_secret_date = credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
                             if now - prev_secret_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
                                 ticket.result = ResultCode::TooManyRequestsChangePassword;
                                 user_stat.wrong_count_login = MAX_COUNT_FAILED_ATTEMPTS + 1;
@@ -442,13 +429,13 @@ fn authenticate(
 
                         let n_secret = thread_rng().gen_range(100_000, 999_999).to_string();
 
-                        uses_credential.set_string("v-s:secret", &n_secret, Lang::NONE);
-                        uses_credential.set_datetime("v-s:SecretDateFrom", now);
+                        credential.set_string("v-s:secret", &n_secret, Lang::NONE);
+                        credential.set_datetime("v-s:SecretDateFrom", now);
 
-                        let res = module.api.update(&systicket, IndvOp::Put, &uses_credential);
+                        let res = module.api.update(&systicket, IndvOp::Put, &credential);
                         if res.result != ResultCode::Ok {
-                            ticket.result = ResultCode::AuthenticationFailed;
-                            error!("fail store new secret, user={}", person.get_id());
+                            ticket.result = ResultCode::InternalServerError;
+                            error!("fail store new secret, user={}, result={:?}", person.get_id(), res);
                             return ticket;
                         }
 
@@ -501,6 +488,34 @@ fn authenticate(
     error!("fail authenticate, login={} password={}, candidate users={:?}", login, password, candidate_account_ids.result);
     ticket.result = ResultCode::AuthenticationFailed;
     ticket
+}
+
+fn create_new_credential(systicket: &str, module: &mut Module, uses_credential: &mut Individual, account: &mut Individual) -> bool {
+    let password = account.get_first_literal("v-s:password").unwrap_or_default();
+
+    uses_credential.set_id(&(account.get_id().to_owned() + "-crdt"));
+    uses_credential.set_uri("rdf:type", "v-s:Credential");
+    uses_credential.set_string("v-s:password", &password, Lang::NONE);
+    //uses_credential.set_datetime("v-s:dateFrom", Utc::now().naive_utc().timestamp());
+
+    let res = module.api.update(systicket, IndvOp::Put, &uses_credential);
+    if res.result != ResultCode::Ok {
+        error!("fail update, uri={}, result_code={:?}", uses_credential.get_id(), res.result);
+        return false;
+    } else {
+        info!("create v-s:Credential {}, res={:?}", uses_credential.get_id(), res);
+
+        account.remove("v-s:password");
+        account.set_uri("v-s:usesCredential", uses_credential.get_id());
+
+        let res = module.api.update(&systicket, IndvOp::Put, account);
+        if res.result != ResultCode::Ok {
+            error!("fail update, uri={}, res={:?}", account.get_id(), res);
+            return false;
+        }
+        info!("update user {}, res={:?}", account.get_id(), res);
+    }
+    true
 }
 
 fn get_password_lifetime(module: &mut Module) -> Option<i64> {
