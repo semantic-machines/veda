@@ -228,7 +228,7 @@ if [ -z $1 ] || [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] 
 fi
 
 if [ -z $1 ] || [ $1 == "search-query" ] || [ $1 == "veda-search-query" ] || [ $1 == "mv2" ]; then
-    echo BUILD TT
+    echo BUILD SEARCH-QUERY
     cd source/veda-search-query
     cargo build --release
     cd $BUILD_PATH
