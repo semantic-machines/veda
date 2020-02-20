@@ -217,6 +217,7 @@ body {
   border-radius: 4px;
 }
 .horizontal-card .description {
+  max-width: 298px;
   display: table-cell;
   word-wrap: break-word;
   vertical-align: top;
