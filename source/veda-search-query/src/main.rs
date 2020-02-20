@@ -90,14 +90,12 @@ async fn main() -> Result<(), Error> {
 
 const TICKET: usize = 0;
 const QUERY: usize = 1;
-const TOP: usize= 5;
-const LIMIT: usize=6;
-const FROM: usize=7;
-
+const TOP: usize = 5;
+const LIMIT: usize = 6;
+const FROM: usize = 7;
 
 fn req_prepare(module: &mut Module, request: &Message, pool: &mut Pool) -> Message {
-
-    if let Ok (s) = str::from_utf8(request.as_slice()) {
+    if let Ok(s) = str::from_utf8(request.as_slice()) {
         let v: JSONValue = if let Ok(v) = serde_json::from_slice(s.as_bytes()) {
             v
         } else {
@@ -119,8 +117,7 @@ fn req_prepare(module: &mut Module, request: &Message, pool: &mut Pool) -> Messa
             }
         }
     }
-        return Message::from("[]".as_bytes());
-
+    return Message::from("[]".as_bytes());
 }
 
 fn select(module: &mut Module, pool: &mut Pool, ticket_id: &str, query: &str, top: i64, limit: i64, from: i64) -> SearchResult {
@@ -155,8 +152,12 @@ async fn select_to_ch(pool: &mut Pool, user_uri: &str, query: &str, top: i64, li
         return Ok(());
     }
 
+    let fq = format!("{} LIMIT {} OFFSET {}", query, limit, from);
+
+    info!("query={}", fq);
+
     let mut client = pool.get_handle().await?;
-    let block = client.query(format!("{} LIMIT {} OFFSET {}", query, limit, from)).fetch_all().await?;
+    let block = client.query(fq).fetch_all().await?;
     for row in block.rows() {
         total_count += 1;
         if total_count >= limit {
