@@ -10,12 +10,12 @@ use serde::Serialize;
 use serde_json::value::Value as JSONValue;
 use std::time::*;
 use std::{str, thread};
+use url::Url;
 use v_api::app::ResultCode;
 use v_authorization::Access;
 use v_az_lmdb::_authorize;
 use v_module::module::{get_ticket_from_db, init_log, Module};
 use v_module::ticket::Ticket;
-use v_onto::individual::Individual;
 
 #[derive(Serialize)]
 struct SearchResult {
@@ -52,6 +52,7 @@ async fn main() -> Result<(), Error> {
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
+    let query_search_db = section.get("query_search_db").expect("param [query_search_db_url] not found in veda.properties");
 
     let query_url = section.get("search_query_url").expect("param [search_query_url] not found in veda.properties");
 
@@ -60,7 +61,7 @@ async fn main() -> Result<(), Error> {
     let mut pool;
 
     loop {
-        pool = match connect_to_clickhouse(&mut module) {
+        pool = match connect_to_clickhouse(query_search_db) {
             Err(e) => {
                 error!("Failed to connect to clickhouse: {}", e);
                 error!("sleep and repeate...");
@@ -194,29 +195,23 @@ async fn select_to_ch(pool: &mut Pool, user_uri: &str, query: &str, top: i64, li
     Ok(())
 }
 
-fn connect_to_clickhouse(module: &mut Module) -> Result<Pool, &'static str> {
-    if let Some(node) = module.get_individual("cfg:standart_node", &mut Individual::default()) {
-        if let Some(v) = node.get_literals("v-s:push_individual_by_event") {
-            for el in v {
-                let mut connection = Individual::default();
-                if module.storage.get_individual(&el, &mut connection) && !connection.is_exists_bool("v-s:deleted", true) {
-                    if let Some(transport) = connection.get_first_literal("v-s:transport") {
-                        if transport == "clickhouse" {
-                            info!("Found configuration to connect to Clickhouse: {}", connection.get_id());
-                            let host = connection.get_first_literal("v-s:host").unwrap_or(String::from("127.0.0.1"));
-                            let port = connection.get_first_integer("v-s:port").unwrap_or(9000) as u16;
-                            let user = connection.get_first_literal("v-s:login").unwrap_or(String::from("default"));
-                            let pass = connection.get_first_literal("v-s:password").unwrap_or(String::from(""));
-                            let url = format!("tcp://{}:{}@{}:{}/", user, pass, host, port);
-                            info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
-                            info!("Connection url: {}", url);
-                            let pool = Pool::new(url);
-                            return Ok(pool);
-                        }
-                    }
-                }
-            }
+fn connect_to_clickhouse(query_search_db_url: &str) -> Result<Pool, &'static str> {
+    info!("Configuration to connect to Clickhouse: {}", query_search_db_url);
+    match Url::parse(query_search_db_url) {
+        Ok(url) => {
+            let host = url.host_str().unwrap_or("127.0.0.1");
+            let port = url.port().unwrap_or(9000);
+            let user = url.username();
+            let pass = url.password().unwrap_or("123");
+            let url = format!("tcp://{}:{}@{}:{}/", user, pass, host, port);
+            info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
+            info!("Connection url: {}", url);
+            let pool = Pool::new(url);
+            return Ok(pool);
+        }
+        Err(e) => {
+            error!("{:?}", e);
+            return Err("Invalid connection url");
         }
     }
-    Err("Configuration to connect to Clickhouse not found")
 }
