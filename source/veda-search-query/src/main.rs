@@ -195,9 +195,9 @@ async fn select_to_ch(pool: &mut Pool, user_uri: &str, query: &str, top: i64, li
     Ok(())
 }
 
-fn connect_to_clickhouse(query_search_db_url: &str) -> Result<Pool, &'static str> {
-    info!("Configuration to connect to Clickhouse: {}", query_search_db_url);
-    match Url::parse(query_search_db_url) {
+fn connect_to_clickhouse(query_db_url: &str) -> Result<Pool, &'static str> {
+    info!("Configuration to connect to Clickhouse: {}", query_db_url);
+    match Url::parse(query_db_url) {
         Ok(url) => {
             let host = url.host_str().unwrap_or("127.0.0.1");
             let port = url.port().unwrap_or(9000);

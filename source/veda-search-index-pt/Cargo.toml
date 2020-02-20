@@ -13,6 +13,7 @@ chrono = "0.4.9"
 chrono-tz = "0.5"
 lazy_static = "1.4.0"
 regex = "1"
+url = "2.1.1"
 
 v_queue = { path = "../v-queue" }
 v_search = { path = "../v-search" }
