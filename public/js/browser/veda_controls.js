@@ -2076,7 +2076,9 @@
         fileIndividualPromises.push(fileIndividualPromise);
       }
       if (!fileIndividualPromises.length) { return; }
+      browseButton.attr("disabled", "disabled");
       Promise.all(fileIndividualPromises).then(function (fileIndividuals) {
+        browseButton.removeAttr("disabled");
         that.value = "";
         indicatorSpinner.empty().hide();
         indicatorPercentage.empty().hide();
@@ -2086,6 +2088,7 @@
           individual.addValue(rel_uri, fileIndividuals);
         }
       }).catch(function (error) {
+        browseButton.removeAttr("disabled");
         console.log(error);
       });
     });
