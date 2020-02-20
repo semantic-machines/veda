@@ -410,6 +410,12 @@ fn authenticate(
                         error!("request new password, login={} password={} secret={}", login, password, secret);
                         ticket.result = ResultCode::PasswordExpired;
 
+                        if (now - edited > 0) && now - edited < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
+                            ticket.result = ResultCode::ChangePasswordForbidden;
+                            error!("request new password: too many requests, login={} password={} secret={}", login, password, secret);
+                            return ticket;
+                        }
+
                         if user_stat.attempt_change_pass > MAX_COUNT_FAILED_ATTEMPTS {
                             let prev_secret_date = uses_credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
                             if now - prev_secret_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
