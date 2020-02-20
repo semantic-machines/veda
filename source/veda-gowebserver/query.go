@@ -152,7 +152,11 @@ func query(ctx *fasthttp.RequestCtx) {
   request[0] = ticketKey
 
   if is_search_query == true {
-    request[1] = sql
+    if sql != "" {
+        request[1] = sql
+    } else {
+        request[1] = query
+    }
   } else {
     request[1] = query
   }
