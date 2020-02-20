@@ -50,7 +50,7 @@ script:
   - testcafe chrome qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.7
   - testcafe chrome qa/testcafe/testComment.js
   - testcafe chrome qa/testcafe/testCreatingNetInterface.js
-  - testcafe chrome qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens --speed 0.7
+  - testcafe chrome qa/testcafe/testDeleteAndRecovery.js
   - testcafe chrome qa/testcafe/testJournal.js
   - testcafe chrome qa/testcafe/testPerson.js
   - testcafe chrome qa/testcafe/testRights.js
