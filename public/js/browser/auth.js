@@ -99,7 +99,11 @@ veda.Module(function (veda) { "use strict";
 
     veda.login(login, hash, secret)
       .then(handleLoginSuccess)
-      .catch(handleLoginError);
+      .catch(handleLoginError)
+      .then(function () {
+        $("#new-password", loginForm).val("");
+        $("#confirm-new-password", loginForm).val("");
+      });
   });
 
   var changePasswordPressed;
