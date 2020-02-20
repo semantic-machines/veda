@@ -1973,48 +1973,6 @@
   };
 
   // FILE UPLOAD CONTROL
-  function uploadFile(params, tries) {
-    tries = typeof tries === "number" ? tries : 5;
-    return new Promise(function (resolve, reject) {
-      var file     = params.file,
-          path     = params.path,
-          uri      = params.uri,
-          progress = params.progress,
-          url = "/files",
-          xhr = new XMLHttpRequest(),
-          fd = new FormData();
-      xhr.open("POST", url, true);
-      xhr.timeout = 10 * 60 * 1000;
-      xhr.upload.onprogress = progress;
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          resolve(params);
-        } else {
-          reject( new Error("File upload error") );
-        }
-      };
-      xhr.onerror = function() {
-        reject( new Error("File upload error") );
-      };
-      xhr.ontimeout = function() {
-        reject( new Error("File upload error") );
-      };
-      fd.append("path", path);
-      fd.append("uri", uri);
-      if (file instanceof File) {
-        fd.append("file", file);
-      } else if (file instanceof Image) {
-        fd.append("content", file.src);
-      }
-      xhr.send(fd);
-    })
-    .catch(function (error) {
-      if (tries > 0) {
-        return uploadFile(params, --tries);
-      }
-      throw error;
-    });
-  }
 
   function loadImage(imageFile) {
     return new Promise(function (resolve, reject) {
@@ -2035,29 +1993,6 @@
       reader.readAsDataURL(imageFile);
     });
   }
-
-//  function resizeImage (image, maxWidth) {
-//    if (image.width <= maxWidth) {
-//      return image;
-//    }
-//    var canvas1 = document.createElement("canvas"),
-//        context1 = canvas1.getContext("2d"),
-//        canvas2 = document.createElement("canvas"),
-//        context2 = canvas2.getContext("2d"),
-//        ratio = maxWidth / image.width,
-//        width = image.width * ratio >> 0,
-//        height = image.height * ratio >> 0;
-//    canvas1.width = width;
-//    canvas1.height = height;
-//    canvas2.width = image.width * 2;
-//    canvas2.height = image.height * 2;
-//    context2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
-//    context1.drawImage(canvas2, 0, 0, width * 2, height * 2, 0, 0, width, height);
-//    var resizedSrc = canvas1.toDataURL("image/jpeg");
-//    var resized = new Image();
-//    resized.src = resizedSrc;
-//    return resized;
-//  }
 
   function resizeImage (image, maxWidth) {
     if (image.width <= maxWidth) {
@@ -2118,6 +2053,19 @@
 
     var notify = new veda.Notify();
 
+    function progress (progressEvent) {
+      if (progressEvent.lengthComputable) {
+        try {
+          var percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
+          indicatorPercentage.text(percentComplete + "%").show();
+        } catch (err) {
+          console.log("Progress indicator error", error);
+        }
+      } else {
+        indicatorSpinner.show();
+      }
+    }
+
     fileInput.click(function (e) {
       e.stopPropagation();
     }).change(function (e) {
@@ -2128,7 +2076,9 @@
         fileIndividualPromises.push(fileIndividualPromise);
       }
       if (!fileIndividualPromises.length) { return; }
+      browseButton.attr("disabled", "disabled");
       Promise.all(fileIndividualPromises).then(function (fileIndividuals) {
+        browseButton.removeAttr("disabled");
         that.value = "";
         indicatorSpinner.empty().hide();
         indicatorPercentage.empty().hide();
@@ -2138,18 +2088,10 @@
           individual.addValue(rel_uri, fileIndividuals);
         }
       }).catch(function (error) {
+        browseButton.removeAttr("disabled");
         console.log(error);
       });
     });
-
-    function progress (progressEvent) {
-      if (progressEvent.lengthComputable) {
-        var percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
-        indicatorPercentage.text(percentComplete + "%").show();
-      } else {
-        indicatorSpinner.show();
-      }
-    };
 
     function createFileIndividual (file, name, parent) {
       var fileName = file.name || name;
@@ -2182,7 +2124,7 @@
           resolve(fileIndividual);
         }
       }).then(function () {
-        return uploadFile({
+        return veda.Backend.uploadFile({
           file: file,
           path: path,
           uri: uri,
