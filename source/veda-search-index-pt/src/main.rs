@@ -19,6 +19,7 @@ use v_onto::resource::Value;
 use v_onto::datatype::DataType;
 use v_onto::datatype::Lang;
 use v_queue::consumer::*;
+use url::Url;
 
 type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
@@ -436,15 +437,7 @@ async fn main() ->  Result<(), Error> {
     }
     let mut module = Module::default();
 
-    let mut config = match get_config(&mut module) {
-        Err(e) => {
-            error!("Failed to read configuration to connect to clickhouse: {}", e);
-            process::exit(101)
-        },
-        Ok(config) => config,
-    };
-
-    let mut pool = match connect_to_clickhouse(&mut config) {
+    let mut pool = match connect_to_clickhouse(&Module::get_property("query_indexer_db").unwrap_or_default()) {
         Err(e) => {
             error!("Failed to connect to clickhouse: {}", e);
             process::exit(101)
@@ -580,35 +573,25 @@ async fn read_predicate_tables(pool: &mut Pool) -> Result<HashMap<String, HashMa
     Ok(tables)
 }
 
-fn get_config(module: &mut Module) -> Result<Individual, &'static str> {
-    if let Some(node) = module.get_individual("cfg:standart_node", &mut Individual::default()) {
-        if let Some(v) = node.get_literals("v-s:push_individual_by_event") {
-            for el in v {
-                let mut config = Individual::default();
-                if module.storage.get_individual(&el, &mut config) && !config.is_exists_bool("v-s:deleted", true) {
-                    if let Some(transport) = config.get_first_literal("v-s:transport") {
-                        if transport == "clickhouse" {
-                            info!("Found configuration to connect to Clickhouse: {}", config.get_id());
-                            return Ok(config);
-                        }
-                    }
-                }
-            }
+fn connect_to_clickhouse(query_db_url: &str) -> Result<Pool, &'static str> {
+    info!("Configuration to connect to Clickhouse: {}", query_db_url);
+    match Url::parse(query_db_url) {
+        Ok(url) => {
+            let host = url.host_str().unwrap_or("127.0.0.1");
+            let port = url.port().unwrap_or(9000);
+            let user = url.username();
+            let pass = url.password().unwrap_or("123");
+            let url = format!("tcp://{}:{}@{}:{}/", user, pass, host, port);
+            info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
+            info!("Connection url: {}", url);
+            let pool = Pool::new(url);
+            return Ok(pool);
+        }
+        Err(e) => {
+            error!("{:?}", e);
+            return Err("Invalid connection url");
         }
     }
-    Err("Configuration to connect to Clickhouse not found")
-}
-
-fn connect_to_clickhouse(config: &mut Individual) -> Result<Pool, &'static str> {
-    let host = config.get_first_literal("v-s:host").unwrap_or(String::from("127.0.0.1"));
-    let port = config.get_first_integer("v-s:port").unwrap_or(9000) as u16;
-    let user = config.get_first_literal("v-s:login").unwrap_or(String::from("default"));
-    let pass = config.get_first_literal("v-s:password").unwrap_or(String::from(""));
-    let url = format!("tcp://{}:{}@{}:{}/", user, pass, host, port);
-    info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
-    info!("Connection url: {}", url);
-    let pool = Pool::new(url);
-    return Ok(pool);
 }
 
 async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
