@@ -36,7 +36,7 @@ veda.Module(function (veda) { "use strict";
         };
         return $.ajax(params);
       } else {
-        throw error;
+        throw new Error();
       }
     })
     .catch(function () {
