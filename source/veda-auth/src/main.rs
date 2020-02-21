@@ -26,13 +26,29 @@ use v_storage::storage::StorageMode;
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 
-const NUMBER_INCORRECT_ATTEMPTS_LOGIN: i32 = 2;
-const NUMBER_INCORRECT_ATTEMPTS_CHANGE_PASSWORD: i32 = 2;
-const FAILED_AUTH_LOCK_PERIOD: i64 = 30 * 60;
-const FAILED_PASS_CHANGE_LOCK_PERIOD: i64 = 30 * 60;
-const SUCCESS_PASS_CHANGE_LOCK_PERIOD: i64 = 24 * 60 * 60;
-const TICKET_LIFETIME: i32 = 40000;
-const SECRET_LIFETIME: i64 = 12 * 60 * 60;
+struct AuthConf {
+    number_incorrect_attempts_login: i32,
+    number_incorrect_attempts_change_password: i32,
+    failed_auth_lock_period: i64,
+    failed_pass_change_lock_period: i64,
+    success_pass_change_lock_period: i64,
+    ticket_lifetime: i32,
+    secret_lifetime: i64,
+}
+
+impl Default for AuthConf {
+    fn default() -> Self {
+        AuthConf {
+            number_incorrect_attempts_login: 2,
+            number_incorrect_attempts_change_password: 2,
+            failed_auth_lock_period: 30 * 60,
+            failed_pass_change_lock_period: 30 * 60,
+            success_pass_change_lock_period: 24 * 60 * 60,
+            ticket_lifetime: 10 * 60 * 60,
+            secret_lifetime: 12 * 60 * 60,
+        }
+    }
+}
 
 fn main() -> std::io::Result<()> {
     init_log();
@@ -62,9 +78,11 @@ fn main() -> std::io::Result<()> {
 
     let mut suspicious: HashMap<String, UserStat> = HashMap::new();
 
+    let conf = AuthConf::default();
+
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let res = req_prepare(&recv_msg, &systicket, &mut module, pass_lifetime, &mut suspicious);
+            let res = req_prepare(&conf, &recv_msg, &systicket, &mut module, pass_lifetime, &mut suspicious);
             if let Err(e) = server.send(res) {
                 error!("fail send {:?}", e);
             }
@@ -72,7 +90,14 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lifetime: Option<i64>, suspicious: &mut HashMap<String, UserStat>) -> Message {
+fn req_prepare(
+    conf: &AuthConf,
+    request: &Message,
+    systicket: &str,
+    module: &mut Module,
+    pass_lifetime: Option<i64>,
+    suspicious: &mut HashMap<String, UserStat>,
+) -> Message {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
@@ -82,7 +107,7 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
     match v["function"].as_str().unwrap_or_default() {
         "authenticate" => {
             let ticket =
-                authenticate(v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, pass_lifetime.unwrap_or_default(), suspicious);
+                authenticate(conf, v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, pass_lifetime.unwrap_or_default(), suspicious);
 
             info!("{:?}", ticket);
 
@@ -97,7 +122,7 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
             return Message::from(res.to_string().as_bytes());
         }
         "get_ticket_trusted" => {
-            let ticket = get_ticket_trusted(v["ticket"].as_str(), v["login"].as_str(), systicket, module);
+            let ticket = get_ticket_trusted(conf, v["ticket"].as_str(), v["login"].as_str(), systicket, module);
 
             let mut res = JSONValue::default();
             res["type"] = json!("ticket");
@@ -117,7 +142,7 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
     Message::default()
 }
 
-fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket: &str, module: &mut Module) -> Ticket {
+fn get_ticket_trusted(conf: &AuthConf, tr_ticket_id: Option<&str>, login: Option<&str>, systicket: &str, module: &mut Module) -> Ticket {
     let mut tr_ticket = Ticket::default();
 
     let login = login.unwrap_or_default();
@@ -175,7 +200,7 @@ fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket
                         }
 
                         let mut ticket = Ticket::default();
-                        create_new_ticket(login, &user_id, TICKET_LIFETIME, &mut ticket, &mut module.storage);
+                        create_new_ticket(login, &user_id, conf.ticket_lifetime, &mut ticket, &mut module.storage);
                         info!("trusted authenticate, result ticket={:?}", ticket);
 
                         return ticket;
@@ -214,6 +239,7 @@ struct UserStat {
 }
 
 fn authenticate(
+    conf: &AuthConf,
     login: Option<&str>,
     password: Option<&str>,
     secret: Option<&str>,
@@ -252,8 +278,8 @@ fn authenticate(
     let user_stat = suspicious.entry(login.to_owned()).or_insert(UserStat::default());
     info!("login={:?}, stat: {:?}", login, user_stat);
 
-    if user_stat.wrong_count_login > NUMBER_INCORRECT_ATTEMPTS_LOGIN {
-        if Utc::now().timestamp() - user_stat.last_wrong_login_date < FAILED_AUTH_LOCK_PERIOD {
+    if user_stat.wrong_count_login > conf.number_incorrect_attempts_login {
+        if Utc::now().timestamp() - user_stat.last_wrong_login_date < conf.failed_auth_lock_period {
             ticket.result = ResultCode::TooManyRequests;
             error!("too many attempt of login");
             return ticket;
@@ -335,7 +361,7 @@ fn authenticate(
                     }
 
                     let prev_secret_date = credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
-                    if now - prev_secret_date > SECRET_LIFETIME {
+                    if now - prev_secret_date > conf.secret_lifetime {
                         ticket.result = ResultCode::SecretExpired;
                         error!("request new password, secret expired, login={} password={} secret={}", login, password, secret);
                         return ticket;
@@ -355,7 +381,7 @@ fn authenticate(
                         return ticket;
                     }
 
-                    if (now - edited > 0) && now - edited < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
+                    if (now - edited > 0) && now - edited < conf.success_pass_change_lock_period {
                         ticket.result = ResultCode::Locked;
                         error!("request new password: too many requests, login={} password={} secret={}", login, password, secret);
                         return ticket;
@@ -372,7 +398,7 @@ fn authenticate(
                         ticket.result = ResultCode::AuthenticationFailed;
                         error!("fail store new password {} for user, user={}", password, person.get_id());
                     } else {
-                        create_new_ticket(login, &user_id, TICKET_LIFETIME, &mut ticket, &mut module.storage);
+                        create_new_ticket(login, &user_id, conf.ticket_lifetime, &mut ticket, &mut module.storage);
                         user_stat.attempt_change_pass = 0;
                         info!("update password {} for user, user={}", password, person.get_id());
                     }
@@ -396,26 +422,26 @@ fn authenticate(
                         warn!("request new password, login={} password={} secret={}", login, password, secret);
                         ticket.result = ResultCode::PasswordExpired;
 
-                        if (now - edited > 0) && now - edited < SUCCESS_PASS_CHANGE_LOCK_PERIOD {
+                        if (now - edited > 0) && now - edited < conf.success_pass_change_lock_period {
                             ticket.result = ResultCode::Locked;
                             error!("request new password: too many requests, login={} password={} secret={}", login, password, secret);
                             return ticket;
                         }
 
-                        if user_stat.attempt_change_pass > NUMBER_INCORRECT_ATTEMPTS_CHANGE_PASSWORD {
+                        if user_stat.attempt_change_pass > conf.number_incorrect_attempts_change_password {
                             let prev_secret_date = credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
-                            if now - prev_secret_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
+                            if now - prev_secret_date < conf.failed_pass_change_lock_period {
                                 ticket.result = ResultCode::TooManyRequestsChangePassword;
-                                user_stat.wrong_count_login = NUMBER_INCORRECT_ATTEMPTS_LOGIN + 1;
+                                user_stat.wrong_count_login = conf.number_incorrect_attempts_login + 1;
                                 user_stat.last_wrong_login_date = Utc::now().timestamp();
                                 error!("request new password, to many request, login={} password={} secret={}", login, password, secret);
                                 return ticket;
                             }
 
-                            if now - user_stat.last_attempt_change_pass_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
+                            if now - user_stat.last_attempt_change_pass_date < conf.failed_pass_change_lock_period {
                                 error!("too many requests of change password");
                                 ticket.result = ResultCode::TooManyRequestsChangePassword;
-                                user_stat.wrong_count_login = NUMBER_INCORRECT_ATTEMPTS_LOGIN + 1;
+                                user_stat.wrong_count_login = conf.number_incorrect_attempts_login + 1;
                                 user_stat.last_wrong_login_date = Utc::now().timestamp();
                                 return ticket;
                             } else {
@@ -467,7 +493,7 @@ fn authenticate(
                     }
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
-                        create_new_ticket(login, &user_id, TICKET_LIFETIME, &mut ticket, &mut module.storage);
+                        create_new_ticket(login, &user_id, conf.ticket_lifetime, &mut ticket, &mut module.storage);
                         user_stat.wrong_count_login = 0;
                         user_stat.last_wrong_login_date = 0;
                         return ticket;
