@@ -24,13 +24,14 @@ use v_search::{FTQuery, FTResult};
 use v_storage::storage::StorageMode;
 
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-const DEFAULT_DURATION: i32 = 40000;
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 
-const MAX_COUNT_FAILED_ATTEMPTS: i32 = 2;
+const NUMBER_INCORRECT_ATTEMPTS_LOGIN: i32 = 2;
+const NUMBER_INCORRECT_ATTEMPTS_CHANGE_PASSWORD: i32 = 2;
 const FAILED_AUTH_LOCK_PERIOD: i64 = 30 * 60;
 const FAILED_PASS_CHANGE_LOCK_PERIOD: i64 = 30 * 60;
 const SUCCESS_PASS_CHANGE_LOCK_PERIOD: i64 = 24 * 60 * 60;
+const TICKET_LIFETIME: i32 = 40000;
 const SECRET_LIFETIME: i64 = 12 * 60 * 60;
 
 fn main() -> std::io::Result<()> {
@@ -174,7 +175,7 @@ fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket
                         }
 
                         let mut ticket = Ticket::default();
-                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, &mut module.storage);
+                        create_new_ticket(login, &user_id, TICKET_LIFETIME, &mut ticket, &mut module.storage);
                         info!("trusted authenticate, result ticket={:?}", ticket);
 
                         return ticket;
@@ -251,7 +252,7 @@ fn authenticate(
     let user_stat = suspicious.entry(login.to_owned()).or_insert(UserStat::default());
     info!("login={:?}, stat: {:?}", login, user_stat);
 
-    if user_stat.wrong_count_login > MAX_COUNT_FAILED_ATTEMPTS {
+    if user_stat.wrong_count_login > NUMBER_INCORRECT_ATTEMPTS_LOGIN {
         if Utc::now().timestamp() - user_stat.last_wrong_login_date < FAILED_AUTH_LOCK_PERIOD {
             ticket.result = ResultCode::TooManyRequests;
             error!("too many attempt of login");
@@ -303,14 +304,12 @@ fn authenticate(
                             edited = _credential.get_first_datetime("v-s:dateFrom").unwrap_or_default();
                         } else {
                             error!("fail read credential: {}", uses_credential_uri);
-//                            edited = now;
                             create_new_credential(systicket, module, &mut credential, account);
                         }
                     }
                     None => {
                         warn!("credential not found, create new");
                         exist_password = account.get_first_literal("v-s:password").unwrap_or_default();
-//                        edited = now;
 
                         create_new_credential(systicket, module, &mut credential, account);
                     }
@@ -373,7 +372,7 @@ fn authenticate(
                         ticket.result = ResultCode::AuthenticationFailed;
                         error!("fail store new password {} for user, user={}", password, person.get_id());
                     } else {
-                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, &mut module.storage);
+                        create_new_ticket(login, &user_id, TICKET_LIFETIME, &mut ticket, &mut module.storage);
                         user_stat.attempt_change_pass = 0;
                         info!("update password {} for user, user={}", password, person.get_id());
                     }
@@ -403,11 +402,11 @@ fn authenticate(
                             return ticket;
                         }
 
-                        if user_stat.attempt_change_pass > MAX_COUNT_FAILED_ATTEMPTS {
+                        if user_stat.attempt_change_pass > NUMBER_INCORRECT_ATTEMPTS_CHANGE_PASSWORD {
                             let prev_secret_date = credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
                             if now - prev_secret_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
                                 ticket.result = ResultCode::TooManyRequestsChangePassword;
-                                user_stat.wrong_count_login = MAX_COUNT_FAILED_ATTEMPTS + 1;
+                                user_stat.wrong_count_login = NUMBER_INCORRECT_ATTEMPTS_LOGIN + 1;
                                 user_stat.last_wrong_login_date = Utc::now().timestamp();
                                 error!("request new password, to many request, login={} password={} secret={}", login, password, secret);
                                 return ticket;
@@ -416,7 +415,7 @@ fn authenticate(
                             if now - user_stat.last_attempt_change_pass_date < FAILED_PASS_CHANGE_LOCK_PERIOD {
                                 error!("too many requests of change password");
                                 ticket.result = ResultCode::TooManyRequestsChangePassword;
-                                user_stat.wrong_count_login = MAX_COUNT_FAILED_ATTEMPTS + 1;
+                                user_stat.wrong_count_login = NUMBER_INCORRECT_ATTEMPTS_LOGIN + 1;
                                 user_stat.last_wrong_login_date = Utc::now().timestamp();
                                 return ticket;
                             } else {
@@ -468,7 +467,7 @@ fn authenticate(
                     }
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
-                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, &mut module.storage);
+                        create_new_ticket(login, &user_id, TICKET_LIFETIME, &mut ticket, &mut module.storage);
                         user_stat.wrong_count_login = 0;
                         user_stat.last_wrong_login_date = 0;
                         return ticket;
@@ -496,7 +495,6 @@ fn create_new_credential(systicket: &str, module: &mut Module, uses_credential: 
     uses_credential.set_id(&(account.get_id().to_owned() + "-crdt"));
     uses_credential.set_uri("rdf:type", "v-s:Credential");
     uses_credential.set_string("v-s:password", &password, Lang::NONE);
-    //uses_credential.set_datetime("v-s:dateFrom", Utc::now().naive_utc().timestamp());
 
     let res = module.api.update(systicket, IndvOp::Put, &uses_credential);
     if res.result != ResultCode::Ok {
