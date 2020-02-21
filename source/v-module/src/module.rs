@@ -354,7 +354,7 @@ pub fn get_ticket_from_db(id: &str, dest: &mut Ticket, module: &mut Module) {
     }
 }
 
-pub fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Ticket, storage: &mut VStorage) {
+pub fn create_new_ticket(login: &str, user_id: &str, duration: i64, ticket: &mut Ticket, storage: &mut VStorage) {
     let mut ticket_indv = Individual::default();
 
     ticket.result = ResultCode::FailStore;

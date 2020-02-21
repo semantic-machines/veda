@@ -6,6 +6,7 @@ extern crate lazy_static;
 use chrono::Utc;
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
+use parse_duration::parse;
 use rand::{thread_rng, Rng};
 use regex::Regex;
 use serde_json::json;
@@ -26,26 +27,29 @@ use v_storage::storage::StorageMode;
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 
+#[derive(Debug)]
 struct AuthConf {
-    number_incorrect_attempts_login: i32,
-    number_incorrect_attempts_change_password: i32,
+    failed_auth_attempts: i32,
+    failed_change_pass_attempts: i32,
     failed_auth_lock_period: i64,
     failed_pass_change_lock_period: i64,
     success_pass_change_lock_period: i64,
-    ticket_lifetime: i32,
+    ticket_lifetime: i64,
     secret_lifetime: i64,
+    pass_lifetime: i64,
 }
 
 impl Default for AuthConf {
     fn default() -> Self {
         AuthConf {
-            number_incorrect_attempts_login: 2,
-            number_incorrect_attempts_change_password: 2,
+            failed_auth_attempts: 2,
+            failed_change_pass_attempts: 2,
             failed_auth_lock_period: 30 * 60,
             failed_pass_change_lock_period: 30 * 60,
             success_pass_change_lock_period: 24 * 60 * 60,
             ticket_lifetime: 10 * 60 * 60,
             secret_lifetime: 12 * 60 * 60,
+            pass_lifetime: 90 * 24 * 60 * 60,
         }
     }
 }
@@ -74,15 +78,13 @@ fn main() -> std::io::Result<()> {
         create_sys_ticket(&mut module.storage).id
     };
 
-    let pass_lifetime = get_password_lifetime(&mut module);
-
     let mut suspicious: HashMap<String, UserStat> = HashMap::new();
 
-    let conf = AuthConf::default();
+    let conf = read_auth_configuration(&mut module);
 
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let res = req_prepare(&conf, &recv_msg, &systicket, &mut module, pass_lifetime, &mut suspicious);
+            let res = req_prepare(&conf, &recv_msg, &systicket, &mut module, &mut suspicious);
             if let Err(e) = server.send(res) {
                 error!("fail send {:?}", e);
             }
@@ -90,14 +92,7 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn req_prepare(
-    conf: &AuthConf,
-    request: &Message,
-    systicket: &str,
-    module: &mut Module,
-    pass_lifetime: Option<i64>,
-    suspicious: &mut HashMap<String, UserStat>,
-) -> Message {
+fn req_prepare(conf: &AuthConf, request: &Message, systicket: &str, module: &mut Module, suspicious: &mut HashMap<String, UserStat>) -> Message {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
@@ -106,8 +101,7 @@ fn req_prepare(
 
     match v["function"].as_str().unwrap_or_default() {
         "authenticate" => {
-            let ticket =
-                authenticate(conf, v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, pass_lifetime.unwrap_or_default(), suspicious);
+            let ticket = authenticate(conf, v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, suspicious);
 
             info!("{:?}", ticket);
 
@@ -245,7 +239,6 @@ fn authenticate(
     secret: Option<&str>,
     systicket: &str,
     module: &mut Module,
-    pass_lifetime: i64,
     suspicious: &mut HashMap<String, UserStat>,
 ) -> Ticket {
     let mut ticket = Ticket::default();
@@ -278,7 +271,7 @@ fn authenticate(
     let user_stat = suspicious.entry(login.to_owned()).or_insert(UserStat::default());
     info!("login={:?}, stat: {:?}", login, user_stat);
 
-    if user_stat.wrong_count_login > conf.number_incorrect_attempts_login {
+    if user_stat.wrong_count_login >= conf.failed_auth_attempts {
         if Utc::now().timestamp() - user_stat.last_wrong_login_date < conf.failed_auth_lock_period {
             ticket.result = ResultCode::TooManyRequests;
             error!("too many attempt of login");
@@ -406,8 +399,8 @@ fn authenticate(
                 } else {
                     // ATTEMPT AUTHENTICATION
 
-                    let mut is_request_new_password = if pass_lifetime > 0 && edited > 0 && now - edited > pass_lifetime * 60 * 60 * 24 {
-                        error!("password is old, lifetime > {} days, user={}", pass_lifetime, account.get_id());
+                    let mut is_request_new_password = if conf.pass_lifetime > 0 && edited > 0 && now - edited > conf.pass_lifetime {
+                        error!("password is old, lifetime > {} days, user={}", conf.pass_lifetime, account.get_id());
                         true
                     } else {
                         false
@@ -428,11 +421,11 @@ fn authenticate(
                             return ticket;
                         }
 
-                        if user_stat.attempt_change_pass > conf.number_incorrect_attempts_change_password {
+                        if user_stat.attempt_change_pass >= conf.failed_change_pass_attempts {
                             let prev_secret_date = credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
                             if now - prev_secret_date < conf.failed_pass_change_lock_period {
                                 ticket.result = ResultCode::TooManyRequestsChangePassword;
-                                user_stat.wrong_count_login = conf.number_incorrect_attempts_login + 1;
+                                user_stat.wrong_count_login = conf.failed_auth_attempts + 1;
                                 user_stat.last_wrong_login_date = Utc::now().timestamp();
                                 error!("request new password, to many request, login={} password={} secret={}", login, password, secret);
                                 return ticket;
@@ -441,7 +434,7 @@ fn authenticate(
                             if now - user_stat.last_attempt_change_pass_date < conf.failed_pass_change_lock_period {
                                 error!("too many requests of change password");
                                 ticket.result = ResultCode::TooManyRequestsChangePassword;
-                                user_stat.wrong_count_login = conf.number_incorrect_attempts_login + 1;
+                                user_stat.wrong_count_login = conf.failed_auth_attempts + 1;
                                 user_stat.last_wrong_login_date = Utc::now().timestamp();
                                 return ticket;
                             } else {
@@ -542,14 +535,6 @@ fn create_new_credential(systicket: &str, module: &mut Module, uses_credential: 
     true
 }
 
-fn get_password_lifetime(module: &mut Module) -> Option<i64> {
-    let mut node = Individual::default();
-    if module.storage.get_individual("cfg:standart_node", &mut node) {
-        return node.get_first_integer("cfg:user_password_lifetime");
-    }
-    None
-}
-
 fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut Module, systicket: &str) {
     if uses_credential.get_first_literal("v-s:secret").is_some() {
         uses_credential.remove("v-s:secret");
@@ -559,4 +544,52 @@ fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut
             error!("fail remove secret code for user, user={}", person_id);
         }
     }
+}
+
+fn read_duration_param(indv: &mut Individual, param: &str) -> Option<std::time::Duration> {
+    if let Some(v) = indv.get_first_literal(param) {
+        if let Ok(d) = parse(&v) {
+            return Some(d);
+        } else {
+            error!("fail parse auth param {}", param);
+        }
+    }
+    None
+}
+
+fn read_auth_configuration(module: &mut Module) -> AuthConf {
+    let mut res = AuthConf::default();
+
+    let mut node = Individual::default();
+
+    if module.storage.get_individual("cfg:standart_node", &mut node) {
+        if let Some(d) = read_duration_param(&mut node, "cfg:user_password_lifetime") {
+            res.pass_lifetime = d.as_secs() as i64;
+        }
+        if let Some(d) = read_duration_param(&mut node, "cfg:user_ticket_lifetime") {
+            res.ticket_lifetime = d.as_secs() as i64;
+        }
+        if let Some(d) = read_duration_param(&mut node, "cfg:secret_lifetime") {
+            res.secret_lifetime = d.as_secs() as i64;
+        }
+        if let Some(d) = read_duration_param(&mut node, "cfg:failed_pass_change_lock_period") {
+            res.failed_pass_change_lock_period = d.as_secs() as i64;
+        }
+        if let Some(d) = read_duration_param(&mut node, "cfg:success_pass_change_lock_period") {
+            res.success_pass_change_lock_period = d.as_secs() as i64;
+        }
+        if let Some(d) = read_duration_param(&mut node, "cfg:failed_auth_lock_period") {
+            res.failed_auth_lock_period = d.as_secs() as i64;
+        }
+        if let Some(v) = node.get_first_integer("cfg:failed_auth_attempts") {
+            res.failed_auth_attempts = v as i32;
+        }
+        if let Some(v) = node.get_first_integer("cfg:failed_change_pass_attempts") {
+            res.failed_change_pass_attempts = v as i32;
+        }
+    }
+
+    info!("read configuration: {:?}", res);
+
+    res
 }
