@@ -20,34 +20,30 @@ veda.Module(function (veda) { "use strict";
       password = $("#password", loginForm).val(),
       hash = Sha256.hash(password);
 
-    // Try internal authentication
-    veda.login(login, hash)
-      // Try ntlm authentication
-      .catch(function (error) {
-        console.log(error);
-        if (error.code === 429) { throw error; }
-        var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
-        return ntlmProvider.load().then(function (ntlmProvider) {
-          var ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
-          if (ntlm) {
-            var params = {
-              type: "POST",
-              url: "/ad/",
-              data: {
-                "login": login,
-                "password": password
-              },
-              dataType: "json",
-              async: true
-            };
-            return $.ajax(params);
-          } else {
-            throw error;
-          }
-        });
-      })
-      .then(handleLoginSuccess)
-      .catch(handleLoginError);
+    var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
+    return ntlmProvider.load().then(function (ntlmProvider) {
+      var ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
+      if (ntlm) {
+        var params = {
+          type: "POST",
+          url: "/ad/",
+          data: {
+            "login": login,
+            "password": password
+          },
+          dataType: "json",
+          async: true
+        };
+        return $.ajax(params);
+      } else {
+        throw error;
+      }
+    })
+    .catch(function () {
+      return veda.login(login, hash)
+    })
+    .then(handleLoginSuccess)
+    .catch(handleLoginError)
   });
 
   $("#new-password, #confirm-new-password, #secret", loginForm).on("input", validateNewPassword);
