@@ -11,7 +11,7 @@ pub enum DataType {
 }
 
 impl DataType {
-    pub fn from_str(l: &str) -> Option<DataType> {
+    pub fn new_from_str(l: &str) -> Option<DataType> {
         match l {
             "Uri" => Some(DataType::Uri),
             "String" => Some(DataType::String),
@@ -24,7 +24,7 @@ impl DataType {
         }
     }
 
-    pub fn from_u64(l: u64) -> Option<DataType> {
+    pub fn new_from_u64(l: u64) -> Option<DataType> {
         match l {
             1 => Some(DataType::Uri),
             2 => Some(DataType::String),
@@ -49,10 +49,18 @@ pub enum Lang {
 }
 
 impl Lang {
-    pub fn from_str(l: &str) -> Lang {
+    pub fn new_from_str(l: &str) -> Lang {
         match l {
             "ru" => Lang::RU,
             "en" => Lang::EN,
+            _ => Lang::NONE,
+        }
+    }
+
+    pub fn new_from_i64(l: i64) -> Lang {
+        match l {
+            0 => Lang::RU,
+            1 => Lang::EN,
             _ => Lang::NONE,
         }
     }

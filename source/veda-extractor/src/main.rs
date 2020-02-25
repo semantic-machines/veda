@@ -67,8 +67,8 @@ fn main() -> Result<(), i32> {
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before_batch as fn(&mut Module, &mut Context, batch_size: u32) -> Option<u32>),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
-        &mut (after_batch as fn(&mut Module, &mut Context, prepared_batch_size: u32)),
+        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
+        &mut (after_batch as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
     );
     Ok(())
 }
@@ -77,13 +77,15 @@ fn before_batch(_module: &mut Module, _ctx: &mut Context, _size_batch: u32) -> O
     None
 }
 
-fn after_batch(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u32) {}
+fn after_batch(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u32) -> bool {
+    false
+}
 
-fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
+fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
-        return Ok(());
+        return Ok(true);
     }
 
     let mut prev_state = Individual::default();
@@ -93,13 +95,13 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
     let date = queue_element.get_first_integer("date");
-//    if date.is_none() {
-//        return Ok(());
-//    }
+    //    if date.is_none() {
+    //        return Ok(());
+    //    }
 
     let exportable = is_exportable(module, ctx, &mut prev_state, &mut new_state);
     if exportable.is_none() {
-        return Ok(());
+        return Ok(true);
     }
     let exportable = exportable.unwrap();
 
@@ -108,7 +110,7 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context
         return Err(PrepareError::Fatal);
     }
 
-    Ok(())
+    Ok(true)
 }
 
 fn is_exportable(module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut Individual, new_state_indv: &mut Individual) -> Option<String> {
