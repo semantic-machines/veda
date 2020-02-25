@@ -30,7 +30,7 @@ pub enum PrepareError {
     Recoverable = 102,
 }
 
-const TICKS_TO_UNIX_EPOCH: i64 = 62135596800000;
+const TICKS_TO_UNIX_EPOCH: i64 = 62_135_596_800_000;
 
 pub struct Module {
     pub storage: VStorage,
@@ -210,28 +210,13 @@ impl Module {
                 }
             }
 
-            let mut size_batch = 0;
-
             // read queue current part info
             if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
                 error!("{} get_info_of_part {}: {}", self.queue_prepared_count, queue_consumer.id, e.as_str());
                 continue;
             }
 
-            if queue_consumer.queue.count_pushed - queue_consumer.count_popped == 0 {
-                // if not new messages, read queue info
-                queue_consumer.queue.get_info_queue();
-
-                if queue_consumer.queue.id > queue_consumer.id {
-                    size_batch = 1;
-                }
-            } else if queue_consumer.queue.count_pushed - queue_consumer.count_popped > 0 {
-                if queue_consumer.queue.id != queue_consumer.id {
-                    size_batch = 1;
-                } else {
-                    size_batch = queue_consumer.queue.count_pushed - queue_consumer.count_popped;
-                }
-            }
+            let size_batch = queue_consumer.get_batch_size();
 
             let mut max_size_batch = size_batch;
             if size_batch > 0 {
@@ -266,13 +251,10 @@ impl Module {
                 if parse_raw(&mut queue_element).is_ok() {
                     match prepare(self, module_info, module_context, &mut queue_element) {
                         Err(e) => {
-                            match e {
-                                PrepareError::Fatal => {
-                                    warn!("found fatal error, stop listen queue");
-                                    //process::exit(e as i32);
-                                    return;
-                                }
-                                _ => {}
+                            if let PrepareError::Fatal = e {
+                                warn!("found fatal error, stop listen queue");
+                                //process::exit(e as i32);
+                                return;
                             }
                         }
                         Ok(b) => {
@@ -291,10 +273,8 @@ impl Module {
                 prepared_batch_size += 1;
             }
 
-            if size_batch > 0 {
-                if after_batch(self, module_context, prepared_batch_size) {
-                    queue_consumer.commit();
-                }
+            if size_batch > 0 && after_batch(self, module_context, prepared_batch_size) {
+                queue_consumer.commit();
             }
 
             if prepared_batch_size == size_batch {

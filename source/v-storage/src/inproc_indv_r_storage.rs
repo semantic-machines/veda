@@ -54,18 +54,20 @@ pub struct StorageROClient {
 }
 
 lazy_static! {
-    pub static ref STORAGE: Mutex<RefCell<StorageROClient>> = Mutex::new(RefCell::new(StorageROClient::new()));
+    pub static ref STORAGE: Mutex<RefCell<StorageROClient>> = Mutex::new(RefCell::new(StorageROClient::default()));
 }
 
-impl StorageROClient {
-    pub fn new() -> StorageROClient {
+impl Default for StorageROClient {
+     fn default() -> Self {
         StorageROClient {
             soc: Socket::new(Protocol::Req0).unwrap(),
             addr: "".to_owned(),
             is_ready: false,
         }
     }
+}
 
+impl StorageROClient {
     fn connect(&mut self) {
         if let Err(e) = self.soc.dial(&self.addr) {
             error!("fail connect to storage_manager ({}), err={:?}", self.addr, e);

@@ -412,7 +412,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                     LanguageTaggedString {
                         value,
                         language,
-                    } => indv.add_string(&predicate, value, Lang::from_str(language)),
+                    } => indv.add_string(&predicate, value, Lang::new_from_str(language)),
                     Typed {
                         value,
                         datatype,
