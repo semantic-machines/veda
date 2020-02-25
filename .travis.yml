@@ -44,25 +44,25 @@ before_script:
 
 script:
   - travis_wait 3 grunt test --stack --verbose
-  - testcafe chrome qa/testcafe/testLogin.js
-  - testcafe chrome qa/testcafe/testLanguage.js
-  - testcafe chrome qa/testcafe/testSearch.js
-  - testcafe chrome qa/testcafe/testAttributiveSearch.js
-  - testcafe chrome qa/testcafe/testComment.js
-  - testcafe chrome qa/testcafe/testCreatingNetInterface.js
-  - testcafe chrome qa/testcafe/testDeleteAndRecovery.js
-  - testcafe chrome qa/testcafe/testJournal.js
-  - testcafe chrome qa/testcafe/testPerson.js
-  - testcafe chrome qa/testcafe/testRights.js
-  - testcafe chrome qa/testcafe/testSearchRangeOfDates.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testLogin.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testLanguage.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testSearch.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testAttributiveSearch.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testComment.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testCreatingNetInterface.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testDeleteAndRecovery.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testJournal.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testPerson.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testRights.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testSearchRangeOfDates.js
 #  - testcafe chrome qa/testcafe/testVersionedDocument.js
-  - testcafe chrome qa/testcafe/testSimpleNet.js
-  - testcafe chrome qa/testcafe/testSimpleNet2.js
-  - testcafe chrome qa/testcafe/testSimpleNet3.js
-  - testcafe chrome qa/testcafe/testSimpleNetLowPriority.js --screenshots screens --screenshots-on-fails screens --speed 0.7
-  - testcafe chrome qa/testcafe/testControls.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet2.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet3.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNetLowPriority.js --screenshots screens --screenshots-on-fails screens --speed 0.7
+  - travis_wait 5 testcafe chrome qa/testcafe/testControls.js
 #  - testcafe chrome qa/testcafe/testDrafts.js
-  - testcafe chrome qa/testcafe/testDropDown.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testDropDown.js
 
 after_script:
   - ./control-stop.sh

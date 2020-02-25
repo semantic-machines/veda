@@ -19,7 +19,7 @@ fi
 
 export CARGO_TARGET_DIR=$HOME/tmp
 
-if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
 
     cd source/libauthorization
     cargo build --release
@@ -32,7 +32,7 @@ if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] || [ $1 == "mv2" ]; then
 
 fi
 
-if [ $1 == "winpak" ] || [ $1 == "veda-winpak" ] ; then
+if [ $1 == "winpak" ] || [ $1 == "veda-winpak" ] || [ $1 == "mva" ] ; then
 
     rm ./veda-winpak
 
@@ -43,7 +43,7 @@ if [ $1 == "winpak" ] || [ $1 == "veda-winpak" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "auth" ] || [ $1 == "veda-auth" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "auth" ] || [ $1 == "veda-auth" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
 
     rm ./veda-auth
 
@@ -54,7 +54,7 @@ if [ -z $1 ] || [ $1 == "auth" ] || [ $1 == "veda-auth" ] || [ $1 == "mv2" ]; th
 
 fi
 
-if [ -z $1 ] || [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
 
     rm ./veda-az-indexer
 
@@ -65,7 +65,7 @@ if [ -z $1 ] || [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] || [ $1 ==
 
 fi
 
-if [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] || [ $1 == "exim" ]; then
+if [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] || [ $1 == "exim" ] || [ $1 == "mva" ]; then
 
     rm ./veda-exim-inquire
 
@@ -76,7 +76,7 @@ if [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] || [ $1 == "exim" ]
 
 fi
 
-if [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] || [ $1 == "exim" ]; then
+if [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] || [ $1 == "exim" ] || [ $1 == "mva" ]; then
 
     rm ./veda-exim-respond
 
@@ -87,7 +87,7 @@ if [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] || [ $1 == "exim" ]
 
 fi
 
-if [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] || [ $1 == "exim" ]; then
+if [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] || [ $1 == "exim" ] || [ $1 == "mva" ]; then
 
     echo start make VEDA-EXTRACTOR
     rm ./veda-extractor
@@ -100,7 +100,7 @@ if [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] || [ $1 == "exim" ]; then
     echo end make VEDA-EXTRACTOR
 fi
 
-if [ -z $1 ] || [ $1 == "input-onto" ] || [ $1 == "veda-input-onto" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "input-onto" ] || [ $1 == "veda-input-onto" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
 
     rm ./veda-input-onto
 
@@ -111,7 +111,7 @@ if [ -z $1 ] || [ $1 == "input-onto" ] || [ $1 == "veda-input-onto" ] || [ $1 ==
 
 fi
 
-if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
 
     echo start make VEDA-CCUS
     rm ./veda-ccus
@@ -124,7 +124,7 @@ if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] || [ $1 == "mv2" ]; th
     echo end make VEDA-CCUS
 fi
 
-if [ -z $1 ] || [ $1 == "ontologist" ] || [ $1 == "veda-ontologist" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "ontologist" ] || [ $1 == "veda-ontologist" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
 
     echo start make VEDA-ONTOLOGIST
     rm ./veda-ontologist
@@ -137,7 +137,7 @@ if [ -z $1 ] || [ $1 == "ontologist" ] || [ $1 == "veda-ontologist" ] || [ $1 ==
     echo end make VEDA-ONTOLOGIST
 fi
 
-if [ $1 == "geo-indexer" ] || [ $1 == "veda-geo-indexer" ] ; then
+if [ $1 == "geo-indexer" ] || [ $1 == "veda-geo-indexer" ] || [ $1 == "mva" ] ; then
 
     echo start make VEDA-GEO-INDEXER
     rm ./veda-geo-indexer
@@ -163,7 +163,7 @@ if [ $1 == "webserver" ] || [ $1 == "veda-webserver" ] ; then
     echo end make VEDA-WEBSERVER
 fi
 
-if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
 
     cd source/veda-bootstrap
     cargo build --release
@@ -175,7 +175,7 @@ if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] || [ $1 == "mv2" ]; th
 
 fi
 
-if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
 
     cd source/veda-mstorage
     cargo build --release
@@ -184,7 +184,7 @@ if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "mv
 
 fi
 
-if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] || [ $1 == "mv2" ] ; then
+if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] || [ $1 == "mv2" ] || [ $1 == "mva" ] ; then
 
     cd source/veda-ro-storage
     cargo build --release
@@ -197,21 +197,21 @@ if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
     ./tools/build-component.sh veda-authorization authorization
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
     cd source/veda-fanout-email
     cargo build --release
     cd $BUILD_PATH
     cp $CARGO_TARGET_DIR/release/veda-fanout-email $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
     cd source/veda-fanout-sql
     cargo build --release
     cd $BUILD_PATH
     cp $CARGO_TARGET_DIR/release/veda-fanout-sql $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "search-index-tt" ] || [ $1 == "veda-search-index-tt" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "search-index-tt" ] || [ $1 == "veda-search-index-tt" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
     echo BUILD TT
     cd source/veda-search-index-tt
     cargo build --release
@@ -219,7 +219,7 @@ if [ -z $1 ] || [ $1 == "search-index-tt" ] || [ $1 == "veda-search-index-tt" ] 
     cp $CARGO_TARGET_DIR/release/veda-search-index-tt $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
     echo BUILD PT
     cd source/veda-search-index-pt
     cargo build --release
@@ -227,7 +227,7 @@ if [ -z $1 ] || [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] 
     cp $CARGO_TARGET_DIR/release/veda-search-index-pt $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "search-query" ] || [ $1 == "veda-search-query" ] || [ $1 == "mv2" ]; then
+if [ -z $1 ] || [ $1 == "search-query" ] || [ $1 == "veda-search-query" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
     echo BUILD SEARCH-QUERY
     cd source/veda-search-query
     cargo build --release
