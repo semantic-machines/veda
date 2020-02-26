@@ -1,6 +1,7 @@
 use crate::queue::*;
 use crate::record::*;
 use crc32fast::Hasher;
+use std::cmp::Ordering;
 use std::fs::*;
 use std::io::prelude::*;
 use std::io::SeekFrom;
@@ -144,19 +145,24 @@ impl Consumer {
     }
 
     pub fn get_batch_size(&mut self) -> u32 {
-        if self.queue.count_pushed - self.count_popped == 0 {
-            // if not new messages, read queue info
-            self.queue.get_info_queue();
+        let delta = self.queue.count_pushed - self.count_popped;
+        match delta.cmp(&0) {
+            Ordering::Equal => {
+                // if not new messages, read queue info
+                self.queue.get_info_queue();
 
-            if self.queue.id > self.id {
-                return 1;
+                if self.queue.id > self.id {
+                    return 1;
+                }
             }
-        } else if self.queue.count_pushed - self.count_popped > 0 {
-            if self.queue.id != self.id {
-                return 1;
-            } else {
-                return self.queue.count_pushed - self.count_popped;
+            Ordering::Greater => {
+                if self.queue.id != self.id {
+                    return 1;
+                } else {
+                    return delta;
+                }
             }
+            _ => {}
         }
         0
     }

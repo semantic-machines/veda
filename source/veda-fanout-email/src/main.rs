@@ -147,9 +147,9 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
     if (!from.is_empty() || !sender_mailbox.is_empty() || !ctx.default_mail_sender.is_empty()) && (!to.is_empty() || recipient_mailbox.is_some()) {
         let mut email_from = Mailbox::new("".to_string());
 
-        if ctx.always_use_mail_sender == true && !ctx.default_mail_sender.is_empty() && ctx.default_mail_sender.len() > 5 {
+        if ctx.always_use_mail_sender && !ctx.default_mail_sender.is_empty() && ctx.default_mail_sender.len() > 5 {
             info!("use default mail sender: {}", ctx.default_mail_sender);
-            if !ctx.default_mail_sender.contains("@") {
+            if !ctx.default_mail_sender.contains('@') {
                 if let Some(r) = extract_email(&None, &ctx.default_mail_sender.to_string(), ctx, module).pop() {
                     email_from = r;
                 } else {
@@ -336,7 +336,7 @@ fn get_emails_from_appointment(has_message_type: &Option<String>, ap: &mut Indiv
             res.push(Mailbox::new_with_name(label.to_string(), el));
         }
 
-        return res;
+        res
     } else {
         return vec![];
     }
@@ -345,7 +345,7 @@ fn get_emails_from_appointment(has_message_type: &Option<String>, ap: &mut Indiv
 fn extract_email(has_message_type: &Option<String>, ap_id: &str, ctx: &mut Context, module: &mut Module) -> Vec<Mailbox> {
     let mut res = Vec::new();
     let label;
-    if ap_id.is_empty() || ap_id.len() < 1 {
+    if ap_id.is_empty() || ap_id.is_empty() {
         return vec![];
     }
 

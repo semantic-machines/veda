@@ -47,22 +47,22 @@ script:
   - travis_wait 5 testcafe chrome qa/testcafe/testLogin.js
   - travis_wait 5 testcafe chrome qa/testcafe/testLanguage.js
   - travis_wait 5 testcafe chrome qa/testcafe/testSearch.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testAttributiveSearch.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.7
   - travis_wait 5 testcafe chrome qa/testcafe/testComment.js
   - travis_wait 5 testcafe chrome qa/testcafe/testCreatingNetInterface.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testDeleteAndRecovery.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens --speed 0.7
   - travis_wait 5 testcafe chrome qa/testcafe/testJournal.js
   - travis_wait 5 testcafe chrome qa/testcafe/testPerson.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testRights.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testRights.js --screenshots screens --screenshots-on-fails screens --speed 0.7
   - travis_wait 5 testcafe chrome qa/testcafe/testSearchRangeOfDates.js
 #  - testcafe chrome qa/testcafe/testVersionedDocument.js
   - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet.js
   - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet2.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet3.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNetLowPriority.js --screenshots screens --screenshots-on-fails screens --speed 0.7
+  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet3.js --screenshots screens --screenshots-on-fails screens --speed 0.7
+  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNetLowPriority.js --screenshots screens --screenshots-on-fails screens --speed 0.5
   - travis_wait 5 testcafe chrome qa/testcafe/testControls.js
 #  - testcafe chrome qa/testcafe/testDrafts.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testDropDown.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testDropDown.js --screenshots screens --screenshots-on-fails screens --speed 0.5
 
 after_script:
   - ./control-stop.sh
