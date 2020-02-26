@@ -59,7 +59,7 @@ script:
   - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet.js
   - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet2.js
   - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet3.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNetLowPriority.js --screenshots screens --screenshots-on-fails screens --speed 0.7
+  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNetLowPriority.js --screenshots screens --screenshots-on-fails screens --speed 0.5
   - travis_wait 5 testcafe chrome qa/testcafe/testControls.js
 #  - testcafe chrome qa/testcafe/testDrafts.js
   - travis_wait 5 testcafe chrome qa/testcafe/testDropDown.js
