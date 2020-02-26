@@ -14,15 +14,13 @@ pub fn parse_json_to_individual(src: &JSONValue, dest: &mut Individual) -> bool 
                     error!("json->individual: fail get id");
                     res = false;
                 }
-            } else {
-                if let Some(values) = value.as_array() {
-                    if !json_to_predicate(key, values, dest) {
-                        res = false;
-                    }
-                } else {
-                    error!("json->individual: predicate [{}] must contain an array of values", key);
+            } else if let Some(values) = value.as_array() {
+                if !json_to_predicate(key, values, dest) {
                     res = false;
                 }
+            } else {
+                error!("json->individual: predicate [{}] must contain an array of values", key);
+                res = false;
             }
         }
     }
@@ -38,13 +36,13 @@ fn get_datatype_from_json(val: Option<&JSONValue>) -> Result<DataType, String> {
     let tp = val.unwrap();
     if tp.is_string() {
         if let Some(v) = tp.as_str() {
-            if let Some(d) = DataType::from_str(v) {
+            if let Some(d) = DataType::new_from_str(v) {
                 return Ok(d);
             }
         }
     } else if tp.is_u64() {
         if let Some(v) = tp.as_u64() {
-            if let Some(d) = DataType::from_u64(v) {
+            if let Some(d) = DataType::new_from_u64(v) {
                 return Ok(d);
             }
         }
@@ -83,17 +81,9 @@ fn json_to_predicate(predicate: &str, values: &[JSONValue], dest: &mut Individua
                     if let Some(s) = vdata.unwrap().as_str() {
                         let lang = if let Some(v) = v.get("lang") {
                             if v.is_string() {
-                                match v.as_str().unwrap().to_uppercase().as_str() {
-                                    "RU" => Lang::RU,
-                                    "EN" => Lang::EN,
-                                    _ => Lang::NONE,
-                                }
+                                Lang::new_from_str(v.as_str().unwrap_or_default().to_lowercase().as_str())
                             } else if v.is_number() {
-                                match v.as_i64().unwrap() {
-                                    0 => Lang::RU,
-                                    1 => Lang::EN,
-                                    _ => Lang::NONE,
-                                }
+                                Lang::new_from_i64(v.as_i64().unwrap_or_default())
                             } else {
                                 Lang::NONE
                             }
