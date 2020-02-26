@@ -53,12 +53,12 @@ script:
   - travis_wait 5 testcafe chrome qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens --speed 0.7
   - travis_wait 5 testcafe chrome qa/testcafe/testJournal.js
   - travis_wait 5 testcafe chrome qa/testcafe/testPerson.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testRights.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testRights.js --screenshots screens --screenshots-on-fails screens --speed 0.7
   - travis_wait 5 testcafe chrome qa/testcafe/testSearchRangeOfDates.js
 #  - testcafe chrome qa/testcafe/testVersionedDocument.js
   - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet.js
   - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet2.js
-  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet3.js
+  - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNet3.js --screenshots screens --screenshots-on-fails screens --speed 0.7
   - travis_wait 5 testcafe chrome qa/testcafe/testSimpleNetLowPriority.js --screenshots screens --screenshots-on-fails screens --speed 0.5
   - travis_wait 5 testcafe chrome qa/testcafe/testControls.js
 #  - testcafe chrome qa/testcafe/testDrafts.js
