@@ -58,7 +58,7 @@ impl ModuleInfo {
                 }
             }
 
-            return Ok(mi);
+            Ok(mi)
         } else {
             Err(ff.err().unwrap())
         }
