@@ -301,8 +301,8 @@ veda.Module(function (veda) { "use strict";
             oneProp = "p" + i + ".dec[1] >= " + values[0] + " AND p" + i + ".dec[1] <= " + values[values.length-1];
             break;
           case values[0] instanceof Date:
-            var start = values[0];
-            var end = values[values.length-1];
+            var start = new Date(values[0]);
+            var end = new Date(values[values.length-1]);
             start.setHours(0,0,0,0);
             end.setHours(23,59,59,999);
             start = Math.floor(start.valueOf() / 1000);
@@ -387,8 +387,8 @@ veda.Module(function (veda) { "use strict";
               break;
             // Date
             case values[0] instanceof Date:
-              var start = values[0];
-              var end = values[values.length-1];
+              var start = new Date(values[0]);
+              var end = new Date(values[values.length-1]);
               start.setHours(0,0,0,0);
               end.setHours(23,59,59,999);
               start = Math.floor(start.valueOf() / 1000);
@@ -488,8 +488,8 @@ veda.Module(function (veda) { "use strict";
               oneProp = prop + "_dec[1] >= " + values[0] + " AND " + prop + "_dec[1] <= " + values[values.length-1];
               break;
             case values[0] instanceof Date:
-              var start = values[0];
-              var end = values[values.length-1];
+              var start = new Date(values[0]);
+              var end = new Date(values[values.length-1]);
               start.setHours(0,0,0,0);
               end.setHours(23,59,59,999);
               start = Math.floor(start.valueOf() / 1000);
