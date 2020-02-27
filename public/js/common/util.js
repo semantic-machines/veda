@@ -353,15 +353,15 @@ veda.Module(function (veda) { "use strict";
       && (value % 1);
   };
 
-  veda.Util.queryFromIndividualTT = function (individual, visited) {
+  veda.Util.queryFromIndividualTT_SUB = function (individual, visited) {
     visited = visited || {};
-    if (individual in visited) {
+    if (individual.id in visited) {
       return;
     } else {
-      visited[individual] = true;
+      visited[individual.id] = true;
     }
     if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-      return individual.get("*")[0];
+      return;
     }
     var re = /[^a-zA-Z0-9]/g;
     var allProps = Object.keys(individual.properties)
@@ -415,7 +415,7 @@ veda.Module(function (veda) { "use strict";
               .filter(Boolean)
               .map( function (value) {
                 if ( value.isNew() ) {
-                  var sub = veda.Util.queryFromIndividualTT(value, visited);
+                  var sub = veda.Util.queryFromIndividualTT_SUB(value, visited);
                   return sub ? prop + "_str[1] IN ( " + sub + " )" : undefined;
                 } else {
                   return prop + "_str[1] = '" + value + "'";
@@ -443,94 +443,106 @@ veda.Module(function (veda) { "use strict";
     .join(" UNION ALL ");
   };
 
-  veda.Util.queryFromIndividualTTJ = function (individual, visited) {
-    visited = visited || {};
-    if (individual in visited) {
-      return;
-    } else {
-      visited[individual] = true;
-    }
+  veda.Util.queryFromIndividualTT_JOIN = function (individual) {
+    var table_counter = 0;
+    var from = " FROM ";
+    var where = " WHERE ";
+    var visited = visited || {};
     if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-      return individual.get("*")[0];
+      return;
     }
-    var re = /[^a-zA-Z0-9]/g;
-    var allProps = Object.keys(individual.properties)
-      .map(function (property_uri, i) {
-        if (property_uri === "@" || property_uri === "rdf:type") { return; }
-        var values = individual.get(property_uri).sort(function (a, b) {
-          return a < b ? - 1 : a === b ? 0 : 1;
-        });
-        var prop = property_uri.replace(re, "_");
-        var oneProp;
-        switch (true) {
-          case Number.isInteger(values[0]):
-            oneProp = prop + "_int[1] >= " + values[0] + " AND " + prop + "_int[1] <= " + values[values.length-1];
-            break;
-          case Number.isFloat(values[0]):
-            oneProp = prop + "_dec[1] >= " + values[0] + " AND " + prop + "_dec[1] <= " + values[values.length-1];
-            break;
-          // Date
-          case values[0] instanceof Date:
-            var start = values[0];
-            var end = values[values.length-1];
-            start.setHours(0,0,0,0);
-            end.setHours(23,59,59,999);
-            start = Math.floor(start.valueOf() / 1000);
-            end = Math.floor(end.valueOf() / 1000);
-            oneProp = prop + "_date[1] >= toDateTime(" + start + ") AND " + prop + "_date[1] <= toDateTime("  + end + ")";
-            break;
-          case typeof values[0] === "boolean":
-            oneProp = values
-              .map(function (value) {
-                return prop + "_int[1] = " + (value ? 1 : 0);
-              }).join(" OR ");
-            break;
-          case values[0] instanceof String:
-            oneProp = values
-              .filter(Boolean)
-              .map( function (value) {
-                var q = value;
-                var lines = q.trim().split("\n");
-                var lineQueries = lines.map(function (line) {
-                  var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-                  line = words.map(function (word) { return "%" + word + "%"; }).join(" ");
-                  return prop + "_str[1] LIKE '" + line + "'";
-                });
-                return lineQueries.join(" OR ");
-              })
-              .join(" OR ");
-            break;
-          case values[0] instanceof veda.IndividualModel:
-            oneProp = values
-              .filter(Boolean)
-              .map( function (value) {
-                if ( value.isNew() ) {
-                  var sub = veda.Util.queryFromIndividualTT(value, visited);
-                  return sub ? prop + "_str[1] IN ( " + sub + " )" : undefined;
-                } else {
-                  return prop + "_str[1] = '" + value + "'";
-                }
-              })
-              .filter(Boolean)
-              .join(" OR ");
-            break;
-        }
-        return oneProp ? "( " + oneProp + " )" : undefined;
-      })
-      .filter(Boolean)
-      .join(" AND ");
+    buildQuery(individual);
+    return "SELECT DISTINCT id" + from + where;
 
-    var where = allProps ? "( " + allProps + " )" : undefined;
+    function buildQuery(individual, parent_prop) {
+      table_counter++;
+      var type = individual.get("rdf:type")[0].id;
+      var alias = "t" + table_counter;
+      visited[individual.id] = alias;
+      var table_aliased = "veda_tt.`" + type + "` AS " + alias;
+      if (!parent_prop) {
+        from +=  table_aliased;
+      } else {
+        from += " JOIN " + table_aliased + " ON " + parent_prop + " = " + alias + ".id";
+      }
 
-    if (Object.keys(visited).length > 1 && !where) { return; }
+      var re = /[^a-zA-Z0-9]/g;
+      var allProps = Object.keys(individual.properties)
+        .map(function (property_uri, i) {
+          if (property_uri === "@" || property_uri === "rdf:type") { return; }
+          var values = individual.get(property_uri).sort(function (a, b) {
+            return a < b ? - 1 : a === b ? 0 : 1;
+          });
+          var prop = alias + "." + property_uri.replace(re, "_");
+          var oneProp;
+          switch (true) {
+            case Number.isInteger(values[0]):
+              oneProp = prop + "_int[1] >= " + values[0] + " AND " + prop + "_int[1] <= " + values[values.length-1];
+              break;
+            case Number.isFloat(values[0]):
+              oneProp = prop + "_dec[1] >= " + values[0] + " AND " + prop + "_dec[1] <= " + values[values.length-1];
+              break;
+            case values[0] instanceof Date:
+              var start = values[0];
+              var end = values[values.length-1];
+              start.setHours(0,0,0,0);
+              end.setHours(23,59,59,999);
+              start = Math.floor(start.valueOf() / 1000);
+              end = Math.floor(end.valueOf() / 1000);
+              oneProp = prop + "_date[1] >= toDateTime(" + start + ") AND " + prop + "_date[1] <= toDateTime("  + end + ")";
+              break;
+            case typeof values[0] === "boolean":
+              oneProp = values
+                .map(function (value) {
+                  return prop + "_int[1] = " + (value ? 1 : 0);
+                }).join(" OR ");
+              break;
+            case values[0] instanceof String:
+              oneProp = values
+                .filter(Boolean)
+                .map( function (value) {
+                  var q = value;
+                  var lines = q.trim().split("\n");
+                  var lineQueries = lines.map(function (line) {
+                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
+                    line = words.map(function (word) { return "%" + word + "%"; }).join(" ");
+                    return prop + "_str[1] LIKE '" + line + "'";
+                  });
+                  return lineQueries.join(" OR ");
+                })
+                .join(" OR ");
+              break;
+            case values[0] instanceof veda.IndividualModel:
+              oneProp = values
+                .filter(Boolean)
+                .map( function (value) {
+                  if ( value.isNew() && !(value.id in visited)) {
+                    return buildQuery(value, prop);
+                  } else if ( value.isNew() && value.id in visited ) {
+                    return prop + "_str[1] = " + visited[value.id] + ".id";
+                  } else {
+                    return prop + "_str[1] = '" + value + "'";
+                  }
+                })
+                .filter(Boolean)
+                .join(" OR ");
+              break;
+          }
+          return oneProp ? "( " + oneProp + " )" : undefined;
+        })
+        .filter(Boolean)
+        .join(" AND ");
 
-    return individual.get("rdf:type").map(function (type) {
-      var from = "veda_tt.`" + type.id + "`";
-      var query = "SELECT DISTINCT id FROM " + from + (where ? " WHERE " + where : "");
-      return query;
-    })
-    .filter(Boolean)
-    .join(" UNION ALL ");
+      var where_aliased = allProps ? "( " + allProps + " )" : undefined;
+
+      if (!where_aliased) { return; }
+
+      if (where === " WHERE ") {
+        where += where_aliased;
+      } else {
+        where += " AND " + where_aliased;
+      }
+    }
   };
 
   veda.Util.queryFromIndividual = function (individual) {
@@ -605,8 +617,8 @@ veda.Module(function (veda) { "use strict";
     query = allProps ? "( " + allProps + " )" : undefined;
 
     console.log(veda.Util.queryFromIndividualPT(individual));
-    console.log(veda.Util.queryFromIndividualTT(individual));
-    console.log(veda.Util.queryFromIndividualTTJ(individual));
+    console.log(veda.Util.queryFromIndividualTT_SUB(individual));
+    console.log(veda.Util.queryFromIndividualTT_JOIN(individual));
 
     return query;
   };
