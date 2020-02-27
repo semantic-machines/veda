@@ -48,7 +48,7 @@ script:
   - travis_wait 5 testcafe chrome qa/testcafe/testLanguage.js
   - travis_wait 5 testcafe chrome qa/testcafe/testSearch.js
   - travis_wait 5 testcafe chrome qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.5
-  - travis_wait 5 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.5
+  - travis_wait 5 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.4
   - travis_wait 5 testcafe chrome qa/testcafe/testCreatingNetInterface.js
   - travis_wait 5 testcafe chrome qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens --speed 0.5
   - travis_wait 5 testcafe chrome qa/testcafe/testJournal.js
