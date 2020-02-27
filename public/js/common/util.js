@@ -264,12 +264,12 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.queryFromIndividualPT = function (individual) {
-    var flat = flattenIndividual(individual.properties);
     if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
       return;
     }
+    var flat = flattenIndividual(individual.properties);
     var tables = [];
-    var allProps = Object.getOwnPropertyNames(flat)
+    var where = Object.getOwnPropertyNames(flat)
       .map(function (property_uri, i) {
 
         var table = "veda_pt.`" + property_uri + "` as p" + i;
@@ -305,14 +305,13 @@ veda.Module(function (veda) { "use strict";
             break;
           case "String":
             oneProp = values
-              .filter(function(item){return !!item && !!item.valueOf();})
+              .filter(Boolean)
               .map( function (value) {
                 var q = value.data;
                 var lines = q.trim().split("\n");
                 var lineQueries = lines.map(function (line) {
                   var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-                  line = words.map(function (word) { return "%" + word + "%"; }).join(" ");
-                  return "p" + i + ".str[1] LIKE '" + line + "'";
+                  return "NOT has(multiSearchAllPositions(arrayStringConcat(" + "p" + i + ".str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                 });
                 return lineQueries.join(" OR ");
               })
@@ -320,23 +319,24 @@ veda.Module(function (veda) { "use strict";
             break;
           case "Uri":
             oneProp = values
-              .filter(function(item){return !!item && !!item.valueOf();})
+              .filter(Boolean)
               .map( function (value) {
-                return "p" + i + ".str[1] = '" + value.data + "'";
+                return "has(" + "p" + i + ".str, '" + value.data + "')";
               })
               .join(" OR ");
             break;
         }
-        return oneProp ? "( " + oneProp + " )" : undefined;
+        if (!oneProp) { return; }
+        return oneProp.indexOf(" OR ") > 0 ? "( " + oneProp + " )" : oneProp;
       })
-      .filter(function(item){return typeof item !== undefined;})
+      .filter(Boolean)
       .join(" AND ");
-    var where = allProps ? "( " + allProps + " )" : undefined;
+
     var from = tables.reduce(function (acc, table, i) {
       return i > 0 ? acc + " JOIN " + table + " ON p" + (i - 1) + ".id = p" + i + ".id" : table;
     }, "")
-    var query = "SELECT DISTINCT id FROM " + from + " WHERE " + where;
-    return query;
+
+    return "SELECT DISTINCT id FROM " + from + (where ? " WHERE " + where : "");;
   };
 
   Number.isFinite = Number.isFinite || function(value) {
@@ -354,17 +354,17 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.queryFromIndividualTT_SUB = function (individual, visited) {
+    if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
+      return;
+    }
     visited = visited || {};
     if (individual.id in visited) {
       return;
     } else {
       visited[individual.id] = true;
     }
-    if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-      return;
-    }
     var re = /[^a-zA-Z0-9]/g;
-    var allProps = Object.keys(individual.properties)
+    var where = Object.keys(individual.properties)
       .map(function (property_uri, i) {
         if (property_uri === "@" || property_uri === "rdf:type") { return; }
         var values = individual.get(property_uri).sort(function (a, b) {
@@ -403,8 +403,7 @@ veda.Module(function (veda) { "use strict";
                 var lines = q.trim().split("\n");
                 var lineQueries = lines.map(function (line) {
                   var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-                  line = words.map(function (word) { return "%" + word + "%"; }).join(" ");
-                  return prop + "_str[1] LIKE '" + line + "'";
+                  return "NOT has(multiSearchAllPositions(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                 });
                 return lineQueries.join(" OR ");
               })
@@ -416,21 +415,20 @@ veda.Module(function (veda) { "use strict";
               .map( function (value) {
                 if ( value.isNew() ) {
                   var sub = veda.Util.queryFromIndividualTT_SUB(value, visited);
-                  return sub ? prop + "_str[1] IN ( " + sub + " )" : undefined;
+                  return sub ? prop + "_str IN ( " + sub + " )" : undefined;
                 } else {
-                  return prop + "_str[1] = '" + value + "'";
+                  return "has(" + prop + "_str, '" + value + "')";
                 }
               })
               .filter(Boolean)
               .join(" OR ");
             break;
         }
-        return oneProp ? "( " + oneProp + " )" : undefined;
+        if (!oneProp) { return; }
+        return oneProp.indexOf(" OR ") > 0 ? "( " + oneProp + " )" : oneProp;
       })
       .filter(Boolean)
       .join(" AND ");
-
-    var where = allProps ? "( " + allProps + " )" : undefined;
 
     if (Object.keys(visited).length > 1 && !where) { return; }
 
@@ -444,16 +442,18 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.queryFromIndividualTT_JOIN = function (individual) {
+    if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
+      return;
+    }
     var table_counter = 0;
     var from = " FROM ";
     var where = " WHERE ";
     var visited = visited || {};
-    if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-      return;
-    }
+    var re = /[^a-zA-Z0-9]/g;
     buildQuery(individual);
     return "SELECT DISTINCT id" + from + where;
 
+    // Recursive from & where population
     function buildQuery(individual, parent_prop) {
       table_counter++;
       var type = individual.get("rdf:type")[0].id;
@@ -465,9 +465,7 @@ veda.Module(function (veda) { "use strict";
       } else {
         from += " JOIN " + table_aliased + " ON " + parent_prop + " = " + alias + ".id";
       }
-
-      var re = /[^a-zA-Z0-9]/g;
-      var allProps = Object.keys(individual.properties)
+      var where_aliased = Object.keys(individual.properties)
         .map(function (property_uri, i) {
           if (property_uri === "@" || property_uri === "rdf:type") { return; }
           var values = individual.get(property_uri).sort(function (a, b) {
@@ -505,8 +503,7 @@ veda.Module(function (veda) { "use strict";
                   var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
                     var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-                    line = words.map(function (word) { return "%" + word + "%"; }).join(" ");
-                    return prop + "_str[1] LIKE '" + line + "'";
+                    return "NOT has(multiSearchAllPositions(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                   });
                   return lineQueries.join(" OR ");
                 })
@@ -519,21 +516,20 @@ veda.Module(function (veda) { "use strict";
                   if ( value.isNew() && !(value.id in visited)) {
                     return buildQuery(value, prop);
                   } else if ( value.isNew() && value.id in visited ) {
-                    return prop + "_str[1] = " + visited[value.id] + ".id";
+                    return "has(" + prop + "_str, '" + visited[value.id] + ".id" + "')";
                   } else {
-                    return prop + "_str[1] = '" + value + "'";
+                    return "has(" + prop + "_str, '" + value + "')";
                   }
                 })
                 .filter(Boolean)
                 .join(" OR ");
               break;
           }
-          return oneProp ? "( " + oneProp + " )" : undefined;
+          if (!oneProp) { return; }
+          return oneProp.indexOf(" OR ") > 0 ? "( " + oneProp + " )" : oneProp;
         })
         .filter(Boolean)
         .join(" AND ");
-
-      var where_aliased = allProps ? "( " + allProps + " )" : undefined;
 
       if (!where_aliased) { return; }
 
