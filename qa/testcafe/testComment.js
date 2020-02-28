@@ -15,7 +15,7 @@ import { Selector, t } from 'testcafe';
       .navigateTo( pageForNavigateFromConfig )
       .typeText('veda-control#comment', timeStamp)
       .click('button#search-button')
-      .click('div.search-result.table-responsive.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
+      .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       //ccus init timeout
       .wait(10000)
       .click('#add-comment')
