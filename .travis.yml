@@ -44,9 +44,9 @@ before_script:
 
 script:
   - travis_wait 3 grunt test --stack --verbose
+  - travis_wait 6 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.4
   - travis_wait 6 testcafe chrome qa/testcafe/testLogin.js
   - travis_wait 6 testcafe chrome qa/testcafe/testLanguage.js
-  - travis_wait 6 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.3
   - travis_wait 6 testcafe chrome qa/testcafe/testSearch.js
   - travis_wait 6 testcafe chrome qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.5
   - travis_wait 6 testcafe chrome qa/testcafe/testCreatingNetInterface.js

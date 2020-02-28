@@ -14,7 +14,9 @@ import { Selector, t } from 'testcafe';
       .expect(Selector('#user-info').innerText).contains('Администратор2 .')
       .navigateTo( pageForNavigateFromConfig )
       .typeText('veda-control#comment', timeStamp)
+      .wait(3000)
       .click('button#search-button')
+      .wait(3000)
       .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       //ccus init timeout
       .wait(10000)
