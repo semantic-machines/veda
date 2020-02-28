@@ -84,16 +84,16 @@ fn main() {
     //info!("started {:?}", started);
 }
 
-fn is_ok_process(sys: &mut sysinfo::System, pid: u32) -> bool {
+fn is_ok_process(sys: &mut sysinfo::System, pid: u32) -> (bool, u64) {
     if let Some(proc) = sys.get_process(pid as i32) {
         match proc.status() {
-            ProcessStatus::Idle => true,
-            ProcessStatus::Run => true,
-            ProcessStatus::Sleep => true,
-            _ => false,
+            ProcessStatus::Idle => (true, proc.memory()),
+            ProcessStatus::Run => (true, proc.memory()),
+            ProcessStatus::Sleep => (true, proc.memory()),
+            _ => (false, proc.memory()),
         }
     } else {
-        false
+        (false, 0)
     }
 }
 
@@ -102,7 +102,8 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
         let mut sys = sysinfo::System::new();
         sys.refresh_processes();
         for (name, process) in processes.iter_mut() {
-            if !is_ok_process(&mut sys, process.id()) {
+            let (is_ok, memory) = is_ok_process(&mut sys, process.id());
+            if !is_ok {
                 let exit_code = if let Ok(c) = process.wait() {
                     c.code().unwrap_or_default()
                 } else {
@@ -126,8 +127,12 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
                             }
                         }
                     } else {
-                        error!("? internal error, not found module {}", name)
+                        error!("? internal error, not found module {}", name);
                     }
+                }
+            } else {
+                if memory > 1024 * 1024 * 4 {
+                    warn!("process {}, memory={} KiB", name, memory);
                 }
             }
         }
@@ -184,7 +189,7 @@ fn start_modules(modules: Vec<&Module>) -> io::Result<Vec<(String, Child)>> {
     sys.refresh_processes();
     let mut success_started = 0;
     for (name, process) in started_processes.iter() {
-        if is_ok_process(&mut sys, process.id()) {
+        if is_ok_process(&mut sys, process.id()).0 {
             success_started += 1;
         } else {
             error!("fail start: {} {}", process.id(), name)
