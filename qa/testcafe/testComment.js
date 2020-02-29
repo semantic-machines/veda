@@ -11,15 +11,18 @@ import { Selector, t } from 'testcafe';
     basic.createTestUI('Тест комментария', timeStamp);
     await t
       .setNativeDialogHandler(() => true)
+      .wait(1000)
       .expect(Selector('#user-info').innerText).contains('Администратор2 .')
+      .wait(1000)
       .navigateTo( pageForNavigateFromConfig )
+      .wait(1000)
       .typeText('veda-control#comment', timeStamp)
-      .wait(10000)
+      .wait(1000)
       .click('button#search-button')
-      .wait(10000)
+      .wait(1000)
       .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       //ccus init timeout
-      .wait(10000)
+      .wait(1000)
       .click('#add-comment')
       .typeText('div[typeof="v-s:Comment"] textarea[class="form-control"]', '12345')  //type comment
       .click('div[typeof="v-s:Comment"] button[id="save"]')
