@@ -1,6 +1,7 @@
 use crate::datatype::{DataType, Lang};
 use crate::individual::Individual;
 use serde_json::value::Value as JSONValue;
+use serde_json::Map;
 
 pub fn parse_json_to_individual(src: &JSONValue, dest: &mut Individual) -> bool {
     let mut res = true;
@@ -53,6 +54,24 @@ fn get_datatype_from_json(val: Option<&JSONValue>) -> Result<DataType, String> {
     Err("invalid value of field [type]".to_owned())
 }
 
+fn add_string(v: &Map<String, JSONValue>, vdata: &JSONValue, predicate: &str, dest: &mut Individual) {
+    if let Some(s) = vdata.as_str() {
+        let lang = if let Some(v) = v.get("lang") {
+            if v.is_string() {
+                Lang::new_from_str(v.as_str().unwrap_or_default().to_lowercase().as_str())
+            } else if v.is_number() {
+                Lang::new_from_i64(v.as_i64().unwrap_or_default())
+            } else {
+                Lang::NONE
+            }
+        } else {
+            Lang::NONE
+        };
+
+        dest.add_string(predicate, s, lang);
+    }
+}
+
 fn json_to_predicate(predicate: &str, values: &[JSONValue], dest: &mut Individual) -> bool {
     let mut res = true;
     for val in values {
@@ -63,45 +82,28 @@ fn json_to_predicate(predicate: &str, values: &[JSONValue], dest: &mut Individua
                 res = false;
                 continue;
             }
-
             let ptype = get_datatype_from_json(v.get("type"));
             if ptype.is_err() {
                 error!("json->individual: predicate [{}], invalid value", predicate);
                 res = false;
                 continue;
             }
+            let vdata = vdata.unwrap();
 
             match ptype.unwrap() {
                 DataType::Uri => {
-                    if let Some(v) = vdata.unwrap().as_str() {
+                    if let Some(v) = vdata.as_str() {
                         dest.add_uri(predicate, v);
                     }
                 }
-                DataType::String => {
-                    if let Some(s) = vdata.unwrap().as_str() {
-                        let lang = if let Some(v) = v.get("lang") {
-                            if v.is_string() {
-                                Lang::new_from_str(v.as_str().unwrap_or_default().to_lowercase().as_str())
-                            } else if v.is_number() {
-                                Lang::new_from_i64(v.as_i64().unwrap_or_default())
-                            } else {
-                                Lang::NONE
-                            }
-                        } else {
-                            Lang::NONE
-                        };
+                DataType::String => add_string(v, vdata, predicate, dest),
 
-                        dest.add_string(predicate, s, lang);
-                    }
-                }
                 DataType::Integer => {
-                    if let Some(v) = vdata.unwrap().as_i64() {
+                    if let Some(v) = vdata.as_i64() {
                         dest.add_integer(predicate, v);
                     }
                 }
                 DataType::Datetime => {
-                    let vdata = vdata.unwrap();
-
                     if vdata.is_number() {
                         if let Some(v) = vdata.as_i64() {
                             dest.add_datetime(predicate, v);
@@ -113,8 +115,6 @@ fn json_to_predicate(predicate: &str, values: &[JSONValue], dest: &mut Individua
                     }
                 }
                 DataType::Decimal => {
-                    let vdata = vdata.unwrap();
-
                     if vdata.is_f64() {
                         if let Some(v) = vdata.as_f64() {
                             dest.add_decimal_from_f64(predicate, v);
@@ -130,12 +130,12 @@ fn json_to_predicate(predicate: &str, values: &[JSONValue], dest: &mut Individua
                     }
                 }
                 DataType::Boolean => {
-                    if let Some(v) = vdata.unwrap().as_bool() {
+                    if let Some(v) = vdata.as_bool() {
                         dest.add_bool(predicate, v);
                     }
                 }
                 DataType::Binary => {
-                    if let Some(v) = vdata.unwrap().as_str() {
+                    if let Some(v) = vdata.as_str() {
                         dest.add_binary(predicate, v.as_bytes().to_vec());
                     }
                 }
