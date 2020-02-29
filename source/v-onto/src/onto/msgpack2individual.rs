@@ -41,9 +41,9 @@ pub fn parse_msgpack(raw: &mut RawObj) -> Result<String, i8> {
     }
 }
 
-pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual) -> bool {
+pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual) -> Result<(), String> {
     if iraw.raw.cur >= iraw.raw.data.len() as u64 {
-        return false;
+        return Err("fail position of cursor".to_owned());
     }
 
     let mut is_found = false;
@@ -58,7 +58,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual)
                     error!("read_string_from_msgpack, err={}", e);
                 }
                 iraw.raw.cur = cur.position();
-                return false;
+                return Err("fail read_string_from_msgpack".to_owned());
             }
         };
 
@@ -75,68 +75,49 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual)
                         Ok(v) => match v {
                             Marker::FixArray(size) => {
                                 if size != 2 && size != 3 {
-                                    error!("parsing values, unexpected array size, len={:?}", size);
-                                    return false;
+                                    return Err(format!("parsing values, unexpected array size, len={:?}", size));
                                 }
 
                                 let v_type: u8;
                                 if let Ok(t) = read_int(&mut cur) {
                                     v_type = t;
                                 } else {
-                                    error!("parsing type");
-                                    return false;
+                                    return Err("parsing type".to_owned());
                                 }
 
                                 if size == 2 {
                                     if v_type == DataType::Boolean as u8 {
                                         match read_bool(&mut cur) {
                                             Ok(res) => iraw.obj.add_bool(&predicate, res),
-                                            Err(e) => {
-                                                error!("value: expected {}, err={:?}", v_type, e);
-                                                return false;
-                                            }
+                                            Err(e) => return Err(format!("value: expected {}, err={:?}", v_type, e)),
                                         }
                                     } else if v_type == DataType::Datetime as u8 {
                                         match read_int(&mut cur) {
                                             Ok(res) => iraw.obj.add_datetime(&predicate, res),
-                                            Err(e) => {
-                                                error!("value: expected {}, err={:?}", v_type, e);
-                                                return false;
-                                            }
+                                            Err(e) => return Err(format!("value: expected {}, err={:?}", v_type, e)),
                                         }
                                     } else if v_type == DataType::Integer as u8 {
                                         match read_int(&mut cur) {
                                             Ok(res) => iraw.obj.add_integer(&predicate, res),
-                                            Err(e) => {
-                                                error!("value: expected {}, err={:?}", v_type, e);
-                                                return false;
-                                            }
+                                            Err(e) => return Err(format!("value: expected {}, err={:?}", v_type, e)),
                                         }
                                     } else if v_type == DataType::Uri as u8 {
                                         match read_string_from_msgpack(&mut cur) {
                                             Ok(res) => iraw.obj.add_uri(&predicate, &res),
-                                            Err(e) => {
-                                                error!("value: expected {}, err={:?}", v_type, e);
-                                                return false;
-                                            }
+                                            Err(e) => return Err(format!("value: expected {}, err={:?}", v_type, e)),
                                         }
                                     } else if v_type == DataType::Binary as u8 {
                                         let values = iraw.obj.resources.entry(predicate.to_owned()).or_default();
                                         if !read_raw_into_resources(&mut cur, values) {
-                                            error!("value: fail read raw");
-                                            return false;
+                                            return Err("value: fail read raw".to_owned());
                                         }
                                     } else if v_type == DataType::String as u8 {
                                         match read_string_from_msgpack(&mut cur) {
                                             Ok(res) => iraw.obj.add_string(&predicate, &res, Lang::NONE),
-                                            Err(e) => {
-                                                error!("value: expected {}, err={:?}", v_type, e);
-                                                return false;
-                                            }
+                                            Err(e) => return Err(format!("value: expected {}, err={:?}", v_type, e)),
                                         };
                                     } else {
-                                        error!("msgpack:unknown type {}", v_type);
-                                        return false;
+                                        return Err(format!("msgpack:unknown type {}", v_type));
                                     }
                                 } else if size == 3 {
                                     if v_type == DataType::Decimal as u8 {
@@ -144,73 +125,46 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual)
                                             Ok(mantissa) => match read_int(&mut cur) {
                                                 Ok(exponent) => iraw.obj.add_decimal_d(&predicate, mantissa, exponent),
                                                 Err(e) => {
-                                                    error!("value: fail read exponent, err={:?}", e);
-                                                    return false;
+                                                    return Err(format!("value: fail read exponent, err={:?}", e));
                                                 }
                                             },
-                                            Err(e) => {
-                                                error!("value: fail read mantissa, err={:?}", e);
-                                                return false;
-                                            }
+                                            Err(e) => return Err(format!("value: fail read mantissa, err={:?}", e)),
                                         }
                                     } else if v_type == DataType::String as u8 {
-                                        let mut lang = Lang::NONE;
-
                                         match read_string_from_msgpack(&mut cur) {
                                             Ok(res) => {
+                                                let lang;
                                                 match read_int(&mut cur) {
-                                                    Ok(res) => {
-                                                        let r_lang: i64 = res;
-
-                                                        if r_lang == 1 {
-                                                            lang = Lang::RU;
-                                                        } else if r_lang == 2 {
-                                                            lang = Lang::EN;
-                                                        }
-                                                    }
+                                                    Ok(res) => lang = Lang::new_from_i64(res),
                                                     Err(e) => {
-                                                        error!("value: fail read mantissa, err={:?}", e);
-                                                        return false;
+                                                        return Err(format!("value: fail read lang, err={:?}", e));
                                                     }
                                                 }
 
                                                 iraw.obj.add_string(&predicate, &res, lang);
                                             }
-                                            Err(e) => {
-                                                error!("value: expected {}, err={:?}", v_type, e);
-                                                return false;
-                                            }
+                                            Err(e) => return Err(format!("value: expected {}, err={:?}", v_type, e)),
                                         }
                                     }
                                 }
                             }
-                            marker => {
-                                error!("parsing values: unexpected marker={:?}", marker);
-                                return false;
-                            }
+                            marker => return Err(format!("parsing values: unexpected marker={:?}", marker)),
                         },
-                        Err(e) => {
-                            error!("parsing values: err={:?}", e);
-                            return false;
-                        }
+                        Err(e) => return Err(format!("parsing values: err={:?}", e)),
                     }
                 }
             }
-            Err(e) => {
-                error!("parsing {:?}", e);
-                return false;
-            }
+            Err(e) => return Err(format!("parsing {:?}", e)),
         }
 
         if is_found {
-            //            indv.cur = cur.position();
             iraw.raw.cur = cur.position();
-            return true;
+            return Ok(());
         }
     }
 
     iraw.raw.cur = cur.position();
-    true
+    Ok(())
 }
 
 fn read_raw_into_resources(cur: &mut Cursor<&[u8]>, values: &mut Vec<Resource>) -> bool {
