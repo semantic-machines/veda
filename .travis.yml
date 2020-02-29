@@ -47,13 +47,13 @@ script:
   - travis_wait 6 testcafe chrome qa/testcafe/testLogin.js
   - travis_wait 6 testcafe chrome qa/testcafe/testLanguage.js
   - travis_wait 6 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.4
+  - travis_wait 6 testcafe chrome qa/testcafe/testPerson.js
   - travis_wait 6 testcafe chrome qa/testcafe/testSearch.js
   - travis_wait 6 testcafe chrome qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.5
   - travis_wait 6 testcafe chrome qa/testcafe/testCreatingNetInterface.js
   - travis_wait 6 testcafe chrome qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens --speed 0.5
   - travis_wait 6 testcafe chrome qa/testcafe/testJournal.js
-  - travis_wait 6 testcafe chrome qa/testcafe/testPerson.js
-  - travis_wait 6 testcafe chrome qa/testcafe/testRights.js --screenshots screens --screenshots-on-fails screens --speed 0.5
+  - travis_wait 6 testcafe chrome qa/testcafe/testRights.js --screenshots screens --screenshots-on-fails screens --speed 0.3
   - travis_wait 6 testcafe chrome qa/testcafe/testSearchRangeOfDates.js
 #  - testcafe chrome qa/testcafe/testVersionedDocument.js
   - travis_wait 6 testcafe chrome qa/testcafe/testSimpleNet.js
