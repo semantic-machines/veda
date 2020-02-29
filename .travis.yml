@@ -40,12 +40,12 @@ before_script:
   - fluxbox >/dev/null 2>&1 &
   - "cp -R ./qa/onto/* ./ontology 2>/dev/null || :"
   - ./control-start.sh
-  - sleep 90
+  - sleep 180
 
 script:
   - travis_wait 3 grunt test --stack --verbose
   - travis_wait 6 testcafe chrome qa/testcafe/testLogin.js
-  - travis_wait 6 testcafe chrome qa/testcafe/testLanguage.js
+  - travis_wait 6 testcafe chrome qa/testcafe/testLanguage.js --screenshots screens --screenshots-on-fails screens --speed 0.3
   - travis_wait 6 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.4
   - travis_wait 6 testcafe chrome qa/testcafe/testPerson.js
   - travis_wait 6 testcafe chrome qa/testcafe/testSearch.js
