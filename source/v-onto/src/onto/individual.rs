@@ -155,7 +155,7 @@ impl Individual {
 
     pub fn add_decimal_from_str(&mut self, predicate: &str, value: &str) {
         if let Ok(v) = Decimal::from_str(value) {
-            let exp = -(v.scale() as i32);
+            let exp = v.scale() as i32 * -1;
             if let Ok(m) = value.replace('.', "").parse::<i64>() {
                 self.add_decimal_d(&predicate, m, exp as i64);
             }
@@ -170,7 +170,7 @@ impl Individual {
 
     pub fn add_decimal_from_f64(&mut self, predicate: &str, value: f64) {
         if let Some(v) = Decimal::from_f64(value) {
-            let exp = -(v.scale() as i32);
+            let exp = v.scale() as i32 * -1;
             self.add_decimal_d(&predicate, (value * pow(10, exp as usize) as f64) as i64, exp as i64);
         } else {
             error!("fail parse [{}] to decimal", value);
