@@ -132,20 +132,11 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual)
                                             Err(e) => return Err(format!("value: fail read mantissa, err={:?}", e)),
                                         }
                                     } else if v_type == DataType::String as u8 {
-                                        let mut lang = Lang::NONE;
-
                                         match read_string_from_msgpack(&mut cur) {
                                             Ok(res) => {
+                                                let lang;
                                                 match read_int(&mut cur) {
-                                                    Ok(res) => {
-                                                        let r_lang: i64 = res;
-
-                                                        if r_lang == 1 {
-                                                            lang = Lang::RU;
-                                                        } else if r_lang == 2 {
-                                                            lang = Lang::EN;
-                                                        }
-                                                    }
+                                                    Ok(res) => lang = Lang::new_from_i64(res),
                                                     Err(e) => {
                                                         return Err(format!("value: fail read lang, err={:?}", e));
                                                     }
