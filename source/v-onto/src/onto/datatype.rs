@@ -59,8 +59,8 @@ impl Lang {
 
     pub fn new_from_i64(l: i64) -> Lang {
         match l {
-            0 => Lang::RU,
-            1 => Lang::EN,
+            1 => Lang::RU,
+            2 => Lang::EN,
             _ => Lang::NONE,
         }
     }
