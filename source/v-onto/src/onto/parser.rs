@@ -12,7 +12,13 @@ pub enum RawType {
 
 pub fn parse_to_predicate(expect_predicate: &str, iraw: &mut Individual) -> bool {
     if iraw.raw.raw_type == RawType::MSGPACK {
-        return parse_msgpack_to_predicate(expect_predicate, iraw);
+        if let Err(e) = parse_msgpack_to_predicate(expect_predicate, iraw) {
+            if !e.is_empty() {
+                error!("parse for [{}], err={}", expect_predicate, e);
+            }
+            return false;
+        }
+        return true;
     } else if iraw.raw.raw_type == RawType::CBOR {
         return parse_cbor_to_predicate(expect_predicate, iraw);
     }
