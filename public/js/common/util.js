@@ -322,8 +322,8 @@ veda.Module(function (veda) { "use strict";
                 var q = value;
                 var lines = q.trim().split("\n");
                 var lineQueries = lines.map(function (line) {
-                  var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-                  return "NOT has(multiSearchAllPositions(arrayStringConcat(" + "p" + i + ".str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                  var words = line.trim().replace(/[-*\s]+/g, " ").split(" ").filter(function (word, i, words) {return words.length > 1 || word.length > 3});
+                  return "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + "p" + i + ".str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                 });
                 return lineQueries.join(" OR ");
               })
@@ -408,8 +408,8 @@ veda.Module(function (veda) { "use strict";
                   var q = value;
                   var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
-                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-                    return "NOT has(multiSearchAllPositions(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ").filter(function (word, i, words) {return words.length > 1 || word.length > 3});
+                    return "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                   });
                   return lineQueries.join(" OR ");
                 })
@@ -511,8 +511,8 @@ veda.Module(function (veda) { "use strict";
                   var q = value;
                   var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
-                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-                    return "NOT has(multiSearchAllPositions(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ").filter(function (word, i, words) {return words.length > 1 || word.length > 3});
+                    return "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                   });
                   return lineQueries.join(" OR ");
                 })
@@ -591,7 +591,7 @@ veda.Module(function (veda) { "use strict";
                 if ( !q.match(/[\+\-\*]/) ) {
                   var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
-                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
+                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ").filter(function (word, i, words) {return words.length > 1 || word.length > 3});
                     line = words.map(function (word) { return "+" + word + "*"; }).join(" ");
                     return "'" + property_uri + "'=='" + line + "'";
                   });
