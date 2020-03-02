@@ -322,11 +322,18 @@ veda.Module(function (veda) { "use strict";
                 var q = value;
                 var lines = q.trim().split("\n");
                 var lineQueries = lines.map(function (line) {
-                  var words = line.trim().replace(/[-*\s]+/g, " ").split(" ").filter(function (word, i, words) {return words.length > 1 || word.length > 3});
-                  return "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + "p" + i + ".str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                  var words = line
+                    .trim()
+                    .replace(/[-*\s]+/g, " ")
+                    .split(" ")
+                    .filter(function (word, i, words) {
+                      return words.length > 1 || word.length > 3
+                    });
+                  return words.length && "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + "p" + i + ".str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                 });
-                return lineQueries.join(" OR ");
+                return lineQueries.filter(Boolean).join(" OR ");
               })
+              .filter(Boolean)
               .join(" OR ");
             break;
           case values[0] instanceof veda.IndividualModel:
@@ -408,11 +415,18 @@ veda.Module(function (veda) { "use strict";
                   var q = value;
                   var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
-                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ").filter(function (word, i, words) {return words.length > 1 || word.length > 3});
-                    return "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                    var words = line
+                      .trim()
+                      .replace(/[-*\s]+/g, " ")
+                      .split(" ")
+                      .filter(function (word, i, words) {
+                        return words.length > 1 || word.length > 3
+                      });
+                    return words.length && "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                   });
-                  return lineQueries.join(" OR ");
+                  return lineQueries.filter(Boolean).join(" OR ");
                 })
+                .filter(Boolean)
                 .join(" OR ");
               break;
             case values[0] instanceof veda.IndividualModel:
@@ -511,11 +525,18 @@ veda.Module(function (veda) { "use strict";
                   var q = value;
                   var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
-                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ").filter(function (word, i, words) {return words.length > 1 || word.length > 3});
-                    return "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                    var words = line
+                      .trim()
+                      .replace(/[-*\s]+/g, " ")
+                      .split(" ")
+                      .filter(function (word, i, words) {
+                        return words.length > 1 || word.length > 3
+                      });
+                    return words.length && "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
                   });
-                  return lineQueries.join(" OR ");
+                  return lineQueries.filter(Boolean).join(" OR ");
                 })
+                .filter(Boolean)
                 .join(" OR ");
               break;
             case values[0] instanceof veda.IndividualModel:
