@@ -1,9 +1,10 @@
-use chrono::{NaiveDateTime, Utc};
+use chrono::{Datelike, NaiveDate, NaiveDateTime, Utc};
 use futures::Future;
 use std::ops::Add;
 use tiberius::{BoxableIo, Error, Transaction};
 use time::Duration;
 use v_module::module::Module;
+use v_onto::datatype::Lang;
 use v_onto::individual::*;
 use voca_rs::chop;
 
@@ -39,7 +40,7 @@ SELECT [t2].[AccessLevelID]
 FROM [WIN-PAK PRO].[dbo].[Card] t1
     JOIN [WIN-PAK PRO].[dbo].[CardAccessLevels] t2 ON [t2].[CardID]=[t1].[RecordID]
 WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
-
+/*
 // CLEAR CARD
 
 pub const CLEAR_CARD: &str = "\
@@ -51,13 +52,14 @@ pub fn clear_card<I: BoxableIo + 'static>(card_number: String, transaction: Tran
     Box::new(transaction.exec(CLEAR_CARD, &[&card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
 }
 
+
 // INSERT CARD
 
 const INSERT_CARD: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[Card]
 (AccountID,TimeStamp,UserID,NodeId,Deleted,UserPriority,CardNumber,Issue,CardHolderID,AccessLevelID,ActivationDate,ExpirationDate,NoOfUsesLeft,CMDFileID,
 CardStatus,Display,BackDrop1ID,BackDrop2ID,ActionGroupID,LastReaderHID,PrintStatus,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
-VALUES (1,@P1,0,0,0,0,@P2,0,@P5,-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
+VALUES (1,@P1,0,0,0,0,@P2,0,@P5,-1,@P3,@P4,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
 
 pub fn insert_card<I: BoxableIo + 'static>(
     now: NaiveDateTime,
@@ -82,7 +84,7 @@ pub fn insert_card<I: BoxableIo + 'static>(
             .and_then(|(_result, trans)| Ok(trans)),
     )
 }
-
+*/
 // INSERT CARD HOLDER
 const INSERT_VEHICLE_HOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
@@ -178,9 +180,9 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
         if let Some(cp) = indv.get_first_literal("v-s:correspondentPerson") {
             if module.get_individual(&cp, &mut icp).is_some() {
                 if let Some(employee) = module.get_individual(&mut icp.get_first_literal("v-s:employee").unwrap_or_default(), &mut Individual::default()) {
-                    first_name = employee.get_first_literal("v-s:firstName").unwrap_or_default();
-                    last_name = employee.get_first_literal("v-s:lastName").unwrap_or_default();
-                    middle_name = employee.get_first_literal("v-s:middleName").unwrap_or_default();
+                    first_name = employee.get_first_literal_with_lang("v-s:firstName", &[Lang::RU, Lang::NONE]).unwrap_or_default();
+                    last_name = employee.get_first_literal_with_lang("v-s:lastName", &[Lang::RU, Lang::NONE]).unwrap_or_default();
+                    middle_name = employee.get_first_literal_with_lang("v-s:middleName", &[Lang::RU, Lang::NONE]).unwrap_or_default();
                     tab_number = employee.get_first_literal("v-s:tabNumber").unwrap_or_default();
                     birthday = employee.get_first_datetime("v-s:birthday").unwrap_or_default();
                 }
@@ -246,11 +248,65 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
     }
 }
 
+// UPDATE CARD
+pub const UPDATE_CARD: &str = "\
+UPDATE [WIN-PAK PRO].[dbo].[Card]
+SET [ActivationDate]=@P1, [ExpirationDate]=@P2, [CardHolderID]=@P4
+WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
+
+pub fn update_card<I: BoxableIo + 'static>(
+    date_from: Option<i64>,
+    date_to: Option<i64>,
+    card_number: String,
+    card_holder: i32,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if date_to.is_some() && date_from.is_some() {
+        Box::new(
+            transaction
+                .exec(
+                    UPDATE_CARD,
+                    &[
+                        &NaiveDateTime::from_timestamp(date_from.unwrap(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                        &NaiveDateTime::from_timestamp(date_to.unwrap(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                        &card_number.as_str(),
+                        &card_holder,
+                    ],
+                )
+                .and_then(|(_result, trans)| Ok(trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
+
+// CREATE WINPAK CHANGE EVENT FOR Card
+pub const CREATE_WINPAK_CHANGE_CARD_EVENT: &str = "\
+UPDATE [WIN-PAK PRO].[dbo].[Card]
+    SET [ActivationDate]=@P1, [CardStatus]=2
+    WHERE LTRIM([CardNumber])=@P2 and [deleted]=0";
+
+pub fn create_winpak_change_card_event<I: BoxableIo + 'static>(
+    is_execute: bool,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if is_execute {
+        Box::new(
+            transaction
+                .exec(CREATE_WINPAK_CHANGE_CARD_EVENT, &[&get_now_00_00_00().add(Duration::hours(WINPAK_TIMEZONE)), &card_number.as_str()])
+                .and_then(|(_result, trans)| Ok(trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
+
 // UPDATE CARD DATE
 
 pub const UPDATE_CARD_DATE: &str = "\
 UPDATE [WIN-PAK PRO].[dbo].[Card]
-    SET [ActivationDate]=@P1, [ExpirationDate]=@P2, [CardStatus]=1
+    SET [ActivationDate]=@P1, [ExpirationDate]=@P2, [CardStatus]=2
     WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
 
 pub fn update_card_date<I: BoxableIo + 'static>(
@@ -461,4 +517,10 @@ pub fn get_equipment_list(indv: &mut Individual, list: &mut Vec<String>) {
     if let Some(pass_equipment) = indv.get_first_literal("mnd-s:passEquipment") {
         split_str_for_winpak_db_columns(&pass_equipment, 64, list);
     }
+}
+
+pub fn get_now_00_00_00() -> NaiveDateTime {
+    let d = NaiveDateTime::from_timestamp(Utc::now().timestamp(), 0);
+    let d_0 = NaiveDate::from_ymd(d.year(), d.month(), d.day()).and_hms(0, 0, 0);
+    d_0
 }

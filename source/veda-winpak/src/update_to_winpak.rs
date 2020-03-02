@@ -113,10 +113,11 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| conn.transaction())
         .and_then(|trans| update_equipment(is_update_equipment, equipment_list, card_number.to_string(), trans))
-        .and_then(|trans| update_card_date(date_from, date_to, card_number.to_string(), trans))
+        .and_then(|trans| update_card_date(Some(get_now_00_00_00().timestamp()), date_to, card_number.to_string(), trans))
         .and_then(|trans| block_card(is_need_block_card, date_from, now, card_number.to_string(), trans))
         .and_then(|trans| clear_access_level(is_update_access_levels, card_number.to_string(), trans))
         .and_then(|trans| update_access_level(is_update_access_levels, now, 0, access_levels, card_number.to_string(), trans))
+        .and_then(|trans| create_winpak_change_card_event(is_update_access_levels, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
     match current_thread::block_on_all(future) {
         Ok(_) => {

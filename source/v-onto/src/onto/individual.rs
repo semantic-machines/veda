@@ -389,6 +389,41 @@ impl Individual {
         None
     }
 
+    pub fn get_first_literal_with_lang(&mut self, predicate: &str, lang: &[Lang]) -> Option<String> {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => {
+                    for r in v.iter() {
+                        match &r.value {
+                            Value::Str(s, l) => {
+                                if lang.contains(l) {
+                                    return Some(s.to_string());
+                                }
+                            }
+                            Value::Uri(s) => {
+                                return Some(s.to_string());
+                            }
+                            _ => {
+                                return None;
+                            }
+                        }
+                    }
+                }
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        None
+    }
+
     pub fn get_first_bool(&mut self, predicate: &str) -> Option<bool> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {

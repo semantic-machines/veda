@@ -70,21 +70,22 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     get_equipment_list(&mut indv_b, &mut equipment_list);
 
-    let mut is_vehicle = false;
     let mut is_human = false;
+    let mut is_vehicle = false;
 
     for has_kind_for_pass in has_kind_for_passes {
         if has_kind_for_pass == "d:c94b6f98986d493cae4a3a37249101dc"
             || has_kind_for_pass == "d:5f5be080f1004af69742bc574c030609"
             || has_kind_for_pass == "d:1799f1e110054b5a9ef819754b0932ce"
         {
-            is_human = true;
+            is_vehicle = true;
         }
         if has_kind_for_pass == "d:ece7e741557e406bb996809163810c6e"
             || has_kind_for_pass == "d:a149d268628b46ae8d40c6ea0ac7f3dd"
             || has_kind_for_pass == "d:228e15d5afe544c099c337ceafa47ea6"
+            || has_kind_for_pass == "d:ih7mpbsuu6xxmy7ouqlyhfqyua"
         {
-            is_vehicle = true;
+            is_human = true;
         }
     }
 
@@ -99,7 +100,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     let ftran = SqlConnection::connect(conn_str).and_then(|conn| conn.transaction());
     let ftran =
-        ftran.and_then(|trans| insert_card_holder(&id, now, is_human, is_vehicle, module, card_number.to_string(), &mut indv_b, trans)).and_then(|trans| trans.commit());
+        ftran.and_then(|trans| insert_card_holder(&id, now, is_vehicle, is_human, module, card_number.to_string(), &mut indv_b, trans)).and_then(|trans| trans.commit());
     match current_thread::block_on_all(ftran) {
         Ok(_) => {}
         Err(e) => {
@@ -129,6 +130,8 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         }
     }
 
+    //let is_access_level = !access_levels.is_empty();
+
     if cardholder_id.get() == 0 {
         error!("ошибка получения id для CardHolder");
         return (ResultCode::DatabaseModifiedError, "ошибка обновления");
@@ -137,10 +140,12 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             .and_then(|conn| conn.transaction())
             .and_then(|trans| clear_temp_field_of_cardholder(cardholder_id.get(), trans))
             .and_then(|trans| update_equipment_where_id(equipment_list, cardholder_id.get(), trans))
-            .and_then(|trans| clear_card(card_number.to_string(), trans))
-            .and_then(|trans| insert_card(now, card_number.to_string(), date_from, date_to, cardholder_id.get(), trans))
+            //.and_then(|trans| clear_card(card_number.to_string(), trans))
+            //.and_then(|trans| insert_card(now, card_number.to_string(), date_from, date_to, cardholder_id.get(), trans))
+            .and_then(|trans| update_card(date_from, date_to, card_number.to_string(), cardholder_id.get(), trans))
             .and_then(|trans| clear_access_level(true, card_number.to_string(), trans))
             .and_then(|trans| update_access_level(true, now, 0, access_levels, card_number.to_string(), trans))
+            //            .and_then(|trans| create_winpak_change_card_event(is_access_level, date_to, card_number.to_string(), trans))
             .and_then(|trans| trans.commit());
         match current_thread::block_on_all(ftran) {
             Ok(_) => {
