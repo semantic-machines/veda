@@ -453,12 +453,14 @@ veda.Module(function (veda) { "use strict";
       return;
     }
     var table_counter = 0;
-    var from = " FROM ";
-    var where = " WHERE ";
+    var from = "";
+    var where = "";
     var visited = visited || {};
     var re = /[^a-zA-Z0-9]/g;
     buildQuery(individual);
-    return "SELECT DISTINCT id" + from + where;
+    var query = from ? "SELECT DISTINCT id FROM " + from : "";
+    query = query && where ? query + " WHERE " + where : query;
+    return query;
 
     // Recursive from & where population
     function buildQuery(individual, parent_prop) {
@@ -540,8 +542,8 @@ veda.Module(function (veda) { "use strict";
 
       if (!where_aliased) { return; }
 
-      if (where === " WHERE ") {
-        where += where_aliased;
+      if (!where) {
+        where = where_aliased;
       } else {
         where += " AND " + where_aliased;
       }
