@@ -10,7 +10,7 @@ path = "src/lib.rs"
 [dependencies]
 futures = "0.1"
 log = "0.4"
-rusty_tarantool = { git = "https://github.com/zheludkovm/RustyTarantool" }
+rusty_tarantool = { git = "https://github.com/zheludkovm/RustyTarantool", rev = "bf918dd4780caaf6958a551ccaa94de69b92e3c7"}
 tokio = "0.1"
 lmdb-rs-m = "0.7.7"
 nng = "0.5.1"
