@@ -1392,6 +1392,14 @@ v-ui:IconModalTemplate
     individual.present(cntr, undefined, newMode).then(function (tmpl) {
       if (newMode === "edit") {
         ok.parent().removeClass("hide");
+        tmpl.on("internal-validated", function (e, validation) {
+          if (validation.state) {
+            ok.removeAttr("disabled");
+          } else {
+            ok.attr("disabled", "disabled");
+          }
+          e.stopPropagation();
+        });
         $(".actions", tmpl).remove();
       }
     });
@@ -2406,7 +2414,7 @@ v-ui:DocumentEventTemplate
   if ( individual.hasValue("rdf:type", "v-s:ProcessStarted") ) {
     $(".start-process", template).show();
     $(".non-start-process", template).hide();
-    var process = individual['v-wf:onProcess'][0];
+    var process = individual.get('v-wf:onProcess')[0];
     process.load().then(function (process) {
       if (
         (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false)) &&
