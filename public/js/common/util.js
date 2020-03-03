@@ -279,14 +279,11 @@ veda.Module(function (veda) { "use strict";
 
   veda.Util.queryFromIndividualPT = function (individual) {
     try {
-      if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-        return;
-      }
       var tables = [];
       var i = -1;
       var where = Object.keys(individual.properties)
         .map(function (property_uri) {
-          if (property_uri.indexOf(".") > 0) { throw new Error("VQL style property nesting: " + property_uri); }
+          if (property_uri.indexOf(".") >= 0 || property_uri.indexOf("*") >= 0) { throw new Error("VQL style property nesting: " + property_uri); }
           if (property_uri === "@") { return; }
           i++;
           var table = "veda_pt.`" + property_uri + "` as p" + i;
@@ -370,9 +367,6 @@ veda.Module(function (veda) { "use strict";
 
   veda.Util.queryFromIndividualTT_SUB = function (individual) {
     try {
-      if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-        return;
-      }
       var visited = {};
       var re = /[^a-zA-Z0-9]/g;
       return buildQuery(individual);
@@ -388,7 +382,7 @@ veda.Module(function (veda) { "use strict";
       }
       var where = Object.keys(individual.properties)
         .map(function (property_uri, i) {
-          if (property_uri.indexOf(".") > 0) { throw new Error("VQL style property nesting: " + property_uri); }
+          if (property_uri.indexOf(".") >= 0 || property_uri.indexOf("*") >= 0) { throw new Error("VQL style property nesting: " + property_uri); }
           if (property_uri === "@" || property_uri === "rdf:type") { return; }
           var values = individual.get(property_uri).sort(function (a, b) {
             return a < b ? - 1 : a === b ? 0 : 1;
@@ -474,9 +468,6 @@ veda.Module(function (veda) { "use strict";
 
   veda.Util.queryFromIndividualTT_JOIN = function (individual) {
     try {
-      if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-        return;
-      }
       var table_counter = 0;
       var from = "";
       var where = "";
@@ -504,7 +495,7 @@ veda.Module(function (veda) { "use strict";
       }
       var where_aliased = Object.keys(individual.properties)
         .map(function (property_uri, i) {
-          if (property_uri.indexOf(".") > 0) { throw new Error("VQL style property nesting: " + property_uri); }
+          if (property_uri.indexOf(".") >= 0 || property_uri.indexOf("*") >= 0) { throw new Error("VQL style property nesting: " + property_uri); }
           if (property_uri === "@" || property_uri === "rdf:type") { return; }
           var values = individual.get(property_uri).sort(function (a, b) {
             return a < b ? - 1 : a === b ? 0 : 1;
