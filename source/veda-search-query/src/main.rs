@@ -17,7 +17,7 @@ use v_az_lmdb::_authorize;
 use v_module::module::{get_ticket_from_db, init_log, Module};
 use v_module::ticket::Ticket;
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 struct SearchResult {
     result: Vec<String>,
     count: i64,
@@ -191,6 +191,8 @@ async fn select_to_ch(pool: &mut Pool, user_uri: &str, query: &str, top: i64, li
     out_res.count = total_count;
     out_res.processed = authorize_count;
     out_res.authorize_time = out_res.authorize_time / 1000;
+
+    info!("result={:?}", out_res);
 
     Ok(())
 }
