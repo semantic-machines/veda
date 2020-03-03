@@ -26,6 +26,7 @@ struct Module {
     name: String,
     exec_name: String,
     args: Vec<String>,
+    memory_limit: Option<u64>,
     order: u32,
     is_enabled: bool,
 }
@@ -131,8 +132,15 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
                     }
                 }
             } else {
-                if memory > 1024 * 1024 * 4 {
-                    warn!("process {}, memory={} KiB", name, memory);
+                if let Some(module) = modules.get(name) {
+                    if let Some(memory_limit) = module.memory_limit {
+                        if memory > memory_limit {
+                            warn!("process {}, memory={} KiB, limit={} KiB", name, memory, memory_limit);
+                            if let Ok(_0) = process.kill() {
+                                warn!("attempt stop module {} {}", process.id(), name);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -244,6 +252,7 @@ fn get_modules_info(path: &str) -> io::Result<HashMap<String, Module>> {
             let mut module = Module {
                 name: line.to_string(),
                 args: Vec::new(),
+                memory_limit: None,
                 order,
                 is_enabled: true,
                 exec_name: String::new(),
@@ -254,6 +263,26 @@ fn get_modules_info(path: &str) -> io::Result<HashMap<String, Module>> {
                 let elements: Vec<&str> = m.split(' ').collect();
                 for el in elements {
                     module.args.push(el.to_string());
+                }
+            }
+
+            if let Some(m) = params.get("memory-limit") {
+                let elements: Vec<&str> = m.split(' ').collect();
+                if elements.len() == 2 {
+                    if let Ok(meml) = elements.get(0).unwrap_or(&"").parse::<i32>() {
+                        let m = match elements.get(1).unwrap_or(&"").to_uppercase().as_str() {
+                            "GB" => 1024 * 1024,
+                            "MB" => 1024,
+                            _ => 1,
+                        };
+
+                        module.memory_limit = Some((meml * m) as u64);
+                        info!("{:?} Kb", module.memory_limit);
+                    }
+                }
+
+                if module.memory_limit.is_none() {
+                    error!("fail parse param [memory-limit]");
                 }
             }
 

@@ -17,6 +17,8 @@ search-index-tt
 search-index-pt
 
 search-query
+    module = search-query
+    memory-limit = 5 Gb
 
 #fanout-sql
 
