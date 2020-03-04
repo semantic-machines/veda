@@ -303,7 +303,7 @@ v-fs:AttributiveSearchModel
             })
             .then(function (blankObject) {
               var vql = veda.Util.queryFromIndividual(blankObject);
-              var sql = veda.Util.queryFromIndividualTT_JOIN(blankObject);
+              var sql = veda.Util.queryFromIndividualTT_JOIN(blankObject, sort);
               var query = {};
               if (ft && !vql) {
                 query.vql = ft;
