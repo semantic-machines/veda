@@ -298,7 +298,6 @@ v-fs:AttributiveSearchModel
       self["v-fs:authorized"] = [0];
       self["v-fs:searchResult"] = [];
     }
-    var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
 
     var ft = self.hasValue("v-fs:fulltextQuery") && evalQuery(self["v-fs:fulltextQuery"][0]);
 
@@ -311,6 +310,7 @@ v-fs:AttributiveSearchModel
             })
             .then(function (blankObject) {
               var vql = veda.Util.queryFromIndividual(blankObject);
+              var sort = self["v-fs:sortOrder"][0];
               var sql = veda.Util.queryFromIndividualTT_JOIN(blankObject, sort);
               var query = {};
               if (ft && !vql) {
