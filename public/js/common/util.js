@@ -277,8 +277,31 @@ veda.Module(function (veda) { "use strict";
       && (value % 1);
   };
 
-  veda.Util.queryFromIndividualPT = function (individual) {
+  veda.Util.queryFromIndividualPT = function (individual, sort) {
     try {
+      var query = buildQuery;
+      var order = orderBy(sort);
+      query = query && order ? query + " ORDER BY " + order : query;
+      return query;
+    } catch (error) {
+      console.log(error);
+    }
+
+    function orderBy(sort) {
+      if (typeof sort === "string" || sort instanceof String) {
+        return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
+          var by = property_uri.replace(/[^a-zA-Z0-9]/g, "_");
+          return [
+            by + ".str " + dir,
+            by + ".date " + dir,
+            by + ".int " + dir,
+            by + ".dec " + dir
+          ].join(", ");
+        });
+      }
+    }
+
+    function buildQuery (individual) {
       var tables = [];
       var i = -1;
       var where = Object.keys(individual.properties)
@@ -360,18 +383,33 @@ veda.Module(function (veda) { "use strict";
       }, "");
 
       return "SELECT DISTINCT id FROM " + from + (where ? " WHERE " + where : "");
-    } catch (error) {
-      console.log(error);
     }
   };
 
-  veda.Util.queryFromIndividualTT_SUB = function (individual) {
+  veda.Util.queryFromIndividualTT_SUB = function (individual, sort) {
     try {
       var visited = {};
       var re = /[^a-zA-Z0-9]/g;
-      return buildQuery(individual);
+      var query = buildQuery(individual);
+      var order = orderBy(sort);
+      query = query && order ? query + " ORDER BY " + order : query;
+      return query;
     } catch (error) {
       console.log(error);
+    }
+
+    function orderBy(sort) {
+      if (typeof sort === "string" || sort instanceof String) {
+        return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
+          var by = property_uri.replace(re, "_");
+          return [
+            by + "_str " + dir,
+            by + "_date " + dir,
+            by + "_int " + dir,
+            by + "_dec " + dir
+          ].join(", ");
+        });
+      }
     }
 
     function buildQuery(individual) {
@@ -466,7 +504,7 @@ veda.Module(function (veda) { "use strict";
     }
   };
 
-  veda.Util.queryFromIndividualTT_JOIN = function (individual) {
+  veda.Util.queryFromIndividualTT_JOIN = function (individual, sort) {
     try {
       var table_counter = 0;
       var from = "";
@@ -476,9 +514,25 @@ veda.Module(function (veda) { "use strict";
       buildQuery(individual);
       var query = from ? "SELECT DISTINCT id FROM " + from : "";
       query = query && where ? query + " WHERE " + where : query;
+      var order = orderBy(sort);
+      query = query && order ? query + " ORDER BY " + order : query;
       return query;
     } catch (error) {
       console.log(error);
+    }
+
+    function orderBy(sort) {
+      if (typeof sort === "string" || sort instanceof String) {
+        return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
+          var by = property_uri.replace(re, "_");
+          return [
+            by + "_str " + dir,
+            by + "_date " + dir,
+            by + "_int " + dir,
+            by + "_dec " + dir
+          ].join(", ");
+        });
+      }
     }
 
     // Recursive from & where population
