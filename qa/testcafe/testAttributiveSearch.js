@@ -23,7 +23,7 @@ import { Selector, t } from 'testcafe';
 
       .click('veda-control#label')
       .pressKey('ctrl+a delete')
-      .typeText('veda-control#comment', first.substring(0,4) + '*')
+      .typeText('veda-control#comment', first)
       .click('button#search-button')
       .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).contains('2')
 
