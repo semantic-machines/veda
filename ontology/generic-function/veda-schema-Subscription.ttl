@@ -143,7 +143,7 @@ v-s:FavoritesIndicatorTemplate
   function getCurrent(hash) {
     return new Promise(function (resolve, reject) {
       var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : "";
-      var re = new RegExp("^(\\w|-)+:.*?$");
+      var re = new RegExp("^(" + String.fromCharCode(92) + "w|-)+:.*?$");
       if ( re.test(current_uri) ) {
         resolve( new veda.IndividualModel(current_uri).load() );
       } else {

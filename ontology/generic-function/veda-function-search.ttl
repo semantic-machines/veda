@@ -115,6 +115,14 @@ v-fs:AttributiveSearch
   v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
 
+v-fs:requiredClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Тип"@ru ;
+  rdfs:label "Required class"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range owl:Class ;
+.
+
 v-fs:PersonalSearch
   rdf:type owl:Class ;
   rdfs:subClassOf v-fs:AttributiveSearch ;
@@ -1393,15 +1401,19 @@ v-fs:MultiFunctionalSearchTemplate
   rdfs:label "MultiFunctional documents search template"@en ;
   v-ui:template """
 <script>
-  var tabs = $("#box-tabs li", template);
   var loadIndicator = $("#load-indicator");
+  
+  var tabs = $("#box-tabs li[data-search]", template);
   tabs.click(function(e){
     e.preventDefault();
     loadIndicator.show();
+
     var self = $(this);
     tabs.removeClass("active");
     self.addClass("active");
+    individual["activeTab"] = self.data("search");
     $(".tabContainer", template).empty();
+    
     var targetIndidivUri = self.find("a").attr("about");
     var targetIndidiv = new veda.IndividualModel(targetIndidivUri);
     targetIndidiv
@@ -1410,16 +1422,21 @@ v-fs:MultiFunctionalSearchTemplate
         loadIndicator.hide();
       });
   });
-  $("#box-tabs li.active", template).click();
+  
+  if (!individual["activeTab"]) {
+    individual["activeTab"] = "fullText";
+  }
+  $("#box-tabs li[data-search='"+individual["activeTab"]+"']", template).click();
+  
   //# sourceURL=v-s:MultiFunctionalSearchTemplate_pre
 </script>
 <div class="container sheet">
   <br>
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 id="currentTab" class="no-margin" about="@" property="rdfs:label"></h2></li>
-    <li role="presentation" class="active"><a href="#" about="v-fs:FulltextSearch" property="rdfs:label"></a></li>
-    <li role="presentation"><a href="#" about="v-fs:AdvancedSearch" property="rdfs:label"></a></li>
-    <li role="presentation"><a href="#" about="v-fs:DocumentsSearch" property="rdfs:label"></a></li>
+    <li data-search="fullText" role="presentation" class="active"><a href="#" about="v-fs:FulltextSearch" property="rdfs:label"></a></li>
+    <li data-search="advanced" role="presentation"><a href="#" about="v-fs:AdvancedSearch" property="rdfs:label"></a></li>
+    <li data-search="my" role="presentation"><a href="#" about="v-fs:DocumentsSearch" property="rdfs:label"></a></li>
   </ul>
   <br>
   <div class="tabContainer"></div>
@@ -1452,38 +1469,16 @@ v-fs:DocumentsSearchBlankTemplate
   rdfs:label "Шаблон бланка поиска Мои документы"@ru ;
   rdfs:label "My documents search blank template"@en ;
   v-ui:template """
-<script>
-  if (!individual.dataSource) {
-    return veda.Backend.query(veda.ticket, "'rdf:type'==='v-fc:Create' && 'v-fc:hasBlank.isExists'=='true'").then(function (queryResult) {
-      var queryResult = queryResult.result;
-      var typesPromises = queryResult.map(function(createUri) {
-        return new veda.IndividualModel(createUri).getPropertyChain("v-fc:hasBlank", "v-fc:targetType");
-      });
-      return Promise.all(typesPromises);
-    }).then(function(types) {
-      return types.reduce(function(acc, type) {
-        if (type.length) {
-          acc = acc.concat(type);
-        }
-        return acc;
-      });
-
-    }).then(function(dataSource) {
-      individual.dataSource = dataSource;
-      return true;
-    });
-  }
-  //# sourceURL=v-fs:DocumentsSearchBlankTemplate_pre
-</script>
 <div>
   <div class="row">
     <div class="col-md-4">
       <em about="v-fs:SearchForContentBundle" property="rdfs:label"></em>
-      <veda-control property="*" data-type="string" placeholder="Введите запрос"></veda-control>
+      <veda-control property="rdfs:label" data-type="string" placeholder="Введите запрос"></veda-control>
     </div>
     <div class="col-md-4">
-      <em about="rdf:type" property="rdfs:label"></em>
-      <veda-control rel="rdf:type" data-single="true" data-type="select" data-source="{individual.dataSource}"></veda-control>
+      <em about="v-fs:requiredClass" property="rdfs:label"></em>
+      <div rel="v-fs:requiredClass" data-template="v-ui:LabelTemplate"></div>
+      <veda-control rel="v-fs:requiredClass" data-type="link" class="fulltext dropdown" data-query-prefix="'rdfs:subClassOf'==='v-s:UserSearchableDocument'"></veda-control>
     </div>
     <div class="col-md-4">
       <em about="v-s:created" property="rdfs:label"></em>
@@ -1493,17 +1488,45 @@ v-fs:DocumentsSearchBlankTemplate
   </div>
 </div>
 <script>
-  function typeHandler() {
-    if (!individual.hasValue("rdf:type")) {
-      individual["rdf:type"] = [new veda.IndividualModel("v-s:Document")];
+  function searchHandler() {
+    var queryString = null; 
+    if (individual.hasValue("rdfs:label")) {
+      queryString = "('*'=='"+individual["rdfs:label"][0]+"')";
+    }
+    if (individual.hasValue("v-s:created")) {
+      var dates = individual["v-s:created"];
+      var start = new Date(dates[0]);
+      var end = new Date(dates[dates.length-1]);
+      start.setHours(0,0,0,0);
+      end.setHours(23,59,59,999);
+      var createdPart = "('v-s:created'==[" + start.toISOString() + "," + end.toISOString() + "])";
+
+      queryString = queryString == null? createdPart : queryString + " && " + createdPart;
+    }
+
+    if (individual.hasValue("v-fs:requiredClass")) {
+      var typePart = individual["v-fs:requiredClass"].map(function(type){
+        return "('rdf:type'==='" + type.id + "')";
+      }).join(" || ");
+      typePart = "(" + typePart + ")";
+
+      queryString = queryString == null? typePart : queryString + " && " + typePart;
+    } else if (queryString != null) {
+      queryString = queryString + " && ('rdf:type'=='v-s:Document')";
+    }
+
+    if (queryString != null) {
+      individual.set("*", [queryString]);
+    } else {
+      delete individual.properties["*"];
     }
   }
 
-  individual.on("rdf:type", typeHandler);
+  individual.on("rdfs:label v-fs:requiredClass v-s:created", searchHandler);
   template.one("remove", function(){
-    individual.off("rdf:type", typeHandler);
+    individual.off("rdfs:label v-fs:requiredClass v-s:created", searchHandler);
   });
-  //# sourceURL=v-fs:AdvancedSearchTemplate_post
+  //# sourceURL=v-fs:DocumentsSearchBlankTemplate_post
 </script>
   """ ;
 .
@@ -1529,67 +1552,81 @@ v-fs:AdvancedSearchTemplate
   rdfs:label "Шаблон бланка полнотекстового поиска"@ru ;
   rdfs:label "Fulltext search blank template"@en ;
   v-ui:template """
-<script>
-  if (!individual.dataSource) {
-    return veda.Backend.query(veda.ticket, "'rdf:type'==='v-fc:Create' && 'v-fc:hasBlank.isExists'=='true'").then(function (queryResult) {
-      var queryResult = queryResult.result;
-      var typesPromises = queryResult.map(function(createUri) {
-        return new veda.IndividualModel(createUri).getPropertyChain("v-fc:hasBlank", "v-fc:targetType");
-      });
-      return Promise.all(typesPromises);
-    }).then(function(types) {
-      return types.reduce(function(acc, type) {
-        if (type.length) {
-          acc = acc.concat(type);
-        }
-        return acc;
-      });
-
-    }).then(function(dataSource) {
-      individual.dataSource = dataSource;
-      return true;
-    });
-  }
-  //# sourceURL=v-fs:AdvancedSearchTemplate_pre
-</script>
 <div>
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <em about="v-fs:SearchForContentBundle" property="rdfs:label"></em>
-      <veda-control property="*" data-type="string" placeholder="Введите запрос"></veda-control>
+      <veda-control property="rdfs:label" data-type="string" placeholder="Введите запрос"></veda-control>
     </div>
-    <div class="col-md-4">
-      <em about="rdf:type" property="rdfs:label"></em>
-      <veda-control rel="rdf:type" data-single="true" data-type="select" data-source="{individual.dataSource}"></veda-control>
+    <div class="col-md-3">
+      <em about="v-fs:requiredClass" property="rdfs:label"></em>
+      <div rel="v-fs:requiredClass" data-template="v-ui:LabelTemplate"></div>
+      <veda-control rel="v-fs:requiredClass" data-type="link" class="fulltext dropdown" data-query-prefix="'rdfs:subClassOf'==='v-s:UserSearchableDocument'"></veda-control>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <em about="v-s:created" property="rdfs:label"></em>
       <div property="v-s:created"></div>
       <veda-control data-type="date" property="v-s:created"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-s:creator" property="rdfs:label"></em>
+      <div property="v-s:creator"></div>
+      <veda-control data-type="link" class="fulltext" property="v-s:creator"></veda-control>
     </div>
   </div>
 </div>
 <script>
   var find = container.siblings(".search-actions").find("#search-button.search-button");
-  function propertyModifiedHandler() {
-    if (!individual.hasValue("rdf:type")) {
-      individual["rdf:type"] = [new veda.IndividualModel("v-s:Document")];
-      return;
+
+  function searchHandler() {
+    var queryString = null; 
+    if (individual.hasValue("rdfs:label")) {
+      queryString = "('*'=='"+individual["rdfs:label"][0]+"')";
     }
-    if (individual.hasValue("*") || individual.hasValue("v-s:created")) {
+    if (individual.hasValue("v-s:created")) {
+      var dates = individual["v-s:created"];
+      var start = new Date(dates[0]);
+      var end = new Date(dates[dates.length-1]);
+      start.setHours(0,0,0,0);
+      end.setHours(23,59,59,999);
+      var createdPart = "('v-s:created'==[" + start.toISOString() + "," + end.toISOString() + "])";
+
+      queryString = queryString == null? createdPart : queryString + " && " + createdPart;
+    }
+    if (individual.hasValue("v-s:creator")) {
+      var creatorPart = individual["v-s:creator"].map(function(creator) {
+        return "('v-s:creator'=='" +  creator.id + "')";
+      }).join(" || ");
+      creatorPart = "(" + creatorPart + ")";
+
+      queryString = queryString == null? creatorPart : queryString + " && " + creatorPart;
+    }
+
+    if (individual.hasValue("v-fs:requiredClass")) {
+      var typePart = individual["v-fs:requiredClass"].map(function(type){
+        return "('rdf:type'==='" + type.id + "')";
+      }).join(" || ");
+      typePart = "(" + typePart + ")";
+
+      queryString = queryString == null? typePart : queryString + " && " + typePart;
+    } else if (queryString != null) {
+      queryString = queryString + " && ('rdf:type'=='v-s:Document')";
+    }
+
+    if (queryString != null) {
+      individual.set("*", [queryString]);
       find.removeAttr("disabled");
-      return;
-    }
-    if (individual.hasValue("rdf:type", "v-s:Document")) {
-      find.attr("disabled", "disabled");
     } else {
-      find.removeAttr("disabled");
+      find.attr("disabled", "disabled");
+      delete individual.properties["*"];
+
     }
   }
-  propertyModifiedHandler();
-  individual.on("propertyModified", propertyModifiedHandler);
+  searchHandler();
+
+  individual.on("rdfs:label v-fs:requiredClass v-s:created v-s:creator", searchHandler);
   template.one("remove", function(){
-    individual.off("propertyModified", propertyModifiedHandler);
+    individual.off("rdfs:label v-fs:requiredClass v-s:created v-s:creator", searchHandler);
   });
   //# sourceURL=v-fs:AdvancedSearchTemplate_post
 </script>
