@@ -1148,9 +1148,9 @@ v-fs:AttributiveSearchInlineTemplate
       e.stopPropagation();
       var $this = $(this);
       $(".orderby a", template).addClass("text-muted");
-      var dir = $this.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
+      var dir = $this.hasClass("glyphicon-sort-by-attributes-alt") ? "asc" : "desc";
       $this.removeClass("text-muted").toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
-      self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.preferences.language)[0].toLowerCase() + "'" + dir ];
+      self["v-fs:sortOrder"] = [ "'" + property_uri + "' " + dir ];
       searchHandler.call(this);
     });
   });
@@ -1402,7 +1402,7 @@ v-fs:MultiFunctionalSearchTemplate
   v-ui:template """
 <script>
   var loadIndicator = $("#load-indicator");
-  
+
   var tabs = $("#box-tabs li[data-search]", template);
   tabs.click(function(e){
     e.preventDefault();
@@ -1413,7 +1413,7 @@ v-fs:MultiFunctionalSearchTemplate
     self.addClass("active");
     individual["activeTab"] = self.data("search");
     $(".tabContainer", template).empty();
-    
+
     var targetIndidivUri = self.find("a").attr("about");
     var targetIndidiv = new veda.IndividualModel(targetIndidivUri);
     targetIndidiv
@@ -1422,12 +1422,12 @@ v-fs:MultiFunctionalSearchTemplate
         loadIndicator.hide();
       });
   });
-  
+
   if (!individual["activeTab"]) {
     individual["activeTab"] = "fullText";
   }
   $("#box-tabs li[data-search='"+individual["activeTab"]+"']", template).click();
-  
+
   //# sourceURL=v-s:MultiFunctionalSearchTemplate_pre
 </script>
 <div class="container sheet">
@@ -1489,7 +1489,7 @@ v-fs:DocumentsSearchBlankTemplate
 </div>
 <script>
   function searchHandler() {
-    var queryString = null; 
+    var queryString = null;
     if (individual.hasValue("rdfs:label")) {
       queryString = "('*'=='"+individual["rdfs:label"][0]+"')";
     }
@@ -1579,7 +1579,7 @@ v-fs:AdvancedSearchTemplate
   var find = container.siblings(".search-actions").find("#search-button.search-button");
 
   function searchHandler() {
-    var queryString = null; 
+    var queryString = null;
     if (individual.hasValue("rdfs:label")) {
       queryString = "('*'=='"+individual["rdfs:label"][0]+"')";
     }
