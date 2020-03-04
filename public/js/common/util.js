@@ -364,7 +364,7 @@ veda.Module(function (veda) { "use strict";
                       .filter(function (word, i, words) {
                         return words.length > 1 || word.length > 3
                       });
-                    return words.length && "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + "p" + i + ".str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                    return words.length && "arrayStringConcat(" + "p" + i + ".str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
                   });
                   return lineQueries.filter(Boolean).join(" OR ");
                 })
@@ -490,7 +490,7 @@ veda.Module(function (veda) { "use strict";
                       .filter(function (word, i, words) {
                         return words.length > 1 || word.length > 3
                       });
-                    return words.length && "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                    return words.length && "arrayStringConcat(" + prop + "_str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
                   });
                   return lineQueries.filter(Boolean).join(" OR ");
                 })
@@ -631,7 +631,7 @@ veda.Module(function (veda) { "use strict";
                       .filter(function (word, i, words) {
                         return words.length > 1 || word.length > 3
                       });
-                    return words.length && "NOT has(multiSearchAllPositionsCaseInsensitiveUTF8(arrayStringConcat(" + prop + "_str, ' '), " + JSON.stringify(words).replace(/\'/g, "\\'").replace(/\"/g, "'") + "), 0)";
+                    return words.length && "arrayStringConcat(" + prop + "_str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
                   });
                   return lineQueries.filter(Boolean).join(" OR ");
                 })
