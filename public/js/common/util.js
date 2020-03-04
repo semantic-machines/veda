@@ -290,21 +290,21 @@ veda.Module(function (veda) { "use strict";
     function orderBy(sort) {
       if (typeof sort === "string" || sort instanceof String) {
         return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
-          var range = veda.ontology[property_uri].get("rdfs:range")[0];
+          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
           var by = property_uri.replace(re, "_");
           var clause;
           switch (range.id) {
-            "xsd:dateTime":
+            case "xsd:dateTime":
               clause = by + ".date " + dir;
               break;
-            "xsd:boolean":
-            "xsd:integer":
+            case "xsd:boolean":
+            case "xsd:integer":
               clause = by + ".int " + dir;
               break;
-            "xsd:decimal":
+            case "xsd:decimal":
               clause = by + ".dec " + dir;
               break;
-            "xsd:string":
+            case "xsd:string":
             default:
               clause = by + ".str " + dir;
               break;
@@ -414,21 +414,21 @@ veda.Module(function (veda) { "use strict";
     function orderBy(sort) {
       if (typeof sort === "string" || sort instanceof String) {
         return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
-          var range = veda.ontology[property_uri].get("rdfs:range")[0];
+          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
           var by = property_uri.replace(re, "_");
           var clause;
           switch (range.id) {
-            "xsd:dateTime":
+            case "xsd:dateTime":
               clause = by + "_date " + dir;
               break;
-            "xsd:boolean":
-            "xsd:integer":
+            case "xsd:boolean":
+            case "xsd:integer":
               clause = by + "_int " + dir;
               break;
-            "xsd:decimal":
+            case "xsd:decimal":
               clause = by + "_dec " + dir;
               break;
-            "xsd:string":
+            case "xsd:string":
             default:
               clause = by + "_str " + dir;
               break;
@@ -550,21 +550,21 @@ veda.Module(function (veda) { "use strict";
     function orderBy(sort) {
       if (typeof sort === "string" || sort instanceof String) {
         return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
-          var range = veda.ontology[property_uri].get("rdfs:range")[0];
+          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
           var by = property_uri.replace(re, "_");
           var clause;
           switch (range.id) {
-            "xsd:dateTime":
+            case "xsd:dateTime":
               clause = by + "_date " + dir;
               break;
-            "xsd:boolean":
-            "xsd:integer":
+            case "xsd:boolean":
+            case "xsd:integer":
               clause = by + "_int " + dir;
               break;
-            "xsd:decimal":
+            case "xsd:decimal":
               clause = by + "_dec " + dir;
               break;
-            "xsd:string":
+            case "xsd:string":
             default:
               clause = by + "_str " + dir;
               break;
