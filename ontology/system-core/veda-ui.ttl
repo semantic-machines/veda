@@ -1730,6 +1730,7 @@ v-ui:TestUI
   v-ui:testString   "Тестовое значение строкового свойства"@ru ;
   v-ui:testString   "Test string property value"@en ;
   v-ui:testInteger  "999"^^xsd:integer ;
+  v-s:creator td:RomanKarpov-Analyst1 ;
 #  v-ui:testDatetime "1945-05-09T21:00:00"^^xsd:dateTime ;
 #  v-ui:testLink     v-ui:TestUIClass ;
   v-ui:testDecimal  "3.1415926"^^xsd:decimal ;
