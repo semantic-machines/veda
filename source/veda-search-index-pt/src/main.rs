@@ -25,8 +25,8 @@ type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
 type BatchElement = (Individual, i8);
 
-const BATCH_SIZE: u32 = 100_000;
-const BLOCK_LIMIT: usize = 10_000;
+const BATCH_SIZE: u32 = 3_000_000;
+const BLOCK_LIMIT: usize = 20_000;
 const EXPORTED_TYPE: [&str; 1] = ["v-s:UserThing"];
 const DB: &str = "veda_pt";
 
