@@ -526,7 +526,8 @@ async fn create_type_table(type_name: &str, client: &mut ClientHandle, db_type_t
             sign Int8 DEFAULT 1,
             version UInt32,
             text String,
-            `v_s_created_date` Array(DateTime) DEFAULT [toDateTime(0)]
+            `v_s_created_date` Array(DateTime) DEFAULT [toDateTime(0)],
+            `v_s_deleted_int` Array(Int64) DEFAULT [0]
         )
         ENGINE = VersionedCollapsingMergeTree(sign, version)
         ORDER BY (`v_s_created_date`[1], id)
@@ -537,7 +538,9 @@ async fn create_type_table(type_name: &str, client: &mut ClientHandle, db_type_t
     table_columns.insert("id".to_owned(), "String".to_owned());
     table_columns.insert("sign".to_owned(), "Int8".to_owned());
     table_columns.insert("version".to_owned(), "UInt32".to_owned());
+    table_columns.insert("text".to_owned(), "String".to_owned());
     table_columns.insert("v_s_created_date".to_owned(), "Array(DateTime)".to_owned());
+    table_columns.insert("v_s_deleted_int".to_owned(), "Array(Int64)".to_owned());
     db_type_tables.insert(type_name.to_string(), table_columns);
     Ok(())
 }
