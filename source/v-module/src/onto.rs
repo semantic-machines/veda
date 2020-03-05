@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use v_onto::individual::*;
 use v_onto::onto::*;
-use v_search::{FTClient, FTQuery};
+use v_search::ft_client::*;
 use v_storage::storage::VStorage;
 
 pub fn load_onto(ft_client: &mut FTClient, storage: &mut VStorage, onto: &mut Onto) -> bool {
