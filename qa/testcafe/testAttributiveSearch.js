@@ -81,8 +81,10 @@ import { Selector, t } from 'testcafe';
       .expect(Selector('#user-info').innerText).contains('Администратор2 .')
       .navigateTo( pageForNavigateFromConfig )
       .click('button#search-button')
-      .click('div.results div.search-result.table-responsive.noSwipe a.glyphicon.glyphicon-sort-by-attributes')
+      .wait(1000)
+      .click('div.results div.search-result.table-responsive.noSwipe [data-orderby="v-ui:testInteger"] > a.glyphicon')
       .expect(Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container td[property="v-ui:testInteger"]').innerText).eql('999')
-      .click('div.results div.search-result.table-responsive.noSwipe a.glyphicon.glyphicon-sort-by-attributes')
+      .wait(1000)
+      .click('div.results div.search-result.table-responsive.noSwipe [data-orderby="v-ui:testInteger"] > a.glyphicon')
       .expect(Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container td[property="v-ui:testInteger"]').innerText).eql('2')
   });

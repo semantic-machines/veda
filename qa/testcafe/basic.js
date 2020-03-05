@@ -101,7 +101,7 @@ export default class basic {
       .typeText('veda-control[property="v-ui:testDatetime"]#date', date)
       .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-right')
       .click('button#save')
-      .wait(10000)
+      .wait(1000)
   }
 
 }
