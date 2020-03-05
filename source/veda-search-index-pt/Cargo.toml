@@ -14,6 +14,7 @@ chrono-tz = "0.5"
 lazy_static = "1.4.0"
 regex = "1"
 url = "2.1.1"
+quote = "=1.0.2"
 
 v_queue = { path = "../v-queue" }
 v_search = { path = "../v-search" }
