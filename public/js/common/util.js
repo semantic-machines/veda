@@ -530,15 +530,15 @@ veda.Module(function (veda) { "use strict";
     }
   };
 
-  veda.Util.queryFromIndividualTT_JOIN = function (individual, sort) {
+  veda.Util.queryFromIndividualTT_JOIN = function (individual, sort, withDeleted) {
     try {
       var table_counter = 0;
       var from = "";
-      var where = "NOT v_s_deleted_int[1] = 1";
+      var where = "";
       var visited = visited || {};
       var re = /[^a-zA-Z0-9]/g;
       buildQuery(individual);
-      var query = from ? "SELECT DISTINCT id FROM " + from + " FINAL" : "";
+      var query = from ? "SELECT DISTINCT id FROM " + from : "";
       query = query && where ? query + " WHERE " + where : query;
       var order = orderBy(sort);
       query = query && order ? query + " ORDER BY " + order : query;
@@ -586,6 +586,12 @@ veda.Module(function (veda) { "use strict";
       } else {
         from += " JOIN " + table_aliased + " ON " + parent_prop + " = " + alias + ".id";
       }
+
+      if (!withDeleted) {
+        where += where ? " AND " : "";
+        where += "NOT " + alias + ".v_s_deleted_int = [1]";
+      }
+
       var where_aliased = Object.keys(individual.properties)
         .map(function (property_uri, i) {
           if (property_uri.indexOf(".") >= 0 || property_uri.indexOf("*") >= 0) { throw new Error("VQL style property nesting: " + property_uri); }
