@@ -1,8 +1,11 @@
 [package]
-name = "veda-search-query"
+name = "v_search_query"
 version = "0.1.0"
 authors = ["itiu <ValeriyBushenev@gmail.com>"]
 edition = "2018"
+
+[lib]
+path = "src/lib.rs"
 
 [dependencies]
 clickhouse-rs = "0.2.0-alpha.4"
@@ -19,9 +22,7 @@ serde = "1.0"
 url = "2.1.1"
 quote = "1.0.3"
 
-v_onto = { path = "../v-onto" }
-v_module = { path = "../v-module" }
 v_api = { path = "../v-api" }
 v_authorization = { path = "../v-authorization" }
 v_az_lmdb = { path = "../v-az-lmdb" }
-v_search_query = { path = "../v-search-query" }
+v_module = { path = "../v-module" }

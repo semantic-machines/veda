@@ -1,5 +1,5 @@
 [package]
-name = "v_search"
+name = "v_search_ft"
 version = "0.1.0"
 authors = ["itiu <ValeriyBushenev@gmail.com>"]
 edition = "2018"
