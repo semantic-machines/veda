@@ -70,7 +70,7 @@ import { Selector, t } from 'testcafe';
       .pressKey('ctrl+a delete')
       .typeText('veda-control#comment', first)
       .typeText('veda-control#label', last)
-      .typeText('veda-control#testString', middle)
+      .typeText('veda-control#testString', middle+'Q')
       .click('veda-control#label')
       .click('button#search-button')
       .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).contains('1');
