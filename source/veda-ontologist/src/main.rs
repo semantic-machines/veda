@@ -13,7 +13,7 @@ use std::{thread, time};
 use v_module::module::*;
 use v_onto::{individual::*, parser::*};
 use v_queue::{consumer::*, record::*};
-use v_search::FTQuery;
+use v_search::ft_client::*;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
