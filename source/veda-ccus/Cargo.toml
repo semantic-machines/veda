@@ -18,7 +18,8 @@ scan_fmt = "0.2"
 log = "0.4"
 rust-ini = "0.13"
 rand = "0.7"
-tokio = "0.1"
+tokio = "0.1.22"
+quote = "=1.0.2"
 v_module = { path = "../v-module" }
 v_queue = { path = "../v-queue" }
 v_onto = { path = "../v-onto" }

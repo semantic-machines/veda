@@ -8,6 +8,7 @@ edition = "2018"
 mysql = "17.0.0"
 log = "0.4"
 chrono = "0.4.9"
+quote = "=1.0.2"
 
 v_queue = { path = "../v-queue" }
 v_search = { path = "../v-search" }
