@@ -584,7 +584,7 @@ veda.Module(function (veda) { "use strict";
       if (!parent_prop) {
         from +=  table_aliased;
       } else {
-        from += " JOIN " + table_aliased + " ON " + parent_prop + " = " + alias + ".id";
+        from += " JOIN " + table_aliased + " ON " + parent_prop + " = [" + alias + ".id]";
       }
 
       if (!withDeleted) {
@@ -649,9 +649,9 @@ veda.Module(function (veda) { "use strict";
                 .filter(Boolean)
                 .map( function (value) {
                   if ( value.isNew() && !(value.id in visited)) {
-                    return buildQuery(value, prop);
+                    return buildQuery(value, prop + "_str");
                   } else if ( value.isNew() && value.id in visited ) {
-                    return "has(" + prop + "_str, '" + visited[value.id] + ".id" + "')";
+                    return "has(" + prop + "_str, " + visited[value.id] + ".id" + ")";
                   } else {
                     return "has(" + prop + "_str, '" + value + "')";
                   }
