@@ -534,11 +534,11 @@ veda.Module(function (veda) { "use strict";
     try {
       var table_counter = 0;
       var from = "";
-      var where = "";
+      var where = "NOT v_s_deleted_int[1] = 1";
       var visited = visited || {};
       var re = /[^a-zA-Z0-9]/g;
       buildQuery(individual);
-      var query = from ? "SELECT DISTINCT id FROM " + from : "";
+      var query = from ? "SELECT DISTINCT id FROM " + from + " FINAL" : "";
       query = query && where ? query + " WHERE " + where : query;
       var order = orderBy(sort);
       query = query && order ? query + " ORDER BY " + order : query;
