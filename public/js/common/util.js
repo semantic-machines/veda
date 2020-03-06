@@ -538,13 +538,44 @@ veda.Module(function (veda) { "use strict";
       var visited = visited || {};
       var re = /[^a-zA-Z0-9]/g;
       buildQuery(individual);
-      var query = from ? "SELECT DISTINCT id FROM " + from : "";
+      var query = from ? "SELECT id FROM " + from : "";
       query = query && where ? query + " WHERE " + where : query;
+      var group = groupBy(sort);
+      query = query && group ? query + " GROUP BY " + group : query;
       var order = orderBy(sort);
+      query = query ? query + " HAVING sum(sign) > 0" : query;
       query = query && order ? query + " ORDER BY " + order : query;
       return query;
     } catch (error) {
       console.log(error);
+    }
+
+    function groupBy(sort) {
+      var by = "id";
+      if (typeof sort === "string" || sort instanceof String) {
+        var props = sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri) {
+          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
+          var by = property_uri.replace(re, "_");
+          switch (range.id) {
+            case "xsd:dateTime":
+              by = by + "_date";
+              break;
+            case "xsd:boolean":
+            case "xsd:integer":
+              by = by + "_int";
+              break;
+            case "xsd:decimal":
+              by = by + "_dec";
+              break;
+            case "xsd:string":
+            default:
+              by = by + "_str";
+              break;
+          }
+          return by;
+        });
+      }
+      return props ? by + ", " + props : by;
     }
 
     function orderBy(sort) {
