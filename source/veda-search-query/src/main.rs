@@ -8,8 +8,10 @@ use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;
 use std::time::*;
 use std::{str, thread};
-use v_module::module::{init_log, Module};
-use v_search_query::clickhouse_client::{connect_to_clickhouse, select};
+use v_module::module::{init_log, Module, get_ticket_from_db};
+use v_search::clickhouse_client::{connect_to_clickhouse, select};
+use v_module::ticket::Ticket;
+use v_api::app::ResultCode;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -69,14 +71,23 @@ fn req_prepare(module: &mut Module, request: &Message, pool: &mut Pool) -> Messa
         };
 
         if let Some(a) = v.as_array() {
-            let ticket = a.get(TICKET).unwrap().as_str().unwrap_or_default();
+            let ticket_id = a.get(TICKET).unwrap().as_str().unwrap_or_default();
             let query = a.get(QUERY).unwrap().as_str().unwrap_or_default();
 
             let top = a.get(TOP).unwrap().as_i64().unwrap_or_default();
             let limit = a.get(LIMIT).unwrap().as_i64().unwrap_or_default();
             let from = a.get(FROM).unwrap().as_i64().unwrap_or_default();
 
-            let res = select(module, pool, ticket, query, top, limit, from);
+            let mut user_uri = "cfg:Guest".to_owned();
+            if !ticket_id.is_empty() {
+                let mut ticket = Ticket::default();
+                get_ticket_from_db(&ticket_id, &mut ticket, module);
+                if ticket.result == ResultCode::Ok {
+                    user_uri = ticket.user_uri;
+                }
+            }
+
+            let res = select(pool, &user_uri, query, top, limit, from);
 
             if let Ok(s) = serde_json::to_string(&res) {
                 return Message::from(s.as_bytes());
