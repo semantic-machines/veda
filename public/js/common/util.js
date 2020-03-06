@@ -399,16 +399,47 @@ veda.Module(function (veda) { "use strict";
     }
   };
 
-  veda.Util.queryFromIndividualTT_SUB = function (individual, sort) {
+  veda.Util.queryFromIndividualTT_SUB = function (individual, sort, withDeleted) {
     try {
       var visited = {};
       var re = /[^a-zA-Z0-9]/g;
       var query = buildQuery(individual);
+      var group = groupBy(sort);
+      query = query && group ? query + " GROUP BY " + group : query;
       var order = orderBy(sort);
+      query = query ? query + " HAVING sum(sign) > 0" : query;
       query = query && order ? query + " ORDER BY " + order : query;
       return query;
     } catch (error) {
       console.log(error);
+    }
+
+    function groupBy(sort) {
+      var by = "id";
+      if (typeof sort === "string" || sort instanceof String) {
+        var props = sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri) {
+          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
+          var by = property_uri.replace(re, "_");
+          switch (range.id) {
+            case "xsd:dateTime":
+              by = by + "_date";
+              break;
+            case "xsd:boolean":
+            case "xsd:integer":
+              by = by + "_int";
+              break;
+            case "xsd:decimal":
+              by = by + "_dec";
+              break;
+            case "xsd:string":
+            default:
+              by = by + "_str";
+              break;
+          }
+          return by;
+        });
+      }
+      return props ? by + ", " + props : by;
     }
 
     function orderBy(sort) {
@@ -518,11 +549,16 @@ veda.Module(function (veda) { "use strict";
         .filter(Boolean)
         .join(" AND ");
 
+      if (!withDeleted) {
+        where += where ? " AND " : "";
+        where += "NOT v_s_deleted_int = [1]";
+      }
+
       if (Object.keys(visited).length > 1 && !where) { return; }
 
       return individual.get("rdf:type").map(function (type) {
         var from = "veda_tt.`" + type.id + "`";
-        var query = "SELECT DISTINCT id FROM " + from + (where ? " WHERE " + where : "");
+        var query = "SELECT id FROM " + from + (where ? " WHERE " + where : "");
         return query;
       })
       .filter(Boolean)
