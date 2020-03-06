@@ -34,7 +34,7 @@ export default class basic {
       .pressKey('ctrl+a delete')
       .typeText('div.input-group.date input.form-control[name="v_s_person_v_s_birthday"]', birthDate)
       .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
-      .wait(2000)
+      .wait(1000)
   }
 
   async fullTextSearch(query, eql) {
@@ -69,9 +69,9 @@ export default class basic {
       .click(number)
       .click(checkbox)
       .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-right')
-      .wait(2000)
+      .wait(1000)
       .click('button#save')
-      .wait(2000)
+      .wait(1000)
   }
 
   async createTestUiForAttributiveSearch(label, comment, testString, date) {
