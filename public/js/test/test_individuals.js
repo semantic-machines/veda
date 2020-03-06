@@ -1128,12 +1128,14 @@ for (i = 0; i < 1; i++) {
             //#1
             assert.ok(ticket_user1.id.length > 0);
 
+	    var now = newDate(new Date());
+
             var new_test_doc1_uri = "test14:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date()),
+                'v-s:created': now,
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
@@ -1181,7 +1183,7 @@ for (i = 0; i < 1; i++) {
                         data: 'td:test-q',
                         type: "Uri"
                     }],
-                'v-s:created': newDate(new Date()),
+                'v-s:created': now,
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
@@ -1205,7 +1207,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:test-e'),
-                'v-s:created': newDate(new Date()),
+                'v-s:created': now,
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
