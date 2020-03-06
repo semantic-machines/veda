@@ -74,7 +74,7 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
         return Ok(());
     }
 
-    let fq = format!("{} LIMIT {} OFFSET {}", query, 10000, from);
+    let fq = format!("{} LIMIT {} OFFSET {}", query, limit, from);
 
     info!("query={}", fq);
 
