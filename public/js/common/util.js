@@ -567,179 +567,182 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.queryFromIndividualTT_JOIN = function (individual, sort, withDeleted) {
+    var table_counter = 0;
+    var re = /[^a-zA-Z0-9]/g;
     try {
-      var table_counter = 0;
-      var from = "";
-      var where = "";
-      var visited = visited || {};
-      var re = /[^a-zA-Z0-9]/g;
-      buildQuery(individual);
-      var query = from ? "SELECT id FROM " + from : "";
-      query = query && where ? query + " WHERE " + where : query;
-      var group = groupBy(sort);
-      query = query && group ? query + " GROUP BY " + group : query;
-      var order = orderBy(sort);
-      query = query ? query + " HAVING sum(sign) > 0" : query;
-      query = query && order ? query + " ORDER BY " + order : query;
-      return query;
+      return individual["rdf:type"].map(function (_type, type_index) {
+        var from = "";
+        var where = "";
+        var visited = visited || {};
+        buildQuery(individual, undefined, type_index);
+        var query = from ? "SELECT id FROM " + from : "";
+        query = query && where ? query + " WHERE " + where : query;
+        var group = groupBy(sort);
+        query = query && group ? query + " GROUP BY " + group : query;
+        var order = orderBy(sort);
+        query = query ? query + " HAVING sum(sign) > 0" : query;
+        query = query && order ? query + " ORDER BY " + order : query;
+        return query;
+
+        function groupBy(sort) {
+          var by = "id";
+          if (typeof sort === "string" || sort instanceof String) {
+            var props = sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri) {
+              var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
+              var by = property_uri.replace(re, "_");
+              switch (range.id) {
+                case "xsd:dateTime":
+                  by = by + "_date";
+                  break;
+                case "xsd:boolean":
+                case "xsd:integer":
+                  by = by + "_int";
+                  break;
+                case "xsd:decimal":
+                  by = by + "_dec";
+                  break;
+                case "xsd:string":
+                default:
+                  by = by + "_str";
+                  break;
+              }
+              return by;
+            });
+          }
+          return props ? by + ", " + props : by;
+        }
+
+        function orderBy(sort) {
+          if (typeof sort === "string" || sort instanceof String) {
+            return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
+              var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
+              var by = property_uri.replace(re, "_");
+              var clause;
+              switch (range.id) {
+                case "xsd:dateTime":
+                  clause = by + "_date " + dir;
+                  break;
+                case "xsd:boolean":
+                case "xsd:integer":
+                  clause = by + "_int " + dir;
+                  break;
+                case "xsd:decimal":
+                  clause = by + "_dec " + dir;
+                  break;
+                case "xsd:string":
+                default:
+                  clause = by + "_str " + dir;
+                  break;
+              }
+              return clause;
+            });
+          }
+        }
+
+        // Recursive from & where population
+        function buildQuery(individual, parent_prop, type_index) {
+          table_counter++;
+          type_index = type_index || 0;
+          var type = individual.get("rdf:type")[type_index].id;
+          var alias = "t" + table_counter;
+          visited[individual.id] = alias;
+          var table_aliased = "veda_tt.`" + type + "` AS " + alias;
+          if (!parent_prop) {
+            from +=  table_aliased;
+          } else {
+            from += " JOIN " + table_aliased + " ON " + parent_prop + " = [" + alias + ".id]";
+          }
+
+          if (!withDeleted) {
+            where += where ? " AND " : "";
+            where += "NOT " + alias + ".v_s_deleted_int = [1]";
+          }
+
+          var where_aliased = Object.keys(individual.properties)
+            .map(function (property_uri, i) {
+              if (property_uri.indexOf(".") >= 0 || property_uri.indexOf("*") >= 0) { throw new Error("VQL style property nesting: " + property_uri); }
+              if (property_uri === "@" || property_uri === "rdf:type") { return; }
+              var values = individual.get(property_uri).sort(function (a, b) {
+                return a < b ? - 1 : a === b ? 0 : 1;
+              });
+              var prop = alias + "." + property_uri.replace(re, "_");
+              var oneProp;
+              switch (true) {
+                case Number.isInteger(values[0]):
+                  oneProp = prop + "_int[1] >= " + values[0] + " AND " + prop + "_int[1] <= " + values[values.length-1];
+                  break;
+                case Number.isFloat(values[0]):
+                  oneProp = prop + "_dec[1] >= " + values[0] + " AND " + prop + "_dec[1] <= " + values[values.length-1];
+                  break;
+                case values[0] instanceof Date:
+                  var start = new Date(values[0]);
+                  var end = new Date(values[values.length-1]);
+                  start.setHours(0,0,0,0);
+                  end.setHours(23,59,59,999);
+                  start = Math.floor(start.valueOf() / 1000);
+                  end = Math.floor(end.valueOf() / 1000);
+                  oneProp = prop + "_date[1] >= toDateTime(" + start + ") AND " + prop + "_date[1] <= toDateTime("  + end + ")";
+                  break;
+                case typeof values[0] === "boolean":
+                  oneProp = values
+                    .map(function (value) {
+                      return prop + "_int[1] = " + (value ? 1 : 0);
+                    }).join(" OR ");
+                  break;
+                case values[0] instanceof String:
+                  oneProp = values
+                    .filter(Boolean)
+                    .map( function (value) {
+                      var q = value;
+                      var lines = q.trim().split("\n");
+                      var lineQueries = lines.map(function (line) {
+                        var words = line
+                          .trim()
+                          .replace(/[-*\s]+/g, " ")
+                          .split(" ")
+                          .filter(function (word, i, words) {
+                            return words.length > 1 || word.length > 3
+                          });
+                        return words.length && "arrayStringConcat(" + prop + "_str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
+                      });
+                      return lineQueries.filter(Boolean).join(" OR ");
+                    })
+                    .filter(Boolean)
+                    .join(" OR ");
+                  break;
+                case values[0] instanceof veda.IndividualModel:
+                  oneProp = values
+                    .filter(Boolean)
+                    .map( function (value) {
+                      if ( value.isNew() && !(value.id in visited)) {
+                        return buildQuery(value, prop + "_str");
+                      } else if ( value.isNew() && value.id in visited ) {
+                        return "has(" + prop + "_str, " + visited[value.id] + ".id" + ")";
+                      } else {
+                        return "has(" + prop + "_str, '" + value + "')";
+                      }
+                    })
+                    .filter(Boolean)
+                    .join(" OR ");
+                  break;
+              }
+              if (!oneProp) { return; }
+              return oneProp.indexOf(" OR ") > 0 ? "( " + oneProp + " )" : oneProp;
+            })
+            .filter(Boolean)
+            .join(" AND ");
+
+          if (!where_aliased) { return; }
+
+          if (!where) {
+            where = where_aliased;
+          } else {
+            where += " AND " + where_aliased;
+          }
+        }
+      }).join(" UNION ALL ");
     } catch (error) {
       console.log(error);
-    }
-
-    function groupBy(sort) {
-      var by = "id";
-      if (typeof sort === "string" || sort instanceof String) {
-        var props = sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri) {
-          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
-          var by = property_uri.replace(re, "_");
-          switch (range.id) {
-            case "xsd:dateTime":
-              by = by + "_date";
-              break;
-            case "xsd:boolean":
-            case "xsd:integer":
-              by = by + "_int";
-              break;
-            case "xsd:decimal":
-              by = by + "_dec";
-              break;
-            case "xsd:string":
-            default:
-              by = by + "_str";
-              break;
-          }
-          return by;
-        });
-      }
-      return props ? by + ", " + props : by;
-    }
-
-    function orderBy(sort) {
-      if (typeof sort === "string" || sort instanceof String) {
-        return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
-          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
-          var by = property_uri.replace(re, "_");
-          var clause;
-          switch (range.id) {
-            case "xsd:dateTime":
-              clause = by + "_date " + dir;
-              break;
-            case "xsd:boolean":
-            case "xsd:integer":
-              clause = by + "_int " + dir;
-              break;
-            case "xsd:decimal":
-              clause = by + "_dec " + dir;
-              break;
-            case "xsd:string":
-            default:
-              clause = by + "_str " + dir;
-              break;
-          }
-          return clause;
-        });
-      }
-    }
-
-    // Recursive from & where population
-    function buildQuery(individual, parent_prop) {
-      table_counter++;
-      var type = individual.get("rdf:type")[0].id;
-      var alias = "t" + table_counter;
-      visited[individual.id] = alias;
-      var table_aliased = "veda_tt.`" + type + "` AS " + alias;
-      if (!parent_prop) {
-        from +=  table_aliased;
-      } else {
-        from += " JOIN " + table_aliased + " ON " + parent_prop + " = [" + alias + ".id]";
-      }
-
-      if (!withDeleted) {
-        where += where ? " AND " : "";
-        where += "NOT " + alias + ".v_s_deleted_int = [1]";
-      }
-
-      var where_aliased = Object.keys(individual.properties)
-        .map(function (property_uri, i) {
-          if (property_uri.indexOf(".") >= 0 || property_uri.indexOf("*") >= 0) { throw new Error("VQL style property nesting: " + property_uri); }
-          if (property_uri === "@" || property_uri === "rdf:type") { return; }
-          var values = individual.get(property_uri).sort(function (a, b) {
-            return a < b ? - 1 : a === b ? 0 : 1;
-          });
-          var prop = alias + "." + property_uri.replace(re, "_");
-          var oneProp;
-          switch (true) {
-            case Number.isInteger(values[0]):
-              oneProp = prop + "_int[1] >= " + values[0] + " AND " + prop + "_int[1] <= " + values[values.length-1];
-              break;
-            case Number.isFloat(values[0]):
-              oneProp = prop + "_dec[1] >= " + values[0] + " AND " + prop + "_dec[1] <= " + values[values.length-1];
-              break;
-            case values[0] instanceof Date:
-              var start = new Date(values[0]);
-              var end = new Date(values[values.length-1]);
-              start.setHours(0,0,0,0);
-              end.setHours(23,59,59,999);
-              start = Math.floor(start.valueOf() / 1000);
-              end = Math.floor(end.valueOf() / 1000);
-              oneProp = prop + "_date[1] >= toDateTime(" + start + ") AND " + prop + "_date[1] <= toDateTime("  + end + ")";
-              break;
-            case typeof values[0] === "boolean":
-              oneProp = values
-                .map(function (value) {
-                  return prop + "_int[1] = " + (value ? 1 : 0);
-                }).join(" OR ");
-              break;
-            case values[0] instanceof String:
-              oneProp = values
-                .filter(Boolean)
-                .map( function (value) {
-                  var q = value;
-                  var lines = q.trim().split("\n");
-                  var lineQueries = lines.map(function (line) {
-                    var words = line
-                      .trim()
-                      .replace(/[-*\s]+/g, " ")
-                      .split(" ")
-                      .filter(function (word, i, words) {
-                        return words.length > 1 || word.length > 3
-                      });
-                    return words.length && "arrayStringConcat(" + prop + "_str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
-                  });
-                  return lineQueries.filter(Boolean).join(" OR ");
-                })
-                .filter(Boolean)
-                .join(" OR ");
-              break;
-            case values[0] instanceof veda.IndividualModel:
-              oneProp = values
-                .filter(Boolean)
-                .map( function (value) {
-                  if ( value.isNew() && !(value.id in visited)) {
-                    return buildQuery(value, prop + "_str");
-                  } else if ( value.isNew() && value.id in visited ) {
-                    return "has(" + prop + "_str, " + visited[value.id] + ".id" + ")";
-                  } else {
-                    return "has(" + prop + "_str, '" + value + "')";
-                  }
-                })
-                .filter(Boolean)
-                .join(" OR ");
-              break;
-          }
-          if (!oneProp) { return; }
-          return oneProp.indexOf(" OR ") > 0 ? "( " + oneProp + " )" : oneProp;
-        })
-        .filter(Boolean)
-        .join(" AND ");
-
-      if (!where_aliased) { return; }
-
-      if (!where) {
-        where = where_aliased;
-      } else {
-        where += " AND " + where_aliased;
-      }
     }
   };
 
