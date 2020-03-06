@@ -8,8 +8,6 @@ use url::Url;
 use v_api::app::ResultCode;
 use v_authorization::Access;
 use v_az_lmdb::_authorize;
-use v_module::module::{get_ticket_from_db, Module};
-use v_module::ticket::Ticket;
 
 #[derive(Serialize, Debug)]
 pub struct QueryResult {
@@ -40,18 +38,9 @@ impl Default for QueryResult {
     }
 }
 
-pub fn select(module: &mut Module, pool: &mut Pool, ticket_id: &str, query: &str, top: i64, limit: i64, from: i64) -> QueryResult {
+pub fn select(pool: &mut Pool, user_uri: &str, query: &str, top: i64, limit: i64, from: i64) -> QueryResult {
     let start = Instant::now();
     let mut res = QueryResult::default();
-
-    let mut user_uri = "cfg:Guest".to_owned();
-    if !ticket_id.is_empty() {
-        let mut ticket = Ticket::default();
-        get_ticket_from_db(&ticket_id, &mut ticket, module);
-        if ticket.result == ResultCode::Ok {
-            user_uri = ticket.user_uri;
-        }
-    }
 
     if let Err(e) = block_on(select_from_clickhouse(pool, &user_uri, query, top, limit, from, &mut res)) {
         error!("fail read from clickhouse: {:?}", e);
