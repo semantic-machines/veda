@@ -152,7 +152,8 @@ function generate_test_membership1(ticket, doc_group) {
         'v-s:resource': newUri('td:ValeriyBushenev'),
         'v-s:memberOf': newUri(doc_group),
         'rdfs:label': [newStr("Русский", "RU")[0], newStr("English", "EN")[0]],
-        'v-s:author': newUri(ticket.user_uri)
+        'v-s:author': newUri(ticket.user_uri),
+        'v-s:created': newDate(new Date())
     };
     return new_test_membership1;
 }
@@ -174,6 +175,7 @@ function generate_test_membership2(ticket, doc_group) {
         'v-s:resource': newUri('td:ValeriyBushenev'),
         'v-s:memberOf': newUri(doc_group),
         'rdfs:label': [newStr("Русский", "RU")[0], newStr("English", "EN")[0]],
+        'v-s:created': newDate(new Date()),
         'v-s:author': newUri(ticket.user_uri)
     };
     return new_test_membership2;
@@ -587,6 +589,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
@@ -626,6 +629,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newStr('test data', 'NONE')
             };
 
@@ -707,6 +711,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newStr('test data', 'NONE')
             };
 
@@ -804,6 +809,7 @@ for (i = 0; i < 1; i++) {
                 'v-s:canUpdate': newBool(true),
                 'v-s:permissionObject': newUri(permissionObject),
                 'v-s:permissionSubject': newUri(permissionSubject),
+                'v-s:created': newDate(new Date()),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1')
             };
 
@@ -920,6 +926,7 @@ for (i = 0; i < 1; i++) {
                 'rdf:type': newUri('v-s:ThisNoMembership'),
                 'v-s:memberOf': newUri(memberOf),
                 'v-s:resource': newUri(resources),
+                'v-s:created': newDate(new Date()),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1')
             };
 
@@ -1001,6 +1008,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri_1,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newStr(test_data, 'NONE'),
                 'v-s:test_fieldA': newUri('BBB' + test_data_uid),
                 'v-s:test_fieldB': newUri('CCC' + test_data_uid)
@@ -1012,6 +1020,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri_2,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer2'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newUri(test_data)
             };
 
@@ -1020,6 +1029,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri_3,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newUri(test_data),
                 'v-s:test_fieldA': newUri('BBB' + test_data_uid)
             };
@@ -1029,6 +1039,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri_4,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newUri('AAA' + test_data_uid),
                 'v-s:test_fieldA': newUri('BBB' + test_data_uid),
                 'v-s:test_fieldB': newUri('CCC' + test_data_uid)
@@ -1122,6 +1133,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
@@ -1169,6 +1181,7 @@ for (i = 0; i < 1; i++) {
                         data: 'td:test-q',
                         type: "Uri"
                     }],
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
@@ -1192,6 +1205,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:test-e'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
@@ -2030,6 +2044,7 @@ for (i = 0; i < 1; i++) {
                 'document["v-s:test_datetime0"]= veda.Util.newDate(new Date("2017-01-03"));' +
                 'document["v-s:test_ArArObj"]= [veda.Util.newDate(new Date("2017-02-03"))];' +
                 'document["v-s:test_Obj"]= veda.Util.newDate(new Date("2017-03-03"))[0];' +
+                'document["v-s:created"]= veda.Util.newDate(new Date("2017-03-03"))[0];' +
                 'put_individual(ticket, document, _event_id);'),
             'v-s:created': newDate(new Date()),
             'v-s:author': newUri(ticket_admin.user_uri)
@@ -2049,6 +2064,7 @@ for (i = 0; i < 1; i++) {
         doc["v-s:test_datetime0"] = newDate(new Date("2017-01-03"));
         doc["v-s:test_ArArObj"] = newDate(new Date("2017-02-03"));
         doc["v-s:test_Obj"] = newDate(new Date("2017-03-03"));
+        doc["v-s:created"] = newDate(new Date("2017-03-03"));
 
         test_success_read(assert, ticket_admin, doc['@'], doc);
     });
@@ -2189,6 +2205,7 @@ for (i = 0; i < 1; i++) {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
@@ -2210,6 +2227,7 @@ for (i = 0; i < 1; i++) {
             var new_permission_filter = {
                 '@': new_permission_filter_uri,
                 'rdf:type': newUri('v-s:PermissionFilter'),
+                'v-s:created': newDate(new Date()),
                 'v-s:permissionObject': newUri(new_test_doc1_uri),
                 'v-s:resource': newUri(new_permission_filter_uri + 'xxx'),
                 'v-s:canRead': newBool(true)
