@@ -12,7 +12,7 @@ use v_module::module::{get_ticket_from_db, Module};
 use v_module::ticket::Ticket;
 
 #[derive(Serialize, Debug)]
-pub struct SearchResult {
+pub struct QueryResult {
     result: Vec<String>,
     count: i64,
     estimated: i64,
@@ -24,9 +24,9 @@ pub struct SearchResult {
     result_code: ResultCode,
 }
 
-impl Default for SearchResult {
+impl Default for QueryResult {
     fn default() -> Self {
-        SearchResult {
+        QueryResult {
             result: vec![],
             count: 0,
             estimated: 0,
@@ -40,9 +40,9 @@ impl Default for SearchResult {
     }
 }
 
-pub fn select(module: &mut Module, pool: &mut Pool, ticket_id: &str, query: &str, top: i64, limit: i64, from: i64) -> SearchResult {
+pub fn select(module: &mut Module, pool: &mut Pool, ticket_id: &str, query: &str, top: i64, limit: i64, from: i64) -> QueryResult {
     let start = Instant::now();
-    let mut res = SearchResult::default();
+    let mut res = QueryResult::default();
 
     let mut user_uri = "cfg:Guest".to_owned();
     if !ticket_id.is_empty() {
@@ -53,18 +53,20 @@ pub fn select(module: &mut Module, pool: &mut Pool, ticket_id: &str, query: &str
         }
     }
 
-    if let Err(e) = block_on(select_to_ch(pool, &user_uri, query, top, limit, from, &mut res)) {
+    if let Err(e) = block_on(select_from_clickhouse(pool, &user_uri, query, top, limit, from, &mut res)) {
         error!("fail read from clickhouse: {:?}", e);
         res.result_code = ResultCode::InternalServerError
     }
 
     res.total_time = start.elapsed().as_millis() as i64;
+    res.query_time = res.total_time - res.authorize_time;
+    info!("result={:?}", res);
 
     res
 }
 
-async fn select_to_ch(pool: &mut Pool, user_uri: &str, query: &str, top: i64, limit: i64, from: i64, out_res: &mut SearchResult) -> Result<(), Error> {
-    let mut authorize_count = 0;
+async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, top: i64, limit: i64, from: i64, out_res: &mut QueryResult) -> Result<(), Error> {
+    let mut authorized_count = 0;
     let mut total_count = 0;
 
     if query.to_uppercase().contains("INSERT") || query.to_uppercase().contains("UPDATE") || query.to_uppercase().contains("DROP") {
@@ -92,9 +94,9 @@ async fn select_to_ch(pool: &mut Pool, user_uri: &str, query: &str, top: i64, li
             Ok(res) => {
                 if res == Access::CanRead as u8 {
                     out_res.result.push(id);
-                    authorize_count += 1;
+                    authorized_count += 1;
 
-                    if authorize_count >= top {
+                    if authorized_count >= top {
                         break;
                     }
                 }
@@ -107,11 +109,10 @@ async fn select_to_ch(pool: &mut Pool, user_uri: &str, query: &str, top: i64, li
     out_res.result_code = ResultCode::Ok;
 
     out_res.estimated = block.row_count() as i64;
-    out_res.count = total_count;
-    out_res.processed = authorize_count;
+    out_res.count = authorized_count;
+    out_res.processed = total_count;
+    out_res.cursor = from + total_count;
     out_res.authorize_time = out_res.authorize_time / 1000;
-
-    info!("result={:?}", out_res);
 
     Ok(())
 }
