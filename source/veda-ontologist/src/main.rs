@@ -13,7 +13,8 @@ use std::{thread, time};
 use v_module::module::*;
 use v_onto::{individual::*, parser::*};
 use v_queue::{consumer::*, record::*};
-use v_search::ft_client::*;
+use v_search::ft_client::FTQuery;
+use v_api::app::ResultCode;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -151,7 +152,7 @@ fn generate_file(module: &mut Module, query: &str, ontology_file_path: &str) -> 
     info!("prepare changes");
 
     let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", query));
-    if res.result_code == 200 && res.count > 0 {
+    if res.result_code == ResultCode::Ok && res.count > 0 {
         let mut indvs = Vec::new();
 
         for el in &res.result {

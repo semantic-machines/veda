@@ -1,6 +1,8 @@
+use crate::common::QueryResult;
 use nng::{Message, Protocol, Socket};
 use serde_json::Value;
 use std::{thread, time};
+use v_api::app::ResultCode;
 
 pub struct FTQuery {
     ticket: String,
@@ -12,28 +14,6 @@ pub struct FTQuery {
     top: i32,
     limit: i32,
     from: i32,
-}
-
-pub struct FTResult {
-    pub result_code: i32,
-    pub result: Vec<String>,
-    pub count: i64,
-    pub estimated: u64,
-    pub processed: u64,
-    pub cursor: u64,
-}
-
-impl Default for FTResult {
-    fn default() -> FTResult {
-        FTResult {
-            result_code: 0,
-            result: Vec::new(),
-            count: 0,
-            estimated: 0,
-            processed: 0,
-            cursor: 0,
-        }
-    }
 }
 
 impl FTQuery {
@@ -121,8 +101,8 @@ impl FTClient {
         self.is_ready
     }
 
-    pub fn query(&mut self, query: FTQuery) -> FTResult {
-        let mut res = FTResult::default();
+    pub fn query(&mut self, query: FTQuery) -> QueryResult {
+        let mut res = QueryResult::default();
 
         if !self.is_ready {
             while !self.connect() {
@@ -131,7 +111,7 @@ impl FTClient {
         }
 
         if !self.is_ready {
-            res.result_code = 474;
+            res.result_code = ResultCode::NotReady;
             return res;
         }
 
@@ -139,7 +119,7 @@ impl FTClient {
 
         if let Err(e) = self.client.send(req) {
             error!("fail send to search module, err={:?}", e);
-            res.result_code = 474;
+            res.result_code = ResultCode::NotReady;
             return res;
         }
 
@@ -148,7 +128,7 @@ impl FTClient {
 
         if let Err(e) = wmsg {
             error!("fail recv from search module, err={:?}", e);
-            res.result_code = 474;
+            res.result_code = ResultCode::NotReady;
             return res;
         }
 
@@ -162,16 +142,16 @@ impl FTClient {
             Value::Null
         };
 
-        res.result_code = v["result_code"].as_i64().unwrap_or_default() as i32;
+        res.result_code = ResultCode::from_i64(v["result_code"].as_i64().unwrap_or_default());
 
-        if res.result_code == 200 {
+        if res.result_code == ResultCode::Ok {
             let jarray: &Vec<_> = &v["result"].as_array().expect("array");
             res.result = jarray.iter().map(|v| v.as_str().unwrap_or_default().to_owned()).collect();
 
             res.count = v["count"].as_i64().unwrap_or_default();
-            res.estimated = v["estimated"].as_u64().unwrap_or_default();
-            res.processed = v["processed"].as_u64().unwrap_or_default();
-            res.cursor = v["cursor"].as_u64().unwrap_or_default();
+            res.estimated = v["estimated"].as_i64().unwrap_or_default();
+            res.processed = v["processed"].as_i64().unwrap_or_default();
+            res.cursor = v["cursor"].as_i64().unwrap_or_default();
         }
 
         //info!("msg={}", v);
