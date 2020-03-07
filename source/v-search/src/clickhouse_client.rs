@@ -9,20 +9,61 @@ use v_api::app::ResultCode;
 use v_authorization::Access;
 use v_az_lmdb::_authorize;
 
-pub fn select(pool: &mut Pool, user_uri: &str, query: &str, top: i64, limit: i64, from: i64) -> QueryResult {
-    let start = Instant::now();
-    let mut res = QueryResult::default();
+pub struct CHClient {
+    client: Pool,
+    addr: String,
+    is_ready: bool,
+}
 
-    if let Err(e) = block_on(select_from_clickhouse(pool, &user_uri, query, top, limit, from, &mut res)) {
-        error!("fail read from clickhouse: {:?}", e);
-        res.result_code = ResultCode::InternalServerError
+impl CHClient {
+    pub fn new(client_addr: String) -> CHClient {
+        CHClient {
+            client: Pool::new(String::new()),
+            addr: client_addr,
+            is_ready: false,
+        }
     }
 
-    res.total_time = start.elapsed().as_millis() as i64;
-    res.query_time = res.total_time - res.authorize_time;
-    info!("result={:?}", res);
+    //    pub fn connect_to_clickhouse(query_db_url: &str) -> Result<Pool, &'static str> {
+    pub fn connect(&mut self) -> bool {
+        info!("Configuration to connect to Clickhouse: {}", self.addr);
+        match Url::parse(self.addr.as_ref()) {
+            Ok(url) => {
+                let host = url.host_str().unwrap_or("127.0.0.1");
+                let port = url.port().unwrap_or(9000);
+                let user = url.username();
+                let pass = url.password().unwrap_or("123");
+                let url = format!("tcp://{}:{}@{}:{}/", user, pass, host, port);
+                info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
+                info!("Connection url: {}", url);
+                let pool = Pool::new(url);
+                self.client = pool;
+                self.is_ready = true;
+                return true;
+            }
+            Err(e) => {
+                error!("Invalid connection url, err={:?}", e);
+                self.is_ready = false;
+                return false;
+            }
+        }
+    }
 
-    res
+    pub fn select(&mut self, user_uri: &str, query: &str, top: i64, limit: i64, from: i64) -> QueryResult {
+        let start = Instant::now();
+        let mut res = QueryResult::default();
+
+        if let Err(e) = block_on(select_from_clickhouse(&mut self.client, &user_uri, query, top, limit, from, &mut res)) {
+            error!("fail read from clickhouse: {:?}", e);
+            res.result_code = ResultCode::InternalServerError
+        }
+
+        res.total_time = start.elapsed().as_millis() as i64;
+        res.query_time = res.total_time - res.authorize_time;
+        info!("result={:?}", res);
+
+        res
+    }
 }
 
 async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, top: i64, limit: i64, from: i64, out_res: &mut QueryResult) -> Result<(), Error> {
@@ -75,25 +116,4 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
     out_res.authorize_time = out_res.authorize_time / 1000;
 
     Ok(())
-}
-
-pub fn connect_to_clickhouse(query_db_url: &str) -> Result<Pool, &'static str> {
-    info!("Configuration to connect to Clickhouse: {}", query_db_url);
-    match Url::parse(query_db_url) {
-        Ok(url) => {
-            let host = url.host_str().unwrap_or("127.0.0.1");
-            let port = url.port().unwrap_or(9000);
-            let user = url.username();
-            let pass = url.password().unwrap_or("123");
-            let url = format!("tcp://{}:{}@{}:{}/", user, pass, host, port);
-            info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
-            info!("Connection url: {}", url);
-            let pool = Pool::new(url);
-            return Ok(pool);
-        }
-        Err(e) => {
-            error!("{:?}", e);
-            return Err("Invalid connection url");
-        }
-    }
 }
