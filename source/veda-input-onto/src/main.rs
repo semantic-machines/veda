@@ -57,7 +57,7 @@ fn main() -> NotifyResult<()> {
 
     let mut module = Module::default();
 
-    while module.api.connect() == false {
+    while !module.api.connect() {
         info! ("wait for start main module ...");
         thread::sleep(std::time::Duration::from_millis(100));
     }
