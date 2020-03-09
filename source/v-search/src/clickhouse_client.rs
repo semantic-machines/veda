@@ -39,12 +39,12 @@ impl CHClient {
                 let pool = Pool::new(url);
                 self.client = pool;
                 self.is_ready = true;
-                return true;
+                true
             }
             Err(e) => {
                 error!("Invalid connection url, err={:?}", e);
                 self.is_ready = false;
-                return false;
+                false
             }
         }
     }
@@ -113,7 +113,7 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
     out_res.count = authorized_count;
     out_res.processed = total_count;
     out_res.cursor = from + total_count;
-    out_res.authorize_time = out_res.authorize_time / 1000;
+    out_res.authorize_time /= 1000;
 
     Ok(())
 }

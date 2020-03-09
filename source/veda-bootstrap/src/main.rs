@@ -131,14 +131,13 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
                         error!("? internal error, not found module {}", name);
                     }
                 }
-            } else {
-                if let Some(module) = modules.get(name) {
-                    if let Some(memory_limit) = module.memory_limit {
-                        if memory > memory_limit {
-                            warn!("process {}, memory={} KiB, limit={} KiB", name, memory, memory_limit);
-                            if let Ok(_0) = process.kill() {
-                                warn!("attempt stop module {} {}", process.id(), name);
-                            }
+            }
+            if let Some(module) = modules.get(name) {
+                if let Some(memory_limit) = module.memory_limit {
+                    if memory > memory_limit {
+                        warn!("process {}, memory={} KiB, limit={} KiB", name, memory, memory_limit);
+                        if let Ok(_0) = process.kill() {
+                            warn!("attempt stop module {} {}", process.id(), name);
                         }
                     }
                 }
