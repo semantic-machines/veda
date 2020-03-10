@@ -287,7 +287,8 @@ v-fc:BlankTemplate
   _class.rights.then(function (rights) {
 
     if (rights.hasValue("v-s:canCreate", true)) {
-      object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit")
+      var object_template = self.get("v-ui:hasTemplate")[0];
+      object.present(objectContainer, object_template, "edit")
         .then(function (objectTemplate) {
           objectTemplate.one("cancel", cancelHandler);
           objectTemplate.one("save", saveHandler);
@@ -405,7 +406,7 @@ v-fc:CreateManagementTemplate
         var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
         if (createBlank && createBlank.object) {
           createBlank.updateBlank().then(function(blank) {
-            return blank.save();  
+            return blank.save();
           }).then(function () {
             return new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").load();
           }).then(function (message) {
