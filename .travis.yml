@@ -61,7 +61,7 @@ script:
   - travis_wait 6 testcafe chrome qa/testcafe/testSimpleNetLowPriority.js --screenshots screens --screenshots-on-fails screens --speed 0.8
   - travis_wait 6 testcafe chrome qa/testcafe/testControls.js --screenshots screens --screenshots-on-fails screens --speed 0.8
 #  - testcafe chrome qa/testcafe/testDrafts.js
-  - travis_wait 6 testcafe chrome qa/testcafe/testDropDown.js --screenshots screens --screenshots-on-fails screens --speed 0.8
+  - travis_wait 10 testcafe chrome qa/testcafe/testDropDown.js --screenshots screens --screenshots-on-fails screens --speed 0.7
   - travis_wait 6 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.8
 
 after_script:

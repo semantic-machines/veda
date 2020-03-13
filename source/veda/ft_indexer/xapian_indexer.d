@@ -5,6 +5,7 @@
 module veda.ft_indexer.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm, std.datetime.stopwatch;
+private import core.stdc.stdlib;
 private import veda.bind.xapian_d_header;
 private import veda.common.type;
 private import veda.core.common.define, veda.core.common.type, veda.core.common.context, veda.core.impl.thread_context;
@@ -662,7 +663,7 @@ public class IndexerContext {
 				}
 
 				if ((dbname in index_dbs) !is null) {
-					//log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
+					log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
 					index_dbs[ dbname ].replace_document(uuid.ptr, uuid.length, doc, &err);
 				}
 
@@ -690,10 +691,18 @@ public class IndexerContext {
 		auto delta = counter - prev_commited_counter;
 
 		prev_commited_counter = counter;
+		auto is_fail_commit = false;
 		foreach (name, db; index_dbs) {
 			db.commit(&err);
-			if (err != 0)
-				log.trace("EX! FT:commit:%s fail=%d", name, counter);
+			if (err != 0) {
+				is_fail_commit = true;
+				log.trace("EX! FT:commit:%s fail=%d, err=%s", name, counter, get_xapian_err_msg(err));
+			}
+		}
+
+		if (is_fail_commit == true) {
+				log.trace("EXIT");
+				exit (-1);
 		}
 
 		if (prev_commited_counter != 0) {

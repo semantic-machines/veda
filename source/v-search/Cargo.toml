@@ -1,5 +1,5 @@
 [package]
-name = "v_search_query"
+name = "v_search"
 version = "0.1.0"
 authors = ["itiu <ValeriyBushenev@gmail.com>"]
 edition = "2018"
@@ -14,15 +14,12 @@ tokio = { version = "0.2.10", features = ["full"] }
 log = "0.4"
 chrono = "0.4.9"
 chrono-tz = "0.5"
-lazy_static = "1.4.0"
-rust-ini = "0.13"
 nng = "0.5.1"
 serde_json = "1.0"
-serde = "1.0"
+serde = { version = "1.0", features = ["derive"] }
 url = "2.1.1"
 quote = "1.0.3"
 
 v_api = { path = "../v-api" }
 v_authorization = { path = "../v-authorization" }
 v_az_lmdb = { path = "../v-az-lmdb" }
-v_module = { path = "../v-module" }

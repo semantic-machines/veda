@@ -20,7 +20,7 @@ use v_onto::individual::*;
 use v_onto::individual2msgpack::to_msgpack;
 use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
-use v_search_ft::ft_client::*;
+use v_search::ft_client::*;
 use v_storage::storage::*;
 
 #[derive(Debug)]

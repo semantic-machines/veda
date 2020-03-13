@@ -2,14 +2,15 @@
 extern crate log;
 
 use clickhouse_rs::errors::Error;
-use clickhouse_rs::Pool;
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;
 use std::time::*;
 use std::{str, thread};
-use v_module::module::{init_log, Module};
-use v_search_query::clickhouse_client::{connect_to_clickhouse, select};
+use v_api::app::ResultCode;
+use v_module::module::{get_ticket_from_db, init_log, Module};
+use v_module::ticket::Ticket;
+use v_search::clickhouse_client::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -23,19 +24,13 @@ async fn main() -> Result<(), Error> {
 
     let mut module = Module::default();
 
-    let mut pool;
+    let mut ch_client = CHClient::new(query_search_db.to_owned());
 
     loop {
-        pool = match connect_to_clickhouse(query_search_db) {
-            Err(e) => {
-                error!("Failed to connect to clickhouse: {}", e);
-                error!("sleep and repeate...");
-                thread::sleep(Duration::from_millis(10000));
-                continue;
-            }
-            Ok(pool) => pool,
-        };
-        break;
+        if ch_client.connect() {
+            break;
+        }
+        thread::sleep(Duration::from_millis(10000));
     }
 
     let server = Socket::new(Protocol::Rep0).unwrap();
@@ -46,7 +41,7 @@ async fn main() -> Result<(), Error> {
 
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let out_msg = req_prepare(&mut module, &recv_msg, &mut pool);
+            let out_msg = req_prepare(&mut module, &recv_msg, &mut ch_client);
             if let Err(e) = server.send(out_msg) {
                 error!("fail send answer, err={:?}", e);
             }
@@ -60,7 +55,7 @@ const TOP: usize = 5;
 const LIMIT: usize = 6;
 const FROM: usize = 7;
 
-fn req_prepare(module: &mut Module, request: &Message, pool: &mut Pool) -> Message {
+fn req_prepare(module: &mut Module, request: &Message, ch_client: &mut CHClient) -> Message {
     if let Ok(s) = str::from_utf8(request.as_slice()) {
         let v: JSONValue = if let Ok(v) = serde_json::from_slice(s.as_bytes()) {
             v
@@ -69,14 +64,23 @@ fn req_prepare(module: &mut Module, request: &Message, pool: &mut Pool) -> Messa
         };
 
         if let Some(a) = v.as_array() {
-            let ticket = a.get(TICKET).unwrap().as_str().unwrap_or_default();
+            let ticket_id = a.get(TICKET).unwrap().as_str().unwrap_or_default();
             let query = a.get(QUERY).unwrap().as_str().unwrap_or_default();
 
             let top = a.get(TOP).unwrap().as_i64().unwrap_or_default();
             let limit = a.get(LIMIT).unwrap().as_i64().unwrap_or_default();
             let from = a.get(FROM).unwrap().as_i64().unwrap_or_default();
 
-            let res = select(module, pool, ticket, query, top, limit, from);
+            let mut user_uri = "cfg:Guest".to_owned();
+            if !ticket_id.is_empty() {
+                let mut ticket = Ticket::default();
+                get_ticket_from_db(&ticket_id, &mut ticket, module);
+                if ticket.result == ResultCode::Ok {
+                    user_uri = ticket.user_uri;
+                }
+            }
+
+            let res = ch_client.select(&user_uri, query, top, limit, from);
 
             if let Ok(s) = serde_json::to_string(&res) {
                 return Message::from(s.as_bytes());

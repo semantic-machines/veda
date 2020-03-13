@@ -146,7 +146,9 @@ func query(ctx *fasthttp.RequestCtx) {
   var is_search_query = false
 
   if sql != "" || (strings.Contains(strings.ToLower(query), "select") && strings.Contains(strings.ToLower(query), "from")) {
-        is_search_query = true
+        if use_clickhouse != "false" {
+            is_search_query = true
+        }
   }
 
   request[0] = ticketKey
