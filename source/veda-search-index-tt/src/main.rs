@@ -122,7 +122,9 @@ impl Context {
                     // If block ends with (-1), truncate it to previous element, as (-1) is always done first for any individual in a batch.
                     // So (-1) row will move to the next block to its (+1) counterpart.
                     if let Some((_op_id, _individual, -1)) = batch.get(block_size - 1) {
-                        block_size = block_size - 1;
+                        if block_size > 1 {
+                            block_size = block_size - 1;
+                        }
                     }
                     let mut slice = batch.drain(0..block_size).collect();
                     Context::process_batch(&type_name, &mut slice, client, db_type_tables, stats).await?;
