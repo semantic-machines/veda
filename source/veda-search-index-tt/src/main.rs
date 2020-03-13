@@ -6,6 +6,7 @@ extern crate lazy_static;
 
 use std::process;
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 use clickhouse_rs::{Pool, errors::Error, Block, ClientHandle};
 use chrono::prelude::*;
@@ -30,7 +31,7 @@ use url::Url;
 
 type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
-type BatchElement = (Individual, i8);
+type BatchElement = (i64, Individual, i8);
 
 const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
@@ -77,6 +78,7 @@ impl Context {
             if let Some(type_resources) = prev_state.get_resources("rdf:type") {
                 for type_resource in type_resources {
                     if let Value::Uri(type_name)  = type_resource.value {
+                        let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
                         let mut prev_state = Individual::default();
                         get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
                         if !self.typed_batch.contains_key(&type_name) {
@@ -84,7 +86,7 @@ impl Context {
                             self.typed_batch.insert(type_name.clone(), new_batch);
                         }
                         let batch = self.typed_batch.get_mut(&type_name).unwrap();
-                        batch.push((prev_state, -1));
+                        batch.push((op_id, prev_state, -1));
                     }
                 }
             }
@@ -93,6 +95,7 @@ impl Context {
         if let Some(type_resources) = new_state.get_resources("rdf:type") {
             for type_resource in type_resources {
                 if let Value::Uri(type_name)  = type_resource.value {
+                    let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
                     let mut new_state = Individual::default();
                     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
                     if !self.typed_batch.contains_key(&type_name) {
@@ -100,7 +103,7 @@ impl Context {
                         self.typed_batch.insert(type_name.clone(), new_batch);
                     }
                     let batch = self.typed_batch.get_mut(&type_name).unwrap();
-                    batch.push((new_state, 1));
+                    batch.push((op_id, new_state, 1));
                 }
             }
         }
@@ -112,9 +115,16 @@ impl Context {
             let client = &mut self.pool.get_handle().await?;
             let db_type_tables = &mut self.db_type_tables;
             let stats = &mut self.stats;
+            let mut block_size = BLOCK_LIMIT;
             for (type_name, batch) in self.typed_batch.iter_mut() {
-                while batch.len() > BLOCK_LIMIT {
-                    let mut slice = batch.drain(0..BLOCK_LIMIT).collect();
+                while batch.len() > block_size {
+                    // Ensure that block contains both previous & current state of the individual.
+                    // If block ends with (-1), truncate it to previous element, as (-1) is always done first for any individual in a batch.
+                    // So (-1) row will move to the next block to its (+1) counterpart.
+                    if let Some((_op_id, _individual, -1)) = batch.get(block_size - 1) {
+                        block_size = block_size - 1;
+                    }
+                    let mut slice = batch.drain(0..block_size).collect();
                     Context::process_batch(&type_name, &mut slice, client, db_type_tables, stats).await?;
                 }
                 Context::process_batch(&type_name, batch, client, db_type_tables, stats).await?;
@@ -144,8 +154,11 @@ impl Context {
 
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
 
-        for (individual, sign) in batch {
+        let mut ops: HashSet<i64> = HashSet::new();
+
+        for (op_id, individual, sign) in batch {
             Context::add_to_table(individual, *sign, &mut id_column, &mut sign_column, &mut version_column, &mut text_column,  &mut columns);
+            ops.insert(*op_id);
         }
 
         info!("Batch prepared in {} us", now.elapsed().as_micros());
