@@ -1,8 +1,9 @@
 use std::collections::HashSet;
 use v_onto::individual::*;
 use v_onto::onto::*;
-use v_search_ft::ft_client::*;
+use v_search::ft_client::*;
 use v_storage::storage::VStorage;
+use v_api::app::ResultCode;
 
 pub fn load_onto(ft_client: &mut FTClient, storage: &mut VStorage, onto: &mut Onto) -> bool {
     let onto_types = vec!["rdfs:Class", "owl:Class", "rdfs:Datatype", "rdf:Property", "owl:DatatypeProperty", "owl:ObjectProperty"];
@@ -19,7 +20,7 @@ pub fn load_onto(ft_client: &mut FTClient, storage: &mut VStorage, onto: &mut On
     }
 
     let res = ft_client.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
-    if res.result_code == 200 && res.count > 0 {
+    if res.result_code == ResultCode::Ok && res.count > 0 {
         info!("load {} onto elements", res.count);
         for el in &res.result {
             let mut indv: Individual = Individual::default();

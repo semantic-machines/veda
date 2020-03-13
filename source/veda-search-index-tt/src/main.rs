@@ -518,7 +518,7 @@ async fn create_type_predicate_column(type_name: &str, column_name: &str, column
         create_type_table(type_name, client, db_type_tables).await?;
     }
     if let Some(table_columns) = db_type_tables.get_mut(type_name) {
-        if let Some(_) = table_columns.get(column_name) {
+        if table_columns.get(column_name).is_some() {
             return Ok(());
         } else {
             let query = format!("ALTER TABLE veda_tt.`{}` ADD COLUMN IF NOT EXISTS `{}` {}", type_name, column_name, column_type);
@@ -530,7 +530,7 @@ async fn create_type_predicate_column(type_name: &str, column_name: &str, column
 }
 
 async fn create_type_table(type_name: &str, client: &mut ClientHandle, db_type_tables: &mut HashMap<String, HashMap<String, String>>) -> Result<(), Error> {
-    if let Some(_) = db_type_tables.get(type_name) {
+    if db_type_tables.get(type_name).is_some() {
         return Ok(());
     }
     let query = format!(r"
@@ -590,11 +590,11 @@ fn connect_to_clickhouse(query_db_url: &str) -> Result<Pool, &'static str> {
             info!("Trying to connect to Clickhouse, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
             info!("Connection url: {}", url);
             let pool = Pool::new(url);
-            return Ok(pool);
+            Ok(pool)
         }
         Err(e) => {
             error!("{:?}", e);
-            return Err("Invalid connection url");
+            Err("Invalid connection url")
         }
     }
 }

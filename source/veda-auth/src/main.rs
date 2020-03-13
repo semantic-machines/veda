@@ -21,8 +21,9 @@ use v_module::module::{create_new_ticket, create_sys_ticket, get_ticket_from_db,
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
-use v_search_ft::ft_client::*;
+use v_search::ft_client::*;
 use v_storage::storage::StorageMode;
+use v_search::common::QueryResult;
 
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
@@ -178,7 +179,7 @@ fn get_ticket_trusted(conf: &AuthConf, tr_ticket_id: Option<&str>, login: Option
 
         if is_allow_trusted {
             let candidate_account_ids = get_candidate_users_of_login(login, module, systicket);
-            if candidate_account_ids.result_code == 200 && candidate_account_ids.count > 0 {
+            if candidate_account_ids.result_code == ResultCode::Ok && candidate_account_ids.count > 0 {
                 for account_id in &candidate_account_ids.result {
                     if let Some(account) = module.get_individual(&account_id, &mut Individual::default()) {
                         let user_id = account.get_first_literal("v-s:owner").unwrap_or_default();
@@ -214,7 +215,7 @@ fn get_ticket_trusted(conf: &AuthConf, tr_ticket_id: Option<&str>, login: Option
     tr_ticket
 }
 
-fn get_candidate_users_of_login(login: &str, module: &mut Module, systicket: &str) -> FTResult {
+fn get_candidate_users_of_login(login: &str, module: &mut Module, systicket: &str) -> QueryResult {
     lazy_static! {
         static ref RE: Regex = Regex::new("[-]").unwrap();
     }
@@ -283,7 +284,7 @@ fn authenticate(
     }
 
     let candidate_account_ids = get_candidate_users_of_login(login, module, systicket);
-    if candidate_account_ids.result_code == 200 && candidate_account_ids.count > 0 {
+    if candidate_account_ids.result_code == ResultCode::Ok && candidate_account_ids.count > 0 {
         for account_id in &candidate_account_ids.result {
             if let Some(account) = module.get_individual(&account_id, &mut Individual::default()) {
                 account.parse_all();

@@ -221,13 +221,7 @@ impl Individual {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => {
-                    for el in v {
-                        if let Value::Str(_s, _l) = &el.value {
-                            return true;
-                        } else if let Value::Uri(_s) = &el.value {
-                            return true;
-                        }
-                    }
+                    return !v.is_empty();
                 }
                 None => {
                     if self.raw.cur < self.raw.data.len() as u64 {

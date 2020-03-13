@@ -427,7 +427,7 @@ async fn main() ->  Result<(), Error> {
         wait_module("fulltext_indexer", wait_load_ontology());
     }
 
-    let consumer_name = format!("search_index_pt");
+    let consumer_name = "search_index_pt".to_string();
 
     let mut queue_consumer = Consumer::new("./data/queue", &consumer_name, "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let module_info = ModuleInfo::new("./data", &consumer_name, true);
@@ -511,7 +511,7 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
 }
 
 async fn create_predicate_table(predicate_name: &str, client: &mut ClientHandle, db_predicate_tables: &mut HashMap<String, HashMap<String, String>>) -> Result<(), Error> {
-    if let Some(_) = db_predicate_tables.get(predicate_name) {
+    if db_predicate_tables.get(predicate_name).is_some() {
         return Ok(());
     }
     let query = format!(r"
@@ -542,7 +542,7 @@ async fn create_predicate_value_column(predicate_name: &str, column_name: &str, 
         create_predicate_table(predicate_name, client, db_predicate_tables).await?;
     }
     if let Some(table_columns) = db_predicate_tables.get_mut(predicate_name) {
-        if let Some(_) = table_columns.get(column_name) {
+        if table_columns.get(column_name).is_some() {
             return Ok(());
         } else {
             let query = format!("ALTER TABLE {}.`{}` ADD COLUMN IF NOT EXISTS `{}` {}", DB, predicate_name, column_name, column_type);

@@ -85,7 +85,6 @@ var g_auth_ch *nanomsg.Socket
 var mstorage_ch_Mutex = sync.RWMutex{}
 var auth_ch_Mutex = sync.RWMutex{}
 
-//mainModuleURL is tcp address of veda server
 var mainModuleURL = ""
 var authModuleURL = ""
 var notifyChannelURL = ""
@@ -95,8 +94,8 @@ var roStorageURL = ""
 var tarantoolURL = ""
 var webserverPort = ""
 var webserverHTTPSPort = ""
+var use_clickhouse = ""
 
-//var aclServiceURL = ""
 var useHTTPS = false
 
 //attachmentsPath is path where files from request are stored
@@ -190,11 +189,11 @@ func getGOMAXPROCS() int {
 }
 
 func main() {
-  fmt.Printf("ENV GOMAXPROCS is %d\n", getGOMAXPROCS())
-  runtime.GOMAXPROCS(1)
-  fmt.Printf("USE GOMAXPROCS is %d\n", getGOMAXPROCS())
-
   log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
+  log.Printf("ENV GOMAXPROCS is %d\n", getGOMAXPROCS())
+  runtime.GOMAXPROCS(1)
+  log.Printf("USE GOMAXPROCS is %d\n", getGOMAXPROCS())
 
   var err error
 
@@ -205,6 +204,7 @@ func main() {
   opt_external_users_http_port := ""
 
   for _, arg := range args {
+    log.Println(arg)
     cuts := strings.Split(arg, "=")
     if len(cuts) == 2 {
       name := cuts[0]
@@ -212,15 +212,18 @@ func main() {
 
       if name == "--http_port" {
         webserverPort = val
-        fmt.Println("use command line param http_port=", webserverPort)
+        log.Println("use command line param http_port=", webserverPort)
       } else if name == "--ext_usr_http_port" {
         opt_external_users_http_port = val
+      } else if name == "--use_clickhouse" {
+        use_clickhouse = strings.TrimSpace(strings.ToLower(val))
+        log.Println("use ckickhouse query")
       }
     }
   }
 
   if opt_external_users_http_port != "" && opt_external_users_http_port == webserverPort {
-    fmt.Println("use external user mode")
+    log.Println("use external user mode")
     areExternalUsers = true
   }
 
