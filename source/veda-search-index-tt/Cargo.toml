@@ -15,6 +15,10 @@ lazy_static = "1.4.0"
 regex = "1"
 url = "2.1.1"
 quote = "1.0.3"
+bincode = "1.2.1"
+serde_derive = "1.0.104"
+serde = "1.0.104"
+uuid = { version = "0.8", features = ["serde", "v4"] }
 
 v_queue = { path = "../v-queue" }
 v_search = { path = "../v-search" }

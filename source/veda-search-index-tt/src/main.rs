@@ -4,9 +4,10 @@ extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
-use std::process;
-use std::collections::HashMap;
-use std::collections::HashSet;
+use serde::{Serialize, Deserialize};
+
+use std::{process, fs};
+use std::collections::{HashMap, HashSet};
 
 use clickhouse_rs::{Pool, errors::Error, Block, ClientHandle};
 use chrono::prelude::*;
@@ -28,6 +29,9 @@ use v_onto::datatype::DataType;
 use v_onto::datatype::Lang;
 use v_queue::consumer::*;
 use url::Url;
+use std::io::{BufWriter, BufReader};
+use std::fs::{File, OpenOptions};
+use bincode::{serialize_into, deserialize_from};
 
 type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
@@ -35,6 +39,8 @@ type BatchElement = (i64, Individual, i8);
 
 const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
+const OP_ID_BLOCK_FILE_NAME: &str =  "data/veda-search-index-tt";
+
 
 pub struct Stats {
     total_prepare_duration: usize,
@@ -50,6 +56,7 @@ pub struct Context {
     db_type_tables: HashMap<String, HashMap<String, String>>,
     typed_batch: TypedBatch,
     stats: Stats,
+    op_id_committed_block : HashSet<i64>
 }
 
 enum ColumnData {
@@ -57,6 +64,19 @@ enum ColumnData {
     Date(Vec<Vec<DateTime<Tz>>>),
     Int(Vec<Vec<i64>>),
     Dec(Vec<Vec<f64>>),
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub struct MyStruct {
+    data: Vec<i64>
+}
+
+impl Default for MyStruct {
+    fn default() -> Self {
+        Self {
+            data : Vec::new()
+        }
+    }
 }
 
 impl Context {
@@ -116,6 +136,9 @@ impl Context {
             let db_type_tables = &mut self.db_type_tables;
             let stats = &mut self.stats;
             let mut block_size = BLOCK_LIMIT;
+
+            let op_id_block_file = OpenOptions::new().write(true).create(true).truncate(false).open(OP_ID_BLOCK_FILE_NAME)?;
+
             for (type_name, batch) in self.typed_batch.iter_mut() {
                 while batch.len() > block_size {
                     // Ensure that block contains both previous & current state of the individual.
@@ -127,10 +150,11 @@ impl Context {
                         }
                     }
                     let mut slice = batch.drain(0..block_size).collect();
-                    Context::process_batch(&type_name, &mut slice, client, db_type_tables, stats).await?;
+                    Context::process_batch(&type_name, &mut slice, client, db_type_tables, stats, &op_id_block_file).await?;
                 }
-                Context::process_batch(&type_name, batch, client, db_type_tables, stats).await?;
+                Context::process_batch(&type_name, batch, client, db_type_tables, stats, &op_id_block_file).await?;
             }
+            fs::remove_file (OP_ID_BLOCK_FILE_NAME)?;
             self.typed_batch.clear();
             stats.last = Instant::now();
             info!("Batch processed in {} ms", now.elapsed().as_millis());
@@ -138,7 +162,7 @@ impl Context {
         Ok(())
     }
 
-    async fn process_batch(type_name: &str, batch: &mut Batch, client: &mut ClientHandle, db_type_tables: &mut HashMap<String, HashMap<String, String>>, stats: &mut Stats) -> Result<(), Error> {
+    async fn process_batch(type_name: &str, batch: &mut Batch, client: &mut ClientHandle, db_type_tables: &mut HashMap<String, HashMap<String, String>>, stats: &mut Stats, op_id_block_file: &File) -> Result<(), Error> {
 
         let now = Instant::now();
 
@@ -156,11 +180,11 @@ impl Context {
 
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
 
-        let mut ops: HashSet<i64> = HashSet::new();
+        let mut ops = MyStruct::default();
 
         for (op_id, individual, sign) in batch {
             Context::add_to_table(individual, *sign, &mut id_column, &mut sign_column, &mut version_column, &mut text_column,  &mut columns);
-            ops.insert(*op_id);
+            ops.data.push(*op_id);
         }
 
         info!("Batch prepared in {} us", now.elapsed().as_micros());
@@ -178,6 +202,9 @@ impl Context {
         let table = format!("veda_tt.`{}`", type_name);
 
         client.insert(table, block).await?;
+
+        //let mut f = BufWriter::new(op_id_block_file);
+        serialize_into(&mut BufWriter::new(op_id_block_file), &ops).unwrap();
 
         let mut insert_duration = now.elapsed().as_millis() as usize;
         if insert_duration == 0 {
@@ -468,7 +495,8 @@ async fn main() ->  Result<(), Error> {
         pool,
         db_type_tables,
         typed_batch,
-        stats
+        stats,
+        op_id_committed_block: Default::default()
     };
 
     load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
@@ -486,7 +514,23 @@ async fn main() ->  Result<(), Error> {
     Ok(())
 }
 
-fn before(_module: &mut Module, _ctx: &mut Context, _batch_size: u32) -> Option<u32> {
+fn before(_module: &mut Module, ctx: &mut Context, _batch_size: u32) -> Option<u32> {
+    if let Ok (f) = File::open(OP_ID_BLOCK_FILE_NAME) {
+        let mut r = BufReader::new(f);
+        ctx.op_id_committed_block.clear();
+        loop {
+            let res: Result<MyStruct, _> = deserialize_from(&mut r);
+            match res {
+              Ok(d) =>  {
+                  for el in d.data {
+                      ctx.op_id_committed_block.insert(el);
+                  }
+              },
+              Err(_) => break
+            }
+        }
+        info!("found {:?} committed individuals", ctx.op_id_committed_block.len());
+    }
     Some(BATCH_SIZE)
 }
 
@@ -506,6 +550,12 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
     }
 
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
+
+    if !ctx.op_id_committed_block.is_empty() && ctx.op_id_committed_block.contains(&op_id) {
+        warn!("op_id {} was found in the list of committed, skipping it", op_id);
+        return Ok(false);
+    }
+
     if let Err(e) = module_info.put_info(op_id, op_id) {
         error!("Failed to write module_info, op_id={}, err={:?}", op_id, e);
     }
