@@ -4,34 +4,29 @@ extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
-use serde::{Serialize, Deserialize};
-
-use std::{process, fs};
-use std::collections::{HashMap, HashSet};
-
-use clickhouse_rs::{Pool, errors::Error, Block, ClientHandle};
+use bincode::{deserialize_from, serialize_into};
 use chrono::prelude::*;
 use chrono_tz::Tz;
-use std::time::Instant;
-
-use regex::Regex;
-
-use tokio;
+use clickhouse_rs::{errors::Error, Block, ClientHandle, Pool};
 use futures::executor::block_on;
-
+use regex::Regex;
+use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
+use std::fs::{File, OpenOptions};
+use std::io::{BufReader, BufWriter};
+use std::time::Instant;
+use std::{fs, process};
+use tokio;
+use url::Url;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_module::onto::load_onto;
+use v_onto::datatype::DataType;
+use v_onto::datatype::Lang;
 use v_onto::individual::*;
 use v_onto::onto::Onto;
 use v_onto::resource::Value;
-use v_onto::datatype::DataType;
-use v_onto::datatype::Lang;
 use v_queue::consumer::*;
-use url::Url;
-use std::io::{BufWriter, BufReader};
-use std::fs::{File, OpenOptions};
-use bincode::{serialize_into, deserialize_from};
 
 type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
@@ -39,8 +34,7 @@ type BatchElement = (i64, Individual, i8);
 
 const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
-const OP_ID_BLOCK_FILE_NAME: &str =  "data/veda-search-index-tt";
-
+const OP_ID_BLOCK_FILE_NAME: &str = "data/veda-search-index-tt";
 
 pub struct Stats {
     total_prepare_duration: usize,
@@ -56,7 +50,7 @@ pub struct Context {
     db_type_tables: HashMap<String, HashMap<String, String>>,
     typed_batch: TypedBatch,
     stats: Stats,
-    op_id_committed_block : HashSet<i64>
+    op_id_committed_block: HashSet<i64>,
 }
 
 enum ColumnData {
@@ -68,19 +62,18 @@ enum ColumnData {
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct MyStruct {
-    data: Vec<i64>
+    data: Vec<i64>,
 }
 
 impl Default for MyStruct {
     fn default() -> Self {
         Self {
-            data : Vec::new()
+            data: Vec::new(),
         }
     }
 }
 
 impl Context {
-
     fn add_to_typed_batch(&mut self, queue_element: &mut Individual) {
         let mut new_state = Individual::default();
         get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
@@ -97,7 +90,7 @@ impl Context {
         if !is_new {
             if let Some(type_resources) = prev_state.get_resources("rdf:type") {
                 for type_resource in type_resources {
-                    if let Value::Uri(type_name)  = type_resource.value {
+                    if let Value::Uri(type_name) = type_resource.value {
                         let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
                         let mut prev_state = Individual::default();
                         get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
@@ -114,7 +107,7 @@ impl Context {
 
         if let Some(type_resources) = new_state.get_resources("rdf:type") {
             for type_resource in type_resources {
-                if let Value::Uri(type_name)  = type_resource.value {
+                if let Value::Uri(type_name) = type_resource.value {
                     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
                     let mut new_state = Individual::default();
                     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
@@ -154,7 +147,7 @@ impl Context {
                 }
                 Context::process_batch(&type_name, batch, client, db_type_tables, stats, &op_id_block_file).await?;
             }
-            fs::remove_file (OP_ID_BLOCK_FILE_NAME)?;
+            fs::remove_file(OP_ID_BLOCK_FILE_NAME)?;
             self.typed_batch.clear();
             stats.last = Instant::now();
             info!("Batch processed in {} ms", now.elapsed().as_millis());
@@ -162,8 +155,14 @@ impl Context {
         Ok(())
     }
 
-    async fn process_batch(type_name: &str, batch: &mut Batch, client: &mut ClientHandle, db_type_tables: &mut HashMap<String, HashMap<String, String>>, stats: &mut Stats, op_id_block_file: &File) -> Result<(), Error> {
-
+    async fn process_batch(
+        type_name: &str,
+        batch: &mut Batch,
+        client: &mut ClientHandle,
+        db_type_tables: &mut HashMap<String, HashMap<String, String>>,
+        stats: &mut Stats,
+        op_id_block_file: &File,
+    ) -> Result<(), Error> {
         let now = Instant::now();
 
         info!("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
@@ -183,7 +182,7 @@ impl Context {
         let mut ops = MyStruct::default();
 
         for (op_id, individual, sign) in batch {
-            Context::add_to_table(individual, *sign, &mut id_column, &mut sign_column, &mut version_column, &mut text_column,  &mut columns);
+            Context::add_to_table(individual, *sign, &mut id_column, &mut sign_column, &mut version_column, &mut text_column, &mut columns);
             ops.data.push(*op_id);
         }
 
@@ -193,7 +192,7 @@ impl Context {
 
         let now = Instant::now();
 
-        let rows= id_column.len();
+        let rows = id_column.len();
 
         let block = Context::mk_block(type_name, id_column, sign_column, version_column, text_column, &mut columns, client, db_type_tables).await?;
 
@@ -230,7 +229,17 @@ impl Context {
 
         let uptime_cps = (stats.total_rows * 1000 / uptime_ms) as f64;
 
-        info!("Total rows inserted = {}, total prepare duration = {} ms, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}", stats.total_rows, stats.total_prepare_duration, stats.total_insert_duration, total_cps, (uptime_ms / 1000) / 3600, (uptime_ms / 1000) % 3600 / 60, (uptime_ms / 1000) % 3600 % 60, uptime_cps);
+        info!(
+            "Total rows inserted = {}, total prepare duration = {} ms, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}",
+            stats.total_rows,
+            stats.total_prepare_duration,
+            stats.total_insert_duration,
+            total_cps,
+            (uptime_ms / 1000) / 3600,
+            (uptime_ms / 1000) % 3600 / 60,
+            (uptime_ms / 1000) % 3600 % 60,
+            uptime_cps
+        );
 
         Ok(())
     }
@@ -242,9 +251,8 @@ impl Context {
         sign_column: &mut Vec<i8>,
         version_column: &mut Vec<u32>,
         text_column: &mut Vec<String>,
-        columns: &mut HashMap<String, ColumnData>
+        columns: &mut HashMap<String, ColumnData>,
     ) {
-
         let rows = id_column.len();
 
         let id = individual.get_id().to_owned();
@@ -262,7 +270,7 @@ impl Context {
         for predicate in individual.get_predicates() {
             if let Some(resources) = individual.get_resources(&predicate) {
                 lazy_static! {
-                   static ref RE: Regex = Regex::new("[^a-zA-Z0-9]").unwrap();
+                    static ref RE: Regex = Regex::new("[^a-zA-Z0-9]").unwrap();
                 }
                 let mut column_name = RE.replace_all(&predicate, "_").into_owned();
                 match &resources[0].rtype {
@@ -282,20 +290,23 @@ impl Context {
                             column.append(&mut empty);
                             column.push(column_value);
                         }
-                    },
+                    }
                     DataType::String => {
                         column_name.push_str("_str");
-                        let column_value: Vec<String> = resources.iter().map(|resource| {
-                            let str_value = resource.get_str();
+                        let column_value: Vec<String> = resources
+                            .iter()
+                            .map(|resource| {
+                                let str_value = resource.get_str();
 
-                            text_content.push(str_value.trim().to_owned());
+                                text_content.push(str_value.trim().to_owned());
 
-                            let lang = match resource.get_lang() {
-                                Lang::NONE => String::from(""),
-                                lang => format!("@{}", lang.to_string()),
-                            };
-                            format!("{}{}", str_value.replace("'", "\\'"), lang)
-                        }).collect();
+                                let lang = match resource.get_lang() {
+                                    Lang::NONE => String::from(""),
+                                    lang => format!("@{}", lang.to_string()),
+                                };
+                                format!("{}{}", str_value.replace("'", "\\'"), lang)
+                            })
+                            .collect();
 
                         if !columns.contains_key(&column_name) {
                             let new_column = ColumnData::Str(Vec::new());
@@ -309,7 +320,7 @@ impl Context {
                             column.append(&mut empty);
                             column.push(column_value);
                         }
-                    },
+                    }
                     DataType::Uri => {
                         column_name.push_str("_str");
                         let column_value: Vec<String> = resources.iter().map(|resource| resource.get_uri().to_string()).collect();
@@ -326,15 +337,16 @@ impl Context {
                             column.append(&mut empty);
                             column.push(column_value);
                         }
-                    },
+                    }
                     DataType::Boolean => {
                         column_name.push_str("_int");
-                        let column_value: Vec<i64> = resources.iter().map(|resource| {
-                            match resource.value {
+                        let column_value: Vec<i64> = resources
+                            .iter()
+                            .map(|resource| match resource.value {
                                 Value::Bool(true) => 1,
-                                _ => 0
-                            }
-                        }).collect();
+                                _ => 0,
+                            })
+                            .collect();
 
                         if !columns.contains_key(&column_name) {
                             let new_column = ColumnData::Int(Vec::new());
@@ -348,7 +360,7 @@ impl Context {
                             column.append(&mut empty);
                             column.push(column_value);
                         }
-                    },
+                    }
                     DataType::Decimal => {
                         column_name.push_str("_dec");
                         let column_value: Vec<f64> = resources.iter().map(|resource| resource.get_float()).collect();
@@ -365,7 +377,7 @@ impl Context {
                             column.append(&mut empty);
                             column.push(column_value);
                         }
-                    },
+                    }
                     DataType::Datetime => {
                         column_name.push_str("_date");
                         let column_value: Vec<DateTime<Tz>> = resources.iter().map(|resource| Tz::UTC.timestamp(resource.get_datetime(), 0)).collect();
@@ -382,7 +394,7 @@ impl Context {
                             column.append(&mut empty);
                             column.push(column_value);
                         }
-                    },
+                    }
                     _ => {
                         error!("Value type is not supported");
                     }
@@ -401,16 +413,11 @@ impl Context {
         text_column: Vec<String>,
         columns: &mut HashMap<String, ColumnData>,
         client: &mut ClientHandle,
-        db_type_tables: &mut HashMap<String, HashMap<String, String>>
+        db_type_tables: &mut HashMap<String, HashMap<String, String>>,
     ) -> Result<Block, Error> {
-
         let rows = id_column.len();
 
-        let mut block = Block::new()
-            .column("id", id_column)
-            .column("sign", sign_column)
-            .column("version", version_column)
-            .column("text", text_column);
+        let mut block = Block::new().column("id", id_column).column("sign", sign_column).column("version", version_column).column("text", text_column);
 
         for (column_name, column_data) in columns.iter_mut() {
             let mut column_type = "Array(String)";
@@ -446,11 +453,10 @@ impl Context {
         }
         Ok(block)
     }
-
 }
 
 #[tokio::main]
-async fn main() ->  Result<(), Error> {
+async fn main() -> Result<(), Error> {
     init_log();
 
     //return test().await;
@@ -471,7 +477,7 @@ async fn main() ->  Result<(), Error> {
         Err(e) => {
             error!("Failed to connect to clickhouse: {}", e);
             process::exit(101)
-        },
+        }
         Ok(pool) => pool,
     };
 
@@ -496,7 +502,7 @@ async fn main() ->  Result<(), Error> {
         db_type_tables,
         typed_batch,
         stats,
-        op_id_committed_block: Default::default()
+        op_id_committed_block: Default::default(),
     };
 
     load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
@@ -515,18 +521,18 @@ async fn main() ->  Result<(), Error> {
 }
 
 fn before(_module: &mut Module, ctx: &mut Context, _batch_size: u32) -> Option<u32> {
-    if let Ok (f) = File::open(OP_ID_BLOCK_FILE_NAME) {
+    if let Ok(f) = File::open(OP_ID_BLOCK_FILE_NAME) {
         let mut r = BufReader::new(f);
         ctx.op_id_committed_block.clear();
         loop {
             let res: Result<MyStruct, _> = deserialize_from(&mut r);
             match res {
-              Ok(d) =>  {
-                  for el in d.data {
-                      ctx.op_id_committed_block.insert(el);
-                  }
-              },
-              Err(_) => break
+                Ok(d) => {
+                    for el in d.data {
+                        ctx.op_id_committed_block.insert(el);
+                    }
+                }
+                Err(_) => break,
             }
         }
         info!("found {:?} committed individuals", ctx.op_id_committed_block.len());
@@ -565,7 +571,13 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
     Ok(false)
 }
 
-async fn create_type_predicate_column(type_name: &str, column_name: &str, column_type: &str, client: &mut ClientHandle, db_type_tables: &mut HashMap<String, HashMap<String, String>>) -> Result<(), Error> {
+async fn create_type_predicate_column(
+    type_name: &str,
+    column_name: &str,
+    column_type: &str,
+    client: &mut ClientHandle,
+    db_type_tables: &mut HashMap<String, HashMap<String, String>>,
+) -> Result<(), Error> {
     if None == db_type_tables.get_mut(type_name) {
         create_type_table(type_name, client, db_type_tables).await?;
     }
@@ -585,7 +597,8 @@ async fn create_type_table(type_name: &str, client: &mut ClientHandle, db_type_t
     if db_type_tables.get(type_name).is_some() {
         return Ok(());
     }
-    let query = format!(r"
+    let query = format!(
+        r"
         CREATE TABLE IF NOT EXISTS veda_tt.`{}` (
             id String,
             sign Int8 DEFAULT 1,
@@ -597,7 +610,9 @@ async fn create_type_table(type_name: &str, client: &mut ClientHandle, db_type_t
         ENGINE = VersionedCollapsingMergeTree(sign, version)
         ORDER BY (`v_s_created_date`[1], id)
         PARTITION BY (toYear(`v_s_created_date`[1]))
-    ", type_name);
+    ",
+        type_name
+    );
     client.execute(query).await?;
     let mut table_columns: HashMap<String, String> = HashMap::new();
     table_columns.insert("id".to_owned(), "String".to_owned());
@@ -621,7 +636,7 @@ async fn read_type_tables(pool: &mut Pool) -> Result<HashMap<String, HashMap<Str
         let mut table_columns: HashMap<String, String> = HashMap::new();
         let columns_block = client.query(read_columns).fetch_all().await?;
         for row_column in columns_block.rows() {
-            let column_name: String      = row_column.get("name")?;
+            let column_name: String = row_column.get("name")?;
             let data_type: String = row_column.get("type")?;
             table_columns.insert(column_name, data_type);
         }
