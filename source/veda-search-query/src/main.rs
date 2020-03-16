@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate log;
 
-use clickhouse_rs::errors::Error;
+use futures::io::Error;
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;

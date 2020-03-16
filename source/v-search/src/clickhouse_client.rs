@@ -24,7 +24,6 @@ impl CHClient {
         }
     }
 
-    //    pub fn connect_to_clickhouse(query_db_url: &str) -> Result<Pool, &'static str> {
     pub fn connect(&mut self) -> bool {
         info!("Configuration to connect to Clickhouse: {}", self.addr);
         match Url::parse(self.addr.as_ref()) {
@@ -70,7 +69,11 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
     let mut authorized_count = 0;
     let mut total_count = 0;
 
-    if query.to_uppercase().contains("INSERT") || query.to_uppercase().contains("UPDATE") || query.to_uppercase().contains("DROP") {
+    if query.to_uppercase().contains("INSERT")
+        || query.to_uppercase().contains("UPDATE")
+        || query.to_uppercase().contains("DROP")
+        || query.to_uppercase().contains("DELETE")
+    {
         out_res.result_code = ResultCode::BadRequest;
         return Ok(());
     }
