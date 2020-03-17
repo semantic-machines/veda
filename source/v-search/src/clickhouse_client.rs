@@ -69,11 +69,7 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
     let mut authorized_count = 0;
     let mut total_count = 0;
 
-    if query.to_uppercase().contains("INSERT")
-        || query.to_uppercase().contains("UPDATE")
-        || query.to_uppercase().contains("DROP")
-        || query.to_uppercase().contains("DELETE")
-    {
+    if query.to_uppercase().split_whitespace().any(|x| x == "INSERT" || x == "UPDATE" || x == "DROP" || x == "DELETE") {
         out_res.result_code = ResultCode::BadRequest;
         return Ok(());
     }
