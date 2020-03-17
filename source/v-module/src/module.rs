@@ -326,12 +326,14 @@ pub fn init_log() {
         .init();
 }
 
-pub fn get_ticket_from_db(id: &str, dest: &mut Ticket, module: &mut Module) {
+pub fn get_ticket_from_db(id: &str, module: &mut Module) -> Ticket {
+    let mut dest = Ticket::default();
     let mut indv = Individual::default();
     if module.storage.get_individual_from_db(StorageId::Tickets, id, &mut indv) {
         dest.update_from_individual(&mut indv);
         dest.result = ResultCode::Ok;
     }
+    dest
 }
 
 pub fn create_new_ticket(login: &str, user_id: &str, duration: i64, ticket: &mut Ticket, storage: &mut VStorage) {
