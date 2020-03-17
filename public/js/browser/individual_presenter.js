@@ -674,7 +674,7 @@ veda.Module(function (veda) { "use strict";
       var control = $(this),
           property_uri = control.attr("property") || control.attr("rel"),
           type = control.attr("data-type") || "generic",
-          spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined,
+          spec = specs && specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined,
           controlType = $.fn["veda_" + type];
 
       //control.removeAttr("property").removeAttr("rel");
