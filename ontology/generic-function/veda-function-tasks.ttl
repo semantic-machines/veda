@@ -370,7 +370,15 @@ v-ft:InboxBlank
   rdfs:label "Бланк входящих задач"@ru ;
   rdfs:label "Blank inbox task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
+  v-wf:onDocument v-ft:InboxDocumentBlank ;
   v-wf:isCompleted false ;
+.
+
+v-ft:InboxDocumentBlank
+  rdf:type v-fc:Blank ;
+#  v-fc:targetType v-s:Document ;
+  rdfs:label "Бланк документа входящей задачи"@ru ;
+  rdfs:label "Inbox task document blank "@en ;
 .
 
 v-ft:Outbox
@@ -517,13 +525,17 @@ v-ft:TaskBlankTemplate
       <em about="v-wf:to" property="rdfs:label"></em>
       <veda-control property="v-wf:to" data-single="true" data-actor-type="v-s:Person v-s:Position" data-type="actor"></veda-control>
     </div>
-    <div class="col-md-4">
-      <em about="v-ft:DocumentTypeBundle" property="rdfs:label"></em>
-      <veda-control rel="v-wf:onDocument.rdf:type" data-type="link" class="dropdown fulltext" data-single="true" data-placeholder=" " data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing'"></veda-control>
+    <div class="col-md-4" about="@" rel="v-wf:onDocument">
+      <div>
+        <em about="v-ft:DocumentTypeBundle" property="rdfs:label"></em>
+        <veda-control rel="rdf:type" data-type="link" class="dropdown fulltext" data-single="true" data-placeholder=" " data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing'"></veda-control>
+      </div>
     </div>
-    <div class="col-md-4">
-      <em about="v-ft:DocumentBundle" property="rdfs:label"></em>
-      <veda-control property="v-wf:onDocument.rdfs:label" data-type="string"></veda-control>
+    <div class="col-md-4" about="@" rel="v-wf:onDocument">
+      <div>
+        <em about="v-ft:DocumentBundle" property="rdfs:label"></em>
+        <veda-control property="rdfs:label" data-type="string"></veda-control>
+      </div>
     </div>
   </div>
   <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>

@@ -276,6 +276,8 @@ v-fc:BlankTemplate
   v-ui:template """
 <script>
   return individual.initBlank();
+
+  //# sourceURL=v-fc:BlankTemplate_pre
 </script>
 <div>
   <div id="object-container"></div>
@@ -316,7 +318,7 @@ v-fc:BlankTemplate
     }
   });
 
-  //# sourceURL=v-fc:BlankTemplate
+  //# sourceURL=v-fc:BlankTemplate_post
 </script>
   """
 .
