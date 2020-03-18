@@ -89,6 +89,7 @@ fn main() -> std::io::Result<()> {
         &mut (before_batch as fn(&mut Module, &mut Context, batch_size: u32) -> Option<u32>),
         &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
         &mut (after_batch as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
+        &mut (heartbeat as fn(&mut Module, &mut Context))
     );
     Ok(())
 }
@@ -100,6 +101,8 @@ pub struct Context {
     ontology_file_path: String,
     onto_types: Vec<String>,
 }
+
+fn heartbeat(_module: &mut Module, _ctx: &mut Context) {}
 
 fn before_batch(_module: &mut Module, _ctx: &mut Context, _size_batch: u32) -> Option<u32> {
     None
