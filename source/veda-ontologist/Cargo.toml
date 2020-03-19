@@ -15,7 +15,7 @@ env_logger = "0.6"
 log = "0.4"
 rust-ini = "0.13"
 quote = "1.0.3"
-sled = "0.31.0"
+pickledb = "0.4.0"
 
 v_queue = { path = "../v-queue" }
 v_onto = { path = "../v-onto" }

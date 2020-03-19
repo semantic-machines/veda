@@ -183,7 +183,7 @@ impl Module {
         before_batch: &mut fn(&mut Module, &mut T, batch_size: u32) -> Option<u32>,
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<bool, PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32) -> bool,
-        heartbeat: &mut fn(&mut Module, &mut T)
+        heartbeat: &mut fn(&mut Module, &mut T),
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut is_ready_notify_channel = false;

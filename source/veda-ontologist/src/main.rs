@@ -5,7 +5,6 @@ extern crate env_logger;
 use chrono::Local;
 use env_logger::Builder;
 use log::LevelFilter;
-use sled::{Db, Serialize};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -17,6 +16,7 @@ use v_module::module::*;
 use v_onto::{individual::*, parser::*};
 use v_queue::consumer::*;
 use v_search::ft_client::FTQuery;
+use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -66,7 +66,7 @@ fn main() -> std::io::Result<()> {
 
     let ontology_file_path = "public/ontology.json";
 
-    wait_load_ontology();
+    //wait_load_ontology();
 
     let path = "./data";
 
@@ -81,12 +81,18 @@ fn main() -> std::io::Result<()> {
         query,
         ontology_file_path: ontology_file_path.to_owned(),
         onto_types: onto_types.iter().map(|s| String::from(*s)).collect(),
-        onto_index: sled::open(path.to_owned() + "/onto-index").unwrap(),
+        onto_index: PickleDb::new(
+            path.to_owned() + "/onto-index.db",
+            PickleDbDumpPolicy::AutoDump,
+            SerializationMethod::Json, ),
         is_need_generate: false,
     };
 
-    if ctx.onto_index.len() == 0 {
+    if ctx.onto_index.total_keys() == 0 {
         recover_index_from_ft(&mut ctx, &mut module);
+        if let Err(e) = ctx.onto_index.dump() {
+            error!("fail flush onto index, err={}", e);
+        }
     }
 
     let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
@@ -107,7 +113,7 @@ pub struct Context {
     query: String,
     ontology_file_path: String,
     onto_types: Vec<String>,
-    onto_index: Db,
+    onto_index: PickleDb,
     is_need_generate: bool,
 }
 
@@ -138,11 +144,11 @@ fn prepare(_module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Contex
         info!("update onto index, id={}, counter={}, is_deleted={}", id, counter, is_deleted);
 
         if is_deleted {
-            if let Err(e) = ctx.onto_index.remove(id) {
+            if let Err(e) = ctx.onto_index.rem(&id) {
                 error!("fail remove from onto index, err={}", e);
             }
         } else {
-            if let Err(e) = ctx.onto_index.insert(id, counter.serialize()) {
+            if let Err(e) = ctx.onto_index.set(&id, &counter) {
                 error!("fail update onto index, err={}", e);
             }
         }
@@ -157,13 +163,13 @@ fn recover_index_from_ft(ctx: &mut Context, module: &mut Module) -> bool {
 
     let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", &ctx.query));
     if res.result_code == ResultCode::Ok && res.count > 0 {
-        if let Err(e) = ctx.onto_index.clear() {
-            error!("fail clean index, err={}", e);
-            return false;
-        }
+//        if let Err(e) = ctx.onto_index.drop() {
+//            error!("fail clean index, err={}", e);
+//            return false;
+//       }
 
         for id in &res.result {
-            if let Err(e) = ctx.onto_index.insert(id, "+") {
+            if let Err(e) = ctx.onto_index.set(id, &0) {
                 error!("fail create onto index, err={}", e);
                 break;
             }
@@ -182,14 +188,12 @@ fn generate_file(ctx: &mut Context, module: &mut Module) -> bool {
     let mut buf = String::new();
 
     buf.push('[');
-    let key = [];
 
-    for kv in ctx.onto_index.range(key..) {
-        if let Ok((k, _v)) = kv {
-            let id = String::from_utf8_lossy(k.as_ref());
+    for kv in ctx.onto_index.iter() {
+        let id = kv.get_key();
 
             let mut rindv: Individual = Individual::default();
-            if module.storage.get_individual(id.as_ref(), &mut rindv) {
+            if module.storage.get_individual(id, &mut rindv) {
                 rindv.parse_all();
 
                 if buf.len() > 1 {
@@ -200,9 +204,9 @@ fn generate_file(ctx: &mut Context, module: &mut Module) -> bool {
                 buf.push_str(&rindv.get_obj().as_json_str());
                 indvs_count += 1;
             } else {
-                error!("fail read, uri={}", id.as_ref());
+                error!("fail read, uri={}", id);
             }
-        }
+
     }
 
     buf.push(']');
