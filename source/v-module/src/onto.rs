@@ -1,9 +1,9 @@
 use std::collections::HashSet;
+use v_api::app::ResultCode;
 use v_onto::individual::*;
 use v_onto::onto::*;
 use v_search::ft_client::*;
 use v_storage::storage::VStorage;
-use v_api::app::ResultCode;
 
 pub fn load_onto(ft_client: &mut FTClient, storage: &mut VStorage, onto: &mut Onto) -> bool {
     let onto_types = vec!["rdfs:Class", "owl:Class", "rdfs:Datatype", "rdf:Property", "owl:DatatypeProperty", "owl:ObjectProperty"];

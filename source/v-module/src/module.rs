@@ -183,12 +183,15 @@ impl Module {
         before_batch: &mut fn(&mut Module, &mut T, batch_size: u32) -> Option<u32>,
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<bool, PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32) -> bool,
+        heartbeat: &mut fn(&mut Module, &mut T)
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut is_ready_notify_channel = false;
         let mut count_timeout_error = 0;
 
         loop {
+            heartbeat(self, module_context);
+
             if !is_ready_notify_channel && !self.notify_channel_url.is_empty() {
                 soc = Socket::new(Protocol::Sub0).unwrap();
                 if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
@@ -326,12 +329,14 @@ pub fn init_log() {
         .init();
 }
 
-pub fn get_ticket_from_db(id: &str, dest: &mut Ticket, module: &mut Module) {
+pub fn get_ticket_from_db(id: &str, module: &mut Module) -> Ticket {
+    let mut dest = Ticket::default();
     let mut indv = Individual::default();
     if module.storage.get_individual_from_db(StorageId::Tickets, id, &mut indv) {
         dest.update_from_individual(&mut indv);
         dest.result = ResultCode::Ok;
     }
+    dest
 }
 
 pub fn create_new_ticket(login: &str, user_id: &str, duration: i64, ticket: &mut Ticket, storage: &mut VStorage) {
