@@ -516,9 +516,12 @@ async fn main() -> Result<(), Error> {
         &mut (before as fn(&mut Module, &mut Context, u32) -> Option<u32>),
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
         &mut (after as fn(&mut Module, &mut Context, u32) -> bool),
+        &mut (heartbeat as fn(&mut Module, &mut Context))
     );
     Ok(())
 }
+
+fn heartbeat(_module: &mut Module, _ctx: &mut Context) {}
 
 fn before(_module: &mut Module, ctx: &mut Context, _batch_size: u32) -> Option<u32> {
     if let Ok(f) = File::open(OP_ID_BLOCK_FILE_NAME) {

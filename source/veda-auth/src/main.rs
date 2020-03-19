@@ -21,9 +21,9 @@ use v_module::module::{create_new_ticket, create_sys_ticket, get_ticket_from_db,
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
+use v_search::common::QueryResult;
 use v_search::ft_client::*;
 use v_storage::storage::StorageMode;
-use v_search::common::QueryResult;
 
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
@@ -138,8 +138,6 @@ fn req_prepare(conf: &AuthConf, request: &Message, systicket: &str, module: &mut
 }
 
 fn get_ticket_trusted(conf: &AuthConf, tr_ticket_id: Option<&str>, login: Option<&str>, systicket: &str, module: &mut Module) -> Ticket {
-    let mut tr_ticket = Ticket::default();
-
     let login = login.unwrap_or_default();
     let tr_ticket_id = tr_ticket_id.unwrap_or_default();
 
@@ -147,10 +145,10 @@ fn get_ticket_trusted(conf: &AuthConf, tr_ticket_id: Option<&str>, login: Option
 
     if login.is_empty() || tr_ticket_id.len() < 6 {
         warn!("trusted authenticate: invalid login {} or ticket {}", login, tr_ticket_id);
-        return tr_ticket;
+        return Ticket::default();
     }
 
-    get_ticket_from_db(&tr_ticket_id, &mut tr_ticket, module);
+    let mut tr_ticket = get_ticket_from_db(&tr_ticket_id, module);
 
     if tr_ticket.result == ResultCode::Ok {
         let mut is_allow_trusted = false;
