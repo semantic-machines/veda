@@ -54,7 +54,7 @@ fn main() {
         tables,
     };
 
-    load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
+    load_onto(&mut module.storage, &mut ctx.onto);
 
     module.listen_queue(
         &mut queue_consumer,
