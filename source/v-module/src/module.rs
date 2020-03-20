@@ -11,7 +11,7 @@ use nng::options::RecvTimeout;
 use nng::{Protocol, Socket};
 use std::io::Write;
 use std::time::Duration;
-use std::{thread, time};
+use std::{env, thread, time};
 use uuid::Uuid;
 use v_api::app::ResultCode;
 use v_api::*;
@@ -48,10 +48,26 @@ impl Default for Module {
 
 impl Module {
     pub fn new(storage_mode: StorageMode) -> Self {
+        let args: Vec<String> = env::args().collect();
+
         let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
-        let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
+
+        let mut ft_query_service_url = String::default();
+
+        for el in args.iter() {
+            if el == "ft_query_service_url" {
+                let p: Vec<&str> = el.split('=').collect();
+                ft_query_service_url = p[1].to_owned();
+            }
+        }
+
+        if ft_query_service_url.is_empty() {
+            ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
+        }
+
+        info!("use ft_query_service_url={}", ft_query_service_url);
 
         let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
             p.to_owned()
