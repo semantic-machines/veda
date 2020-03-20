@@ -54,7 +54,7 @@ fn main() -> Result<(), i32> {
     connect_to_smtp(&mut ctx, &mut module);
 
     info!("load onto start");
-    load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
+    load_onto(&mut module.storage, &mut ctx.onto);
     info!("load onto end");
 
     module.listen_queue(

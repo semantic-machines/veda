@@ -8,7 +8,7 @@ use serde_json::value::Value as JSONValue;
 use std::time::*;
 use std::{str, thread};
 use v_api::app::ResultCode;
-use v_module::module::{get_ticket_from_db, init_log, Module};
+use v_module::module::{init_log, Module};
 use v_search::clickhouse_client::*;
 
 #[tokio::main]
@@ -72,7 +72,7 @@ fn req_prepare(module: &mut Module, request: &Message, ch_client: &mut CHClient)
 
             let mut user_uri = "cfg:Guest".to_owned();
             if !ticket_id.is_empty() {
-                let ticket = get_ticket_from_db(&ticket_id, module);
+                let ticket = module.get_ticket_from_db(&ticket_id);
                 if ticket.result == ResultCode::Ok {
                     user_uri = ticket.user_uri;
                 }

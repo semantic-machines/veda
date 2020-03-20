@@ -66,7 +66,7 @@ fn main() -> NotifyResult<()> {
 
     let mut onto = Onto::default();
     info!("load onto start");
-    load_onto(&mut module.fts, &mut module.storage, &mut onto);
+    load_onto(&mut module.storage, &mut onto);
     info!("load onto end");
 
     info!("start prepare files");

@@ -16,6 +16,7 @@ use v_module::module::*;
 use v_onto::{individual::*, parser::*};
 use v_queue::consumer::*;
 use v_search::ft_client::FTQuery;
+use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -65,21 +66,34 @@ fn main() -> std::io::Result<()> {
 
     let ontology_file_path = "public/ontology.json";
 
-    wait_load_ontology();
+    //wait_load_ontology();
 
-    let module_info = ModuleInfo::new("./data", "ontologist", true);
+    let path = "./data";
+
+    let module_info = ModuleInfo::new(path, "ontologist", true);
     if module_info.is_err() {
         error!("{:?}", &module_info.err());
         return Ok(());
     }
 
     let mut ctx = Context {
-        is_found_onto_changes: false,
         last_found_changes: Instant::now(),
         query,
         ontology_file_path: ontology_file_path.to_owned(),
         onto_types: onto_types.iter().map(|s| String::from(*s)).collect(),
+        onto_index: PickleDb::new(
+            path.to_owned() + "/onto-index.db",
+            PickleDbDumpPolicy::AutoDump,
+            SerializationMethod::Json, ),
+        is_need_generate: false,
     };
+
+    if ctx.onto_index.total_keys() == 0 {
+        recover_index_from_ft(&mut ctx, &mut module);
+        if let Err(e) = ctx.onto_index.dump() {
+            error!("fail flush onto index, err={}", e);
+        }
+    }
 
     let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     module.listen_queue(
@@ -95,16 +109,23 @@ fn main() -> std::io::Result<()> {
 }
 
 pub struct Context {
-    is_found_onto_changes: bool,
     last_found_changes: Instant,
     query: String,
     ontology_file_path: String,
     onto_types: Vec<String>,
+    onto_index: PickleDb,
+    is_need_generate: bool,
 }
 
 fn heartbeat(module: &mut Module, ctx: &mut Context) {
     if !Path::new(&ctx.ontology_file_path).exists() {
-        generate_file(module, &ctx.query, &ctx.ontology_file_path);
+        generate_file(ctx, module);
+    } else {
+        if ctx.is_need_generate && Instant::now().duration_since(ctx.last_found_changes).as_secs() > 5 {
+            if generate_file(ctx, module) {
+                ctx.is_need_generate = false;
+            }
+        }
     }
 }
 
@@ -116,96 +137,121 @@ fn after_batch(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u
     true
 }
 
-fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<bool, PrepareError> {
-    let prev_found_changes = ctx.last_found_changes;
+fn prepare(_module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<bool, PrepareError> {
+    if let Some((id, counter, is_deleted)) = test_on_onto(queue_element, &ctx.onto_types) {
+        ctx.last_found_changes = Instant::now();
+        ctx.is_need_generate = true;
+        info!("update onto index, id={}, counter={}, is_deleted={}", id, counter, is_deleted);
 
-    if !ctx.is_found_onto_changes {
-        ctx.is_found_onto_changes = is_changes(queue_element, &ctx.onto_types);
-
-        if ctx.is_found_onto_changes {
-            ctx.last_found_changes = Instant::now();
-        }
-    }
-
-    if ctx.is_found_onto_changes && Instant::now().duration_since(prev_found_changes).as_secs() > 5 {
-        if generate_file(module, &ctx.query, &ctx.ontology_file_path) {
-            ctx.is_found_onto_changes = false;
+        if is_deleted {
+            if let Err(e) = ctx.onto_index.rem(&id) {
+                error!("fail remove from onto index, err={}", e);
+            }
+        } else {
+            if let Err(e) = ctx.onto_index.set(&id, &counter) {
+                error!("fail update onto index, err={}", e);
+            }
         }
     }
 
     return Ok(true);
 }
 
-fn generate_file(module: &mut Module, query: &str, ontology_file_path: &str) -> bool {
-    info!("prepare changes");
-    info!("query={}", query);
+fn recover_index_from_ft(ctx: &mut Context, module: &mut Module) -> bool {
+    info!("recover index from ft");
+    info!("query={}", ctx.query);
 
-    let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", query));
+    let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", &ctx.query));
     if res.result_code == ResultCode::Ok && res.count > 0 {
-        let mut indvs = Vec::new();
+//        if let Err(e) = ctx.onto_index.drop() {
+//            error!("fail clean index, err={}", e);
+//            return false;
+//       }
 
-        for el in &res.result {
-            let mut rindv: Individual = Individual::default();
-            if module.storage.get_individual(&el, &mut rindv) {
-                rindv.parse_all();
-                indvs.push(rindv);
-            } else {
-                error!("fail read, uri={}", &el);
+        for id in &res.result {
+            if let Err(e) = ctx.onto_index.set(id, &0) {
+                error!("fail create onto index, err={}", e);
+                break;
             }
-        }
-
-        let mut buf = String::new();
-
-        buf.push('[');
-        for el in indvs.iter() {
-            if buf.len() > 1 {
-                buf.push(',');
-            }
-
-            buf.push_str(&el.get_obj().as_json_str());
-        }
-        buf.push(']');
-
-        if let Ok(mut file) = File::create(ontology_file_path) {
-            if let Err(e) = file.write_all(buf.as_bytes()) {
-                error!("fail write to file {:?}", e);
-            } else {
-                info!("stored: count:{}, bytes:{}", indvs.len(), buf.len());
-                return true;
-            }
-        } else {
-            error!("fail create file {}", ontology_file_path);
         }
     } else {
-        error!("search return empty set, query: {}", &query);
+        error!("search return empty set, query: {}", &ctx.query);
     }
 
     false
 }
 
-fn is_changes(qel: &mut Individual, onto_types: &Vec<String>) -> bool {
-    if parse_raw(qel).is_ok() {
-        if let Some(new_state) = qel.get_first_binobj("new_state") {
-            let mut indv: Individual = Individual::default();
-            indv.set_raw(new_state.as_slice());
+fn generate_file(ctx: &mut Context, module: &mut Module) -> bool {
+    info!("generate file use onto index");
 
-            if parse_raw(&mut indv).is_ok() {
-                if indv.any_exists_v("rdf:type", &onto_types) {
-                    info!("found onto changes from storage: uri={}", indv.get_id());
-                    return true;
+    let mut indvs_count = 0;
+    let mut buf = String::new();
+
+    buf.push('[');
+
+    for kv in ctx.onto_index.iter() {
+        let id = kv.get_key();
+
+            let mut rindv: Individual = Individual::default();
+            if module.storage.get_individual(id, &mut rindv) {
+                rindv.parse_all();
+
+                if buf.len() > 1 {
+                    buf.push(',');
+                    buf.push('\n');
                 }
+
+                buf.push_str(&rindv.get_obj().as_json_str());
+                indvs_count += 1;
+            } else {
+                error!("fail read, uri={}", id);
+            }
+
+    }
+
+    buf.push(']');
+
+    if let Ok(mut file) = File::create(&ctx.ontology_file_path) {
+        if let Err(e) = file.write_all(buf.as_bytes()) {
+            error!("fail write to file {:?}", e);
+        } else {
+            info!("stored: count:{}, bytes:{}", indvs_count, buf.len());
+            return true;
+        }
+    } else {
+        error!("fail create file {}", ctx.ontology_file_path);
+    }
+
+    false
+}
+
+fn test_on_onto(queue_element: &mut Individual, onto_types: &Vec<String>) -> Option<(String, i64, bool)> {
+    if parse_raw(queue_element).is_ok() {
+        let wcmd = queue_element.get_first_integer("cmd");
+        if wcmd.is_none() {
+            return None;
+        }
+        let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
+
+        let mut prev_state = Individual::default();
+        get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
+
+        let mut new_state = Individual::default();
+        get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+
+        if cmd != IndvOp::Remove {
+            let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
+            if new_state.any_exists_v("rdf:type", &onto_types) {
+                info!("found onto changes from storage: uri={}", new_state.get_id());
+                return Some((new_state.get_id().to_owned(), new_state.get_first_integer("v-s:updateCounter").unwrap_or_default(), is_deleted));
             }
         } else {
-            let wcmd = qel.get_first_integer("cmd");
-            if wcmd.is_none() {
-                return false;
-            }
-            let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
-
-            if cmd != IndvOp::Remove {
-                warn!("not found field [new_state], indv={}", qel.parse_all());
+            if prev_state.any_exists_v("rdf:type", &onto_types) {
+                info!("found onto changes from storage: uri={}", prev_state.get_id());
+                return Some((prev_state.get_id().to_owned(), prev_state.get_first_integer("v-s:updateCounter").unwrap_or_default(), true));
             }
         }
     }
-    false
+
+    None
 }

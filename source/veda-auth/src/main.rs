@@ -17,7 +17,7 @@ use v_api::app::ResultCode;
 use v_api::*;
 use v_authorization::Trace;
 use v_az_lmdb::_authorize;
-use v_module::module::{create_new_ticket, create_sys_ticket, get_ticket_from_db, init_log, Module};
+use v_module::module::{create_new_ticket, create_sys_ticket, init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
@@ -148,7 +148,7 @@ fn get_ticket_trusted(conf: &AuthConf, tr_ticket_id: Option<&str>, login: Option
         return Ticket::default();
     }
 
-    let mut tr_ticket = get_ticket_from_db(&tr_ticket_id, module);
+    let mut tr_ticket = module.get_ticket_from_db(&tr_ticket_id);
 
     if tr_ticket.result == ResultCode::Ok {
         let mut is_allow_trusted = false;

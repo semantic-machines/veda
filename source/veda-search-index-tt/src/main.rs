@@ -505,7 +505,7 @@ async fn main() -> Result<(), Error> {
         op_id_committed_block: Default::default(),
     };
 
-    load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
+    load_onto(&mut module.storage, &mut ctx.onto);
 
     info!("Rusty search-index: start listening to queue");
 

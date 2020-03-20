@@ -183,7 +183,7 @@ impl Module {
         before_batch: &mut fn(&mut Module, &mut T, batch_size: u32) -> Option<u32>,
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<bool, PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32) -> bool,
-        heartbeat: &mut fn(&mut Module, &mut T)
+        heartbeat: &mut fn(&mut Module, &mut T),
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut is_ready_notify_channel = false;
@@ -296,6 +296,16 @@ impl Module {
             }
         }
     }
+
+    pub fn get_ticket_from_db(&mut self, id: &str) -> Ticket {
+        let mut dest = Ticket::default();
+        let mut indv = Individual::default();
+        if self.storage.get_individual_from_db(StorageId::Tickets, id, &mut indv) {
+            dest.update_from_individual(&mut indv);
+            dest.result = ResultCode::Ok;
+        }
+        dest
+    }
 }
 
 pub fn get_inner_binobj_as_individual<'a>(queue_element: &'a mut Individual, field_name: &str, new_indv: &'a mut Individual) -> bool {
@@ -327,16 +337,6 @@ pub fn init_log() {
         .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
         .filter(None, LevelFilter::Info)
         .init();
-}
-
-pub fn get_ticket_from_db(id: &str, module: &mut Module) -> Ticket {
-    let mut dest = Ticket::default();
-    let mut indv = Individual::default();
-    if module.storage.get_individual_from_db(StorageId::Tickets, id, &mut indv) {
-        dest.update_from_individual(&mut indv);
-        dest.result = ResultCode::Ok;
-    }
-    dest
 }
 
 pub fn create_new_ticket(login: &str, user_id: &str, duration: i64, ticket: &mut Ticket, storage: &mut VStorage) {
