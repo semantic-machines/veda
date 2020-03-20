@@ -193,6 +193,34 @@ impl Module {
         Some(iraw)
     }
 
+    fn connect_to_notify_channel(&mut self) -> Option<Socket> {
+        if !self.is_ready_notify_channel && !self.notify_channel_url.is_empty() {
+            let soc = Socket::new(Protocol::Sub0).unwrap();
+            if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
+                error!("fail set timeout, {} err={}", self.notify_channel_url, e);
+                return None;
+            }
+
+            if let Err(e) = soc.dial(&self.notify_channel_url) {
+                error!("fail connect to, {} err={}", self.notify_channel_url, e);
+                return None;
+            } else {
+                let all_topics = vec![];
+                if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
+                    error!("fail subscribe, {} err={}", self.notify_channel_url, e);
+                    soc.close();
+                    self.is_ready_notify_channel = false;
+                    return None;
+                } else {
+                    info!("success subscribe on queue changes: {}", self.notify_channel_url);
+                    self.is_ready_notify_channel = true;
+                    return Some(soc);
+                }
+            }
+        }
+        None
+    }
+
     pub fn listen_queue<T>(
         &mut self,
         queue_consumer: &mut Consumer,
@@ -209,25 +237,8 @@ impl Module {
         loop {
             heartbeat(self, module_context);
 
-            if !self.is_ready_notify_channel && !self.notify_channel_url.is_empty() {
-                soc = Socket::new(Protocol::Sub0).unwrap();
-                if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
-                    error!("fail set timeout, {} err={}", self.notify_channel_url, e);
-                }
-
-                if let Err(e) = soc.dial(&self.notify_channel_url) {
-                    error!("fail connect to, {} err={}", self.notify_channel_url, e);
-                } else {
-                    let all_topics = vec![];
-                    if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
-                        error!("fail subscribe, {} err={}", self.notify_channel_url, e);
-                        soc.close();
-                        self.is_ready_notify_channel = false;
-                    } else {
-                        info!("success subscribe on queue changes: {}", self.notify_channel_url);
-                        self.is_ready_notify_channel = true;
-                    }
-                }
+            if let Some(s) = self.connect_to_notify_channel() {
+                soc = s;
             }
 
             // read queue current part info
