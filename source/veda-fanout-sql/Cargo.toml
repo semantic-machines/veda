@@ -11,7 +11,6 @@ chrono = "0.4.9"
 quote = "1.0.3"
 
 v_queue = { path = "../v-queue" }
-v_search = { path = "../v-search" }
 v_onto = { path = "../v-onto" }
 v_storage = { path = "../v-storage" }
 v_module = { path = "../v-module" }
