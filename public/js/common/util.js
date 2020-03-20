@@ -746,6 +746,170 @@ veda.Module(function (veda) { "use strict";
     }
   };
 
+  veda.Util.queryInbox = function (taskBlank, sort, withDeleted) {
+    var task_from = taskBlank.get("v-wf:from"),
+        task_to = taskBlank.get("v-wf:to"),
+        task_label = taskBlank.get("rdfs:label"),
+        task_created = taskBlank.get("v-s:created"),
+        task_given = taskBlank.get("v-wf:dateGiven"),
+        document_type,
+        document_label,
+        decision_created;
+
+    if ( taskBlank.hasValue("v-wf:onDocument") ) {
+      var document = taskBlank.get("v-wf:onDocument")[0];
+      document_type = document.get("rdf:type")[0];
+      document_label = document.get("rdfs:label")[0];
+    }
+    if ( taskBlank.hasValue("v-wf:takenDecision") ) {
+      var decision = taskBlank.get("v-wf:takenDecision")[0];
+      decision_created = decision.get("v-s:created");
+    }
+
+    var re = /[^a-zA-Z0-9]/g;
+
+    var from = "veda_tt.`s-wf:UserTaskForm` AS t0";
+    if (document_type) {
+      from += " JOIN veda_pt.`rdf:type` AS t1 ON t0.v_wf_onDocument_str[1] = t1.id";
+    }
+    if (document_label) {
+      from += " JOIN veda_pt.`rdfs:label` AS t2 ON t0.v_wf_onDocument_str[1] = t2.id";
+    }
+    if (decision_created) {
+      from += " JOIN veda_pt.`rdf:type` AS t3 ON t0.v_wf_takenDecision_str[1] = t3.id";
+    }
+
+    var where_arr = [];
+
+    if (!withDeleted) {
+      var where_deleted = !withDeleted ? "NOT (t0.v_s_deleted_int = [1])" : false;
+      where_arr.push("(" + where_deleted + ")");
+    }
+    if (task_from.length) {
+      var where_task_from = task_from.map(function (val) {
+        return "has(t0.`v_wf_from_str`, '" + val + "')";
+      }).join(" OR ");
+      where_arr.push("(" + where_task_from + ")");
+    }
+    if (task_to.length) {
+      var where_task_to = task_to.map(function (val) {
+        return "has(t0.`v_wf_to_str`, '" + val + "')";
+      }).join(" OR ");
+      where_arr.push("(" + where_task_to + ")");
+    }
+    if (task_label.length) {
+      var where_task_label = task_label.map(function (val) {
+        return "has(t0.`rdfs_label_str`, '" + val + "')";
+      }).join(" OR ");
+      where_arr.push("(" + where_task_label + ")");
+    }
+    if (task_created.length) {
+      task_created = task_created.sort();
+      var start = new Date(task_created[0]);
+      var end = new Date(task_created[task_created.length-1]);
+      start.setHours(0,0,0,0);
+      end.setHours(23,59,59,999);
+      start = Math.floor(start.valueOf() / 1000);
+      end = Math.floor(end.valueOf() / 1000);
+      var where_task_created = "t0.`v_s_created_date[1]` >= toDateTime(" + start + ") AND t0.`v_s_created_date`[1] <= toDateTime("  + end + ")";
+      where_arr.push("(" + where_task_created + ")");
+    }
+    if (task_given.length) {
+      task_given = task_given.sort();
+      var start = new Date(task_given[0]);
+      var end = new Date(task_given[task_given.length-1]);
+      start.setHours(0,0,0,0);
+      end.setHours(23,59,59,999);
+      start = Math.floor(start.valueOf() / 1000);
+      end = Math.floor(end.valueOf() / 1000);
+      var where_task_given = "t0.`v_wf_taskGiven_date[1]` >= toDateTime(" + start + ") AND t0.`v_wf_taskGiven_date`[1] <= toDateTime("  + end + ")";
+      where_arr.push("(" + where_task_given + ")");
+    }
+    if (document_type) {
+      var where_document_type = "has(t1.str, '" + document_type.id + "')";
+      where_arr.push("(" + where_document_type + ")");
+    }
+    if (document_label) {
+      var where_document_label = "has(t2.str, '" + document_label + "')";
+      where_arr.push("(" + where_document_label + ")");
+    }
+    if (decision_created.length) {
+      decision_created = decision_created.sort();
+      var start = new Date(task_given[0]);
+      var end = new Date(task_given[task_given.length-1]);
+      start.setHours(0,0,0,0);
+      end.setHours(23,59,59,999);
+      start = Math.floor(start.valueOf() / 1000);
+      end = Math.floor(end.valueOf() / 1000);
+      var where_decision_created = "t3.`v_s_created_date[1]` >= toDateTime(" + start + ") AND t3.`v_s_created_date[1]`[1] <= toDateTime("  + end + ")";
+      where_arr.push("(" + where_decision_created + ")");
+    }
+    var where = where_arr.join(" AND ");
+
+    var query = "SELECT id FROM " + from + " WHERE " + where;
+    var group = groupBy(sort);
+    query = group ? query + " GROUP BY " + group : query;
+    var order = orderBy(sort);
+    query = query ? query + " HAVING sum(sign) > 0" : query;
+    query = order ? query + " ORDER BY " + order : query;
+    return query;
+
+    function groupBy(sort) {
+      var by = "id";
+      if (typeof sort === "string" || sort instanceof String) {
+        var props = sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri) {
+          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
+          var by = property_uri.replace(re, "_");
+          switch (range.id) {
+            case "xsd:dateTime":
+              by = by + "_date";
+              break;
+            case "xsd:boolean":
+            case "xsd:integer":
+              by = by + "_int";
+              break;
+            case "xsd:decimal":
+              by = by + "_dec";
+              break;
+            case "xsd:string":
+            default:
+              by = by + "_str";
+              break;
+          }
+          return by;
+        });
+      }
+      return props ? by + ", " + props : by;
+    }
+
+    function orderBy(sort) {
+      if (typeof sort === "string" || sort instanceof String) {
+        return sort.replace(/'(.+?)'\s+(\w+)/gi, function (match, property_uri, dir) {
+          var range = veda.ontology.properties[property_uri].get("rdfs:range")[0];
+          var by = property_uri.replace(re, "_");
+          var clause;
+          switch (range.id) {
+            case "xsd:dateTime":
+              clause = by + "_date " + dir;
+              break;
+            case "xsd:boolean":
+            case "xsd:integer":
+              clause = by + "_int " + dir;
+              break;
+            case "xsd:decimal":
+              clause = by + "_dec " + dir;
+              break;
+            case "xsd:string":
+            default:
+              clause = by + "_str " + dir;
+              break;
+          }
+          return clause;
+        });
+      }
+    }
+  };
+
   veda.Util.queryFromIndividual = function (individual) {
     var query;
     var flat = flattenIndividual(individual.properties);

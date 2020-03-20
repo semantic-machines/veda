@@ -363,6 +363,7 @@ v-ft:Inbox
   v-fs:sortOrder "'v-s:created' desc" ;
   v-ui:hasTemplate v-ft:InboxTemplate ;
   v-fs:applicableOperation v-ft:MakeDecisionOperation ;
+  v-fs:queryBuilder "veda.Util.queryInbox" ;
   v-fs:searchOnLoad true ;
 .
 v-ft:InboxBlank
@@ -371,6 +372,7 @@ v-ft:InboxBlank
   rdfs:label "Blank inbox task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
   v-wf:onDocument v-ft:InboxDocumentBlank ;
+  v-wf:takenDecision v-ft:DecisionBlank ;
   v-wf:isCompleted false ;
 .
 
@@ -379,6 +381,13 @@ v-ft:InboxDocumentBlank
 #  v-fc:targetType v-s:Document ;
   rdfs:label "Бланк документа входящей задачи"@ru ;
   rdfs:label "Inbox task document blank "@en ;
+.
+
+v-ft:DecisionBlank
+  rdf:type v-fc:Blank ;
+#  v-fc:targetType v-s:Decision ;
+  rdfs:label "Бланк решения по входящей задачи"@ru ;
+  rdfs:label "Inbox task decision blank "@en ;
 .
 
 v-ft:Outbox
@@ -557,10 +566,12 @@ v-ft:TaskBlankTemplate
       </div>
     </div>
     <div class="row">
-      <div class="col-md-4">
-        <em about="v-ft:DecisionDateBundle" property="rdfs:label"></em>
-        <veda-control property="v-wf:takenDecision.v-s:created" data-type="date"></veda-control>
-        <div property="v-wf:takenDecision.v-s:created"></div>
+      <div class="col-md-4" about="@" rel="v-wf:takenDecision">
+        <div>
+          <em about="v-ft:DecisionDateBundle" property="rdfs:label"></em>
+          <veda-control property="v-s:created" data-type="date"></veda-control>
+          <div property="v-s:created"></div>
+        </div>
       </div>
     </div>
   </div>
