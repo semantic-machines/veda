@@ -38,6 +38,7 @@ pub struct Module {
     pub api: APIClient,
     queue_prepared_count: i64,
     notify_channel_url: String,
+    is_ready_notify_channel: bool,
 }
 
 impl Default for Module {
@@ -109,6 +110,7 @@ impl Module {
             api,
             queue_prepared_count: 0,
             notify_channel_url,
+            is_ready_notify_channel: false,
         }
     }
 }
@@ -202,13 +204,12 @@ impl Module {
         heartbeat: &mut fn(&mut Module, &mut T),
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
-        let mut is_ready_notify_channel = false;
         let mut count_timeout_error = 0;
 
         loop {
             heartbeat(self, module_context);
 
-            if !is_ready_notify_channel && !self.notify_channel_url.is_empty() {
+            if !self.is_ready_notify_channel && !self.notify_channel_url.is_empty() {
                 soc = Socket::new(Protocol::Sub0).unwrap();
                 if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
                     error!("fail set timeout, {} err={}", self.notify_channel_url, e);
@@ -221,10 +222,10 @@ impl Module {
                     if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
                         error!("fail subscribe, {} err={}", self.notify_channel_url, e);
                         soc.close();
-                        is_ready_notify_channel = false;
+                        self.is_ready_notify_channel = false;
                     } else {
                         info!("success subscribe on queue changes: {}", self.notify_channel_url);
-                        is_ready_notify_channel = true;
+                        self.is_ready_notify_channel = true;
                     }
                 }
             }
@@ -303,7 +304,7 @@ impl Module {
 
                     if count_timeout_error > 0 && size_batch > 0 {
                         warn!("queue changed but we not received notify message, need reconnect...");
-                        is_ready_notify_channel = false;
+                        self.is_ready_notify_channel = false;
                         count_timeout_error += 1;
                     }
                 } else {
