@@ -105,7 +105,6 @@ v-fs:AdvancedSearchBundle
   rdfs:label "Advanced search"@en ;
 .
 
-
 v-fs:AttributiveSearch
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
@@ -184,6 +183,13 @@ v-fs:query
   rdfs:label "Query"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:boolean ;
+.
+v-fs:queryBuilder
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Построитель запроса"@ru ;
+  rdfs:label "Query builder"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:string ;
 .
 v-fs:loadAll
   rdf:type owl:DatatypeProperty ;
@@ -274,6 +280,7 @@ v-fs:AttributiveSearchModel
   this["v-fs:estimated"] = [ this["v-fs:estimated"][0] || 0 ];
   this["v-fs:authorized"] = [ this["v-fs:authorized"][0] || 0 ];
   this["v-fs:sortOrder"] = [ this["v-fs:sortOrder"][0] || "'v-s:created' desc" ];
+  var queryBuilder = this.hasValue("v-fs:queryBuilder") ? eval(this.get("v-fs:queryBuilder")[0].valueOf()) : veda.Util.queryFromIndividualTT_JOIN;
 
   function evalQuery (query) {
     return new Promise(function (resolve, reject) {
@@ -311,7 +318,7 @@ v-fs:AttributiveSearchModel
             .then(function (blankObject) {
               var vql = veda.Util.queryFromIndividual(blankObject);
               var sort = self["v-fs:sortOrder"][0];
-              var sql = veda.Util.queryFromIndividualTT_JOIN(blankObject, sort);
+              var sql = queryBuilder(blankObject, sort);
               var query = {};
               if (ft && !vql) {
                 query.vql = ft;
