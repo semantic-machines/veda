@@ -389,7 +389,7 @@ fn operation_prepare(
     let upd_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
     new_indv.set_integer("v-s:updateCounter", upd_counter);
 
-    if !new_indv.is_exists("v-s:created") {
+    if cmd == IndvOp::Put && !new_indv.is_exists("v-s:created") {
         new_indv.add_datetime("v-s:created", Utc::now().naive_utc().timestamp());
     }
 

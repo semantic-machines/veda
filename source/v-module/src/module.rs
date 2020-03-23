@@ -11,7 +11,7 @@ use nng::options::RecvTimeout;
 use nng::{Protocol, Socket};
 use std::io::Write;
 use std::time::Duration;
-use std::{thread, time};
+use std::{env, thread, time};
 use uuid::Uuid;
 use v_api::app::ResultCode;
 use v_api::*;
@@ -38,6 +38,7 @@ pub struct Module {
     pub api: APIClient,
     queue_prepared_count: i64,
     notify_channel_url: String,
+    is_ready_notify_channel: bool,
 }
 
 impl Default for Module {
@@ -48,10 +49,26 @@ impl Default for Module {
 
 impl Module {
     pub fn new(storage_mode: StorageMode) -> Self {
+        let args: Vec<String> = env::args().collect();
+
         let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
-        let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
+
+        let mut ft_query_service_url = String::default();
+
+        for el in args.iter() {
+            if el == "ft_query_service_url" {
+                let p: Vec<&str> = el.split('=').collect();
+                ft_query_service_url = p[1].to_owned();
+            }
+        }
+
+        if ft_query_service_url.is_empty() {
+            ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
+        }
+
+        info!("use ft_query_service_url={}", ft_query_service_url);
 
         let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
             p.to_owned()
@@ -93,6 +110,7 @@ impl Module {
             api,
             queue_prepared_count: 0,
             notify_channel_url,
+            is_ready_notify_channel: false,
         }
     }
 }
@@ -175,6 +193,34 @@ impl Module {
         Some(iraw)
     }
 
+    fn connect_to_notify_channel(&mut self) -> Option<Socket> {
+        if !self.is_ready_notify_channel && !self.notify_channel_url.is_empty() {
+            let soc = Socket::new(Protocol::Sub0).unwrap();
+            if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
+                error!("fail set timeout, {} err={}", self.notify_channel_url, e);
+                return None;
+            }
+
+            if let Err(e) = soc.dial(&self.notify_channel_url) {
+                error!("fail connect to, {} err={}", self.notify_channel_url, e);
+                return None;
+            } else {
+                let all_topics = vec![];
+                if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
+                    error!("fail subscribe, {} err={}", self.notify_channel_url, e);
+                    soc.close();
+                    self.is_ready_notify_channel = false;
+                    return None;
+                } else {
+                    info!("success subscribe on queue changes: {}", self.notify_channel_url);
+                    self.is_ready_notify_channel = true;
+                    return Some(soc);
+                }
+            }
+        }
+        None
+    }
+
     pub fn listen_queue<T>(
         &mut self,
         queue_consumer: &mut Consumer,
@@ -186,31 +232,13 @@ impl Module {
         heartbeat: &mut fn(&mut Module, &mut T),
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
-        let mut is_ready_notify_channel = false;
         let mut count_timeout_error = 0;
 
         loop {
             heartbeat(self, module_context);
 
-            if !is_ready_notify_channel && !self.notify_channel_url.is_empty() {
-                soc = Socket::new(Protocol::Sub0).unwrap();
-                if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
-                    error!("fail set timeout, {} err={}", self.notify_channel_url, e);
-                }
-
-                if let Err(e) = soc.dial(&self.notify_channel_url) {
-                    error!("fail connect to, {} err={}", self.notify_channel_url, e);
-                } else {
-                    let all_topics = vec![];
-                    if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
-                        error!("fail subscribe, {} err={}", self.notify_channel_url, e);
-                        soc.close();
-                        is_ready_notify_channel = false;
-                    } else {
-                        info!("success subscribe on queue changes: {}", self.notify_channel_url);
-                        is_ready_notify_channel = true;
-                    }
-                }
+            if let Some(s) = self.connect_to_notify_channel() {
+                soc = s;
             }
 
             // read queue current part info
@@ -287,7 +315,7 @@ impl Module {
 
                     if count_timeout_error > 0 && size_batch > 0 {
                         warn!("queue changed but we not received notify message, need reconnect...");
-                        is_ready_notify_channel = false;
+                        self.is_ready_notify_channel = false;
                         count_timeout_error += 1;
                     }
                 } else {
