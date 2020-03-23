@@ -1230,6 +1230,7 @@ for (i = 0; i < 1; i++) {
             var new_test_doc1_remove_from1 = {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
+                'v-s:created': now,
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
