@@ -1,8 +1,13 @@
 #[macro_use]
 extern crate log;
 
-use std::process;
-use std::collections::HashMap;
+use std::{process, fs};
+use std::collections::{HashMap, HashSet};
+
+use std::fs::{File, OpenOptions};
+use std::io::{BufReader, BufWriter};
+use bincode::{deserialize_from, serialize_into};
+use serde::{Deserialize, Serialize};
 
 use clickhouse_rs::{Pool, errors::Error, Block, ClientHandle};
 use chrono::prelude::*;
@@ -23,12 +28,13 @@ use url::Url;
 
 type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
-type BatchElement = (Individual, i8);
+type BatchElement = (i64, Individual, i8);
 
 const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
 const EXPORTED_TYPE: [&str; 1] = ["v-s:UserThing"];
 const DB: &str = "veda_pt";
+const PROPS_OPS_FILE_NAME: &str = "data/veda-search-index-pt";
 
 pub struct Stats {
     total_prepare_duration: usize,
@@ -54,6 +60,19 @@ enum ColumnData {
     Dec(Vec<Vec<f64>>),
 }
 
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub struct PropsOps {
+    data: HashMap<String, HashSet<i64>>
+}
+
+impl Default for PropsOps {
+    fn default() -> Self {
+        Self {
+            data: HashMap::new(),
+        }
+    }
+}
+
 impl Context {
 
     fn add_to_typed_batch(&mut self, queue_element: &mut Individual) {
@@ -75,6 +94,7 @@ impl Context {
                     if !self.onto.is_some_entered(&type_name, &EXPORTED_TYPE) {
                         continue;
                     }
+                    let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
                     let mut prev_state = Individual::default();
                     get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
                     if !self.typed_batch.contains_key(&type_name) {
@@ -82,7 +102,8 @@ impl Context {
                         self.typed_batch.insert(type_name.clone(), new_batch);
                     }
                     let batch = self.typed_batch.get_mut(&type_name).unwrap();
-                    batch.push((prev_state, -1));
+                    batch.push((op_id, prev_state, -1));
+                    //info!("op_id = {}, sign = {}, type = {}", op_id, -1, type_name);
                 }
             }
         }
@@ -92,6 +113,7 @@ impl Context {
                 if !self.onto.is_some_entered(&type_name, &EXPORTED_TYPE) {
                     continue;
                 }
+                let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
                 let mut new_state = Individual::default();
                 get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
                 if !self.typed_batch.contains_key(&type_name) {
@@ -99,7 +121,8 @@ impl Context {
                     self.typed_batch.insert(type_name.clone(), new_batch);
                 }
                 let batch = self.typed_batch.get_mut(&type_name).unwrap();
-                batch.push((new_state, 1));
+                batch.push((op_id, new_state, 1));
+                //info!("op_id = {}, sign = {}, type = {}", op_id, 1, type_name);
             }
         }
     }
@@ -110,13 +133,40 @@ impl Context {
             let client = &mut self.pool.get_handle().await?;
             let db_predicate_tables = &mut self.db_predicate_tables;
             let stats = &mut self.stats;
+
+            //Read or create batch info file
+            let f = OpenOptions::new()
+                            .read(true)
+                            .write(true)
+                            .create(true)
+                            .truncate(false)
+                            .open(PROPS_OPS_FILE_NAME)?;
+            let props_ops_file = f.try_clone()?;
+            let mut props_ops = PropsOps::default();
+            let mut reader = BufReader::new(f);
+            loop {
+                let res: Result<PropsOps, _> = deserialize_from(&mut reader);
+                match res {
+                    Ok(d) => {
+                        for (prop, ops) in d.data {
+                            props_ops.data.insert(prop, ops);
+                        }
+                    }
+                    Err(_) => break,
+                }
+            }
+            if props_ops.data.len() > 0 {
+                info!("Found info file for uncompleted previous batch.");
+            }
+
             for (type_name, batch) in self.typed_batch.iter_mut() {
                 while batch.len() > BLOCK_LIMIT {
                     let mut slice = batch.drain(0..BLOCK_LIMIT).collect();
-                    Context::process_batch(&type_name, &mut slice, client, db_predicate_tables, stats).await?;
+                    Context::process_batch(&type_name, &mut slice, client, db_predicate_tables, stats, &mut props_ops, &props_ops_file).await?;
                 }
-                Context::process_batch(&type_name, batch, client, db_predicate_tables, stats).await?;
+                Context::process_batch(&type_name, batch, client, db_predicate_tables, stats, &mut props_ops, &props_ops_file).await?;
             }
+            fs::remove_file(PROPS_OPS_FILE_NAME)?;
             self.typed_batch.clear();
             stats.last = Instant::now();
             info!("Batch processed in {} ms", now.elapsed().as_millis());
@@ -124,7 +174,15 @@ impl Context {
         Ok(())
     }
 
-    async fn process_batch(type_name: &str, batch: &mut Batch, client: &mut ClientHandle, db_predicate_tables: &mut HashMap<String, HashMap<String, String>>, stats: &mut Stats) -> Result<(), Error> {
+    async fn process_batch(
+        type_name: &str,
+        batch: &mut Batch,
+        client: &mut ClientHandle,
+        db_predicate_tables: &mut HashMap<String, HashMap<String, String>>,
+        stats: &mut Stats,
+        props_ops: &mut PropsOps,
+        props_ops_file: &File,
+    ) -> Result<(), Error> {
 
         let mut predicate_tables: HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, HashMap<String, ColumnData>)> = HashMap::new();
 
@@ -136,8 +194,8 @@ impl Context {
 
         info!("Processing class batch: {}, count: {}", type_name, rows);
 
-        for (individual, sign) in batch {
-            Context::add_to_tables(individual, type_name, *sign, &mut predicate_tables);
+        for (op_id, individual, sign) in batch {
+            Context::add_to_tables(individual, type_name, *sign, &mut predicate_tables, *op_id, props_ops);
         }
 
         let elapsed = now.elapsed().as_millis();
@@ -157,6 +215,8 @@ impl Context {
             let table = format!("{}.`{}`", DB, predicate);
 
             client.insert(table, block).await?;
+
+            serialize_into(&mut BufWriter::new(props_ops_file), &props_ops).unwrap();
         }
 
         let mut insert_duration = now.elapsed().as_millis();
@@ -193,6 +253,8 @@ impl Context {
         type_name: &str,
         sign: i8,
         predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, HashMap<String, ColumnData>)>,
+        op_id: i64,
+        props_ops: &mut PropsOps,
     ) {
 
         let id = individual.get_id().to_owned();
@@ -204,14 +266,24 @@ impl Context {
         let mut text_content: Vec<String> = Vec::new();
 
         for predicate in individual.get_predicates() {
-            Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, predicate, predicate_tables, &mut text_content);
+            if !props_ops.data.contains_key(&predicate) {
+                props_ops.data.insert(predicate.to_string(), HashSet::new());
+            }
+            let ops = props_ops.data.get_mut(&predicate).unwrap();
+            let signed_op = op_id * (sign as i64);
+            if !ops.contains(&signed_op) {
+                Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, &predicate, predicate_tables, &mut text_content);
+                ops.insert(signed_op);
+            } else {
+                info!("Skip already exported, uri = {}, predicate = {}, op_id = {}", id, predicate, signed_op);
+            }
         }
 
         if !text_content.is_empty() {
             let text_predicate = String::from("text");
             let text = text_content.join(" ");
             individual.set_string(&text_predicate, &text, Lang::NONE);
-            Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, text_predicate, predicate_tables, &mut text_content);
+            Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, &text_predicate, predicate_tables, &mut text_content);
         }
     }
 
@@ -222,17 +294,17 @@ impl Context {
         created: DateTime<Tz>,
         type_name: &str,
         individual: &mut Individual,
-        predicate: String,
+        predicate: &str,
         predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, HashMap<String, ColumnData>)>,
         text_content: &mut Vec<String>
     ) {
-        if let Some(resources) = individual.get_resources(&predicate) {
+        if let Some(resources) = individual.get_resources(predicate) {
 
-            if !predicate_tables.contains_key(&predicate) {
+            if !predicate_tables.contains_key(predicate) {
                 let new_table = (vec![], vec![], vec![], vec![], vec![], HashMap::new());
-                predicate_tables.insert(predicate.clone(), new_table);
+                predicate_tables.insert(predicate.to_string(), new_table);
             }
-            let predicate_table = predicate_tables.get_mut(&predicate).unwrap();
+            let predicate_table = predicate_tables.get_mut(predicate).unwrap();
             let (type_column, created_column, id_column, sign_column, version_column, columns) = predicate_table;
             type_column.push(type_name.to_owned());
             created_column.push(created);
