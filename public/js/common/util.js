@@ -752,6 +752,7 @@ veda.Module(function (veda) { "use strict";
         task_label = taskBlank.get("rdfs:label"),
         task_created = taskBlank.get("v-s:created"),
         task_given = taskBlank.get("v-wf:dateGiven"),
+        task_completed = taskBlank.get("v-wf:isCompleted"),
         document_type,
         document_label,
         decision_created;
@@ -768,22 +769,27 @@ veda.Module(function (veda) { "use strict";
 
     var re = /[^a-zA-Z0-9]/g;
 
-    var from = "veda_tt.`s-wf:UserTaskForm` AS t0";
+    var from = "veda_tt.`v-wf:DecisionForm` AS t0";
     if (document_type) {
-      from += " JOIN veda_pt.`rdf:type` AS t1 ON t0.v_wf_onDocument_str[1] = t1.id";
+      from += " JOIN veda_pt.`rdf:type` AS t1 ON t0.`v_wf_onDocument_str`[1] = t1.id";
     }
     if (document_label) {
-      from += " JOIN veda_pt.`rdfs:label` AS t2 ON t0.v_wf_onDocument_str[1] = t2.id";
+      from += " JOIN veda_pt.`rdfs:label` AS t2 ON t0.`v_wf_onDocument_str`[1] = t2.id";
     }
-    if (decision_created) {
-      from += " JOIN veda_pt.`rdf:type` AS t3 ON t0.v_wf_takenDecision_str[1] = t3.id";
+    if (decision_created.length) {
+      from += " JOIN veda_pt.`rdf:type` AS t3 ON t0.`v_wf_takenDecision_str`[1] = t3.id";
     }
 
     var where_arr = [];
 
     if (!withDeleted) {
-      var where_deleted = !withDeleted ? "NOT (t0.v_s_deleted_int = [1])" : false;
+      var where_deleted = !withDeleted ? "NOT (t0.`v_s_deleted_int` = [1])" : false;
       where_arr.push("(" + where_deleted + ")");
+    }
+    if (task_completed.length) {
+      var bool = task_completed[0];
+      var where_task_completed = "t0.`v_wf_isCompleted_int` = [" + (bool ? 1 : 0) + "]";
+      where_arr.push("(" + where_task_completed + ")");
     }
     if (task_from.length) {
       var where_task_from = task_from.map(function (val) {
@@ -798,31 +804,47 @@ veda.Module(function (veda) { "use strict";
       where_arr.push("(" + where_task_to + ")");
     }
     if (task_label.length) {
-      var where_task_label = task_label.map(function (val) {
-        return "has(t0.`rdfs_label_str`, '" + val + "')";
-      }).join(" OR ");
+      var where_task_label = task_label
+      .filter(Boolean)
+      .map( function (value) {
+        var q = value;
+        var lines = q.trim().split("\n");
+        var lineQueries = lines.map(function (line) {
+          var words = line
+            .trim()
+            .replace(/[-*\s]+/g, " ")
+            .split(" ")
+            .filter(function (word, i, words) {
+              return words.length > 1 || word.length > 3
+            });
+          return words.length && "arrayStringConcat(t0.`rdfs_label_str`, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
+        });
+        return lineQueries.filter(Boolean).join(" OR ");
+      })
+      .filter(Boolean)
+      .join(" OR ");
       where_arr.push("(" + where_task_label + ")");
     }
     if (task_created.length) {
-      task_created = task_created.sort();
+      task_created = task_created.sort(function(a, b){return a-b});
       var start = new Date(task_created[0]);
       var end = new Date(task_created[task_created.length-1]);
       start.setHours(0,0,0,0);
       end.setHours(23,59,59,999);
       start = Math.floor(start.valueOf() / 1000);
       end = Math.floor(end.valueOf() / 1000);
-      var where_task_created = "t0.`v_s_created_date[1]` >= toDateTime(" + start + ") AND t0.`v_s_created_date`[1] <= toDateTime("  + end + ")";
+      var where_task_created = "t0.`v_s_created_date`[1] >= toDateTime(" + start + ") AND t0.`v_s_created_date`[1] <= toDateTime("  + end + ")";
       where_arr.push("(" + where_task_created + ")");
     }
     if (task_given.length) {
-      task_given = task_given.sort();
+      task_given = task_given.sort(function(a, b){return a-b});
       var start = new Date(task_given[0]);
       var end = new Date(task_given[task_given.length-1]);
       start.setHours(0,0,0,0);
       end.setHours(23,59,59,999);
       start = Math.floor(start.valueOf() / 1000);
       end = Math.floor(end.valueOf() / 1000);
-      var where_task_given = "t0.`v_wf_taskGiven_date[1]` >= toDateTime(" + start + ") AND t0.`v_wf_taskGiven_date`[1] <= toDateTime("  + end + ")";
+      var where_task_given = "t0.`v_wf_taskGiven_date`[1] >= toDateTime(" + start + ") AND t0.`v_wf_taskGiven_date`[1] <= toDateTime("  + end + ")";
       where_arr.push("(" + where_task_given + ")");
     }
     if (document_type) {
@@ -830,18 +852,36 @@ veda.Module(function (veda) { "use strict";
       where_arr.push("(" + where_document_type + ")");
     }
     if (document_label) {
-      var where_document_label = "has(t2.str, '" + document_label + "')";
+      var where_document_label = [document_label]
+      .filter(Boolean)
+      .map( function (value) {
+        var q = value;
+        var lines = q.trim().split("\n");
+        var lineQueries = lines.map(function (line) {
+          var words = line
+            .trim()
+            .replace(/[-*\s]+/g, " ")
+            .split(" ")
+            .filter(function (word, i, words) {
+              return words.length > 1 || word.length > 3
+            });
+          return words.length && "arrayStringConcat(t2.str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
+        });
+        return lineQueries.filter(Boolean).join(" OR ");
+      })
+      .filter(Boolean)
+      .join(" OR ");
       where_arr.push("(" + where_document_label + ")");
     }
     if (decision_created.length) {
-      decision_created = decision_created.sort();
+      decision_created = decision_created.sort(function(a, b){return a-b});
       var start = new Date(task_given[0]);
       var end = new Date(task_given[task_given.length-1]);
       start.setHours(0,0,0,0);
       end.setHours(23,59,59,999);
       start = Math.floor(start.valueOf() / 1000);
       end = Math.floor(end.valueOf() / 1000);
-      var where_decision_created = "t3.`v_s_created_date[1]` >= toDateTime(" + start + ") AND t3.`v_s_created_date[1]`[1] <= toDateTime("  + end + ")";
+      var where_decision_created = "t3.`v_s_created_date` >= toDateTime(" + start + ") AND t3.`v_s_created_date` <= toDateTime("  + end + ")";
       where_arr.push("(" + where_decision_created + ")");
     }
     var where = where_arr.join(" AND ");
