@@ -278,6 +278,7 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.queryFromIndividualPT = function (individual, sort) {
+    var re = /[^a-zA-Z0-9]/g;
     try {
       var query = buildQuery;
       var order = orderBy(sort);
@@ -747,6 +748,7 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.queryInbox = function (taskBlank, sort, withDeleted) {
+    var re = /[^a-zA-Z0-9]/g;
     var task_from = taskBlank.get("v-wf:from"),
         task_to = taskBlank.get("v-wf:to"),
         task_label = taskBlank.get("rdfs:label"),
@@ -766,8 +768,6 @@ veda.Module(function (veda) { "use strict";
       var decision = taskBlank.get("v-wf:takenDecision")[0];
       decision_created = decision.get("v-s:created");
     }
-
-    var re = /[^a-zA-Z0-9]/g;
 
     var from = "veda_tt.`v-wf:DecisionForm` AS t0";
     if (document_type) {
