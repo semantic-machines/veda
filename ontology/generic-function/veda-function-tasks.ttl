@@ -56,7 +56,7 @@ v-ft:UserTaskFormIndex_2_1
 v-ft:TaskCounter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Счетчик задач "@ru ;
+  rdfs:label "Счетчик задач"@ru ;
   rdfs:label "Task counter"@en ;
   v-ui:hasModel v-ft:TaskCounterModel;
   v-ui:hasTemplate v-ft:TaskCounterTemplate;
@@ -372,21 +372,17 @@ v-ft:InboxBlank
   rdfs:label "Blank inbox task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
   v-wf:onDocument v-ft:InboxDocumentBlank ;
-  v-wf:takenDecision v-ft:DecisionBlank ;
+  v-wf:takenDecision v-ft:InboxDecisionBlank ;
   v-wf:isCompleted false ;
 .
-
 v-ft:InboxDocumentBlank
   rdf:type v-fc:Blank ;
-#  v-fc:targetType v-s:Document ;
-  rdfs:label "Бланк документа входящей задачи"@ru ;
+  rdfs:label "Бланк документа по входящей задаче"@ru ;
   rdfs:label "Inbox task document blank "@en ;
 .
-
-v-ft:DecisionBlank
+v-ft:InboxDecisionBlank
   rdf:type v-fc:Blank ;
-#  v-fc:targetType v-s:Decision ;
-  rdfs:label "Бланк решения по входящей задачи"@ru ;
+  rdfs:label "Бланк решения по входящей задаче"@ru ;
   rdfs:label "Inbox task decision blank "@en ;
 .
 
@@ -406,7 +402,19 @@ v-ft:OutboxBlank
   rdfs:label "Бланк исходящих задач"@ru ;
   rdfs:label "Blank outbox task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
+  v-wf:onDocument v-ft:OutboxDocumentBlank ;
+  v-wf:takenDecision v-ft:OutboxDecisionBlank ;
   v-wf:isCompleted false ;
+.
+v-ft:OutboxDocumentBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк документа по исходящей задаче"@ru ;
+  rdfs:label "Outbox task document blank "@en ;
+.
+v-ft:OutboxDecisionBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк решения по исходящей задаче"@ru ;
+  rdfs:label "Outbox task decision blank "@en ;
 .
 
 v-ft:Completed
@@ -425,7 +433,19 @@ v-ft:CompletedBlank
   rdfs:label "Бланк выполненных задач"@ru ;
   rdfs:label "Blank completed task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
+  v-wf:onDocument v-ft:CompletedDocumentBlank ;
+  v-wf:takenDecision v-ft:CompletedDecisionBlank ;
   v-wf:isCompleted true ;
+.
+v-ft:CompletedDocumentBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк документа по выполненной задаче"@ru ;
+  rdfs:label "Completed task document blank "@en ;
+.
+v-ft:CompletedDecisionBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк решения по выполненной задаче"@ru ;
+  rdfs:label "Completed task decision blank "@en ;
 .
 
 v-ft:OutboxCompleted
@@ -444,7 +464,19 @@ v-ft:OutboxCompletedBlank
   rdfs:label "Бланк выполненных задач"@ru ;
   rdfs:label "Blank completed task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
+  v-wf:onDocument v-ft:OutboxCompletedDocumentBlank ;
+  v-wf:takenDecision v-ft:OutboxCompletedDecisionBlank ;
   v-wf:isCompleted true ;
+.
+v-ft:OutboxCompletedDocumentBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк документа по выполненной исходящей задаче"@ru ;
+  rdfs:label "Completed outbox task document blank "@en ;
+.
+v-ft:OutboxCompletedDecisionBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк решения по выполненной исходящей задаче"@ru ;
+  rdfs:label "Completed outbox task decision blank "@en ;
 .
 
 v-ft:MyBundle
@@ -566,7 +598,7 @@ v-ft:TaskBlankTemplate
       </div>
     </div>
     <div class="row">
-      <div class="col-md-4" about="@" rel="v-wf:takenDecision">
+      <div class="col-md-4" about="@" data-embedded="true" rel="v-wf:takenDecision">
         <div>
           <em about="v-ft:DecisionDateBundle" property="rdfs:label"></em>
           <veda-control property="v-s:created" data-type="date"></veda-control>

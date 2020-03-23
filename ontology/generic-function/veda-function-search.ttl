@@ -310,6 +310,7 @@ v-fs:AttributiveSearchModel
 
     return Promise.resolve(ft)
       .then(function (ft) {
+        var query = {};
         if ( self.hasValue("v-fs:searchBlank") ) {
           return self["v-fs:searchBlank"][0].load()
             .then(function (searchBlank) {
@@ -319,7 +320,6 @@ v-fs:AttributiveSearchModel
               var vql = veda.Util.queryFromIndividual(blankObject);
               var sort = self["v-fs:sortOrder"][0];
               var sql = queryBuilder(blankObject, sort);
-              var query = {};
               if (ft && !vql) {
                 query.vql = ft;
               } else if (ft && vql) {
@@ -333,7 +333,8 @@ v-fs:AttributiveSearchModel
               return query;
             })
         } else {
-          return queryString;
+          query.vql = ft;
+          return query;
         }
       })
       .then(performQuery.bind(self));
