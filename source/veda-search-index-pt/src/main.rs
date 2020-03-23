@@ -204,14 +204,14 @@ impl Context {
         let mut text_content: Vec<String> = Vec::new();
 
         for predicate in individual.get_predicates() {
-            Context::add_to_predicate_table(&id, version, sign, &created, type_name, individual, predicate, predicate_tables, &mut text_content);
+            Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, predicate, predicate_tables, &mut text_content);
         }
 
         if !text_content.is_empty() {
             let text_predicate = String::from("text");
             let text = text_content.join(" ");
             individual.set_string(&text_predicate, &text, Lang::NONE);
-            Context::add_to_predicate_table(&id, version, sign, &created, type_name, individual, text_predicate, predicate_tables, &mut text_content);
+            Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, text_predicate, predicate_tables, &mut text_content);
         }
     }
 
@@ -219,7 +219,7 @@ impl Context {
         id: &str,
         version: u32,
         sign: i8,
-        created: &DateTime<Tz>,
+        created: DateTime<Tz>,
         type_name: &str,
         individual: &mut Individual,
         predicate: String,
@@ -235,7 +235,7 @@ impl Context {
             let predicate_table = predicate_tables.get_mut(&predicate).unwrap();
             let (type_column, created_column, id_column, sign_column, version_column, columns) = predicate_table;
             type_column.push(type_name.to_owned());
-            created_column.push(created.to_owned());
+            created_column.push(created);
             id_column.push(id.to_owned());
             sign_column.push(sign);
             version_column.push(version);
