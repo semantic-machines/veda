@@ -216,7 +216,14 @@ impl Context {
 
             client.insert(table, block).await?;
 
-            serialize_into(&mut BufWriter::new(props_ops_file), &props_ops).unwrap();
+            let f = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create(true)
+                .truncate(false)
+                .open(PROPS_OPS_FILE_NAME)?;
+
+            serialize_into(&mut BufWriter::new(f), &props_ops).unwrap();
         }
 
         let mut insert_duration = now.elapsed().as_millis();
