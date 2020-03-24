@@ -11,6 +11,7 @@ use nng::options::RecvTimeout;
 use nng::{Protocol, Socket};
 use std::io::Write;
 use std::time::Duration;
+use std::time::Instant;
 use std::{env, thread, time};
 use uuid::Uuid;
 use v_api::app::ResultCode;
@@ -230,9 +231,13 @@ impl Module {
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<bool, PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32) -> bool,
         heartbeat: &mut fn(&mut Module, &mut T),
+        max_timeout_between_batches: Option<u64>,
+        min_batch_size_to_cancel_timeout: Option<u32>,
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut count_timeout_error = 0;
+
+        let mut prev_batch_time = Instant::now();
 
         loop {
             heartbeat(self, module_context);
@@ -322,6 +327,25 @@ impl Module {
                     count_timeout_error = 0;
                 }
             }
+
+            if let Some(t) = max_timeout_between_batches {
+                let delta = prev_batch_time.elapsed().as_millis() as u64;
+                if let Some(c) = min_batch_size_to_cancel_timeout {
+                    if prepared_batch_size < c {
+                        if delta < t {
+                            thread::sleep(time::Duration::from_millis(t - delta));
+                            info!("sleep {} ms", t - delta);
+                        }
+                    }
+                } else {
+                    if delta < t {
+                        thread::sleep(time::Duration::from_millis(t - delta));
+                        info!("sleep {} ms", t - delta);
+                    }
+                }
+            }
+
+            prev_batch_time = Instant::now();
         }
     }
 
