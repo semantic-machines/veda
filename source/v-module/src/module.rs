@@ -58,7 +58,7 @@ impl Module {
         let mut ft_query_service_url = String::default();
 
         for el in args.iter() {
-            if el == "ft_query_service_url" {
+            if el.starts_with("--ft_query_service_url") {
                 let p: Vec<&str> = el.split('=').collect();
                 ft_query_service_url = p[1].to_owned();
             }
