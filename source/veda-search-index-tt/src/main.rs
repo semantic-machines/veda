@@ -517,8 +517,6 @@ async fn main() -> Result<(), Error> {
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
         &mut (after as fn(&mut Module, &mut Context, u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut Context)),
-        None,
-        None
     );
     Ok(())
 }

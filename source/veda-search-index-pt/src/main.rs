@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate log;
 
-use std::process;
+use std::{process};
 use std::collections::HashMap;
 
 use clickhouse_rs::{Pool, errors::Error, Block, ClientHandle};
@@ -478,8 +478,6 @@ async fn main() ->  Result<(), Error> {
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
         &mut (after as fn(&mut Module, &mut Context, u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut Context)),
-        None,
-        None
     );
     Ok(())
 }
