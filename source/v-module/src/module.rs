@@ -503,9 +503,9 @@ pub fn wait_module(module_name: &str, wait_op_id: i64) -> i64 {
         loop {
             if let Some((_, committed)) = info.read_info() {
                 if committed >= wait_op_id {
+            	    info!("wait module [{}] to complete op_id={}, found commited_op_id={}", module_name, wait_op_id, committed);
                     return committed;
                 }
-                info!("wait module [{}] to complete op_id={}, found commited_op_id={}", module_name, wait_op_id, committed);
             } else {
                 error!("fail read info for module [{}]", module_name);
                 //break;

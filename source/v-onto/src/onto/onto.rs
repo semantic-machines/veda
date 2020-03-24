@@ -78,7 +78,7 @@ impl Onto {
                 }
             //}
             } else {
-                warn!("is not onto element: {}", indv.obj.uri)
+                debug!("is not onto element: {}", indv.obj.uri)
             }
         }
         true
