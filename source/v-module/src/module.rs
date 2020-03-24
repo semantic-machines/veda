@@ -40,6 +40,8 @@ pub struct Module {
     queue_prepared_count: i64,
     notify_channel_url: String,
     is_ready_notify_channel: bool,
+    max_timeout_between_batches: Option<u64>,
+    min_batch_size_to_cancel_timeout: Option<u32>,
 }
 
 impl Default for Module {
@@ -57,11 +59,25 @@ impl Module {
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
 
         let mut ft_query_service_url = String::default();
+        let mut max_timeout_between_batches = None;
+        let mut min_batch_size_to_cancel_timeout = None;
 
         for el in args.iter() {
             if el.starts_with("--ft_query_service_url") {
                 let p: Vec<&str> = el.split('=').collect();
                 ft_query_service_url = p[1].to_owned();
+            } else if el.starts_with("--max_timeout_between_batches") {
+                let p: Vec<&str> = el.split('=').collect();
+                if let Ok(v) = p[1].parse::<u64>() {
+                    max_timeout_between_batches = Some(v);
+                    info!("use {} = {} ms", el, v);
+                }
+            } else if el.starts_with("--min_batch_size_to_cancel_timeout") {
+                let p: Vec<&str> = el.split('=').collect();
+                if let Ok(v) = p[1].parse::<u32>() {
+                    min_batch_size_to_cancel_timeout = Some(v);
+                    info!("use {} = {}", el, v);
+                }
             }
         }
 
@@ -112,6 +128,8 @@ impl Module {
             queue_prepared_count: 0,
             notify_channel_url,
             is_ready_notify_channel: false,
+            max_timeout_between_batches,
+            min_batch_size_to_cancel_timeout,
         }
     }
 }
@@ -231,8 +249,6 @@ impl Module {
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<bool, PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32) -> bool,
         heartbeat: &mut fn(&mut Module, &mut T),
-        max_timeout_between_batches: Option<u64>,
-        min_batch_size_to_cancel_timeout: Option<u32>,
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut count_timeout_error = 0;
@@ -328,9 +344,9 @@ impl Module {
                 }
             }
 
-            if let Some(t) = max_timeout_between_batches {
+            if let Some(t) = self.max_timeout_between_batches {
                 let delta = prev_batch_time.elapsed().as_millis() as u64;
-                if let Some(c) = min_batch_size_to_cancel_timeout {
+                if let Some(c) = self.min_batch_size_to_cancel_timeout {
                     if prepared_batch_size < c {
                         if delta < t {
                             thread::sleep(time::Duration::from_millis(t - delta));

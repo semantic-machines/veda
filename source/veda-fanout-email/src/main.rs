@@ -65,8 +65,6 @@ fn main() -> Result<(), i32> {
         &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
         &mut (after_batch as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut Context)),
-        None,
-        None
     );
     Ok(())
 }
