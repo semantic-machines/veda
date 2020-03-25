@@ -11,6 +11,7 @@ use nng::options::RecvTimeout;
 use nng::{Protocol, Socket};
 use std::io::Write;
 use std::time::Duration;
+use std::time::Instant;
 use std::{env, thread, time};
 use uuid::Uuid;
 use v_api::app::ResultCode;
@@ -39,6 +40,8 @@ pub struct Module {
     queue_prepared_count: i64,
     notify_channel_url: String,
     is_ready_notify_channel: bool,
+    max_timeout_between_batches: Option<u64>,
+    min_batch_size_to_cancel_timeout: Option<u32>,
 }
 
 impl Default for Module {
@@ -56,11 +59,25 @@ impl Module {
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
 
         let mut ft_query_service_url = String::default();
+        let mut max_timeout_between_batches = None;
+        let mut min_batch_size_to_cancel_timeout = None;
 
         for el in args.iter() {
             if el.starts_with("--ft_query_service_url") {
                 let p: Vec<&str> = el.split('=').collect();
                 ft_query_service_url = p[1].to_owned();
+            } else if el.starts_with("--max_timeout_between_batches") {
+                let p: Vec<&str> = el.split('=').collect();
+                if let Ok(v) = p[1].parse::<u64>() {
+                    max_timeout_between_batches = Some(v);
+                    info!("use {} = {} ms", el, v);
+                }
+            } else if el.starts_with("--min_batch_size_to_cancel_timeout") {
+                let p: Vec<&str> = el.split('=').collect();
+                if let Ok(v) = p[1].parse::<u32>() {
+                    min_batch_size_to_cancel_timeout = Some(v);
+                    info!("use {} = {}", el, v);
+                }
             }
         }
 
@@ -111,6 +128,8 @@ impl Module {
             queue_prepared_count: 0,
             notify_channel_url,
             is_ready_notify_channel: false,
+            max_timeout_between_batches,
+            min_batch_size_to_cancel_timeout,
         }
     }
 }
@@ -234,6 +253,8 @@ impl Module {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut count_timeout_error = 0;
 
+        let mut prev_batch_time = Instant::now();
+
         loop {
             heartbeat(self, module_context);
 
@@ -322,6 +343,25 @@ impl Module {
                     count_timeout_error = 0;
                 }
             }
+
+            if let Some(t) = self.max_timeout_between_batches {
+                let delta = prev_batch_time.elapsed().as_millis() as u64;
+                if let Some(c) = self.min_batch_size_to_cancel_timeout {
+                    if prepared_batch_size < c {
+                        if delta < t {
+                            thread::sleep(time::Duration::from_millis(t - delta));
+                            info!("sleep {} ms", t - delta);
+                        }
+                    }
+                } else {
+                    if delta < t {
+                        thread::sleep(time::Duration::from_millis(t - delta));
+                        info!("sleep {} ms", t - delta);
+                    }
+                }
+            }
+
+            prev_batch_time = Instant::now();
         }
     }
 
@@ -463,9 +503,9 @@ pub fn wait_module(module_name: &str, wait_op_id: i64) -> i64 {
         loop {
             if let Some((_, committed)) = info.read_info() {
                 if committed >= wait_op_id {
+            	    info!("wait module [{}] to complete op_id={}, found commited_op_id={}", module_name, wait_op_id, committed);
                     return committed;
                 }
-                info!("wait module [{}] to complete op_id={}, found commited_op_id={}", module_name, wait_op_id, committed);
             } else {
                 error!("fail read info for module [{}]", module_name);
                 //break;
