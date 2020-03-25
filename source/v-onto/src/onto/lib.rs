@@ -9,5 +9,6 @@ pub mod individual2msgpack;
 pub mod json2individual;
 pub mod msgpack2individual;
 pub mod onto;
+pub mod onto_index;
 pub mod parser;
 pub mod resource;

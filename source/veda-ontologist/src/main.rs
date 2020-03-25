@@ -13,10 +13,10 @@ use v_api::app::ResultCode;
 use v_api::IndvOp;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
+use v_onto::onto_index::OntoIndex;
 use v_onto::{individual::*, parser::*};
 use v_queue::consumer::*;
 use v_search::ft_client::FTQuery;
-use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -81,14 +81,11 @@ fn main() -> std::io::Result<()> {
         query,
         ontology_file_path: ontology_file_path.to_owned(),
         onto_types: onto_types.iter().map(|s| String::from(*s)).collect(),
-        onto_index: PickleDb::new(
-            path.to_owned() + "/onto-index.db",
-            PickleDbDumpPolicy::AutoDump,
-            SerializationMethod::Json, ),
+        onto_index: OntoIndex::load(),
         is_need_generate: false,
     };
 
-    if ctx.onto_index.total_keys() == 0 {
+    if ctx.onto_index.len() == 0 {
         recover_index_from_ft(&mut ctx, &mut module);
         if let Err(e) = ctx.onto_index.dump() {
             error!("fail flush onto index, err={}", e);
@@ -113,7 +110,7 @@ pub struct Context {
     query: String,
     ontology_file_path: String,
     onto_types: Vec<String>,
-    onto_index: PickleDb,
+    onto_index: OntoIndex,
     is_need_generate: bool,
 }
 
@@ -144,7 +141,7 @@ fn prepare(_module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Contex
         info!("update onto index, id={}, counter={}, is_deleted={}", id, counter, is_deleted);
 
         if is_deleted {
-            if let Err(e) = ctx.onto_index.rem(&id) {
+            if let Err(e) = ctx.onto_index.remove(&id) {
                 error!("fail remove from onto index, err={}", e);
             }
         } else {
@@ -163,10 +160,10 @@ fn recover_index_from_ft(ctx: &mut Context, module: &mut Module) -> bool {
 
     let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", &ctx.query));
     if res.result_code == ResultCode::Ok && res.count > 0 {
-//        if let Err(e) = ctx.onto_index.drop() {
-//            error!("fail clean index, err={}", e);
-//            return false;
-//       }
+        //        if let Err(e) = ctx.onto_index.drop() {
+        //            error!("fail clean index, err={}", e);
+        //            return false;
+        //       }
 
         for id in &res.result {
             if let Err(e) = ctx.onto_index.set(id, &0) {
@@ -189,24 +186,21 @@ fn generate_file(ctx: &mut Context, module: &mut Module) -> bool {
 
     buf.push('[');
 
-    for kv in ctx.onto_index.iter() {
-        let id = kv.get_key();
+    for id in ctx.onto_index.data.keys() {
+        let mut rindv: Individual = Individual::default();
+        if module.storage.get_individual(id, &mut rindv) {
+            rindv.parse_all();
 
-            let mut rindv: Individual = Individual::default();
-            if module.storage.get_individual(id, &mut rindv) {
-                rindv.parse_all();
-
-                if buf.len() > 1 {
-                    buf.push(',');
-                    buf.push('\n');
-                }
-
-                buf.push_str(&rindv.get_obj().as_json_str());
-                indvs_count += 1;
-            } else {
-                error!("fail read, uri={}", id);
+            if buf.len() > 1 {
+                buf.push(',');
+                buf.push('\n');
             }
 
+            buf.push_str(&rindv.get_obj().as_json_str());
+            indvs_count += 1;
+        } else {
+            error!("fail read, uri={}", id);
+        }
     }
 
     buf.push(']');
