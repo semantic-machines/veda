@@ -29,6 +29,8 @@ use url::Url;
 type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
 type BatchElement = (i64, Individual, i8);
+type PredicateTable = (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<(i64, String)>, HashMap<String, ColumnData>);
+type PredicateTables = HashMap<String, PredicateTable>;
 
 const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
@@ -61,7 +63,7 @@ enum ColumnData {
 }
 
 pub struct PropsOps {
-    data: HashMap<String, HashSet<i64>>
+    data: HashMap<String, HashSet<(i64, String)>>
 }
 
 impl Default for PropsOps {
@@ -75,7 +77,7 @@ impl Default for PropsOps {
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct PredicateOps {
     predicate: String,
-    ops: Vec<i64>,
+    ops: Vec<(i64, String)>,
 }
 
 impl Context {
@@ -159,8 +161,8 @@ impl Context {
                             props_ops.data.insert(predicate.clone(), HashSet::new());
                         }
                         let operations = props_ops.data.get_mut(&predicate).unwrap();
-                        for op_id in ops {
-                            operations.insert(op_id);
+                        for op in ops {
+                            operations.insert(op);
                         }
                     }
                     Err(_) => break,
@@ -195,7 +197,7 @@ impl Context {
         props_ops_file: &File,
     ) -> Result<(), Error> {
 
-        let mut predicate_tables: HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>)> = HashMap::new();
+        let mut predicate_tables: PredicateTables = HashMap::new();
 
         let now = Instant::now();
 
@@ -263,7 +265,7 @@ impl Context {
         individual: &mut Individual,
         type_name: &str,
         sign: i8,
-        predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>)>,
+        predicate_tables: &mut PredicateTables,
         op_id: i64,
         props_ops: &mut PropsOps,
     ) {
@@ -282,9 +284,10 @@ impl Context {
             }
             let ops = props_ops.data.get_mut(&predicate).unwrap();
             let signed_op = op_id * (sign as i64);
-            if !ops.contains(&signed_op) {
+            let tuple = (signed_op, type_name.to_string());
+            if !ops.contains(&tuple) {
                 Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, &predicate, predicate_tables, &mut text_content, op_id);
-                ops.insert(signed_op);
+                ops.insert(tuple);
             } else {
                 info!("Skip already exported, uri = {}, predicate = {}, op_id = {}", id, predicate, signed_op);
             }
@@ -306,7 +309,7 @@ impl Context {
         type_name: &str,
         individual: &mut Individual,
         predicate: &str,
-        predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>)>,
+        predicate_tables: &mut PredicateTables,
         text_content: &mut Vec<String>,
         op_id: i64,
     ) {
@@ -317,13 +320,13 @@ impl Context {
                 predicate_tables.insert(predicate.to_string(), new_table);
             }
             let predicate_table = predicate_tables.get_mut(predicate).unwrap();
-            let (type_column, created_column, id_column, sign_column, version_column, op_id_column, columns) = predicate_table;
+            let (type_column, created_column, id_column, sign_column, version_column, op_type_column, columns) = predicate_table;
             type_column.push(type_name.to_owned());
             created_column.push(created);
             id_column.push(id.to_owned());
             sign_column.push(sign);
             version_column.push(version);
-            op_id_column.push(op_id * (sign as i64));
+            op_type_column.push((op_id * (sign as i64), type_name.to_string()));
             let rows = id_column.len() - 1;
 
             match &resources[0].rtype {
@@ -447,18 +450,18 @@ impl Context {
 
     async fn mk_block(
         predicate: String,
-        predicate_table: (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>),
+        predicate_table: PredicateTable,
         client: &mut ClientHandle,
         db_predicate_tables: &mut HashMap<String, HashMap<String, String>>
     ) -> Result<(Block, PredicateOps), Error> {
 
-        let (type_column, created_column, id_column, sign_column, version_column, op_id_column, mut columns) = predicate_table;
+        let (type_column, created_column, id_column, sign_column, version_column, op_type_column, mut columns) = predicate_table;
 
         let rows = id_column.len();
 
         let predicate_ops = PredicateOps {
             predicate: predicate.clone(),
-            ops: op_id_column
+            ops: op_type_column
         };
 
         let mut block = Block::new()
