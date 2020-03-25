@@ -516,7 +516,7 @@ async fn main() -> Result<(), Error> {
         &mut (before as fn(&mut Module, &mut Context, u32) -> Option<u32>),
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
         &mut (after as fn(&mut Module, &mut Context, u32) -> bool),
-        &mut (heartbeat as fn(&mut Module, &mut Context))
+        &mut (heartbeat as fn(&mut Module, &mut Context)),
     );
     Ok(())
 }
@@ -548,6 +548,7 @@ fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) ->
         error!("Error processing batch: {}", e);
         process::exit(101);
     }
+
     true
 }
 
