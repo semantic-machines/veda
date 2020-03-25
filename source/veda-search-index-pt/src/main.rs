@@ -60,7 +60,6 @@ enum ColumnData {
     Dec(Vec<Vec<f64>>),
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct PropsOps {
     data: HashMap<String, HashSet<i64>>
 }
@@ -71,6 +70,12 @@ impl Default for PropsOps {
             data: HashMap::new(),
         }
     }
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub struct PredicateOps {
+    predicate: String,
+    ops: Vec<i64>,
 }
 
 impl Context {
@@ -145,11 +150,17 @@ impl Context {
             let mut props_ops = PropsOps::default();
             let mut reader = BufReader::new(f);
             loop {
-                let res: Result<PropsOps, _> = deserialize_from(&mut reader);
+                let res: Result<PredicateOps, _> = deserialize_from(&mut reader);
                 match res {
-                    Ok(d) => {
-                        for (prop, ops) in d.data {
-                            props_ops.data.insert(prop, ops);
+                    Ok(predicate_ops) => {
+                        let predicate = predicate_ops.predicate;
+                        let ops = predicate_ops.ops;
+                        if !props_ops.data.contains_key(&predicate) {
+                            props_ops.data.insert(predicate.clone(), HashSet::new());
+                        }
+                        let operations = props_ops.data.get_mut(&predicate).unwrap();
+                        for op_id in ops {
+                            operations.insert(op_id);
                         }
                     }
                     Err(_) => break,
@@ -184,7 +195,7 @@ impl Context {
         props_ops_file: &File,
     ) -> Result<(), Error> {
 
-        let mut predicate_tables: HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, HashMap<String, ColumnData>)> = HashMap::new();
+        let mut predicate_tables: HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>)> = HashMap::new();
 
         let now = Instant::now();
 
@@ -208,7 +219,7 @@ impl Context {
 
         for (predicate, predicate_table) in predicate_tables {
 
-            let block = Context::mk_block(predicate.clone(), predicate_table, client, db_predicate_tables).await?;
+            let (block, predicate_ops) = Context::mk_block(predicate.clone(), predicate_table, client, db_predicate_tables).await?;
 
             //info!("`{}` block = {:?}", predicate, block);
 
@@ -216,14 +227,7 @@ impl Context {
 
             client.insert(table, block).await?;
 
-            let f = OpenOptions::new()
-                .read(true)
-                .write(true)
-                .create(true)
-                .truncate(false)
-                .open(PROPS_OPS_FILE_NAME)?;
-
-            serialize_into(&mut BufWriter::new(f), &props_ops).unwrap();
+            serialize_into(&mut BufWriter::new(props_ops_file), &predicate_ops).unwrap();
         }
 
         let mut insert_duration = now.elapsed().as_millis();
@@ -259,7 +263,7 @@ impl Context {
         individual: &mut Individual,
         type_name: &str,
         sign: i8,
-        predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, HashMap<String, ColumnData>)>,
+        predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>)>,
         op_id: i64,
         props_ops: &mut PropsOps,
     ) {
@@ -279,7 +283,7 @@ impl Context {
             let ops = props_ops.data.get_mut(&predicate).unwrap();
             let signed_op = op_id * (sign as i64);
             if !ops.contains(&signed_op) {
-                Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, &predicate, predicate_tables, &mut text_content);
+                Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, &predicate, predicate_tables, &mut text_content, op_id);
                 ops.insert(signed_op);
             } else {
                 info!("Skip already exported, uri = {}, predicate = {}, op_id = {}", id, predicate, signed_op);
@@ -290,7 +294,7 @@ impl Context {
             let text_predicate = String::from("text");
             let text = text_content.join(" ");
             individual.set_string(&text_predicate, &text, Lang::NONE);
-            Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, &text_predicate, predicate_tables, &mut text_content);
+            Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, &text_predicate, predicate_tables, &mut text_content, op_id);
         }
     }
 
@@ -302,22 +306,24 @@ impl Context {
         type_name: &str,
         individual: &mut Individual,
         predicate: &str,
-        predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, HashMap<String, ColumnData>)>,
-        text_content: &mut Vec<String>
+        predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>)>,
+        text_content: &mut Vec<String>,
+        op_id: i64,
     ) {
         if let Some(resources) = individual.get_resources(predicate) {
 
             if !predicate_tables.contains_key(predicate) {
-                let new_table = (vec![], vec![], vec![], vec![], vec![], HashMap::new());
+                let new_table = (vec![], vec![], vec![], vec![], vec![], vec![], HashMap::new());
                 predicate_tables.insert(predicate.to_string(), new_table);
             }
             let predicate_table = predicate_tables.get_mut(predicate).unwrap();
-            let (type_column, created_column, id_column, sign_column, version_column, columns) = predicate_table;
+            let (type_column, created_column, id_column, sign_column, version_column, op_id_column, columns) = predicate_table;
             type_column.push(type_name.to_owned());
             created_column.push(created);
             id_column.push(id.to_owned());
             sign_column.push(sign);
             version_column.push(version);
+            op_id_column.push(op_id * (sign as i64));
             let rows = id_column.len() - 1;
 
             match &resources[0].rtype {
@@ -441,14 +447,19 @@ impl Context {
 
     async fn mk_block(
         predicate: String,
-        predicate_table: (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, HashMap<String, ColumnData>),
+        predicate_table: (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>),
         client: &mut ClientHandle,
         db_predicate_tables: &mut HashMap<String, HashMap<String, String>>
-    ) -> Result<Block, Error> {
+    ) -> Result<(Block, PredicateOps), Error> {
 
-        let (type_column, created_column, id_column, sign_column, version_column, mut columns) = predicate_table;
+        let (type_column, created_column, id_column, sign_column, version_column, op_id_column, mut columns) = predicate_table;
 
         let rows = id_column.len();
+
+        let predicate_ops = PredicateOps {
+            predicate: predicate.clone(),
+            ops: op_id_column
+        };
 
         let mut block = Block::new()
             .column("rdf_type_str", type_column)
@@ -493,7 +504,7 @@ impl Context {
             }
             create_predicate_value_column(&predicate, column_name, column_type, client, db_predicate_tables).await?;
         }
-        Ok(block)
+        Ok((block, predicate_ops))
     }
 
 }
