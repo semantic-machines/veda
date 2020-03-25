@@ -11,11 +11,13 @@ path = "src/main.rs"
 [dependencies]
 chrono = "0.4"
 serde_json = "1.0"
+bincode = "1.2.1"
+serde_derive = "1.0.104"
+serde = "1.0.104"
 env_logger = "0.6"
 log = "0.4"
 rust-ini = "0.13"
 quote = "1.0.3"
-pickledb = "0.4.0"
 
 v_queue = { path = "../v-queue" }
 v_onto = { path = "../v-onto" }

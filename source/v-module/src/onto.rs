@@ -1,18 +1,17 @@
-use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
 use std::collections::HashSet;
 use v_onto::individual::*;
 use v_onto::onto::*;
 use v_storage::storage::VStorage;
+use v_onto::onto_index::OntoIndex;
 
 pub const DATA_BASE_PATH: &str = "./data";
 
 pub fn load_onto(storage: &mut VStorage, onto: &mut Onto) -> bool {
-    let onto_index = PickleDb::load(DATA_BASE_PATH.to_owned() + "/onto-index.db", PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
+    let onto_index = OntoIndex::load();
 
-    info!("load {} onto elements", onto_index.total_keys());
+    info!("load {} onto elements", onto_index.len());
 
-    for kv in onto_index.iter() {
-        let id = kv.get_key();
+    for id in onto_index.data.keys() {
         let mut indv: Individual = Individual::default();
         if storage.get_individual(&id, &mut indv) {
             onto.update(&mut indv);
