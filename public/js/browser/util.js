@@ -329,9 +329,9 @@ veda.Module(function (veda) { "use strict";
     if ( transformId ) {
       template.trigger("save");
       var transform = new veda.IndividualModel(transformId);
-      transform.load().then(function (transform) {
-        veda.Util.buildStartFormByTransformation(individual, transform).then(function (startForm) {
-          veda.Util.showModal(startForm, startFormTemplate, "edit");
+      return transform.load().then(function (transform) {
+        return veda.Util.buildStartFormByTransformation(individual, transform).then(function (startForm) {
+          return veda.Util.showModal(startForm, startFormTemplate, "edit");
         });
       });
     } else {
