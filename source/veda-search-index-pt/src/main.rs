@@ -31,6 +31,7 @@ type Batch = Vec<BatchElement>;
 type BatchElement = (i64, Individual, i8);
 type PredicateTable = (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<(i64, String)>, HashMap<String, ColumnData>);
 type PredicateTables = HashMap<String, PredicateTable>;
+type PropsOps = HashMap<String, HashSet<(i64, String)>>;
 
 const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
@@ -60,18 +61,6 @@ enum ColumnData {
     Date(Vec<Vec<DateTime<Tz>>>),
     Int(Vec<Vec<i64>>),
     Dec(Vec<Vec<f64>>),
-}
-
-pub struct PropsOps {
-    data: HashMap<String, HashSet<(i64, String)>>
-}
-
-impl Default for PropsOps {
-    fn default() -> Self {
-        Self {
-            data: HashMap::new(),
-        }
-    }
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -149,7 +138,7 @@ impl Context {
                             .truncate(false)
                             .open(PROPS_OPS_FILE_NAME)?;
             let props_ops_file = f.try_clone()?;
-            let mut props_ops = PropsOps::default();
+            let mut props_ops = HashMap::new();
             let mut reader = BufReader::new(f);
             loop {
                 let res: Result<PredicateOps, _> = deserialize_from(&mut reader);
@@ -157,10 +146,10 @@ impl Context {
                     Ok(predicate_ops) => {
                         let predicate = predicate_ops.predicate;
                         let ops = predicate_ops.ops;
-                        if !props_ops.data.contains_key(&predicate) {
-                            props_ops.data.insert(predicate.clone(), HashSet::new());
+                        if !props_ops.contains_key(&predicate) {
+                            props_ops.insert(predicate.clone(), HashSet::new());
                         }
-                        let operations = props_ops.data.get_mut(&predicate).unwrap();
+                        let operations = props_ops.get_mut(&predicate).unwrap();
                         for op in ops {
                             operations.insert(op);
                         }
@@ -168,7 +157,7 @@ impl Context {
                     Err(_) => break,
                 }
             }
-            if props_ops.data.len() > 0 {
+            if props_ops.len() > 0 {
                 info!("Found info file for uncompleted previous batch.");
             }
 
@@ -179,7 +168,7 @@ impl Context {
                 }
                 Context::process_batch(&type_name, batch, client, db_predicate_tables, stats, &mut props_ops, &props_ops_file).await?;
             }
-            fs::remove_file(PROPS_OPS_FILE_NAME)?;
+            //fs::remove_file(PROPS_OPS_FILE_NAME)?;
             self.typed_batch.clear();
             stats.last = Instant::now();
             info!("Batch processed in {} ms", now.elapsed().as_millis());
@@ -279,10 +268,10 @@ impl Context {
         let mut text_content: Vec<String> = Vec::new();
 
         for predicate in individual.get_predicates() {
-            if !props_ops.data.contains_key(&predicate) {
-                props_ops.data.insert(predicate.to_string(), HashSet::new());
+            if !props_ops.contains_key(&predicate) {
+                props_ops.insert(predicate.to_string(), HashSet::new());
             }
-            let ops = props_ops.data.get_mut(&predicate).unwrap();
+            let ops = props_ops.get_mut(&predicate).unwrap();
             let signed_op = op_id * (sign as i64);
             let tuple = (signed_op, type_name.to_string());
             if !ops.contains(&tuple) {
