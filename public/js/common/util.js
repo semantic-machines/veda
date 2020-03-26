@@ -826,9 +826,9 @@ veda.Module(function (veda) { "use strict";
       where_arr.push("(" + where_task_label + ")");
     }
     if (task_created.length) {
-      task_created = task_created.sort(function(a, b){return a-b});
+      task_created = task_created.sort(function (a, b) {return a - b});
       var start = new Date(task_created[0]);
-      var end = new Date(task_created[task_created.length-1]);
+      var end = new Date(task_created[task_created.length - 1]);
       start.setHours(0,0,0,0);
       end.setHours(23,59,59,999);
       start = Math.floor(start.valueOf() / 1000);
@@ -837,9 +837,9 @@ veda.Module(function (veda) { "use strict";
       where_arr.push("(" + where_task_created + ")");
     }
     if (task_given.length) {
-      task_given = task_given.sort(function(a, b){return a-b});
+      task_given = task_given.sort(function (a, b) {return a - b});
       var start = new Date(task_given[0]);
-      var end = new Date(task_given[task_given.length-1]);
+      var end = new Date(task_given[task_given.length - 1]);
       start.setHours(0,0,0,0);
       end.setHours(23,59,59,999);
       start = Math.floor(start.valueOf() / 1000);
@@ -874,9 +874,9 @@ veda.Module(function (veda) { "use strict";
       where_arr.push("(" + where_document_label + ")");
     }
     if (decision_created.length) {
-      decision_created = decision_created.sort(function(a, b){return a-b});
-      var start = new Date(task_given[0]);
-      var end = new Date(task_given[task_given.length-1]);
+      decision_created = decision_created.sort(function (a, b) {return a - b});
+      var start = new Date(decision_created[0]);
+      var end = new Date(decision_created[decision_created.length - 1]);
       start.setHours(0,0,0,0);
       end.setHours(23,59,59,999);
       start = Math.floor(start.valueOf() / 1000);
