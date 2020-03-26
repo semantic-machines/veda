@@ -31,7 +31,7 @@ type Batch = Vec<BatchElement>;
 type BatchElement = (i64, Individual, i8);
 type PredicateTable = (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, Vec<i64>, HashMap<String, ColumnData>);
 type PredicateTables = HashMap<String, PredicateTable>;
-type TypesPropsOps = HashMap<String, HashMap<String, HashSet<i64>>>;
+type CommittedTypesPropsOps = HashMap<String, HashMap<String, HashSet<i64>>>;
 
 const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
@@ -139,7 +139,7 @@ impl Context {
                             .truncate(false)
                             .open(BATCH_LOG_FILE_NAME)?;
             let batch_log_file = f.try_clone()?;
-            let mut types_props_ops: TypesPropsOps = HashMap::new();
+            let mut committed_types_props_ops: CommittedTypesPropsOps = HashMap::new();
             let mut reader = BufReader::new(f);
             loop {
                 let res: Result<TypePropOps, _> = deserialize_from(&mut reader);
@@ -148,10 +148,10 @@ impl Context {
                         let type_name = type_prop_ops.type_name;
                         let prop = type_prop_ops.predicate;
                         let ops = type_prop_ops.ops;
-                        if !types_props_ops.contains_key(&type_name) {
-                            types_props_ops.insert(type_name.clone(), HashMap::new());
+                        if !committed_types_props_ops.contains_key(&type_name) {
+                            committed_types_props_ops.insert(type_name.clone(), HashMap::new());
                         }
-                        let type_hash = types_props_ops.get_mut(&type_name).unwrap();
+                        let type_hash = committed_types_props_ops.get_mut(&type_name).unwrap();
                         if !type_hash.contains_key(&prop) {
                             type_hash.insert(prop.clone(), HashSet::new());
                         }
@@ -163,16 +163,16 @@ impl Context {
                     Err(_) => break,
                 }
             }
-            if types_props_ops.len() > 0 {
+            if committed_types_props_ops.len() > 0 {
                 info!("Found info file for uncompleted previous batch.");
             }
 
             for (type_name, batch) in self.typed_batch.iter_mut() {
                 while batch.len() > BLOCK_LIMIT {
                     let mut slice = batch.drain(0..BLOCK_LIMIT).collect();
-                    Context::process_batch(&type_name, &mut slice, client, db_predicate_tables, stats, &mut types_props_ops, &batch_log_file).await?;
+                    Context::process_batch(&type_name, &mut slice, client, db_predicate_tables, stats, &mut committed_types_props_ops, &batch_log_file).await?;
                 }
-                Context::process_batch(&type_name, batch, client, db_predicate_tables, stats, &mut types_props_ops, &batch_log_file).await?;
+                Context::process_batch(&type_name, batch, client, db_predicate_tables, stats, &mut committed_types_props_ops, &batch_log_file).await?;
             }
             fs::remove_file(BATCH_LOG_FILE_NAME)?;
             self.typed_batch.clear();
@@ -188,7 +188,7 @@ impl Context {
         client: &mut ClientHandle,
         db_predicate_tables: &mut HashMap<String, HashMap<String, String>>,
         stats: &mut Stats,
-        types_props_ops: &mut TypesPropsOps,
+        committed_types_props_ops: &mut CommittedTypesPropsOps,
         batch_log_file: &File,
     ) -> Result<(), Error> {
 
@@ -203,7 +203,7 @@ impl Context {
         info!("Processing class batch: {}, count: {}", type_name, rows);
 
         for (op_id, individual, sign) in batch {
-            Context::add_to_tables(individual, type_name, *sign, &mut predicate_tables, *op_id, types_props_ops);
+            Context::add_to_tables(individual, type_name, *sign, &mut predicate_tables, *op_id, committed_types_props_ops);
         }
 
         let elapsed = now.elapsed().as_millis();
@@ -262,7 +262,7 @@ impl Context {
         sign: i8,
         predicate_tables: &mut PredicateTables,
         op_id: i64,
-        types_props_ops: &mut TypesPropsOps,
+        committed_types_props_ops: &mut CommittedTypesPropsOps,
     ) {
 
         let id = individual.get_id().to_owned();
@@ -273,16 +273,16 @@ impl Context {
 
         let mut text_content: Vec<String> = Vec::new();
 
-        if !types_props_ops.contains_key(type_name) {
-            types_props_ops.insert(type_name.to_string(), HashMap::new());
+        if !committed_types_props_ops.contains_key(type_name) {
+            committed_types_props_ops.insert(type_name.to_string(), HashMap::new());
         }
-        let props_ops = types_props_ops.get_mut(type_name).unwrap();
+        let committed_props_ops = committed_types_props_ops.get_mut(type_name).unwrap();
 
         for predicate in individual.get_predicates() {
-            if !props_ops.contains_key(&predicate) {
-                props_ops.insert(predicate.to_string(), HashSet::new());
+            if !committed_props_ops.contains_key(&predicate) {
+                committed_props_ops.insert(predicate.to_string(), HashSet::new());
             }
-            let ops = props_ops.get_mut(&predicate).unwrap();
+            let ops = committed_props_ops.get_mut(&predicate).unwrap();
             let signed_op = op_id * (sign as i64);
             if !ops.contains(&signed_op) {
                 Context::add_to_predicate_table(&id, version, sign, created, type_name, individual, &predicate, predicate_tables, &mut text_content, op_id);
