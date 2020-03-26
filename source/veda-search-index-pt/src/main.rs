@@ -35,7 +35,7 @@ type CommittedTypesPropsOps = HashMap<String, HashMap<String, HashSet<i64>>>;
 
 const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
-const EXPORTED_TYPE: [&str; 1] = ["v-s:UserThing"];
+const EXPORTED_TYPE: [&str; 1] = ["v-s:Exportable"];
 const DB: &str = "veda_pt";
 const BATCH_LOG_FILE_NAME: &str = "data/batch-log-index-pt";
 
