@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::fs::rename;
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter};
+use std::path::Path;
 
 const LOCAL_STORAGE_FILE_NAME: &str = "data/onto-index";
 
@@ -19,7 +20,7 @@ impl OntoIndex {
             let res: Result<OntoIndex, _> = deserialize_from(&mut r);
             match res {
                 Ok(d) => {
-                    info! ("load {} onto elements", d.data.keys().len());
+                    info!("load {} onto elements", d.data.keys().len());
                     return d;
                 }
                 Err(e) => error!("fail load local storage, err={}", e),
@@ -28,6 +29,10 @@ impl OntoIndex {
         OntoIndex {
             data: HashMap::new(),
         }
+    }
+
+    pub fn exists(&self) -> bool {
+        Path::new(LOCAL_STORAGE_FILE_NAME).exists()
     }
 
     pub fn dump(&self) -> Result<(), Box<ErrorKind>> {
