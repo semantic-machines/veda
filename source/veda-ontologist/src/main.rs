@@ -115,6 +115,13 @@ pub struct Context {
 }
 
 fn heartbeat(module: &mut Module, ctx: &mut Context) {
+    if !ctx.onto_index.exists() {
+        recover_index_from_ft(ctx, module);
+        if let Err(e) = ctx.onto_index.dump() {
+            error!("fail flush onto index, err={}", e);
+        }
+    }
+
     if !Path::new(&ctx.ontology_file_path).exists() {
         generate_file(ctx, module);
     } else {
