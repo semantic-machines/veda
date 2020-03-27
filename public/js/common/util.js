@@ -776,7 +776,7 @@ veda.Module(function (veda) { "use strict";
     if (document_label) {
       from += " JOIN veda_pt.`rdfs:label` AS t2 ON t0.`v_wf_onDocument_str`[1] = t2.id";
     }
-    if (decision_created.length) {
+    if (decision_created && decision_created.length) {
       from += " JOIN veda_pt.`rdf:type` AS t3 ON t0.`v_wf_takenDecision_str`[1] = t3.id";
     }
 
@@ -873,7 +873,7 @@ veda.Module(function (veda) { "use strict";
       .join(" OR ");
       where_arr.push("(" + where_document_label + ")");
     }
-    if (decision_created.length) {
+    if (decision_created && decision_created.length) {
       decision_created = decision_created.sort(function (a, b) {return a - b});
       var start = new Date(decision_created[0]);
       var end = new Date(decision_created[decision_created.length - 1]);
