@@ -1676,12 +1676,14 @@ v-wf:takenDecision
   rdfs:domain v-wf:DecisionForm ;
   rdfs:range rdfs:Resource ;
 .
+
 v-wf:possibleDecisionClass
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Варианты решения"@ru ;
   rdfs:label "Possible decision"@ru ;
   rdfs:domain v-wf:DecisionForm ;
+  rdfs:domain v-df:ApprovalTask ;
   rdfs:range owl:Class ;
 .
 
@@ -1833,9 +1835,17 @@ v-wf:processedDocument
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Документ"@ru ;
   rdfs:label "Document"@en ;
-  rdfs:domain v-wf:StartForm ;
   rdfs:range v-s:Thing ;
+  rdfs:domain v-wf:StartForm ;
+  rdfs:domain v-df:QuestionRouteStartForm ;
+  rdfs:domain v-df:InstructionRouteStartForm ;
+  rdfs:domain v-df:TaskRouteStartForm ;
+  rdfs:domain v-df:DistributionRouteStartForm ;
+  rdfs:domain v-df:CoordinationRouteStartForm ;
+  rdfs:domain v-df:SignRouteStartForm;
+  rdfs:domain v-df:ConfirmationRouteStartForm ;
 .
+
 #-- используется только в тестовом комплексном маршруте --
 v-wf:processInitiator
   rdf:type rdf:Property ;
