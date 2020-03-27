@@ -27,6 +27,15 @@ void main(char[][] args)
 	process_name = ft_indexer_queue_name;
 	string use_db;
 
+        try
+        {
+            mkdir(xapian_info_path);
+            writeln("create folder: ", xapian_info_path);
+        }
+        catch (Exception ex)
+        {
+        }
+
 	if (args.length == 2) {
 		string[] carg = cast(string[]) args[ 1 ].split("=");
 		if (carg.length == 2 && carg[ 0 ] == "--indexer_use_db")

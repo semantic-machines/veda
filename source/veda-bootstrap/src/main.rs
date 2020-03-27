@@ -12,7 +12,7 @@ use std::io::{Error, ErrorKind};
 use std::path::Path;
 use std::process::{Child, Command};
 use std::time::SystemTime;
-use std::{fs, io, thread, time};
+use std::{fs, io, thread, time, process};
 use sysinfo::{ProcessExt, ProcessStatus, SystemExt};
 
 #[derive(Debug)]
@@ -321,6 +321,12 @@ fn main() {
     if started.is_err() {
         error!("veda not started, exit. err={:?}", started.err());
         return;
+    }
+
+    if let Ok(mut file) = File::create(".pids/__".to_owned() + "bootstrap-pid") {
+        if let Err(e) = file.write_all(format!("{}", process::id()).as_bytes()) {
+            error!("can not create pid file for bootstrap {}, err={:?}", process::id(), e);
+        }
     }
 
     app.watch_started_modules();
