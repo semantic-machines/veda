@@ -43,6 +43,7 @@ pub struct Stats {
     total_prepare_duration: usize,
     total_insert_duration: usize,
     total_rows: usize,
+    insert_count: usize,
     started: Instant,
     last: Instant,
 }
@@ -225,6 +226,8 @@ impl Context {
             client.insert(table, block).await?;
 
             serialize_into(&mut BufWriter::new(batch_log_file), &type_prop_ops).unwrap();
+
+            stats.insert_count += 1;
         }
 
         let mut insert_duration = now.elapsed().as_millis();
@@ -251,7 +254,18 @@ impl Context {
 
         let uptime_cps = (stats.total_rows * 1000 / uptime_ms) as f64;
 
-        info!("Total individuals inserted = {}, total prepare duration = {} ms, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}", stats.total_rows, stats.total_prepare_duration, stats.total_insert_duration, total_cps, (uptime_ms / 1000) / 3600, (uptime_ms / 1000) % 3600 / 60, (uptime_ms / 1000) % 3600 % 60, uptime_cps);
+        info!(
+            "Total individuals inserted = {}, total prepare duration = {} ms, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}, inserts count = {}",
+            stats.total_rows,
+            stats.total_prepare_duration,
+            stats.total_insert_duration,
+            total_cps,
+            (uptime_ms / 1000) / 3600,
+            (uptime_ms / 1000) % 3600 / 60,
+            (uptime_ms / 1000) % 3600 % 60,
+            uptime_cps,
+            stats.insert_count
+        );
 
         Ok(())
     }
@@ -548,6 +562,7 @@ async fn main() ->  Result<(), Error> {
         total_prepare_duration: 0,
         total_insert_duration: 0,
         total_rows: 0,
+        insert_count: 0,
         started: Instant::now(),
         last: Instant::now(),
     };
