@@ -138,11 +138,19 @@ body {
   border: 1px solid #ddd;
   padding: 20px!important;
   margin-bottom: 20px;
+  box-shadow: 1px 1px 4px #e0e0e0;
+  -o-box-shadow: 1px 1px 4px #e0e0e0;
+  -webkit-box-shadow: 1px 1px 4px #e0e0e0;
+  -moz-box-shadow: 1px 1px 4px #e0e0e0;
 }
 
 .sheet .sheet {
   border: none!important;
   padding: 0!important;
+  box-shadow: none;
+  -o-box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
 }
 
 .modal .sheet {
