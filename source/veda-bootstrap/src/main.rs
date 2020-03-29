@@ -12,7 +12,7 @@ use std::io::{Error, ErrorKind};
 use std::path::Path;
 use std::process::{Child, Command};
 use std::time::SystemTime;
-use std::{fs, io, thread, time, process};
+use std::{fs, io, process, thread, time};
 use sysinfo::{ProcessExt, ProcessStatus, SystemExt};
 
 #[derive(Debug)]
@@ -84,67 +84,66 @@ impl App {
     fn watch_started_modules(&mut self) {
         loop {
             let mut new_config_modules = HashSet::new();
-            match self.get_modules_info() {
-                Ok(_) => {
-                    for el in self.modules_start_order.iter() {
-                        new_config_modules.insert(el.to_owned());
-                    }
 
-                    let mut sys = sysinfo::System::new();
-                    sys.refresh_processes();
-                    for (name, process) in self.started_modules.iter_mut() {
-                        let (is_ok, memory) = is_ok_process(&mut sys, process.id());
-                        if !is_ok {
-                            let exit_code = if let Ok(c) = process.wait() {
-                                c.code().unwrap_or_default()
-                            } else {
-                                0
-                            };
+            if let Err(e) = self.get_modules_info() {
+                if e.kind() != ErrorKind::NotFound {
+                    error!("fail read modules info");
+                }
+            }
 
-                            if exit_code != ModuleError::Fatal as i32 {
-                                error!("found dead module {} {}, exit code = {}, restart this", process.id(), name, exit_code);
-                                if let Ok(_0) = process.kill() {
-                                    warn!("attempt stop module {} {}", process.id(), name);
-                                }
+            for el in self.modules_start_order.iter() {
+                new_config_modules.insert(el.to_owned());
+            }
 
-                                if let Some(module) = self.modules_info.get(name) {
-                                    match start_module(module) {
-                                        Ok(child) => {
-                                            info!("{} restart module {}, {}, {:?}", child.id(), module.name, module.exec_name, module.args);
-                                            *process = child;
-                                        }
-                                        Err(e) => {
-                                            error!("fail execute {}, err={:?}", module.exec_name, e);
-                                        }
-                                    }
-                                } else {
-                                    error!("? internal error, not found module {}", name);
-                                }
-                            }
+            let mut sys = sysinfo::System::new();
+            sys.refresh_processes();
+            for (name, process) in self.started_modules.iter_mut() {
+                let (is_ok, memory) = is_ok_process(&mut sys, process.id());
+                debug!("name={}, memory={}", name, memory);
+                if !is_ok {
+                    let exit_code = if let Ok(c) = process.wait() {
+                        c.code().unwrap_or_default()
+                    } else {
+                        0
+                    };
+
+                    if exit_code != ModuleError::Fatal as i32 {
+                        error!("found dead module {} {}, exit code = {}, restart this", process.id(), name, exit_code);
+                        if let Ok(_0) = process.kill() {
+                            warn!("attempt stop module {} {}", process.id(), name);
                         }
+
                         if let Some(module) = self.modules_info.get(name) {
-                            if let Some(memory_limit) = module.memory_limit {
-                                if memory > memory_limit {
-                                    warn!("process {}, memory={} KiB, limit={} KiB", name, memory, memory_limit);
-                                    if let Ok(_0) = process.kill() {
-                                        warn!("attempt stop module {} {}", process.id(), name);
-                                    }
+                            match start_module(module) {
+                                Ok(child) => {
+                                    info!("{} restart module {}, {}, {:?}", child.id(), module.name, module.exec_name, module.args);
+                                    *process = child;
+                                }
+                                Err(e) => {
+                                    error!("fail execute {}, err={:?}", module.exec_name, e);
                                 }
                             }
                         } else {
-                            info!("process {} does not exist in the configuration, it will be killed", name);
+                            error!("? internal error, not found module {}", name);
+                        }
+                    }
+                }
+                if let Some(module) = self.modules_info.get(name) {
+                    if let Some(memory_limit) = module.memory_limit {
+                        if memory > memory_limit {
+                            warn!("process {}, memory={} KiB, limit={} KiB", name, memory, memory_limit);
                             if let Ok(_0) = process.kill() {
                                 warn!("attempt stop module {} {}", process.id(), name);
                             }
                         }
-                        new_config_modules.remove(name);
+                    }
+                } else {
+                    info!("process {} does not exist in the configuration, it will be killed", name);
+                    if let Ok(_0) = process.kill() {
+                        warn!("attempt stop module {} {}", process.id(), name);
                     }
                 }
-                Err(e) => {
-                    if e.kind() != ErrorKind::NotFound {
-                        error!("fail read modules info");
-                    }
-                }
+                new_config_modules.remove(name);
             }
 
             for name in new_config_modules {
@@ -166,8 +165,6 @@ impl App {
     }
 
     fn get_modules_info(&mut self) -> io::Result<()> {
-        self.modules_info.clear();
-
         let f = File::open("veda.modules")?;
         let file = &mut BufReader::new(&f);
         let cur_modifed_date = f.metadata()?.modified()?;
@@ -179,6 +176,7 @@ impl App {
         }
 
         info!("read modules configuration...");
+        self.modules_info.clear();
         self.date_changed_modules_info = Some(cur_modifed_date);
         let mut order = 0;
 
