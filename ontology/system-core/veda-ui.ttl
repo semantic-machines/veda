@@ -726,7 +726,7 @@ v-ui:StandardButtonsTemplate
   individual.rights.then(function (rights) {
     var canUpdate = rights.hasValue("v-s:canUpdate", true);
     var canDelete = rights.hasValue("v-s:canDelete", true);
-    var enabledButtons = (container.data("buttons") || defaultButtons).trim().replace(/\s+/g, " ").split(" ");
+    var enabledButtons = (container.data("buttons") || defaultButtons).trim().replace(/\\s+/g, " ").split(" ");
     enabledButtons.forEach(function (id) {
       if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
       if ( !canDelete && (id === "delete" || id === "destroy") ) { return; }
