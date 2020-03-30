@@ -230,6 +230,14 @@ if [ -z $1 ] || [ $1 == "search-query" ] || [ $1 == "veda-search-query" ] || [ $
     cp $CARGO_TARGET_DIR/release/veda-search-query $PWD
 fi
 
+if [ -z $1 ] || [ $1 == "cleaner" ] || [ $1 == "veda-cleaner" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
+    echo BUILD CLEANER
+    cd source/veda-cleaner
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-cleaner $PWD
+fi
+
 if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "mv1" ]; then
     rm ./veda-scripts-main
     rm ./veda-scripts-lp
