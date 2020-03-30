@@ -59,7 +59,7 @@ impl CHClient {
 
         res.total_time = start.elapsed().as_millis() as i64;
         res.query_time = res.total_time - res.authorize_time;
-        info!("result={:?}", res);
+        debug!("result={:?}", res);
 
         res
     }
