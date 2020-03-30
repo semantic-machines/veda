@@ -209,8 +209,9 @@ impl Individual {
         self.raw.data.len()
     }
 
-    pub fn set_id(&mut self, id: &str) {
+    pub fn set_id(&mut self, id: &str) -> &mut Self {
         self.obj.uri = id.to_owned();
+        self
     }
 
     pub fn get_id(&self) -> &str {
