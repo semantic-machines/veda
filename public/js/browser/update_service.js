@@ -112,14 +112,14 @@ veda.Module(function (veda) { "use strict";
       veda.trigger("ccus-online");
 
       pingInterval = setInterval(function (that) {
-        if (Date.now() - lastPing > pingTimeout) {
+        if (Date.now() - lastPing > 2 * pingTimeout) {
           console.log("client: ping missed, close socket");
           veda.trigger("ccus-offline");
           clearInterval(pingInterval);
           that.close();
           return;
         }
-      }, pingTimeout * 2, this);
+      }, pingTimeout, this);
     }
 
     function messageHandler(event) {
