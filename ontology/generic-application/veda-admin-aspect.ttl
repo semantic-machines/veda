@@ -445,12 +445,6 @@ v-s:PermissionGeneratorRegistry_Admin
 
 # -- ОШИБКИ --
 
-v-s:PermissionStatementBlank
-  a v-fc:Blank ;
-  rdfs:label "Сообщение об ошибке"@ru ;
-  rdfs:label "Bug report"@en ;
-  v-fc:targetType v-s:BugReport ;
-.
 v-s:BugReportRegistry
   a v-fs:AttributiveSearch ;
   rdfs:label "Сообщения об ошибках"@ru ;
@@ -634,7 +628,7 @@ v-ui:TrustedTicketTemplate
   $("#submit-login", template).click(function(e){
     e.preventDefault();
     var useLogin = $("#login", template).val();
-    veda.Backend.get_ticket_trusted(veda.ticket, useLogin).then(function(result) {      
+    veda.Backend.get_ticket_trusted(veda.ticket, useLogin).then(function(result) {
       veda.end_time = localStorage["end_time"] = Math.floor((result["end_time"] - 621355968000000000) / 10000 );
       veda.ticket = localStorage["ticket"] = result["id"];
       veda.user_uri = localStorage["user_uri"] = result["user_uri"];
