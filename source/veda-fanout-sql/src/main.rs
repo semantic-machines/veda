@@ -181,8 +181,8 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
                     Value::Bool(true) => String::from("1"),
                     Value::Bool(_) => String::from("0"),
                     Value::Int(int_value) => int_value.to_string(),
-                    Value::Str(str_value, _lang) => format!("'{}'", str_value.replace("'", "\\'")),
-                    Value::Uri(uri_value) => format!("'{}'", uri_value.replace("'", "\\'")),
+                    Value::Str(str_value, _lang) => format!("'{}'", str_value.replace("'", "''").replace(r#"\"#, r#"\\"#)),
+                    Value::Uri(uri_value) => format!("'{}'", uri_value.replace("'", "''").replace(r#"\"#, r#"\\"#)),
                     Value::Num(_m, _e) => resource.get_float().to_string(),
                     Value::Datetime(timestamp) => format!("'{}'", NaiveDateTime::from_timestamp(*timestamp, 0)),
                     _ => String::from("NULL"),
@@ -206,10 +206,15 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
 
     if tr_error {
         match transaction.rollback() {
-            Ok(_) => info!("Transaction rolled back for `{}`", uri),
-            Err(e) => error!("Transaction rolled back failed for `{}`. {:?}", uri, e),
+            Ok(_) => {
+                info!("Transaction rolled back for `{}`", uri);
+                return Ok(true);
+            },
+            Err(e) => {
+                error!("Transaction roll back failed for `{}`. {:?}", uri, e);
+                return Err(PrepareError::Fatal);
+            },
         }
-        return Err(PrepareError::Fatal);
     }
 
     match transaction.commit() {
