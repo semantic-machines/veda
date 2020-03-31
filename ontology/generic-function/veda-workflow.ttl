@@ -751,7 +751,7 @@ v-wf:taskPropertySpecification2
   v-ui:forProperty rdfs:comment, rdfs:label ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
-v-wf:taskPropertySpecification2
+v-wf:taskPropertySpecification2_1
   rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства комментарий"@ru ;
   rdfs:label "Property specification for comment"@en ;
