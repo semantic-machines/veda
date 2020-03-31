@@ -11,7 +11,7 @@ use v_search::clickhouse_client::CHClient;
 pub fn clean_email(systicket: &Ticket, ch_client: &mut CHClient, module: &mut Module) {
     let date_before = Utc::now().naive_utc().sub(Duration::days(30));
 
-    let query = format!("SELECT DISTINCT id FROM veda_tt.`v-s:Email` WHERE v_s_deleted_int = 0 AND v_s_created_date[1] < toDateTime ({})", date_before.timestamp());
+    let query = format!("SELECT DISTINCT id FROM veda_tt.`v-s:Email` FINAL WHERE v_s_deleted_int[1] = 0 AND v_s_created_date[1] < toDateTime ({})", date_before.timestamp());
     let res = ch_client.select(&systicket.user_uri, &query, 0, 1000, 0);
 
     if res.result_code == ResultCode::Ok {
