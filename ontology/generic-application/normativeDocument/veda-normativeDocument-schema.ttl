@@ -57,13 +57,6 @@ v-s:checkQuestion
   rdfs:range xsd:string ;
   rdfs:domain v-s:NormativeDocumentRequirement ;
 .
-v-s:hasNormativeDocument
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Нормативный документ"@ru ;
-  rdfs:label "Normative document"@en ;
-  rdfs:range v-s:NormativeDocument ;
-  rdfs:domain v-s:NormativeDocument ;
-.
 v-s:requirementGroupNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Номер группы требований"@ru ;

@@ -70,7 +70,7 @@ func query(ctx *fasthttp.RequestCtx) {
     }
 
     if jsonData["sql"] != nil {
-      query = jsonData["sql"].(string)
+      sql = jsonData["sql"].(string)
     }
 
     if jsonData["sort"] != nil {

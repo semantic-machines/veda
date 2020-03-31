@@ -187,15 +187,6 @@ v-s:PsattachSignatureSample
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
 .
-v-s:PsattachOrganizationProperties
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:ContractorProfile ;
-  v-ui:forProperty v-s:attachOrganizationProperties;
-  v-ui:tooltip "Свидетельство налогового (компетентного) органа (в соответствии с Соглашением об избежании двойного налогообложения) о регистрации контрагента в качестве налогоплательщика по месту нахождения его основной деятельности с проставленным апостилем и переводом на русский язык."@ru ;
-  v-ui:tooltip "Details of the organization."@en ;
-  v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 100 ;
-.
 v-s:PsattachOtherDoc
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-s:ContractorProfile ;
