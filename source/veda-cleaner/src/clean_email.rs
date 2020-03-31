@@ -18,9 +18,19 @@ pub fn clean_email(systicket: &Ticket, ch_client: &mut CHClient, module: &mut Mo
     let res = ch_client.select(&systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, 0);
 
     if res.result_code == ResultCode::Ok {
-        for el in res.result.iter() {
-            info!("email id for remove: {}", el);
-            module.api.update(&systicket.id, IndvOp::Remove, &Individual::default().set_id(el));
+        for id in res.result.iter() {
+            let mut rindv: Individual = Individual::default();
+            if module.storage.get_individual(id, &mut rindv) {
+                if !rindv.is_exists("v-s:creator") {
+                    info!(
+                        "remove {}, id = {}, created = {}",
+                        rindv.get_first_literal("rdf:type").unwrap_or_default(),
+                        id,
+                        NaiveDateTime::from_timestamp(rindv.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S")
+                    );
+                    module.api.update(&systicket.id, IndvOp::Remove, &Individual::default().set_id(id));
+                }
+            }
         }
     }
 }
