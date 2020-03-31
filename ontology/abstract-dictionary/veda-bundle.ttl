@@ -169,6 +169,11 @@ v-s:DeletedAlert
   rdfs:label "Объект удален"@ru ;
   rdfs:label "Object is deleted"@en ;
 .
+v-s:RemovedAlert
+  rdf:type v-s:Bundle ;
+  rdfs:label "Объект уничтожен"@ru ;
+  rdfs:label "Object is removed"@en ;
+.
 v-s:InvalidAlert
   rdf:type v-s:Bundle ;
   rdfs:label "Документ не актуален"@ru ;
@@ -392,12 +397,12 @@ v-s:CreateBundle
 .
 v-s:FindBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Найти"@ru ;  
+  rdfs:label "Найти"@ru ;
   rdfs:label "Find"@en ;
 .
 v-s:ChangeSizeBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Изменить размер"@ru ;  
+  rdfs:label "Изменить размер"@ru ;
   rdfs:label "Change size"@en ;
 .
 
