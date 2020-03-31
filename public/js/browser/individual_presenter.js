@@ -242,7 +242,9 @@ veda.Module(function (veda) { "use strict";
       if (e.type === "cancel") {
         template.callModelMethod("reset");
       } else if (e.type === "destroy") {
-        template.callModelMethod("remove");
+        template.callModelMethod("remove").then(function () {
+          riot.route("#/");
+        });
       } else {
         template.callModelMethod(e.type);
       }
