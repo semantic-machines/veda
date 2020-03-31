@@ -570,7 +570,12 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server_put(params);
+    return call_server_put(params)
+      .then(function () {
+        return localDB.then(function (db) {
+          return db.remove(params.data.uri);
+        });
+      });
   };
 
   veda.Backend.put_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
