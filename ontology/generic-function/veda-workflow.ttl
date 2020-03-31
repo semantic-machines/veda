@@ -1674,6 +1674,7 @@ v-wf:takenDecision
   rdfs:label "Решение"@ru ;
   rdfs:label "Decision"@en ;
   rdfs:domain v-wf:DecisionForm ;
+  rdfs:domain v-s:JournalRecord ;
   rdfs:range rdfs:Resource ;
 .
 
@@ -2542,10 +2543,6 @@ v-wf:TraceRecord
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Trace Record"@en ;
   v-ui:hasTemplate v-wf:TraceRecordTemplate ;
-.
-v-wf:takenDecision
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:JournalRecord ;
 .
 
 v-wf:WorkflowReadUser
