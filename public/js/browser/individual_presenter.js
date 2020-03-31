@@ -242,8 +242,11 @@ veda.Module(function (veda) { "use strict";
       if (e.type === "cancel") {
         template.callModelMethod("reset");
       } else if (e.type === "destroy") {
-        template.callModelMethod("remove").then(function () {
-          riot.route("#/");
+        template.callModelMethod("remove").then(function (removed) {
+          var removedAlert = new veda.IndividualModel("v-s:RemovedAlert");
+          removedAlert.load().then(function (removedAlert) {
+            template.empty().append('<div class="container alert alert-danger"><strong>' + removedAlert.toString() + '</strong></div>');
+          });
         });
       } else {
         template.callModelMethod(e.type);
