@@ -24,6 +24,7 @@ use v_onto::resource::Value;
 use v_onto::datatype::DataType;
 use v_onto::datatype::Lang;
 use v_queue::consumer::*;
+use v_api::IndvOp;
 use url::Url;
 
 type TypedBatch = HashMap<String, Batch>;
@@ -74,6 +75,13 @@ pub struct TypePropOps {
 impl Context {
 
     fn add_to_typed_batch(&mut self, queue_element: &mut Individual) {
+
+        let cmd = get_cmd(queue_element);
+        if cmd.is_none() {
+            error!("Queue element cmd is none. Skip element.");
+            return;
+        }
+
         let mut new_state = Individual::default();
         get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
@@ -106,21 +114,29 @@ impl Context {
             }
         }
 
-        if let Some(types) = new_state.get_literals("rdf:type") {
-            for type_name in types {
-                if !self.onto.is_some_entered(&type_name, &EXPORTED_TYPE) {
-                    continue;
+        let is_remove: bool;
+        if cmd == Some(IndvOp::Remove) {
+            is_remove = true;
+        } else {
+            is_remove = false;
+        }
+        if !is_remove {
+            if let Some(types) = new_state.get_literals("rdf:type") {
+                for type_name in types {
+                    if !self.onto.is_some_entered(&type_name, &EXPORTED_TYPE) {
+                        continue;
+                    }
+                    let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
+                    let mut new_state = Individual::default();
+                    get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+                    if !self.typed_batch.contains_key(&type_name) {
+                        let new_batch = Batch::new();
+                        self.typed_batch.insert(type_name.clone(), new_batch);
+                    }
+                    let batch = self.typed_batch.get_mut(&type_name).unwrap();
+                    batch.push((op_id, new_state, 1));
+                    //info!("op_id = {}, sign = {}, type = {}", op_id, 1, type_name);
                 }
-                let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
-                let mut new_state = Individual::default();
-                get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
-                if !self.typed_batch.contains_key(&type_name) {
-                    let new_batch = Batch::new();
-                    self.typed_batch.insert(type_name.clone(), new_batch);
-                }
-                let batch = self.typed_batch.get_mut(&type_name).unwrap();
-                batch.push((op_id, new_state, 1));
-                //info!("op_id = {}, sign = {}, type = {}", op_id, 1, type_name);
             }
         }
     }
@@ -606,19 +622,11 @@ fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) ->
 }
 
 fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<bool, PrepareError> {
-    let cmd = get_cmd(queue_element);
-    if cmd.is_none() {
-        error!("Queue element cmd is none. Skip element.");
-        return Ok(false);
-    }
-
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
     if let Err(e) = module_info.put_info(op_id, op_id) {
         error!("Failed to write module_info, op_id={}, err={:?}", op_id, e);
     }
-
     ctx.add_to_typed_batch(queue_element);
-
     Ok(false)
 }
 
