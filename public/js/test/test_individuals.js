@@ -2615,4 +2615,62 @@ for (i = 0; i < 1; i++) {
         });
     */
 
+    /*
+    QUnit.test("#051 test restrictions in subject groups", function (assert) {
+        var ticket_admin = get_admin_ticket();
+
+        var ticket1 = get_user1_ticket();
+        var ticket2 = get_user2_ticket();
+
+        var user1 = ticket1.user_uri;
+        var user2 = ticket2.user_uri;
+
+        var doc1 = create_test_document1(ticket_admin)["@"];
+
+        var group_Doc = 'g:group_A' + guid();
+        var group_User = 'g:group_B' + guid();
+
+        var res;
+
+        res = addToGroup(ticket_admin, group_Doc, doc1);
+
+        //#1
+        assert.ok(res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_User, user1, [can_read]);
+
+        //#2
+        assert.ok(res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_User, user2);
+
+        //#3
+        assert.ok(res[1].result == 200);
+
+        res = addRight(ticket_admin.id, [can_read, can_update, can_delete], group_User, group_Doc);
+
+        //#4
+        assert.ok(res[1].result == 200);
+
+        Backend.wait_module(m_acl, res[1].op_id);
+
+        //#5
+        check_rights_success(assert, ticket1.id, doc1, [can_read]);
+
+        //#6
+        check_rights_fail(assert, ticket1.id, doc1, [can_update]);
+
+        //#7
+        check_rights_fail(assert, ticket1.id, doc1, [can_delete]);
+
+        //#8
+        check_rights_success(assert, ticket2.id, doc1, [can_read]);
+
+        //#9
+        check_rights_success(assert, ticket2.id, doc1, [can_update]);
+
+        //#10
+        check_rights_success(assert, ticket2.id, doc1, [can_delete]);
+    });
+    */
 }
