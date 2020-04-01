@@ -2615,7 +2615,7 @@ for (i = 0; i < 1; i++) {
         });
     */
 
-    /*
+    
     QUnit.test("#051 test restrictions in subject groups", function (assert) {
         var ticket_admin = get_admin_ticket();
 
@@ -2672,5 +2672,5 @@ for (i = 0; i < 1; i++) {
         //#10
         check_rights_success(assert, ticket2.id, doc1, [can_delete]);
     });
-    */
+    
 }

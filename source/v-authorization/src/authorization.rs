@@ -76,8 +76,9 @@ fn authorize_obj_group(
 
             for permission in permissions {
                 let subj_id = &permission.id;
-                if azc.subject_groups.contains_key(subj_id) {
-                    let restriction_access = object_group_access;
+                if let Some(subj_gr) = azc.subject_groups.get(subj_id) {
+                    let obj_restriction_access = object_group_access;
+                    let subj_restriction_access = subj_gr.access;
 
                     let permission_access = if permission.access > 15 {
                         (((permission.access & 0xF0) >> 4) ^ 0x0F) & permission.access
@@ -87,7 +88,7 @@ fn authorize_obj_group(
 
                     for i_access in ACCESS_LIST.iter() {
                         let access = *i_access;
-                        if (request_access & access & restriction_access) != 0 {
+                        if (request_access & access & obj_restriction_access & subj_restriction_access) != 0 {
                             calc_bits = access & permission_access;
 
                             if calc_bits > 0 {
@@ -319,7 +320,8 @@ pub fn authorize(
         print_to_trace_info(trace, format!("authorize uri={}, user={}, request_access={}\n", uri, user_uri, access_to_pretty_string(request_access)));
     }
 
-    if let Err(e) = get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, db, &mut azc.is_need_exclusive_az, false) {
+    if let Err(e) = get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, db, &mut azc.is_need_exclusive_az, false)
+    {
         return Err(e);
     }
     db.fiber_yield();
