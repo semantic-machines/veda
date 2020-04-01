@@ -6,7 +6,7 @@ use std::str;
 use std::time::*;
 use url::Url;
 use v_api::app::ResultCode;
-use v_authorization::Access;
+use v_authorization::common::Access;
 use v_az_lmdb::_authorize;
 
 pub struct CHClient {

@@ -15,7 +15,7 @@ use std::collections::HashMap;
 use uuid::*;
 use v_api::app::ResultCode;
 use v_api::*;
-use v_authorization::Trace;
+use v_authorization::common::Trace;
 use v_az_lmdb::_authorize;
 use v_module::module::{create_new_ticket, create_sys_ticket, init_log, Module};
 use v_module::ticket::Ticket;

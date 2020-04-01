@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use v_authorization::Access;
+use v_authorization::common::Access;
 use v_onto::individual::Individual;
 use v_storage::storage::{StorageId, VStorage};
 

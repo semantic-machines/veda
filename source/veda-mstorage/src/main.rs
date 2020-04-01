@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use std::str;
 use v_api::app::ResultCode;
 use v_api::IndvOp;
-use v_authorization::{Access, Trace};
+use v_authorization::common::{Access, Trace};
 use v_az_lmdb::_authorize;
 use v_module::info::ModuleInfo;
 use v_module::module::{create_sys_ticket, init_log, Module};
