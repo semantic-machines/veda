@@ -319,9 +319,8 @@ pub fn authorize(
         print_to_trace_info(trace, format!("authorize uri={}, user={}, request_access={}\n", uri, user_uri, access_to_pretty_string(request_access)));
     }
 
-    match get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, db, &mut azc.is_need_exclusive_az, false) {
-        Ok(_res) => {}
-        Err(e) => return Err(e),
+    if let Err(e) = get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, db, &mut azc.is_need_exclusive_az, false) {
+        return Err(e);
     }
     db.fiber_yield();
 

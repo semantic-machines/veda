@@ -127,9 +127,6 @@ pub(crate) fn get_resource_groups(
     ignore_exclusive: bool,
 ) -> Result<bool, i64> {
     if level > 32 {
-        //        if trace.is_info {
-        //            print_to_trace_info(trace, format!("ERR! level down > 32,
-        // uri={}\n", uri));        }
         return Ok(true);
     }
 
@@ -151,20 +148,6 @@ pub(crate) fn get_resource_groups(
                 if walked_groups.contains_key(&group.id) {
                     preur_access = walked_groups[&group.id].0;
                     if (preur_access & new_access) == new_access && group.marker == walked_groups[&group.id].1 {
-                        /*                           if trace.is_info {
-                                                        print_to_trace_info(
-                                                            trace,
-                                                            format!(
-                                                                "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
-                                                                level * 2,
-                                                                level as usize,
-                                                                group.id,
-                                                                access_to_pretty_string(preur_access)
-                                                            ),
-                                                        );
-                                                    }
-                        */
-
                         continue;
                     }
                 }
@@ -175,34 +158,7 @@ pub(crate) fn get_resource_groups(
                     tree_groups.insert(group.id.clone(), uri.to_string());
                 }
 
-                /*
-                                if trace.is_info {
-                                    print_to_trace_info(
-                                        trace,
-                                        format!(
-                                            "{:1$} ({})GROUP [{}] {}-> {}\n",
-                                            level * 2,
-                                            level as usize,
-                                            group.id,
-                                            access_to_pretty_string(orig_access),
-                                            access_to_pretty_string(new_access)
-                                        ),
-                                    );
-                                }
-                */
                 if uri == group.id {
-                    /*                    if trace.is_info {
-                        print_to_trace_info(
-                            trace,
-                            format!(
-                                "{:1$} ({})GROUP [{}].access={} SKIP, uri == group_key\n",
-                                level * 2,
-                                level as usize,
-                                group.id,
-                                access_to_pretty_string(orig_access)
-                            ),
-                        );
-                    } */
                     continue;
                 }
 
@@ -214,13 +170,11 @@ pub(crate) fn get_resource_groups(
 
                 db.fiber_yield();
 
-                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, db, out_f_is_exclusive, t_ignore_exclusive)
+                if let Err(e) =
+                    get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, db, out_f_is_exclusive, t_ignore_exclusive)
                 {
-                    Ok(_res) => {}
-                    Err(e) => {
-                        if e < 0 {
-                            return Err(e);
-                        }
+                    if e < 0 {
+                        return Err(e);
                     }
                 }
 
