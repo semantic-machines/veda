@@ -10,6 +10,7 @@ use std::thread;
 use std::time;
 use std::time::SystemTime;
 use v_authorization::*;
+use v_authorization::common::{Storage, Trace, FILTER_PREFIX, get_elements_from_index};
 
 const DB_PATH: &str = "./data/acl-indexes/";
 const MODULE_INFO_PATH: &str = "./data/module-info/acl_preparer_info";
