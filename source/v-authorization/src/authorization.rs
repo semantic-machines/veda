@@ -14,8 +14,8 @@ pub struct Right {
 }
 
 pub struct AzContext<'a> {
-    uri: &'a str,
-    user_uri: &'a str,
+    id: &'a str,
+    user_id: &'a str,
     request_access: u8,
     calc_right_res: u8,
     is_need_exclusive_az: bool,
@@ -26,6 +26,12 @@ pub struct AzContext<'a> {
     tree_groups_o: &'a mut HashMap<String, String>,
     subject_groups: &'a mut HashMap<String, Right>,
     checked_groups: &'a mut HashMap<String, u8>,
+}
+
+impl<'a> Default for AzContext<'a> {
+    fn default() -> Self {
+        unimplemented!()
+    }
 }
 
 fn authorize_obj_group(
@@ -72,7 +78,7 @@ fn authorize_obj_group(
         Ok(str) => {
             let permissions: &mut Vec<Right> = &mut Vec::new();
 
-            get_elements_from_index(&str, permissions);
+            decode_elements_from_index(&str, permissions);
 
             for permission in permissions {
                 let subj_id = &permission.id;
@@ -184,7 +190,7 @@ fn prepare_obj_group(
     match db.get(&(MEMBERSHIP_PREFIX.to_owned() + uri)) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
-            get_elements_from_index(&groups_str, groups_set);
+            decode_elements_from_index(&groups_str, groups_set);
 
             groups_set_len = groups_set.len();
 
@@ -289,20 +295,42 @@ fn prepare_obj_group(
     }
 }
 
-pub fn authorize(
-    uri: &str,
-    user_uri: &str,
-    request_access: u8,
-    filter_value: &str,
-    filter_allow_access_to_other: u8,
-    db: &dyn Storage,
-    trace: &mut Trace,
-) -> Result<u8, i64> {
+fn get_filter(id: &str, db: &dyn Storage) -> (String, u8) {
+    let mut filter_value;
+    let mut filter_allow_access_to_other = 0;
+    match db.get(&(FILTER_PREFIX.to_owned() + id)) {
+        Ok(data) => {
+            filter_value = data;
+            if filter_value.len() < 3 {
+                filter_value.clear();
+            } else {
+                let filters_set: &mut Vec<Right> = &mut Vec::new();
+                decode_elements_from_index(&filter_value, filters_set);
+
+                if !filters_set.is_empty() {
+                    let el = &mut filters_set[0];
+
+                    filter_value = el.id.clone();
+                    filter_allow_access_to_other = el.access;
+                }
+            }
+            //eprintln!("Authorize:uri=[{}], filter_value=[{}]", uri, filter_value);
+        }
+        Err(e) => {
+            eprintln!("ERR! Authorize: _authorize {:?}, err={:?}", id, e);
+            //return Err(e);
+            filter_value = String::new();
+        }
+    }
+    (filter_value, filter_allow_access_to_other)
+}
+
+pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, trace: &mut Trace) -> Result<u8, i64> {
     let s_groups = &mut HashMap::new();
 
     let mut azc = AzContext {
-        uri,
-        user_uri,
+        id: id,
+        user_id: user_id,
         request_access,
         calc_right_res: 0,
         is_need_exclusive_az: false,
@@ -315,12 +343,16 @@ pub fn authorize(
         checked_groups: &mut HashMap::new(),
     };
 
+    let r = get_filter(id, db);
+    let filter_value = r.0;
+    let filter_allow_access_to_other = r.1;
+
     // читаем группы subject (ticket.user_uri)
     if trace.is_info {
-        print_to_trace_info(trace, format!("authorize uri={}, user={}, request_access={}\n", uri, user_uri, access_to_pretty_string(request_access)));
+        print_to_trace_info(trace, format!("authorize uri={}, user={}, request_access={}\n", id, user_id, access_to_pretty_string(request_access)));
     }
 
-    if let Err(e) = get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, db, &mut azc.is_need_exclusive_az, false)
+    if let Err(e) = get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_id, 15, s_groups, &filter_value, 0, db, &mut azc.is_need_exclusive_az, false)
     {
         return Err(e);
     }
@@ -329,9 +361,9 @@ pub fn authorize(
     azc.subject_groups = s_groups;
 
     azc.subject_groups.insert(
-        user_uri.to_string(),
+        user_id.to_string(),
         Right {
-            id: user_uri.to_string(),
+            id: user_id.to_string(),
             access: 15,
             marker: 0 as char,
             is_deleted: false,
@@ -339,15 +371,15 @@ pub fn authorize(
         },
     );
 
-    let mut request_access_t = request_access;
+    let mut request_access_with_filter = request_access;
     let empty_filter_value = String::new();
 
     if !filter_value.is_empty() {
-        request_access_t = request_access & filter_allow_access_to_other;
+        request_access_with_filter = request_access & filter_allow_access_to_other;
     }
 
     if !trace.is_info && !trace.is_group && !trace.is_acl {
-        match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, db) {
+        match authorize_obj_group(&mut azc, trace, request_access_with_filter, "v-s:AllResourcesGroup", 15, &empty_filter_value, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -360,7 +392,7 @@ pub fn authorize(
             Err(e) => return Err(e),
         }
 
-        match authorize_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, db) {
+        match authorize_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -373,7 +405,7 @@ pub fn authorize(
             Err(e) => return Err(e),
         }
 
-        match prepare_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, 0, db) {
+        match prepare_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, 0, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -399,7 +431,7 @@ pub fn authorize(
                 Err(e) => return Err(e),
             }
 
-            match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, db) {
+            match authorize_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, db) {
                 Ok(res) => {
                     if res && final_check(&mut azc, trace) {
                         return Ok(azc.calc_right_res);
@@ -408,7 +440,7 @@ pub fn authorize(
                 Err(e) => return Err(e),
             }
 
-            match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, db) {
+            match prepare_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, 0, db) {
                 Ok(res) => {
                     if res && final_check(&mut azc, trace) {
                         return Ok(azc.calc_right_res);
@@ -420,7 +452,7 @@ pub fn authorize(
     } else {
         // IF NEED TRACE
 
-        match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, db) {
+        match authorize_obj_group(&mut azc, trace, request_access_with_filter, "v-s:AllResourcesGroup", 15, &empty_filter_value, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -435,7 +467,7 @@ pub fn authorize(
             Err(e) => return Err(e),
         }
 
-        match authorize_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, db) {
+        match authorize_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -450,7 +482,7 @@ pub fn authorize(
             Err(e) => return Err(e),
         }
 
-        match prepare_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, 0, db) {
+        match prepare_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, 0, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -486,7 +518,7 @@ pub fn authorize(
                 Err(e) => return Err(e),
             }
 
-            match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, db) {
+            match authorize_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, db) {
                 Ok(res) => {
                     if res {
                         //                    if trace.is_info {
@@ -499,7 +531,7 @@ pub fn authorize(
                 Err(e) => return Err(e),
             }
 
-            match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, db) {
+            match prepare_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, 0, db) {
                 Ok(res) => {
                     if res {
                         //                    if trace.is_info {
@@ -526,8 +558,8 @@ pub fn authorize(
                 trace,
                 format!(
                     "result: uri={}, user={}, request={}, answer={}\n\n",
-                    azc.uri,
-                    azc.user_uri,
+                    azc.id,
+                    azc.user_id,
                     access_to_pretty_string(azc.request_access),
                     access_to_pretty_string(0)
                 ),
