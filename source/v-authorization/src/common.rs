@@ -62,7 +62,7 @@ pub struct Trace<'a> {
     pub str_num: u32,
 }
 
-pub fn get_elements_from_index(src: &str, results: &mut Vec<Right>) -> bool {
+pub fn decode_elements_from_index(src: &str, results: &mut Vec<Right>) -> bool {
     if src.is_empty() {
         return false;
     }
@@ -133,7 +133,7 @@ pub(crate) fn get_resource_groups(
     match db.get(&(MEMBERSHIP_PREFIX.to_owned() + uri)) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
-            get_elements_from_index(&groups_str, groups_set);
+            decode_elements_from_index(&groups_str, groups_set);
 
             for (idx, group) in groups_set.iter_mut().enumerate() {
                 if group.id.is_empty() {
@@ -300,8 +300,8 @@ pub(crate) fn final_check(azc: &mut AzContext, trace: &mut Trace) -> bool {
             trace,
             format!(
                 "result: uri={}, user={}, request={}, answer={}\n\n",
-                azc.uri,
-                azc.user_uri,
+                azc.id,
+                azc.user_id,
                 access_to_pretty_string(azc.request_access),
                 access_to_pretty_string(azc.calc_right_res)
             ),

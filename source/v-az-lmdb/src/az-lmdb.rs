@@ -10,7 +10,7 @@ use std::thread;
 use std::time;
 use std::time::SystemTime;
 use v_authorization::*;
-use v_authorization::common::{Storage, Trace, FILTER_PREFIX, get_elements_from_index};
+use v_authorization::common::{Storage, Trace};
 
 const DB_PATH: &str = "./data/acl-indexes/";
 const MODULE_INFO_PATH: &str = "./data/module-info/acl_preparer_info";
@@ -147,39 +147,9 @@ pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_r
         db: &db,
     };
 
-    // 0. читаем фильтр прав у object (uri)
-    let mut filter_value;
-    let mut filter_allow_access_to_other = 0;
-    match storage.get(&(FILTER_PREFIX.to_owned() + uri)) {
-        Ok(data) => {
-            filter_value = data;
-            if filter_value.len() < 3 {
-                filter_value.clear();
-            } else {
-                let filters_set: &mut Vec<Right> = &mut Vec::new();
-                get_elements_from_index(&filter_value, filters_set);
-
-                if !filters_set.is_empty() {
-                    let el = &mut filters_set[0];
-
-                    filter_value = el.id.clone();
-                    filter_allow_access_to_other = el.access;
-                }
-            }
-            //eprintln!("Authorize:uri=[{}], filter_value=[{}]", uri, filter_value);
-        }
-        Err(e) => {
-            if e == 0 {
-                filter_value = String::new();
-            } else {
-                eprintln!("ERR! Authorize: _authorize {:?}", uri);
-                return Err(e);
-            }
-        }
-    }
 
     if let Some(t) = trace {
-        authorize(uri, user_uri, request_access, &filter_value, filter_allow_access_to_other, &storage, t)
+        authorize(uri, user_uri, request_access,&storage, t)
     } else {
         let mut t = Trace {
             acl: &mut String::new(),
@@ -191,6 +161,6 @@ pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_r
             str_num: 0,
         };
 
-        authorize(uri, user_uri, request_access, &filter_value, filter_allow_access_to_other, &storage, &mut t)
+        authorize(uri, user_uri, request_access,&storage, &mut t)
     }
 }
