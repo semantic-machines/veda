@@ -445,14 +445,6 @@ v-s:GroupGenerator_permission1
   rdfs:label "R. Все пользователи. Индивиды v-s:GroupGenerator" ;
 .
 
-v-s:GroupGenerator_permission2
-  rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:GroupGeneratorUser ;
-  v-s:permissionSubject v-s:GroupGenerator_BaseUser ;
-  v-s:canCreate "true"^^xsd:boolean ;
-  rdfs:label "C. Админы. Класс v-s:GroupGenerator" ;
-.
-
 v-s:GroupGenerator_permission3
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:GroupGenerator ;
