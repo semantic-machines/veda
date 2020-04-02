@@ -46,6 +46,6 @@ ccus
 
 gowebserver
     module = gowebserver
-    args = --use_clickhouse=true --http_port=8080
+    args = --use_clickhouse=false --http_port=8080
 
 input-onto

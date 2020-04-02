@@ -354,7 +354,7 @@ for (i = 0; i < 1; i++) {
             //#1
             assert.ok(data.indexOf("owl:") >= 0);
         });
-
+/*
     QUnit.test(
         "#100 SearchQuery",
         function (assert) {
@@ -365,7 +365,7 @@ for (i = 0; i < 1; i++) {
             assert.ok(data.indexOf("owl:Thing") >= 0);
             assert.ok(data.indexOf("owl:Nothing") >= 0);
         });
-
+*/
     QUnit.test(
         "#004 search form test",
         function (assert) {
