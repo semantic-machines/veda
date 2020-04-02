@@ -33,6 +33,14 @@ v-s:hasSettings
   rdfs:range v-s:Settings ;
 .
 
+v-s:attachmentBlank
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Бланки"@ru ;
+  rdfs:label "Blanks"@en ;
+  rdfs:domain v-s:Application ;
+  rdfs:range v-s:File ;
+.
+
 v-s:Settings
   rdf:type owl:Class ;
   rdfs:label "Настройки"@ru ;
@@ -121,6 +129,9 @@ v-s:ApplicationTemplate
   if (!individual.hasValue("v-s:hasReport")) {
     $(".reports", template).remove();
   }
+  if (!individual.hasValue("v-s:attachmentBlank")) {
+    $(".attachment-blanks", template).remove();
+  }
 </script>
 <div about="@" class="container">
   <div class="sheet">
@@ -144,9 +155,13 @@ v-s:ApplicationTemplate
         <div about="@" rel="v-s:responsible" class="margin-md"></div-->
       </div>
       <div class="col-lg-4 col-sm-6">
-        <em about="v-s:ManualBundle" property="rdfs:label"></em>
+        <em class="no-margin" about="v-s:ManualBundle" property="rdfs:label"></em>
         <div about="@" rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
       </div>
+    </div>
+    <div class="attachment-blanks">
+      <em about="v-s:attachmentBlank" property="rdfs:label"></em>
+      <div about="@" rel="v-s:attachmentBlank" data-template="v-ui:FileTemplate"></div>
     </div>
   </div>
   <div class="row" style="display: flex; flex-flow: row wrap;">
