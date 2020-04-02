@@ -101,8 +101,7 @@ v-s:Organization_permission0
   v-s:permissionSubject v-s:ContractorProfileAll_ReadUser ;
   v-s:permissionSubject v-s:ContractorCategoryRequest_BaseUser ;
   v-s:permissionSubject v-s:ContractorCategoryRequestAll_ReadUser ;
-  v-s:permissionSubject v-s:ContractorCategoryDecision_BaseUser ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionAll_ReadUser ;
+   v-s:permissionSubject v-s:ContractorCategoryDecisionAll_ReadUser ;
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "R. Все пользователи Organization. Окружение Organization справочники, справочники Veda" ;
 .
@@ -166,16 +165,6 @@ v-s:ContractorProfile_permission4
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "R. Пользователи с правами просмотра всех ContractorProfile. Окружение ContractorProfile" ;
 .
-
-v-s:ContractorCategoryDecision_permission6
-  rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:ContractorCategoryDecision_Environment ;
-  v-s:permissionSubject v-s:ContractorCategoryDecision_BaseUser ;
-  v-s:canCreate "true"^^xsd:boolean ;
-  v-s:canRead "true"^^xsd:boolean ;
-  v-s:canUpdate "true"^^xsd:boolean ;
-  rdfs:label "CRU. Основные пользователи ContractorCategoryDecision. Окружение ContractorCategoryDecision" ;
-.
 v-s:ContractorCategoryDecisionSecurity_permission62
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:ContractorCategoryDecisionSecurity_Environment ;
@@ -220,9 +209,6 @@ v-s:ContractorCategoryDecision_permission8
   v-s:permissionObject v-s:ContractorProfile_Environment ;
   v-s:permissionObject v-s:ContractorCategoryRequest_Environment ;
   v-s:permissionObject v-s:ContractorCategoryDecision_Environment ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionSecurityAll_ReadUser ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionLegalAll_ReadUser ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionFinancialAll_ReadUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionSecurity_BaseUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionLegal_BaseUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionFinancial_BaseUser ;
