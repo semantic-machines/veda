@@ -325,6 +325,38 @@ fn get_filter(id: &str, db: &dyn Storage) -> (String, u8) {
     (filter_value, filter_allow_access_to_other)
 }
 
+fn authorize_obj_groups(
+    id: &str,
+    request_access_with_filter: u8,
+    filter_value: &str,
+    db: &dyn Storage,
+    trace: &mut Trace,
+    azc: &mut AzContext,
+) -> Option<Result<u8, i64>> {
+    for gr in ["v-s:AllResourcesGroup", id].iter() {
+        match authorize_obj_group(azc, trace, request_access_with_filter, gr, 15, &filter_value, db) {
+            Ok(res) => {
+                if res && final_check(azc, trace) {
+                    return Some(Ok(azc.calc_right_res));
+                }
+            }
+            Err(e) => return Some(Err(e)),
+        }
+    }
+
+    match prepare_obj_group(azc, trace, request_access_with_filter, id, 15, &filter_value, 0, db) {
+        Ok(res) => {
+            if res && final_check(azc, trace) {
+                return Some(Ok(azc.calc_right_res));
+            }
+        }
+
+        Err(e) => return Some(Err(e)),
+    }
+
+    None
+}
+
 pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, trace: &mut Trace) -> Result<u8, i64> {
     let s_groups = &mut HashMap::new();
 
@@ -378,140 +410,16 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
         request_access_with_filter = request_access & filter_allow_access_to_other;
     }
 
-    if !trace.is_info && !trace.is_group && !trace.is_acl {
-        match authorize_obj_group(&mut azc, trace, request_access_with_filter, "v-s:AllResourcesGroup", 15, &empty_filter_value, db) {
-            Ok(res) => {
-                if res {
-                    if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
-                        if final_check(&mut azc, trace) {
-                            return Ok(azc.calc_right_res);
-                        }
-                    }
-                }
-            }
-            Err(e) => return Err(e),
-        }
+    if let Some(r) = authorize_obj_groups(id, request_access_with_filter, &empty_filter_value, db, trace, &mut azc) {
+        return r;
+    }
 
-        match authorize_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, db) {
-            Ok(res) => {
-                if res {
-                    if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
-                        if final_check(&mut azc, trace) {
-                            return Ok(azc.calc_right_res);
-                        }
-                    }
-                }
-            }
-            Err(e) => return Err(e),
-        }
+    if !filter_value.is_empty() {
+        azc.checked_groups.clear();
+        azc.walked_groups_o.clear();
 
-        match prepare_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, 0, db) {
-            Ok(res) => {
-                if res {
-                    if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
-                        if final_check(&mut azc, trace) {
-                            return Ok(azc.calc_right_res);
-                        }
-                    }
-                }
-            }
-            Err(e) => return Err(e),
-        }
-
-        if !filter_value.is_empty() {
-            azc.checked_groups.clear();
-            azc.walked_groups_o.clear();
-
-            for gr in ["v-s:AllResourcesGroup", id].iter() {
-                match authorize_obj_group(&mut azc, trace, request_access, gr, 15, &filter_value, db) {
-                    Ok(res) => {
-                        if res && final_check(&mut azc, trace) {
-                            return Ok(azc.calc_right_res);
-                        }
-                    }
-                    Err(e) => return Err(e),
-                }
-            }
-
-            match prepare_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, 0, db) {
-                Ok(res) => {
-                    if res && final_check(&mut azc, trace) {
-                        return Ok(azc.calc_right_res);
-                    }
-                }
-                Err(e) => return Err(e),
-            }
-        }
-    } else {
-        // IF NEED TRACE
-
-        for gr in ["v-s:AllResourcesGroup", id].iter() {
-            match authorize_obj_group(&mut azc, trace, request_access_with_filter, gr, 15, &empty_filter_value, db) {
-                Ok(res) => {
-                    if res {
-                        if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
-                            //                    if trace.is_info {
-                            //                        print_to_trace_info(trace, format!("RETURN MY BE
-                            // ASAP\n"));                    }
-                        } else if final_check(&mut azc, trace) {
-                            return Ok(azc.calc_right_res);
-                        }
-                    }
-                }
-                Err(e) => return Err(e),
-            }
-        }
-
-        match prepare_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, 0, db) {
-            Ok(res) => {
-                if res {
-                    if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
-                        //                    if trace.is_info {
-                        //                        print_to_trace_info(trace, format!("RETURN MY BE
-                        // ASAP\n"));                    }
-                    }
-                } else if final_check(&mut azc, trace) {
-                    return Ok(azc.calc_right_res);
-                }
-            }
-            Err(e) => return Err(e),
-        }
-
-        if !filter_value.is_empty() {
-            if trace.is_info {
-                print_to_trace_info(trace, format!("USE FILTER: [{}]\n", filter_value));
-            }
-
-            azc.checked_groups.clear();
-            azc.walked_groups_o.clear();
-
-            for gr in ["v-s:AllResourcesGroup", id].iter() {
-                match authorize_obj_group(&mut azc, trace, request_access, gr, 15, &filter_value, db) {
-                    Ok(res) => {
-                        if res {
-                            //                    if trace.is_info {
-                            //                        print_to_trace_info(trace, format!("RETURN MY BE
-                            // ASAP\n"));                    }
-                        } else if final_check(&mut azc, trace) {
-                            return Ok(azc.calc_right_res);
-                        }
-                    }
-                    Err(e) => return Err(e),
-                }
-            }
-
-            match prepare_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, 0, db) {
-                Ok(res) => {
-                    if res {
-                        //                    if trace.is_info {
-                        //                        print_to_trace_info(trace, format!("RETURN MY BE
-                        // ASAP\n"));                    }
-                    } else if final_check(&mut azc, trace) {
-                        return Ok(azc.calc_right_res);
-                    }
-                }
-                Err(e) => return Err(e),
-            }
+        if let Some(r) = authorize_obj_groups(id, request_access, &filter_value, db, trace, &mut azc) {
+            return r;
         }
     }
 
