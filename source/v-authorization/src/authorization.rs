@@ -422,22 +422,15 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
             azc.checked_groups.clear();
             azc.walked_groups_o.clear();
 
-            match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, db) {
-                Ok(res) => {
-                    if res && final_check(&mut azc, trace) {
-                        return Ok(azc.calc_right_res);
+            for gr in ["v-s:AllResourcesGroup", id].iter() {
+                match authorize_obj_group(&mut azc, trace, request_access, gr, 15, &filter_value, db) {
+                    Ok(res) => {
+                        if res && final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
+                    Err(e) => return Err(e),
                 }
-                Err(e) => return Err(e),
-            }
-
-            match authorize_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, db) {
-                Ok(res) => {
-                    if res && final_check(&mut azc, trace) {
-                        return Ok(azc.calc_right_res);
-                    }
-                }
-                Err(e) => return Err(e),
             }
 
             match prepare_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, 0, db) {
@@ -452,34 +445,21 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
     } else {
         // IF NEED TRACE
 
-        match authorize_obj_group(&mut azc, trace, request_access_with_filter, "v-s:AllResourcesGroup", 15, &empty_filter_value, db) {
-            Ok(res) => {
-                if res {
-                    if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
-                        //                    if trace.is_info {
-                        //                        print_to_trace_info(trace, format!("RETURN MY BE
-                        // ASAP\n"));                    }
-                    } else if final_check(&mut azc, trace) {
-                        return Ok(azc.calc_right_res);
+        for gr in ["v-s:AllResourcesGroup", id].iter() {
+            match authorize_obj_group(&mut azc, trace, request_access_with_filter, gr, 15, &empty_filter_value, db) {
+                Ok(res) => {
+                    if res {
+                        if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
+                            //                    if trace.is_info {
+                            //                        print_to_trace_info(trace, format!("RETURN MY BE
+                            // ASAP\n"));                    }
+                        } else if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 }
+                Err(e) => return Err(e),
             }
-            Err(e) => return Err(e),
-        }
-
-        match authorize_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, db) {
-            Ok(res) => {
-                if res {
-                    if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
-                        //                    if trace.is_info {
-                        //                        print_to_trace_info(trace, format!("RETURN MY BE
-                        // ASAP\n"));                    }
-                    } else if final_check(&mut azc, trace) {
-                        return Ok(azc.calc_right_res);
-                    }
-                }
-            }
-            Err(e) => return Err(e),
         }
 
         match prepare_obj_group(&mut azc, trace, request_access_with_filter, id, 15, &empty_filter_value, 0, db) {
@@ -505,30 +485,19 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
             azc.checked_groups.clear();
             azc.walked_groups_o.clear();
 
-            match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, db) {
-                Ok(res) => {
-                    if res {
-                        //                    if trace.is_info {
-                        //                        print_to_trace_info(trace, format!("RETURN MY BE
-                        // ASAP\n"));                    }
-                    } else if final_check(&mut azc, trace) {
-                        return Ok(azc.calc_right_res);
+            for gr in ["v-s:AllResourcesGroup", id].iter() {
+                match authorize_obj_group(&mut azc, trace, request_access, gr, 15, &filter_value, db) {
+                    Ok(res) => {
+                        if res {
+                            //                    if trace.is_info {
+                            //                        print_to_trace_info(trace, format!("RETURN MY BE
+                            // ASAP\n"));                    }
+                        } else if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
+                    Err(e) => return Err(e),
                 }
-                Err(e) => return Err(e),
-            }
-
-            match authorize_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, db) {
-                Ok(res) => {
-                    if res {
-                        //                    if trace.is_info {
-                        //                        print_to_trace_info(trace, format!("RETURN MY BE
-                        // ASAP\n"));                    }
-                    } else if final_check(&mut azc, trace) {
-                        return Ok(azc.calc_right_res);
-                    }
-                }
-                Err(e) => return Err(e),
             }
 
             match prepare_obj_group(&mut azc, trace, request_access, id, 15, &filter_value, 0, db) {
