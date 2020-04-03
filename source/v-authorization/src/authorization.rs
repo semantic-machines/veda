@@ -338,10 +338,6 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
         checked_groups: &mut HashMap::new(),
     };
 
-    let r = get_filter(id, db);
-    let filter_value = r.0;
-    let filter_allow_access_to_other = r.1;
-
     // читаем группы subject (ticket.user_uri)
     if trace.is_info {
         print_to_trace_info(trace, format!("authorize uri={}, user={}, request_access={}\n", id, user_id, access_to_pretty_string(request_access)));
@@ -365,11 +361,16 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
         },
     );
 
-    let mut request_access_with_filter = request_access;
     let empty_filter_value = String::new();
+    let mut filter_value = String::new();
+    let mut request_access_with_filter = request_access;
 
-    if !filter_value.is_empty() {
-        request_access_with_filter = request_access & filter_allow_access_to_other;
+    if let Some((value, filter_allow_access_to_other)) = get_filter(id, db) {
+        filter_value = value;
+
+        if !filter_value.is_empty() {
+            request_access_with_filter = request_access & filter_allow_access_to_other;
+        }
     }
 
     if let Some(r) = authorize_obj_groups(id, request_access_with_filter, &empty_filter_value, db, trace, &mut azc) {

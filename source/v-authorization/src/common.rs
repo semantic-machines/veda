@@ -308,7 +308,7 @@ pub(crate) fn final_check(azc: &mut AzContext, trace: &mut Trace) -> bool {
     res
 }
 
-pub(crate) fn get_filter(id: &str, db: &dyn Storage) -> (String, u8) {
+pub(crate) fn get_filter(id: &str, db: &dyn Storage) -> Option<(String, u8)> {
     let mut filter_value;
     let mut filter_allow_access_to_other = 0;
     match db.get(&(FILTER_PREFIX.to_owned() + id)) {
@@ -332,8 +332,8 @@ pub(crate) fn get_filter(id: &str, db: &dyn Storage) -> (String, u8) {
         Err(e) => {
             eprintln!("ERR! Authorize: _authorize {:?}, err={:?}", id, e);
             //return Err(e);
-            filter_value = String::new();
+            return None;
         }
     }
-    (filter_value, filter_allow_access_to_other)
+    Some((filter_value, filter_allow_access_to_other))
 }
