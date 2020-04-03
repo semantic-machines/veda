@@ -3,10 +3,10 @@ use core::fmt;
 use std::collections::HashMap;
 
 pub(crate) const PERMISSION_PREFIX: &str = "P";
-pub const FILTER_PREFIX: &str = "F";
+pub(crate) const FILTER_PREFIX: &str = "F";
 pub(crate) const MEMBERSHIP_PREFIX: &str = "M";
 pub(crate) const M_IS_EXCLUSIVE: char = 'X';
-const M_IGNORE_EXCLUSIVE: char = 'N';
+pub(crate) const M_IGNORE_EXCLUSIVE: char = 'N';
 pub(crate) static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
 pub(crate) static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 
@@ -62,7 +62,7 @@ pub struct Trace<'a> {
     pub str_num: u32,
 }
 
-pub fn decode_elements_from_index(src: &str, results: &mut Vec<Right>) -> bool {
+pub(crate) fn decode_elements_from_index(src: &str, results: &mut Vec<Right>) -> bool {
     if src.is_empty() {
         return false;
     }
@@ -120,7 +120,6 @@ pub(crate) fn get_resource_groups(
     uri: &str,
     access: u8,
     results: &mut HashMap<String, Right>,
-    filter_value: &str,
     level: u8,
     db: &dyn Storage,
     out_f_is_exclusive: &mut bool,
@@ -170,9 +169,7 @@ pub(crate) fn get_resource_groups(
 
                 db.fiber_yield();
 
-                if let Err(e) =
-                    get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, db, out_f_is_exclusive, t_ignore_exclusive)
-                {
+                if let Err(e) = get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, level + 1, db, out_f_is_exclusive, t_ignore_exclusive) {
                     if e < 0 {
                         return Err(e);
                     }
@@ -233,7 +230,7 @@ pub(crate) fn print_to_trace_group(trace: &mut Trace, text: String) {
     trace.group.push_str(&text);
 }
 
-pub fn print_to_trace_info(trace: &mut Trace, text: String) {
+pub(crate) fn print_to_trace_info(trace: &mut Trace, text: String) {
     trace.str_num += 1;
     trace.info.push_str(&(trace.str_num.to_string() + " " + &text));
 }
@@ -250,7 +247,7 @@ pub(crate) fn get_path(mopc: &mut HashMap<String, String>, el: String) -> String
     }
 }
 
-pub fn access_to_pretty_string(src: u8) -> String {
+pub(crate) fn access_to_pretty_string(src: u8) -> String {
     let mut res: String = "".to_owned();
 
     if src & 1 == 1 {
@@ -309,4 +306,34 @@ pub(crate) fn final_check(azc: &mut AzContext, trace: &mut Trace) -> bool {
     }
 
     res
+}
+
+pub(crate) fn get_filter(id: &str, db: &dyn Storage) -> (String, u8) {
+    let mut filter_value;
+    let mut filter_allow_access_to_other = 0;
+    match db.get(&(FILTER_PREFIX.to_owned() + id)) {
+        Ok(data) => {
+            filter_value = data;
+            if filter_value.len() < 3 {
+                filter_value.clear();
+            } else {
+                let filters_set: &mut Vec<Right> = &mut Vec::new();
+                decode_elements_from_index(&filter_value, filters_set);
+
+                if !filters_set.is_empty() {
+                    let el = &mut filters_set[0];
+
+                    filter_value = el.id.clone();
+                    filter_allow_access_to_other = el.access;
+                }
+            }
+            //eprintln!("Authorize:uri=[{}], filter_value=[{}]", uri, filter_value);
+        }
+        Err(e) => {
+            eprintln!("ERR! Authorize: _authorize {:?}, err={:?}", id, e);
+            //return Err(e);
+            filter_value = String::new();
+        }
+    }
+    (filter_value, filter_allow_access_to_other)
 }

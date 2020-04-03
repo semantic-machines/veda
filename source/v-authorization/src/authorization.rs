@@ -295,46 +295,9 @@ fn prepare_obj_group(
     }
 }
 
-fn get_filter(id: &str, db: &dyn Storage) -> (String, u8) {
-    let mut filter_value;
-    let mut filter_allow_access_to_other = 0;
-    match db.get(&(FILTER_PREFIX.to_owned() + id)) {
-        Ok(data) => {
-            filter_value = data;
-            if filter_value.len() < 3 {
-                filter_value.clear();
-            } else {
-                let filters_set: &mut Vec<Right> = &mut Vec::new();
-                decode_elements_from_index(&filter_value, filters_set);
-
-                if !filters_set.is_empty() {
-                    let el = &mut filters_set[0];
-
-                    filter_value = el.id.clone();
-                    filter_allow_access_to_other = el.access;
-                }
-            }
-            //eprintln!("Authorize:uri=[{}], filter_value=[{}]", uri, filter_value);
-        }
-        Err(e) => {
-            eprintln!("ERR! Authorize: _authorize {:?}, err={:?}", id, e);
-            //return Err(e);
-            filter_value = String::new();
-        }
-    }
-    (filter_value, filter_allow_access_to_other)
-}
-
-fn authorize_obj_groups(
-    id: &str,
-    request_access_with_filter: u8,
-    filter_value: &str,
-    db: &dyn Storage,
-    trace: &mut Trace,
-    azc: &mut AzContext,
-) -> Option<Result<u8, i64>> {
+fn authorize_obj_groups(id: &str, request_access: u8, filter_value: &str, db: &dyn Storage, trace: &mut Trace, azc: &mut AzContext) -> Option<Result<u8, i64>> {
     for gr in ["v-s:AllResourcesGroup", id].iter() {
-        match authorize_obj_group(azc, trace, request_access_with_filter, gr, 15, &filter_value, db) {
+        match authorize_obj_group(azc, trace, request_access, gr, 15, &filter_value, db) {
             Ok(res) => {
                 if res && final_check(azc, trace) {
                     return Some(Ok(azc.calc_right_res));
@@ -344,7 +307,7 @@ fn authorize_obj_groups(
         }
     }
 
-    match prepare_obj_group(azc, trace, request_access_with_filter, id, 15, &filter_value, 0, db) {
+    match prepare_obj_group(azc, trace, request_access, id, 15, &filter_value, 0, db) {
         Ok(res) => {
             if res && final_check(azc, trace) {
                 return Some(Ok(azc.calc_right_res));
@@ -361,8 +324,8 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
     let s_groups = &mut HashMap::new();
 
     let mut azc = AzContext {
-        id: id,
-        user_id: user_id,
+        id,
+        user_id,
         request_access,
         calc_right_res: 0,
         is_need_exclusive_az: false,
@@ -384,8 +347,7 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
         print_to_trace_info(trace, format!("authorize uri={}, user={}, request_access={}\n", id, user_id, access_to_pretty_string(request_access)));
     }
 
-    if let Err(e) = get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_id, 15, s_groups, &filter_value, 0, db, &mut azc.is_need_exclusive_az, false)
-    {
+    if let Err(e) = get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_id, 15, s_groups, 0, db, &mut azc.is_need_exclusive_az, false) {
         return Err(e);
     }
     db.fiber_yield();
