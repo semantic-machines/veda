@@ -26,6 +26,7 @@ pub struct AzContext<'a> {
     tree_groups_o: &'a mut HashMap<String, String>,
     subject_groups: &'a mut HashMap<String, Right>,
     checked_groups: &'a mut HashMap<String, u8>,
+    filter_value: String,
 }
 
 impl<'a> Default for AzContext<'a> {
@@ -40,7 +41,6 @@ fn authorize_obj_group(
     request_access: u8,
     object_group_id: &str,
     object_group_access: u8,
-    filter_value: &str,
     db: &dyn Storage,
 ) -> Result<bool, i64> {
     let mut is_authorized = false;
@@ -68,8 +68,8 @@ fn authorize_obj_group(
         print_to_trace_group(trace, format!("{}\n", object_group_id));
     }
 
-    let acl_key = if !filter_value.is_empty() {
-        PERMISSION_PREFIX.to_owned() + filter_value + object_group_id
+    let acl_key = if !azc.filter_value.is_empty() {
+        PERMISSION_PREFIX.to_owned() + &azc.filter_value + object_group_id
     } else {
         PERMISSION_PREFIX.to_owned() + object_group_id
     };
@@ -111,8 +111,8 @@ fn authorize_obj_group(
                                 }
 
                                 if trace.is_info && prev_res != azc.calc_right_res {
-                                    let f_log_str = if !filter_value.is_empty() {
-                                        ", with filter ".to_owned() + filter_value
+                                    let f_log_str = if !azc.filter_value.is_empty() {
+                                        ", with filter ".to_owned() + &azc.filter_value
                                     } else {
                                         "".to_owned()
                                     };
@@ -168,16 +168,7 @@ fn authorize_obj_group(
     Ok(false)
 }
 
-fn prepare_obj_group(
-    azc: &mut AzContext,
-    trace: &mut Trace,
-    request_access: u8,
-    uri: &str,
-    access: u8,
-    filter_value: &str,
-    level: u8,
-    db: &dyn Storage,
-) -> Result<bool, i64> {
+fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8, uri: &str, access: u8, level: u8, db: &dyn Storage) -> Result<bool, i64> {
     if level > 32 {
         return Ok(false);
     }
@@ -253,7 +244,7 @@ fn prepare_obj_group(
                     continue;
                 }
 
-                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, filter_value, db) {
+                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, db) {
                     Ok(res) => {
                         if res {
                             if !azc.is_need_exclusive_az {
@@ -272,7 +263,7 @@ fn prepare_obj_group(
                     }
                 }
 
-                prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, db)?;
+                prepare_obj_group(azc, trace, request_access, &group.id, new_access, level + 1, db)?;
             }
 
             if groups_set_len == 0 {
@@ -295,9 +286,22 @@ fn prepare_obj_group(
     }
 }
 
-fn authorize_obj_groups(id: &str, request_access: u8, filter_value: &str, db: &dyn Storage, trace: &mut Trace, azc: &mut AzContext) -> Option<Result<u8, i64>> {
+fn authorize_obj_groups(id: &str, request_access: u8, db: &dyn Storage, trace: &mut Trace, azc: &mut AzContext) -> Option<Result<u8, i64>> {
+    let mut request_access_with_filter = request_access;
+    let mut filter_value = String::new();
+
+    if azc.filter_value.is_empty() {
+        if let Some((value, filter_allow_access_to_other)) = get_filter(id, db) {
+            filter_value = value;
+
+            if !filter_value.is_empty() {
+                request_access_with_filter = request_access & filter_allow_access_to_other;
+            }
+        }
+    }
+
     for gr in ["v-s:AllResourcesGroup", id].iter() {
-        match authorize_obj_group(azc, trace, request_access, gr, 15, &filter_value, db) {
+        match authorize_obj_group(azc, trace, request_access_with_filter, gr, 15, db) {
             Ok(res) => {
                 if res && final_check(azc, trace) {
                     return Some(Ok(azc.calc_right_res));
@@ -307,7 +311,7 @@ fn authorize_obj_groups(id: &str, request_access: u8, filter_value: &str, db: &d
         }
     }
 
-    match prepare_obj_group(azc, trace, request_access, id, 15, &filter_value, 0, db) {
+    match prepare_obj_group(azc, trace, request_access_with_filter, id, 15, 0, db) {
         Ok(res) => {
             if res && final_check(azc, trace) {
                 return Some(Ok(azc.calc_right_res));
@@ -317,6 +321,7 @@ fn authorize_obj_groups(id: &str, request_access: u8, filter_value: &str, db: &d
         Err(e) => return Some(Err(e)),
     }
 
+    azc.filter_value = filter_value;
     None
 }
 
@@ -336,6 +341,7 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
         tree_groups_o: &mut HashMap::new(),
         subject_groups: &mut HashMap::new(),
         checked_groups: &mut HashMap::new(),
+        filter_value: String::default(),
     };
 
     // читаем группы subject (ticket.user_uri)
@@ -361,27 +367,15 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
         },
     );
 
-    let empty_filter_value = String::new();
-    let mut filter_value = String::new();
-    let mut request_access_with_filter = request_access;
-
-    if let Some((value, filter_allow_access_to_other)) = get_filter(id, db) {
-        filter_value = value;
-
-        if !filter_value.is_empty() {
-            request_access_with_filter = request_access & filter_allow_access_to_other;
-        }
-    }
-
-    if let Some(r) = authorize_obj_groups(id, request_access_with_filter, &empty_filter_value, db, trace, &mut azc) {
+    if let Some(r) = authorize_obj_groups(id, request_access, db, trace, &mut azc) {
         return r;
     }
 
-    if !filter_value.is_empty() {
+    if !azc.filter_value.is_empty() {
         azc.checked_groups.clear();
         azc.walked_groups_o.clear();
 
-        if let Some(r) = authorize_obj_groups(id, request_access, &filter_value, db, trace, &mut azc) {
+        if let Some(r) = authorize_obj_groups(id, request_access, db, trace, &mut azc) {
             return r;
         }
     }
