@@ -38,24 +38,28 @@ impl<'a> Default for AzContext<'a> {
 fn authorize_obj_group(
     azc: &mut AzContext,
     trace: &mut Trace,
-    request_access: u8,
+    request_access_in: u8,
     object_group_id: &str,
     object_group_access: u8,
+    level: u8,
     db: &dyn Storage,
-) -> Result<bool, i64> {
+) -> Result<(bool, String), i64> {
     let mut is_authorized = false;
     let mut calc_bits;
+
+    let mut request_access = request_access_in;
+    let mut filter_value = String::new();
 
     if !trace.is_info && !trace.is_group && !trace.is_acl {
         let left_to_check = (azc.calc_right_res ^ request_access) & request_access;
 
         if left_to_check & object_group_access == 0 {
-            return Ok(is_authorized);
+            return Ok((is_authorized, filter_value));
         }
 
         if let Some(v) = azc.checked_groups.get(object_group_id) {
             if *v == object_group_access {
-                return Ok(is_authorized);
+                return Ok((is_authorized, filter_value));
             }
         }
 
@@ -106,7 +110,7 @@ fn authorize_obj_group(
                                     if trace.is_info {
                                     } else if !trace.is_group && !trace.is_acl {
                                         is_authorized = true;
-                                        return Ok(is_authorized);
+                                        return Ok((is_authorized, filter_value));
                                     }
                                 }
 
@@ -161,11 +165,11 @@ fn authorize_obj_group(
     if (azc.calc_right_res & request_access) == request_access {
         if !trace.is_info && !trace.is_group && !trace.is_acl {
             is_authorized = true;
-            return Ok(is_authorized);
+            return Ok((is_authorized, filter_value));
         }
     }
 
-    Ok(false)
+    Ok((false, filter_value))
 }
 
 fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8, uri: &str, access: u8, level: u8, db: &dyn Storage) -> Result<bool, i64> {
@@ -244,8 +248,8 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                     continue;
                 }
 
-                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, db) {
-                    Ok(res) => {
+                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, level + 1, db) {
+                    Ok((res, _filter_value)) => {
                         if res {
                             if !azc.is_need_exclusive_az {
                                 return Ok(true);
@@ -287,7 +291,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
 }
 
 fn authorize_obj_groups(id: &str, request_access: u8, db: &dyn Storage, trace: &mut Trace, azc: &mut AzContext) -> Option<Result<u8, i64>> {
-    let mut request_access_with_filter = request_access;
+    let mut request_access_1 = request_access;
     let mut filter_value = String::new();
 
     if azc.filter_value.is_empty() {
@@ -295,14 +299,15 @@ fn authorize_obj_groups(id: &str, request_access: u8, db: &dyn Storage, trace: &
             filter_value = value;
 
             if !filter_value.is_empty() {
-                request_access_with_filter = request_access & filter_allow_access_to_other;
+                request_access_1 = request_access & filter_allow_access_to_other;
             }
         }
     }
 
     for gr in ["v-s:AllResourcesGroup", id].iter() {
-        match authorize_obj_group(azc, trace, request_access_with_filter, gr, 15, db) {
-            Ok(res) => {
+        match authorize_obj_group(azc, trace, request_access_1, gr, 15, 0, db) {
+            Ok((res, filter_value)) => {
+                //azc.filter_value = filter_value;
                 if res && final_check(azc, trace) {
                     return Some(Ok(azc.calc_right_res));
                 }
@@ -311,7 +316,9 @@ fn authorize_obj_groups(id: &str, request_access: u8, db: &dyn Storage, trace: &
         }
     }
 
-    match prepare_obj_group(azc, trace, request_access_with_filter, id, 15, 0, db) {
+    azc.filter_value = filter_value;
+
+    match prepare_obj_group(azc, trace, request_access, id, 15, 0, db) {
         Ok(res) => {
             if res && final_check(azc, trace) {
                 return Some(Ok(azc.calc_right_res));
@@ -321,7 +328,6 @@ fn authorize_obj_groups(id: &str, request_access: u8, db: &dyn Storage, trace: &
         Err(e) => return Some(Err(e)),
     }
 
-    azc.filter_value = filter_value;
     None
 }
 
