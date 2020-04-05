@@ -330,7 +330,9 @@ pub(crate) fn get_filter(id: &str, db: &dyn Storage) -> Option<(String, u8)> {
             //eprintln!("Authorize:uri=[{}], filter_value=[{}]", uri, filter_value);
         }
         Err(e) => {
-            eprintln!("ERR! Authorize: _authorize {:?}, err={:?}", id, e);
+            if e < 0 {
+                eprintln!("ERR! Authorize: _authorize {:?}, err={:?}", id, e);
+            }
             //return Err(e);
             return None;
         }
