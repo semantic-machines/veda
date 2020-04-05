@@ -50,6 +50,16 @@ fn authorize_obj_group(
     let mut request_access = request_access_in;
     let mut filter_value = String::new();
 
+    if azc.filter_value.is_empty() && level == 0 {
+        if let Some((value, filter_allow_access_to_other)) = get_filter(object_group_id, db) {
+            filter_value = value;
+
+            if !filter_value.is_empty() {
+                request_access = request_access & filter_allow_access_to_other;
+            }
+        }
+    }
+
     if !trace.is_info && !trace.is_group && !trace.is_acl {
         let left_to_check = (azc.calc_right_res ^ request_access) & request_access;
 
@@ -291,23 +301,12 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
 }
 
 fn authorize_obj_groups(id: &str, request_access: u8, db: &dyn Storage, trace: &mut Trace, azc: &mut AzContext) -> Option<Result<u8, i64>> {
-    let mut request_access_1 = request_access;
-    let mut filter_value = String::new();
-
-    if azc.filter_value.is_empty() {
-        if let Some((value, filter_allow_access_to_other)) = get_filter(id, db) {
-            filter_value = value;
-
-            if !filter_value.is_empty() {
-                request_access_1 = request_access & filter_allow_access_to_other;
-            }
-        }
-    }
-
     for gr in ["v-s:AllResourcesGroup", id].iter() {
-        match authorize_obj_group(azc, trace, request_access_1, gr, 15, 0, db) {
+        match authorize_obj_group(azc, trace, request_access, gr, 15, 0, db) {
             Ok((res, filter_value)) => {
-                //azc.filter_value = filter_value;
+                if !filter_value.is_empty() {
+                    azc.filter_value = filter_value.clone();
+                }
                 if res && final_check(azc, trace) {
                     return Some(Ok(azc.calc_right_res));
                 }
@@ -315,8 +314,6 @@ fn authorize_obj_groups(id: &str, request_access: u8, db: &dyn Storage, trace: &
             Err(e) => return Some(Err(e)),
         }
     }
-
-    azc.filter_value = filter_value;
 
     match prepare_obj_group(azc, trace, request_access, id, 15, 0, db) {
         Ok(res) => {
