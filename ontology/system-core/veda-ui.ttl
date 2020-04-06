@@ -487,15 +487,16 @@ v-ui:AdministrationIconTemplate
   rdfs:label "Administration button template"@en ;
   v-ui:template """
 <script>
-  template.tooltip({
-    container: template,
-    placement: "bottom",
-    trigger: "hover",
-    title: individual["rdfs:label"].join(" ")
-  });
-  veda.user.isMemberOf("cfg:SuperUser").then(function (isSuperUser) {
+  return veda.user.isMemberOf("cfg:SuperUser").then(function (isSuperUser) {
     if (!isSuperUser) {
       template.remove();
+    } else {
+      template.tooltip({
+        container: template,
+        placement: "bottom",
+        trigger: "hover",
+        title: individual["rdfs:label"].join(" ")
+      });
     }
   });
   //# sourceURL=v-ui:AdministrationIconTemplate_pre
@@ -505,7 +506,6 @@ v-ui:AdministrationIconTemplate
 </a>
   """
 .
-
 
 v-ui:LanguageSwitchTemplate
   rdf:type v-ui:ClassTemplate ;
