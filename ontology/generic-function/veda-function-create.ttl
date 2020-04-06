@@ -370,39 +370,42 @@ v-fc:CreateManagementTemplate
 
   if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
     $(".action.save-create", template).click(function () {
-      var personalLabel = prompt( new veda.IndividualModel("v-s:EnterLabel").toString(), individual.toString() );
-      if (!personalLabel) { return; }
-      individual.clone().then(function (personalCreate) {
-        personalCreate["rdf:type"] = [ new veda.IndividualModel("v-fc:PersonalCreate") ];
-        personalCreate["v-s:creator"] = [];
-        personalCreate["v-s:created"] = [];
-        personalCreate["rdfs:isDefinedBy"] = [];
-        personalCreate["rdfs:label"] = [ personalLabel ];
-        var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
-        if (createBlank && createBlank.object) {
-          return createBlank.clone().then(function(personalCreateBlank) {
-            personalCreateBlank.object = createBlank.object;
-            return personalCreateBlank.updateBlank();
-          }).then(function(personalCreateBlank) {
-            personalCreateBlank["rdfs:isDefinedBy"] = [];
-            personalCreateBlank.save();
-            personalCreate["v-fc:hasBlank"] = [ personalCreateBlank ];
+      var enterLabel = new veda.IndividualModel("v-s:EnterLabel");
+      enterLabel.load().then(function (enterLabel) {
+        var personalLabel = prompt( enterLabel.toString(), individual.toString() );
+        if (!personalLabel) { return; }
+        individual.clone().then(function (personalCreate) {
+          personalCreate["rdf:type"] = [ new veda.IndividualModel("v-fc:PersonalCreate") ];
+          personalCreate["v-s:creator"] = [];
+          personalCreate["v-s:created"] = [];
+          personalCreate["rdfs:isDefinedBy"] = [];
+          personalCreate["rdfs:label"] = [ personalLabel ];
+          var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
+          if (createBlank && createBlank.object) {
+            return createBlank.clone().then(function(personalCreateBlank) {
+              personalCreateBlank.object = createBlank.object;
+              return personalCreateBlank.updateBlank();
+            }).then(function(personalCreateBlank) {
+              personalCreateBlank["rdfs:isDefinedBy"] = [];
+              personalCreateBlank.save();
+              personalCreate["v-fc:hasBlank"] = [ personalCreateBlank ];
+              return personalCreate.save();
+            });
+          } else {
             return personalCreate.save();
+          }
+        }).then(function (personalCreate) {
+          return veda.user.aspect.load().then(function (aspect) {
+            aspect.addValue("v-s:hasCreate", personalCreate);
+          return aspect.save();
+          }).then(function() {
+            return new veda.IndividualModel("v-fc:BlankSuccessfullySaved").load();
+          }).then(function(message) {
+            notify("success", { message: message });
           });
-        } else {
-          return personalCreate.save();
-        }
-      }).then(function (personalCreate) {
-        return veda.user.aspect.load().then(function (aspect) {
-          aspect.addValue("v-s:hasCreate", personalCreate);
-        return aspect.save();
-        }).then(function() {
-          return new veda.IndividualModel("v-fc:BlankSuccessfullySaved").load();
-        }).then(function(message) {
-          notify("success", { message: message });
+        }).catch(function (error) {
+          notify("danger", { message: error });
         });
-      }).catch(function (error) {
-        notify("danger", { message: error });
       });
     });
   } else {
