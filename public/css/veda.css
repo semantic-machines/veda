@@ -912,9 +912,6 @@ fieldset[disabled] .form-control {
 veda-control {
   display: block;
 }
-.form-inline veda-control {
-  display: inline-block;
-}
 .form-inline veda-control .checkbox {
   margin-left: 10px;
 }
@@ -1518,6 +1515,7 @@ svg.process-path-highlight path
   margin-top: 1.5em;
   margin-bottom: 1em;
 }
+
 .row-attribute {
   margin-top: 1em;
 }
@@ -1525,6 +1523,16 @@ svg.process-path-highlight path
   text-align: right;
   font-weight: bold;
 }
+.row-attribute > div:first-child > label {
+  margin-bottom: 0;
+}
+@media (max-width: 767px) {
+  .row-attribute > div:first-child {
+    text-align: left;
+    font-weight: bold;
+  }
+}
+
 #line-status {
   font-size: 0.7em;
   margin: 0.7em 0 -2em;
