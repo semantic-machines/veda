@@ -96,10 +96,6 @@ v-s:LayoutTemplate
     document.title = vedaInfo.toString();
   });
 
-  $("#log-out", template).click(function(){
-    veda.logout();
-  })
-
   // Render user
   var userInfo = $("#user-info", template);
   var userInfoTmpl = "v-ui:IconPersonTemplate";
