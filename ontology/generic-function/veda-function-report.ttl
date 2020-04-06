@@ -110,28 +110,31 @@ v-s:ReportManagementTemplate
 
   if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
     $(".action.save-report", template).click(function () {
-      var personalLabel = prompt( new veda.IndividualModel("v-s:EnterLabel").toString(), individual.toString() );
-      if (!personalLabel) { return; }
-      var personalReport = individual.clone();
-      personalReport["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalReport") ];
-      personalReport["v-s:creator"] = [];
-      personalReport["v-s:created"] = [];
-      personalReport["rdfs:isDefinedBy"] = [];
-      personalReport["rdfs:label"] = [ personalLabel ];
-      var reportBlank = individual.hasValue("v-s:reportBlank") ? individual["v-s:reportBlank"][0] : undefined;
-      if (reportBlank && reportBlank.object) {
-        var personalReportBlank = reportBlank.clone();
-        personalReport["v-s:reportBlank"] = [ personalReportBlank ];
-        personalReportBlank["rdfs:isDefinedBy"] = [];
-        personalReportBlank.object = reportBlank.object;
-        personalReportBlank.updateBlank();
-        personalReportBlank.save();
-      }
-      personalReport.save();
-      var aspect = veda.user.aspect;
-      aspect.addValue("v-s:hasReport", personalReport);
-      aspect.save();
-      notify("success", { message: new veda.IndividualModel("v-s:ReportSuccessfullySaved").toString() });
+      var enterLabel = new veda.IndividualModel("v-s:EnterLabel");
+      enterLabel.load().then(function (enterLabel) {
+        var personalLabel = prompt( enterLabel.toString(), individual.toString() );
+        if (!personalLabel) { return; }
+        var personalReport = individual.clone();
+        personalReport["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalReport") ];
+        personalReport["v-s:creator"] = [];
+        personalReport["v-s:created"] = [];
+        personalReport["rdfs:isDefinedBy"] = [];
+        personalReport["rdfs:label"] = [ personalLabel ];
+        var reportBlank = individual.hasValue("v-s:reportBlank") ? individual["v-s:reportBlank"][0] : undefined;
+        if (reportBlank && reportBlank.object) {
+          var personalReportBlank = reportBlank.clone();
+          personalReport["v-s:reportBlank"] = [ personalReportBlank ];
+          personalReportBlank["rdfs:isDefinedBy"] = [];
+          personalReportBlank.object = reportBlank.object;
+          personalReportBlank.updateBlank();
+          personalReportBlank.save();
+        }
+        personalReport.save();
+        var aspect = veda.user.aspect;
+        aspect.addValue("v-s:hasReport", personalReport);
+        aspect.save();
+        notify("success", { message: new veda.IndividualModel("v-s:ReportSuccessfullySaved").toString() });
+      });
     });
   } else {
     $(".action.save-report", template).remove();
