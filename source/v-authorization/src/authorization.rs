@@ -13,6 +13,18 @@ pub struct Right {
     level: u8,
 }
 
+impl Right {
+    fn new(id: &str) -> Self {
+        Right {
+            id: id.to_string(),
+            access: 15,
+            marker: 0 as char,
+            is_deleted: false,
+            level: 0,
+        }
+    }
+}
+
 pub struct AzContext<'a> {
     id: &'a str,
     user_id: &'a str,
@@ -38,38 +50,24 @@ impl<'a> Default for AzContext<'a> {
 fn authorize_obj_group(
     azc: &mut AzContext,
     trace: &mut Trace,
-    request_access_in: u8,
+    request_access: u8,
     object_group_id: &str,
     object_group_access: u8,
-    level: u8,
     db: &dyn Storage,
-) -> Result<(bool, String), i64> {
+) -> Result<bool, i64> {
     let mut is_authorized = false;
     let mut calc_bits;
-
-    let mut request_access = request_access_in;
-    let mut filter_value = String::new();
-
-    if azc.filter_value.is_empty() && level == 0 {
-        if let Some((value, filter_allow_access_to_other)) = get_filter(object_group_id, db) {
-            filter_value = value;
-
-            if !filter_value.is_empty() {
-                request_access = request_access & filter_allow_access_to_other;
-            }
-        }
-    }
 
     if !trace.is_info && !trace.is_group && !trace.is_acl {
         let left_to_check = (azc.calc_right_res ^ request_access) & request_access;
 
         if left_to_check & object_group_access == 0 {
-            return Ok((is_authorized, filter_value));
+            return Ok(is_authorized);
         }
 
         if let Some(v) = azc.checked_groups.get(object_group_id) {
             if *v == object_group_access {
-                return Ok((is_authorized, filter_value));
+                return Ok(is_authorized);
             }
         }
 
@@ -120,7 +118,7 @@ fn authorize_obj_group(
                                     if trace.is_info {
                                     } else if !trace.is_group && !trace.is_acl {
                                         is_authorized = true;
-                                        return Ok((is_authorized, filter_value));
+                                        return Ok(is_authorized);
                                     }
                                 }
 
@@ -175,11 +173,11 @@ fn authorize_obj_group(
     if (azc.calc_right_res & request_access) == request_access {
         if !trace.is_info && !trace.is_group && !trace.is_acl {
             is_authorized = true;
-            return Ok((is_authorized, filter_value));
+            return Ok(is_authorized);
         }
     }
 
-    Ok((false, filter_value))
+    Ok(false)
 }
 
 fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8, uri: &str, access: u8, level: u8, db: &dyn Storage) -> Result<bool, i64> {
@@ -258,8 +256,8 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                     continue;
                 }
 
-                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, level + 1, db) {
-                    Ok((res, _filter_value)) => {
+                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, db) {
+                    Ok(res) => {
                         if res {
                             if !azc.is_need_exclusive_az {
                                 return Ok(true);
@@ -302,11 +300,8 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
 
 fn authorize_obj_groups(id: &str, request_access: u8, db: &dyn Storage, trace: &mut Trace, azc: &mut AzContext) -> Option<Result<u8, i64>> {
     for gr in ["v-s:AllResourcesGroup", id].iter() {
-        match authorize_obj_group(azc, trace, request_access, gr, 15, 0, db) {
-            Ok((res, filter_value)) => {
-                if !filter_value.is_empty() {
-                    azc.filter_value = filter_value.clone();
-                }
+        match authorize_obj_group(azc, trace, request_access, gr, 15, db) {
+            Ok(res) => {
                 if res && final_check(azc, trace) {
                     return Some(Ok(azc.calc_right_res));
                 }
@@ -358,21 +353,38 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
     db.fiber_yield();
 
     azc.subject_groups = s_groups;
+    azc.subject_groups.insert(user_id.to_string(), Right::new(user_id));
 
-    azc.subject_groups.insert(
-        user_id.to_string(),
-        Right {
-            id: user_id.to_string(),
-            access: 15,
-            marker: 0 as char,
-            is_deleted: false,
-            level: 0,
-        },
-    );
+    let first_level_object_groups: &mut Vec<Right> = &mut Vec::new();
+    first_level_object_groups.push(Right::new(id));
+    match db.get(&(MEMBERSHIP_PREFIX.to_owned() + id)) {
+        Ok(groups_str) => {
+            decode_elements_from_index(&groups_str, first_level_object_groups);
+        }
+        Err(_e) => {}
+    }
 
-    if let Some(r) = authorize_obj_groups(id, request_access, db, trace, &mut azc) {
+    let mut request_access_with_filter = request_access;
+    let mut filter_value = String::new();
+
+    for gr_obj in first_level_object_groups.iter() {
+        if azc.filter_value.is_empty() {
+            if let Some((value, filter_allow_access_to_other)) = get_filter(&gr_obj.id, db) {
+                filter_value = value;
+
+                if !filter_value.is_empty() {
+                    request_access_with_filter = request_access & filter_allow_access_to_other;
+                }
+                break;
+            }
+        }
+    }
+
+    if let Some(r) = authorize_obj_groups(id, request_access_with_filter, db, trace, &mut azc) {
         return r;
     }
+
+    azc.filter_value = filter_value;
 
     if !azc.filter_value.is_empty() {
         azc.checked_groups.clear();
