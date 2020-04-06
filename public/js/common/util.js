@@ -361,10 +361,7 @@ veda.Module(function (veda) { "use strict";
                     var words = line
                       .trim()
                       .replace(/[-*\s]+/g, " ")
-                      .split(" ")
-                      .filter(function (word, i, words) {
-                        return words.length > 1 || word.length > 3
-                      });
+                      .split(" ");
                     return words.length && "arrayStringConcat(" + "p" + i + ".str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
                   });
                   return lineQueries.filter(Boolean).join(" OR ");
@@ -518,10 +515,7 @@ veda.Module(function (veda) { "use strict";
                     var words = line
                       .trim()
                       .replace(/[-*\s]+/g, " ")
-                      .split(" ")
-                      .filter(function (word, i, words) {
-                        return words.length > 1 || word.length > 3
-                      });
+                      .split(" ");
                     return words.length && "arrayStringConcat(" + prop + "_str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
                   });
                   return lineQueries.filter(Boolean).join(" OR ");
@@ -700,10 +694,7 @@ veda.Module(function (veda) { "use strict";
                         var words = line
                           .trim()
                           .replace(/[-*\s]+/g, " ")
-                          .split(" ")
-                          .filter(function (word, i, words) {
-                            return words.length > 1 || word.length > 3
-                          });
+                          .split(" ");
                         return words.length && "arrayStringConcat(" + prop + "_str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
                       });
                       return lineQueries.filter(Boolean).join(" OR ");
@@ -813,10 +804,7 @@ veda.Module(function (veda) { "use strict";
           var words = line
             .trim()
             .replace(/[-*\s]+/g, " ")
-            .split(" ")
-            .filter(function (word, i, words) {
-              return words.length > 1 || word.length > 3
-            });
+            .split(" ");
           return words.length && "arrayStringConcat(t0.`rdfs_label_str`, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
         });
         return lineQueries.filter(Boolean).join(" OR ");
@@ -861,10 +849,7 @@ veda.Module(function (veda) { "use strict";
           var words = line
             .trim()
             .replace(/[-*\s]+/g, " ")
-            .split(" ")
-            .filter(function (word, i, words) {
-              return words.length > 1 || word.length > 3
-            });
+            .split(" ");
           return words.length && "arrayStringConcat(t2.str, ' ') LIKE '%" + words.join("% %").replace(/\'/g, "\\'").replace(/\"/g, "'") + "%'";
         });
         return lineQueries.filter(Boolean).join(" OR ");
@@ -991,7 +976,10 @@ veda.Module(function (veda) { "use strict";
                 if ( !q.match(/[\+\-\*]/) ) {
                   var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
-                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ").filter(function (word, i, words) {return words.length > 1 || word.length > 3});
+                    var words = line
+                      .trim()
+                      .replace(/[-*\s]+/g, " ")
+                      .split(" ");
                     line = words.map(function (word) { return "+" + word + "*"; }).join(" ");
                     return "'" + property_uri + "'=='" + line + "'";
                   });
