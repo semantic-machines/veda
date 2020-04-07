@@ -587,6 +587,9 @@ veda.Module(function (veda) { "use strict";
         if (isEmbedded) {
           aboutTemplate.data("isEmbedded", true);
           embedded.push(aboutTemplate);
+          if (mode === "edit") {
+            aboutTemplate.trigger("internal-validate");
+          }
         }
       });
     }).get();
@@ -610,12 +613,7 @@ veda.Module(function (veda) { "use strict";
     template.data("validation", validation);
 
     function validateTemplate (e) {
-      if ( Object.keys(validation).length === 0) {
-        if ( !template.data("isEmbedded") ) {
-          e.stopPropagation();
-        }
-        return;
-      }
+      e.stopPropagation();
       if (mode === "edit") {
         Object.keys(validation).map( function (property_uri) {
           if (property_uri === "state") { return; }
@@ -634,8 +632,8 @@ veda.Module(function (veda) { "use strict";
         template.trigger("internal-validated", [validation]);
       }
       // "validate" event should bubble up to be handled by parent template only if current template is embedded
-      if ( !template.data("isEmbedded") ) {
-        e.stopPropagation();
+      if ( template.data("isEmbedded") ) {
+        container.trigger("internal-validate");
       }
     }
     //template.on("internal-validate", debounce(validateTemplate, 500));
@@ -786,12 +784,9 @@ veda.Module(function (veda) { "use strict";
       if (isEmbedded) {
         valTemplate.data("isEmbedded", true);
         embedded.push(valTemplate);
-        valTemplate.one("remove", function () {
-          if (embedded.length) {
-            var index = embedded.indexOf(valTemplate);
-            if ( index >= 0 ) embedded.splice(index, 1);
-          }
-        });
+        if (mode === "edit") {
+          valTemplate.trigger("internal-validate");
+        }
       }
       if (!isAbout) {
         var btnGroup = $("<div class='rel-actions btn-group btn-group-xs -view edit search' role='group'></div>");
@@ -808,6 +803,10 @@ veda.Module(function (veda) { "use strict";
         btnRemove.click(function (e) {
           e.preventDefault();
           e.stopPropagation();
+          if (isEmbedded && embedded.length ) {
+            var index = embedded.indexOf(valTemplate);
+            if ( index >= 0 ) embedded.splice(index, 1);
+          }
           about.removeValue( rel_uri, value );
           if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", about) ) {
             value.delete();
