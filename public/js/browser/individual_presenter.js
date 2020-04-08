@@ -787,6 +787,12 @@ veda.Module(function (veda) { "use strict";
         if (mode === "edit") {
           valTemplate.trigger("internal-validate");
         }
+        valTemplate.one("remove", function () {
+          if (embedded.length) {
+            var index = embedded.indexOf(valTemplate);
+            if ( index >= 0 ) embedded.splice(index, 1);
+          }
+        });
       }
       if (!isAbout) {
         var btnGroup = $("<div class='rel-actions btn-group btn-group-xs -view edit search' role='group'></div>");
@@ -803,10 +809,7 @@ veda.Module(function (veda) { "use strict";
         btnRemove.click(function (e) {
           e.preventDefault();
           e.stopPropagation();
-          if (isEmbedded && embedded.length ) {
-            var index = embedded.indexOf(valTemplate);
-            if ( index >= 0 ) embedded.splice(index, 1);
-          }
+          valTemplate.remove();
           about.removeValue( rel_uri, value );
           if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", about) ) {
             value.delete();
