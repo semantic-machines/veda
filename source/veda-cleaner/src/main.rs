@@ -1,12 +1,15 @@
-mod clean_email;
+mod v_s_email;
+mod v_s_permission;
 
 #[macro_use]
 extern crate log;
 
-use crate::clean_email::*;
+use crate::v_s_email::*;
+use crate::v_s_permission::clean_invalid_permission;
 use ini::Ini;
-use std::thread;
+use std::collections::HashSet;
 use std::time::*;
+use std::{env, thread};
 use v_module::module::{init_log, Module};
 use v_search::clickhouse_client::*;
 
@@ -22,6 +25,21 @@ async fn main() {
 
     let mut ch_client = CHClient::new(query_search_db.to_owned());
 
+    let mut cleaner_modules = HashSet::new();
+    let args: Vec<String> = env::args().collect();
+    for el in args.iter() {
+        if el.starts_with("--modules") {
+            let p: Vec<&str> = el.split('=').collect();
+            if p.len() == 2 {
+                for s in p[1].split(',') {
+                    cleaner_modules.insert(s);
+                }
+            }
+        }
+    }
+
+    info!("use modules: {:?}", cleaner_modules);
+
     loop {
         if ch_client.connect() {
             break;
@@ -35,7 +53,11 @@ async fn main() {
         let systicket = module.get_ticket_from_db(&t);
 
         loop {
-            clean_email(&systicket, &mut ch_client, &mut module);
+            if cleaner_modules.contains("v_s_email") {
+                clean_email(&systicket, &mut ch_client, &mut module);
+            } else if cleaner_modules.contains("v_s_permission") {
+                clean_invalid_permission(&systicket, &mut ch_client, &mut module);
+            }
             thread::sleep(Duration::from_millis(10000));
         }
     }

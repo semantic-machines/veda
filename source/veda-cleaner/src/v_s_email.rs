@@ -23,10 +23,10 @@ pub fn clean_email(systicket: &Ticket, ch_client: &mut CHClient, module: &mut Mo
             if module.storage.get_individual(id, &mut rindv) {
                 if !rindv.is_exists("v-s:creator") {
                     info!(
-                        "remove {}, id = {}, created = {}",
+                        "remove {}, created = {}, id = {}",
                         rindv.get_first_literal("rdf:type").unwrap_or_default(),
+                        NaiveDateTime::from_timestamp(rindv.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S"),
                         id,
-                        NaiveDateTime::from_timestamp(rindv.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S")
                     );
                     module.api.update(&systicket.id, IndvOp::Remove, &Individual::default().set_id(id));
                 }
