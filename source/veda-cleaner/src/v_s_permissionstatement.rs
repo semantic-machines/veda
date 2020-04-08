@@ -7,7 +7,7 @@ use v_search::clickhouse_client::CHClient;
 
 const MAX_SIZE_BATCH: i64 = 100000;
 
-pub fn clean_invalid_permission(systicket: &Ticket, ch_client: &mut CHClient, module: &mut Module) {
+pub fn clean_invalid_permissionstatement(systicket: &Ticket, ch_client: &mut CHClient, module: &mut Module) {
     let module_info = ModuleInfo::new("./data", "clean_invalid_permission", true);
     if module_info.is_err() {
         error!("{:?}", &module_info.err());

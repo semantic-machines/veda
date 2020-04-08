@@ -1,11 +1,13 @@
 mod v_s_email;
-mod v_s_permission;
+mod v_s_membership;
+mod v_s_permissionstatement;
 
 #[macro_use]
 extern crate log;
 
 use crate::v_s_email::*;
-use crate::v_s_permission::clean_invalid_permission;
+use crate::v_s_membership::*;
+use crate::v_s_permissionstatement::*;
 use ini::Ini;
 use std::collections::HashSet;
 use std::time::*;
@@ -55,8 +57,10 @@ async fn main() {
         loop {
             if cleaner_modules.contains("v_s_email") {
                 clean_email(&systicket, &mut ch_client, &mut module);
-            } else if cleaner_modules.contains("v_s_permission") {
-                clean_invalid_permission(&systicket, &mut ch_client, &mut module);
+            } else if cleaner_modules.contains("v_s_permissionstatement") {
+                clean_invalid_permissionstatement(&systicket, &mut ch_client, &mut module);
+            } else if cleaner_modules.contains("v_s_membership") {
+                clean_invalid_membership(&systicket, &mut ch_client, &mut module);
             }
             thread::sleep(Duration::from_millis(10000));
         }
