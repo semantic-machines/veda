@@ -24,7 +24,6 @@ pub fn clean_invalid_membership(systicket: &Ticket, ch_client: &mut CHClient, mo
                 pos += 1;
                 let mut indv: Individual = Individual::default();
                 if module.storage.get_individual(id, &mut indv) {
-
                     for p in ["v-s:memberOf", "v-s:resource"].iter() {
                         let link_value = &indv.get_first_literal(p).unwrap_or_default();
                         if !module.get_individual(link_value, &mut Individual::default()).is_some() {

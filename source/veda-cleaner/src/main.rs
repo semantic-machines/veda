@@ -1,6 +1,7 @@
 mod v_s_email;
 mod v_s_membership;
 mod v_s_permissionstatement;
+mod v_wf_process;
 
 #[macro_use]
 extern crate log;
@@ -8,6 +9,7 @@ extern crate log;
 use crate::v_s_email::*;
 use crate::v_s_membership::*;
 use crate::v_s_permissionstatement::*;
+use crate::v_wf_process::*;
 use ini::Ini;
 use std::collections::HashSet;
 use std::time::*;
@@ -53,14 +55,16 @@ async fn main() {
 
     if let Ok(t) = module.get_sys_ticket_id() {
         let systicket = module.get_ticket_from_db(&t);
-
+        clean_process(&systicket, &mut ch_client, &mut module);
         loop {
-            if cleaner_modules.contains("v_s_email") {
+            if cleaner_modules.contains("email") {
                 clean_email(&systicket, &mut ch_client, &mut module);
-            } else if cleaner_modules.contains("v_s_permissionstatement") {
+            } else if cleaner_modules.contains("permissionstatement") {
                 clean_invalid_permissionstatement(&systicket, &mut ch_client, &mut module);
-            } else if cleaner_modules.contains("v_s_membership") {
+            } else if cleaner_modules.contains("membership") {
                 clean_invalid_membership(&systicket, &mut ch_client, &mut module);
+            } else if cleaner_modules.contains("process") {
+                clean_process(&systicket, &mut ch_client, &mut module);
             }
             thread::sleep(Duration::from_millis(10000));
         }
