@@ -146,7 +146,7 @@ func query(ctx *fasthttp.RequestCtx) {
   var is_search_query = false
 
   if sql != "" || (strings.Contains(strings.ToLower(query), "select") && strings.Contains(strings.ToLower(query), "from")) {
-        if use_clickhouse != "false" {
+        if use_clickhouse == "true" {
             is_search_query = true
         }
   }

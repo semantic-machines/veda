@@ -217,7 +217,7 @@ func main() {
         opt_external_users_http_port = val
       } else if name == "--use_clickhouse" {
         use_clickhouse = strings.TrimSpace(strings.ToLower(val))
-        log.Println("use ckickhouse query")
+        log.Println("use clickhouse query =", use_clickhouse)
       }
     }
   }
