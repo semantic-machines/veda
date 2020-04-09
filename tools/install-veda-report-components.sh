@@ -43,6 +43,16 @@ else
   echo "Strings add into mysqld.cnf."
 fi
 
+#CREATE USER 'ba'@'localhost' IDENTIFIED BY '123';
+
+#GRANT ALL PRIVILEGES ON *.* TO 'ba'@'localhost' WITH GRANT OPTION;
+
+#CREATE USER 'ba'@'%' IDENTIFIED BY '123';
+
+#GRANT ALL PRIVILEGES ON *.* TO 'ba'@'%' WITH GRANT OPTION;
+
+#FLUSH PRIVILEGES;
+
 sudo /etc/init.d/mysql restart
 
 # install jasperreport server
