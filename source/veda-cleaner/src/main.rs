@@ -15,7 +15,15 @@ use std::collections::HashSet;
 use std::time::*;
 use std::{env, thread};
 use v_module::module::{init_log, Module};
+use v_module::ticket::Ticket;
 use v_search::clickhouse_client::*;
+
+pub struct CleanerContext {
+    module: Module,
+    ch_client: CHClient,
+    systicket: Ticket,
+    need_report: bool,
+}
 
 #[tokio::main]
 async fn main() {
@@ -25,9 +33,12 @@ async fn main() {
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
     let query_search_db = section.get("query_search_db").expect("param [query_search_db_url] not found in veda.properties");
 
-    let mut module = Module::default();
-
-    let mut ch_client = CHClient::new(query_search_db.to_owned());
+    let mut ctx = CleanerContext {
+        module: Module::default(),
+        ch_client: CHClient::new(query_search_db.to_owned()),
+        systicket: Ticket::default(),
+        need_report: false,
+    };
 
     let mut cleaner_modules = HashSet::new();
     let args: Vec<String> = env::args().collect();
@@ -39,13 +50,20 @@ async fn main() {
                     cleaner_modules.insert(s);
                 }
             }
+        } else if el.starts_with("--report") {
+            let p: Vec<&str> = el.split('=').collect();
+            if p.len() == 2 {
+                if p[1] == "true" {
+                    ctx.need_report = true;
+                }
+            }
         }
     }
 
     info!("use modules: {:?}", cleaner_modules);
 
     loop {
-        if ch_client.connect() {
+        if ctx.ch_client.connect() {
             break;
         }
         thread::sleep(Duration::from_millis(10000));
@@ -53,18 +71,18 @@ async fn main() {
 
     info!("cleaner started");
 
-    if let Ok(t) = module.get_sys_ticket_id() {
-        let systicket = module.get_ticket_from_db(&t);
-        clean_process(&systicket, &mut ch_client, &mut module);
+    if let Ok(t) = ctx.module.get_sys_ticket_id() {
+        ctx.systicket = ctx.module.get_ticket_from_db(&t);
+        clean_process(&mut ctx);
         loop {
             if cleaner_modules.contains("email") {
-                clean_email(&systicket, &mut ch_client, &mut module);
+                clean_email(&mut ctx);
             } else if cleaner_modules.contains("permissionstatement") {
-                clean_invalid_permissionstatement(&systicket, &mut ch_client, &mut module);
+                clean_invalid_permissionstatement(&mut ctx);
             } else if cleaner_modules.contains("membership") {
-                clean_invalid_membership(&systicket, &mut ch_client, &mut module);
+                clean_invalid_membership(&mut ctx);
             } else if cleaner_modules.contains("process") {
-                clean_process(&systicket, &mut ch_client, &mut module);
+                clean_process(&mut ctx);
             }
             thread::sleep(Duration::from_millis(10000));
         }
