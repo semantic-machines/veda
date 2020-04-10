@@ -76,7 +76,7 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
 
     let fq = format!("{} LIMIT {} OFFSET {}", query, limit, from);
 
-    info!("query={}", fq);
+    //info!("query={}", fq);
 
     let mut client = pool.get_handle().await?;
     let block = client.query(fq).fetch_all().await?;

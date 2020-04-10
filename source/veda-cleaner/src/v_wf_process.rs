@@ -5,10 +5,11 @@ use v_api::app::ResultCode;
 //use v_api::IndvOp;
 use crate::CleanerContext;
 use std::collections::HashMap;
+use std::io::Write;
 use v_module::info::ModuleInfo;
 use v_onto::individual::Individual;
 
-const MAX_SIZE_BATCH: i64 = 1000;
+const MAX_SIZE_BATCH: i64 = 10000;
 
 pub fn clean_process(ctx: &mut CleanerContext) {
     let module_info = ModuleInfo::new("./data", "clean_process", true);
@@ -28,13 +29,31 @@ pub fn clean_process(ctx: &mut CleanerContext) {
                 if let Some(rindv) = ctx.module.get_individual(id, &mut Individual::default()) {
                     if let Some(process) = ctx.module.get_individual(&rindv.get_first_literal("v-wf:forProcess").unwrap_or_default(), &mut Individual::default()) {
                         if !process.is_exists("v-wf:parentWorkOrder") {
-                            let mut process_elements = HashMap::new();
-                            collect_process_elements("", process, &mut process_elements, ctx);
+                            if ctx.report_type == "processes" {
+                                if let Some(report) = &mut ctx.report {
+                                    report.write((process.get_id().to_owned() + "\n").as_bytes()).unwrap_or_default();
+                                }
+                            } else {
+                                let mut process_elements = HashMap::new();
+                                collect_process_elements("", process, &mut process_elements, ctx);
+
+                                if ctx.report_type == "ids" {
+                                    if let Some(report) = &mut ctx.report {
+                                        for el in process_elements.keys() {
+                                            report.write((el.to_owned() + "\n").as_bytes()).unwrap_or_default();
+                                        }
+                                    }
+                                }
+                            }
                         }
                     } else {
                         error!("invalid WorkItem {}", id);
                     }
                 }
+            }
+            if let Err(e) = module_info.put_info(pos, pos) {
+                error!("{:?}", e);
+                return;
             }
         }
     }
@@ -76,8 +95,6 @@ fn collect_process_elements(parent_id: &str, process: &mut Individual, process_e
     );
     process_elements.insert(process.get_id().to_owned(), ("Process".to_owned(), parent_id.to_owned()));
     collect_work_items(process, process_elements, ctx);
-
-    info!("process_elements={:?}", process_elements);
 }
 
 fn collect_work_items(process: &mut Individual, process_elements: &mut HashMap<String, (String, String)>, ctx: &mut CleanerContext) {
