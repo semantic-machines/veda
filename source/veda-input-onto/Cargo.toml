@@ -17,8 +17,8 @@ log = "0.4"
 rust-ini = "0.13"
 ron = "0.5.1"
 serde = "1.0"
-rio_turtle = {git="https://github.com/semantic-machines/rio.git", rev="857dc9657021cd6e4092b77c889b28eecfac7eb6"}
-rio_api = "0.3.1"
+rio_turtle = {git="https://github.com/semantic-machines/rio.git", rev="cab2cb9863df496478da6a247cc8403414d9e9eb"}
+rio_api = "0.4"
 notify = "=5.0.0-pre.1"
 md-5 = "0.8.0"
 hex = "0.4.0"

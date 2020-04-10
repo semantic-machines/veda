@@ -20,10 +20,10 @@ use std::fs::{DirEntry, File};
 use std::io::BufReader;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::{time as std_time, thread};
 use std::{fs, io};
-use v_api::*;
+use std::{thread, time as std_time};
 use v_api::app::ResultCode;
+use v_api::*;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_module::onto::*;
@@ -58,7 +58,7 @@ fn main() -> NotifyResult<()> {
     let mut module = Module::default();
 
     while !module.api.connect() {
-        info! ("wait for start main module ...");
+        info!("wait for start main module ...");
         thread::sleep(std::time::Duration::from_millis(100));
     }
 
