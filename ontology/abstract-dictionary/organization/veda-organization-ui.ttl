@@ -295,6 +295,11 @@ v-s:NotValidCode
   rdfs:comment "Поле может содержать только латинские буквы и цифры"@ru ;
   rdfs:comment "Field must consist only a-z character and digits"@en ;
 .
+v-s:DefaultAppointmentBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Основное назначение"@ru ;
+  rdfs:label "Default appointment"@en ;
+.
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:OrganizationTemplate
@@ -710,54 +715,7 @@ v-s:DepartmentTemplate
   """ ;
 .
 
-v-s:AppointmentTemplate
-  rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-s:Appointment ;
-  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
-  rdfs:label "Template for v-s:Appointment class"@en ;
-  v-ui:template """
-<script>
-
-</script>
-<div class="container sheet">
-  <h2>
-    <span about="v-s:Appointment" property="rdfs:label"></span>
-    <!-- <small about="@" property="rdfs:label"></small> -->
-  </h2>
-  <hr>
-  <div class="form-inline">
-    <div class="form-group">
-      <label about="v-s:parentUnit" property="rdfs:label"></label>:
-      <span about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></span>
-    </div>
-  </div>
-  <div class="form-inline">
-    <div class="form-group" about="@" rel="v-s:employee">
-      <label about="v-s:employee" property="rdfs:label"></label>:
-      <span class="view -edit -search">
-        <span about="@" property="rdfs:label"></span>
-        <span about="@" property="v-s:tabNumber"></span>
-      </span>
-    </div>
-  </div>
-  <div class="form-inline">
-    <div class="form-group" about="@" rel="v-s:occupation">
-      <label about="v-s:occupation" property="rdfs:label"></label>:
-      <span class="view -edit -search">
-        <span about="@" property="rdfs:label"></span>
-        <span about="@" rel="v-s:parentOrganization" data-template="v-ui:LabelTemplate"></span>
-      </span>
-    </div>
-  </div>
-  <hr>
-  <!-- BUTTONS -->
-  <div class="actions">
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="delete"></span>
-  </div>
-</div>
-<script></script>
-  """
-.
+##########НАЗНАЧЕНИЕ############
 v-s:NewAppointmentTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Appointment ;
@@ -838,6 +796,18 @@ v-s:NewAppointmentTemplate
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div about="@" rel="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
     <veda-control id="select-ParentUnit" rel="v-s:parentUnit" data-query-prefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='{individual['v-s:parentOrganization'][0].id}') || '@'==='{individual['v-s:parentOrganization'][0].id}'" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+    <em about="v-s:date" property="rdfs:label"></em>
+    <div class="form-inline">
+      <div class="form-group">
+        <span property="v-s:dateFrom" class="view -edit search"></span>
+        <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
+      </div>
+      <span class="view -edit -search">&mdash;&nbsp;&nbsp;&nbsp;</span>
+      <div class="form-group">
+        <span property="v-s:dateTo" class="view -edit search"></span>
+        <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
+      </div>
+    </div>
     <hr class="view -edit -search">
     <div class="row">
       <div class="col-md-6">
@@ -876,6 +846,11 @@ v-s:NewAppointmentTemplate
   </div>
 </div>
 <script>
+  if(mode === "edit" && individual.isNew()) {
+    individual["v-s:dateFrom"]=[new Date()];
+  }
+
+
   var NewPerson;
   var NewOccupation;
 
@@ -1058,7 +1033,24 @@ v-s:EmployeeEmbeddedTemplate
         }
       });
     }
-
+    if (!individual.hasValue('v-s:lastName')) {
+      result["v-s:lastName"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:firstName')) {
+      result["v-s:firstName"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:birthday')) {
+      result["v-s:birthday"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
     if (!individual.hasValue('v-s:tabNumber')) {
       result["v-s:tabNumber"] = {
         state: false,
@@ -1177,5 +1169,1536 @@ v-s:OccupationEmbeddedTemplate
     </div>
   </div>
 </div>
+  """ ;
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###################################################НОВОЕ########################################################
+#-------шаблон создания НАЗНАЧЕНИЯ для админа
+v-s:AppointmentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Appointment ;
+  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
+  rdfs:label "Template for v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on('validate', function() {
+    var result = {};
+    result["v-s:employee"] = {
+      state: individual.hasValue('v-s:employee'),
+      cause: ["v-ui:minCardinality"]
+    };
+    result["v-s:occupation"] = {
+      state: individual.hasValue('v-s:occupation'),
+      cause: ["v-ui:minCardinality"]
+    };
+    if (!individual.hasValue('v-s:parentOrganization')) {
+      result["v-s:parentOrganization"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:parentUnit')) {
+      result["v-s:parentUnit"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:description')) {
+      result["v-s:description"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    template.trigger("validated", result);
+  });
+  template.on("special-validate", function (e, validStates) {
+    setTimeout(function(){
+      // console.log($('div.validating-block:not(.hide) veda-control.has-error', template));
+      if ($('div.validating-block:not(.hide) .has-error', template).length == 0) {
+        $('.action#save', template).removeAttr('disabled');
+      } else {
+        $('.action#save', template).attr('disabled', 'disabled');
+      }
+    },500);
+  });
+
+//# sourceURL=v-s:AppointmentTemplate_pre
+</script>
+<div class="container sheet">
+  <h2>
+    <span about="v-s:Appointment" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:Organization" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div about="@" rel="v-s:parentOrganization" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+        <veda-control rel="v-s:parentOrganization" data-query-prefix = "'rdf:type'=='v-s:Organization'" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:Department" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div about="@" rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+        <veda-control rel="v-s:parentUnit" data-query-prefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='{individual['v-s:parentOrganization'][0].id}') || '@'=='{individual['v-s:parentOrganization'][0].id}'" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+    </div>
+    <section id="Employee" class="hide">
+      <h4 class="section-header -view edit search">
+        <span about="v-s:employee" property="rdfs:label"></span>
+        <div class="btn-group -view edit -search">
+          <button id="selectPersonBtn" class="btn btn-sm btn-primary navbar-btn">Выбрать</button>
+          <button id="createPersonBtn" class="btn btn-sm btn-default navbar-btn">Создать</button>
+        </div>
+      </h4>
+      <div class="section-content">
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:employee" property="rdfs:label" class="view -edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+             <div id="select-Person" class="validating-block">
+              <div about="@" rel="v-s:employee" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+              <veda-control data-type="link" rel="v-s:employee" class="fulltext dropdown margin-sm -view edit -search" data-query-prefix="'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='{individual['v-s:parentOrganization'][0].id}'"></veda-control>
+            </div>
+          </div>
+        </div>
+        <div id="fill-Person" class="validating-block"></div>
+      </div>
+    </section>
+    <section id="Position" class="hide">
+      <h4 class="section-header -view edit search">
+        <span about="v-s:Position" property="rdfs:label"></span>
+        <div class="btn-group -view edit -search">
+          <button id="selectOccupationBtn" class="btn btn-sm btn-primary navbar-btn">Выбрать</button>
+          <button id="createOccupationBtn" class="btn btn-sm btn-default navbar-btn">Создать</button>
+        </div>
+      </h4>
+      <div class="section-content">
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:Position" property="rdfs:label" class="view -edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <div id="select-Occupation" class="validating-block">
+              <div about="@" rel="v-s:occupation" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+              <veda-control data-type="link" rel="v-s:occupation" class="fulltext dropdown margin-sm -view edit -search" data-query-prefix="'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='{individual['v-s:parentUnit'][0].id}'"></veda-control>
+            </div>
+          </div>
+        </div>
+        <div id="fill-Occupation" class="validating-block"></div>
+      </div>
+    </section>
+    <hr class="-view edit -search">
+    <div id="radioBlock">
+      <div class="row row-attribute  -view edit -search">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:DefaultAppointmentBundle" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+           <div class="radio">
+          </div>
+        </div>
+      </div>
+    </div>
+    <section id="ForAdmin">
+      <h4 class="section-header -view edit search">
+        <span about="cfg:Administrator" property="rdfs:label"></span>
+      </h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:date" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div class="form-inline">
+            <div class="form-group">
+              <span property="v-s:dateFrom" class="view -edit search"></span>
+              <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
+            </div>
+            <span class="view -edit -search">&mdash;&nbsp;&nbsp;&nbsp;</span>
+            <div class="form-group">
+              <span property="v-s:dateTo" class="view -edit search"></span>
+              <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-content">
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:origin" property="rdfs:label"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <div property="v-s:origin" class="view -edit search"></div>
+            <veda-control property="v-s:origin" data-type="string" class="-view edit search"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <div class="checkbox no-margin">
+              <label>
+                <veda-control property="v-s:official" data-type="boolean"></veda-control>
+                <span about="v-s:official" property="rdfs:label"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="row row-attribute  -view edit -search">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:description" property="rdfs:label"></label>
+          </div>
+          <div class="col-sm-8 col-xs-6">
+            <div property="v-s:description" class="view -edit search"></div>
+            <veda-control property="v-s:description" data-type="string" class="-view edit search"></veda-control>
+          </div>
+          <div class="col-sm-1 col-xs-1">
+            <button id="recalculate" class="btn btn-xs btn-success">
+              <span class="glyphicon glyphicon-refresh"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section> 
+    <hr>
+    <!--Системные свойства -->
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <!-- BUTTONS -->
+    <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+    </div>
+  </div>
+</div>
+<script>
+  if (template.data("mode") === "view" && veda.appointment.id != 'cfg:AdministratorAppointment'){
+    $('#edit.action', template).remove();
+  }
+
+  //проставляет признаки по умолчанию для Назначения
+  if(mode === "edit" && individual.isNew()) {
+    individual["v-s:origin"]=["ExternalUser"];
+    individual["v-s:official"]=[true];
+    individual["v-s:dateFrom"]=[new Date()];
+  }
+
+  //Отображает Персону и Должность после выбора Организации
+  function hidePosAndEmp(){
+    if (individual.hasValue("v-s:parentOrganization"))
+    {
+      $("#Employee").removeClass('hide');
+      $("#Position").removeClass('hide');
+    }
+    else {
+      $("#Employee").addClass('hide');
+      $("#Position").addClass('hide');
+      individual["v-s:parentUnit"] = [];}
+  }
+  individual.on("v-s:parentOrganization", hidePosAndEmp);
+  template.one("remove", function () {
+    individual.off("v-s:parentOrganization", hidePosAndEmp);
+  });
+  hidePosAndEmp();
+   
+  var NewPerson;
+  var NewOccupation;
+  var defaultAppointment;
+  template.on('click', '#radioBlock input[type="radio"]', function () {
+    defaultAppointment = $(this).attr('value');
+  });
+  template.on("special-validate", function (e, validStates) {
+    setTimeout(function () {
+      if ($('div.validating-block:not(.hide) .has-error', template).length == 0) {
+        $('.action#save', template).removeAttr('disabled');
+      } else {
+        $('.action#save', template).attr('disabled', 'disabled');
+      }
+    }, 500);
+  });
+
+  function toogleButtons(currentBtn) {
+    currentBtn.siblings().removeClass('btn-primary').addClass('btn-default')
+    currentBtn.removeClass('btn-default').addClass('btn-primary');
+    template.trigger('special-validate');
+  }
+
+  $('#createPersonBtn', template).click(function () {
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+    $('#radioBlock').addClass('hide');
+    defaultAppointment = undefined;
+    $('#select-Person').addClass('hide');
+    if (NewPerson) {
+      $('#fill-Person').removeClass('hide');
+    } else {
+      NewPerson = new veda.IndividualModel();
+      NewPerson['rdf:type'] = [new veda.IndividualModel('v-s:Person')];
+      NewPerson['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+      NewPerson.present($("<div>"), 'v-s:PersonEmbeddedTemplate', 'edit').then(function (tmpl) {
+        tmpl.on("validate", function () {
+          template.trigger('special-validate');
+        });
+        $('#fill-Person').append(tmpl);
+      });
+    }
+    individual['v-s:employee'] = [NewPerson];
+  });
+
+  $('#selectPersonBtn').click(function () {
+    var self = $(this);
+    if (self.hasClass('btn-primary')) { return false; }
+    toogleButtons(self);
+    defaultAppointment = undefined;
+    $('#select-Person').removeClass('hide');
+    $('#fill-Person').addClass('hide');
+    individual['v-s:employee'] = [];
+    //individual.on('v-s:employee', setDefaultAppointment);
+  });
+
+ $('#createOccupationBtn', template).click(function () {
+    var self = $(this);
+    if (self.hasClass('btn-primary')) { return true; }
+    toogleButtons(self);
+    //individual.off('v-s:employee', setDefaultAppointment);
+    $('#select-Occupation').addClass('hide');
+    if (NewOccupation) {
+      $('#fill-Occupation').removeClass('hide');
+    } else {
+      NewOccupation = new veda.IndividualModel();
+      NewOccupation['rdf:type'] = [new veda.IndividualModel('v-s:Position')];
+      NewOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+      NewOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
+      NewOccupation['v-s:origin'] = individual['v-s:origin'];
+      NewOccupation.present($("<div>"), 'v-s:PositionEmbeddedTemplate', 'edit').then(function (tmpl) {
+        tmpl.on("validate", function () {
+          template.trigger('special-validate');
+        });
+        $('#fill-Occupation').append(tmpl);
+      });
+    }
+    individual['v-s:occupation'] = [NewOccupation];
+  });
+
+  $('#selectOccupationBtn').click(function () {
+    var self = $(this);
+    if (self.hasClass('btn-primary')) { return true; }
+    toogleButtons(self);
+    $('#select-Occupation').removeClass('hide');
+    $('#fill-Occupation').addClass('hide');
+    individual['v-s:occupation'] = [];
+  });
+  function setDefaultAppointment() {
+    var radioCont = $('.radio', template).empty();
+    if (individual.hasValue('v-s:employee')) {
+      var employeeId = individual['v-s:employee'][0].id;
+      var queryString = "'rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + employeeId + "' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && '@'!='"+individual.id+"'";
+      veda.Backend.query({ticket: veda.ticket, query: queryString}).then(function (queryResult) {
+        var appointmentsUris = queryResult.result;
+        if (appointmentsUris.length > 0) {
+          veda.Backend.get_individuals(veda.ticket, appointmentsUris).then(function (appointmentsJSONs) {
+            appointmentsJSONs.forEach(function (appointmentJSON) {
+              var label = $('<label></label>');
+              var radio = $('<input type="radio" name="defaultAppointment"/>').attr('value', appointmentJSON["@"]);
+              label.append(radio);
+              label.append( (new veda.IndividualModel(appointmentJSON))['rdfs:label'][0] );
+              radioCont.append($('<div class="radio"></div>').append(label));
+            });
+            var newAppointLabel = individual['v-s:employee'][0]['rdfs:label'][0];
+            radioCont.append('<div class="radio"><label><input type="radio" checked name="defaultAppointment"/>Текущее для ' + newAppointLabel + '</label></div>');
+            $('#radioBlock').removeClass('hide');
+            return;
+          });
+        }
+      });
+    }
+    $('#radioBlock').addClass('hide');
+  }
+  setDefaultAppointment();
+  individual.on('v-s:employee', setDefaultAppointment);
+  template.one('remove', function () {
+    individual.off('v-s:employee', setDefaultAppointment);
+  });
+
+  //Пересчитывает id назначения
+  function autoID() {
+    var org1 = individual["v-s:parentOrganization"][0].id;
+    var org = org1.slice(6);
+  
+    var id_emp = individual["v-s:employee"][0]["v-s:description"][0];
+    var id_occup = individual["v-s:occupation"][0]["v-s:subjectCode"][0];
+     individual["v-s:description"] = [id_emp +"_pos_"+ id_occup];
+  }
+  $("#recalculate", template).click(autoID);
+
+
+  $(".actions #save").off("click");
+  $(".actions #save").on("click", function() {
+    var tempEmployee = individual['v-s:employee'][0];
+    var tempOccupation = individual['v-s:occupation'][0];
+    var tempCommunicationMean = individual['v-s:employee'][0]['v-s:hasCommunicationMean'];
+    var tempAccount = individual['v-s:employee'][0]['v-s:hasAccount'][0];
+    individual.id = individual["v-s:description"][0];
+    
+
+    //новый id персоны
+    var promises_emp = individual.getPropertyChain("v-s:employee", "v-s:description").then(function(emp_id) {
+      return (new veda.IndividualModel(""+emp_id[0]));
+    }).then(function(emp) { 
+        if(tempCommunicationMean){ tempCommunicationMean.map(function(CommunicationMean) {//Средства связи
+          CommunicationMean["v-s:parent"] = [emp];
+          return CommunicationMean.save(); 
+        });}
+        if(tempAccount){ //Аккаунт
+        tempAccount["v-s:owner"] = [emp];
+        /*var test = emp.id + "_account";
+        console.log(test);*/
+        tempAccount.id = emp.id + "_account";
+        tempAccount["v-s:origin"] = individual['v-s:origin'];
+        return tempAccount.save();}
+        else return undefined;
+      return Promise.all();
+    }).then(function() { //Должность
+      if (tempOccupation.isNew()) {
+        tempOccupation.id = individual['v-s:occupation'][0]["v-s:description"][0];
+        tempOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
+        tempOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+        return tempOccupation.save();
+      }
+      else return undefined;
+    }).then(function(savedOccupation){ //Персона
+      if (tempEmployee.isNew()) {
+          tempEmployee.id = individual['v-s:employee'][0]["v-s:description"][0];
+          tempEmployee['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+          tempEmployee['v-s:owner'] = [tempEmployee];
+          tempEmployee['v-s:origin'] = individual['v-s:origin'];
+          tempEmployee['v-s:hasAccount'] = [ tempAccount];
+        }
+
+      if (savedOccupation) {
+        individual['v-s:occupation'] = [savedOccupation];
+      }
+      if (defaultAppointment){
+        tempEmployee['v-s:defaultAppointment'] = [ new veda.IndividualModel(defaultAppointment) ];
+      } else {
+        tempEmployee['v-s:defaultAppointment'] = [individual];
+      }
+      tempEmployee['v-s:hasAppointment'] = tempEmployee['v-s:hasAppointment'].concat(individual);
+      console.log(tempEmployee);
+      return tempEmployee.save();
+    }).then(function(savedEmployee) { //Назначение
+      if (savedEmployee) {
+        individual['v-s:employee'] = [ tempEmployee ];  
+      }
+      individual.save();
+    });
+    return true;
+  });
+
+
+  //# sourceURL=v-s:AppointmentTemplate_post
+</script>
+  """ ;
+.
+
+
+#-------шаблон создания ПЕРСОНЫ для админа
+v-s:PersonTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения персональной информации"@ru ;
+  rdfs:label "Personal information template"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:lastName')) {
+      result["v-s:lastName"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:firstName')) {
+      result["v-s:firstName"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    } 
+    if (!individual.hasValue('v-s:tabNumber')) {
+      result["v-s:tabNumber"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:parentOrganization')) {
+      result["v-s:parentOrganization"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if ( individual.hasValue('v-s:lastName') && individual.hasValue('v-s:firstName') && individual.hasValue('v-s:parentOrganization') && individual.isNew()) {
+      var queryString = "'rdf:type'==='v-s:Person' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'v-s:lastName'=='" + individual['v-s:lastName'][0] + "' && 'v-s:firstName'=='" + individual['v-s:firstName'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningPersonFIO').addClass('hide'); 
+        } else {
+          $('#warningPersonFIO').removeClass('hide');
+        }
+      });
+    }
+    if ( individual.hasValue('v-s:tabNumber') && individual.isNew()) {
+      var queryString = "'rdf:type'==='v-s:Person' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'v-s:tabNumber'=='" + individual['v-s:tabNumber'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningPersonTabNum').addClass('hide'); 
+        } else {
+          $('#warningPersonTabNum').removeClass('hide');
+        }
+      });
+    }
+    template.trigger("validated", result);
+  });
+
+
+  if (veda.appointment.id != 'cfg:AdministratorAppointment') {
+    $("#add-Account", template).attr('disabled', 'disabled');
+
+  }
+  var canCreateSubsidiary = (new veda.IndividualModel("v-s:Subsidiary")).canCreate();
+  Promise.all([canCreateSubsidiary]).then(function(results) {
+    if ( !results[0] || !results[1]) {
+      $("#add-subsidiary", template).remove();
+    }
+  })
+  var queryString = "'rdf:type'==='v-s:Appointment' && 'v-s:employee'==='"+individual.id+"'";
+  $("veda-control[rel='v-s:defaultAppointment']", template).attr("data-query-prefix", queryString);
+  //$('veda-control[rel="v-s:parentUnit"]', template).attr('data-query-prefix', departmentQueryPrefix);
+</script>
+<div class="container sheet">
+  <div class="col-sm-12 col-xs-12">
+   <div id="warningPersonFIO" class="alert alert-warning hide">
+      <span>Внимание. Пользователь с такими ФИО уже существует в данной организации. Возможно Вам следует выбрать его.</span>
+    </div>
+    <div id="warningPersonTabNum" class="alert alert-danger hide">
+      <span>Внимание. Пользователь с таким табельным номером уже существует в данной организации.</span>
+    </div>
+     <div class="col-md-9">
+        <h3 class="margin-sm view edit search">
+          <span about="v-s:Person" property="rdfs:label"></span>
+        </h3>
+        <hr>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5"></div>
+          <div class="col-sm-9 col-xs-7">
+            <h4 class="view edit -search"><span about="@" property="v-s:lastName"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:middleName"></span></h4>
+          </div>
+        </div>
+        <div id="notEditForUsers" class="alert alert-info hide -view edit -search">
+          <span>ФИО пользователя редактировать нельзя. Если Вы допустили опечатку, то обратитесь в службу поддержки.
+          </span>
+        </div>
+        <div class="row row-attribute  -view edit search notEditForUsers">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:lastName" property="rdfs:label"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <veda-control property="v-s:lastName" data-type="multilingualString" class="-view edit search"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute  -view edit search notEditForUsers">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:firstName" property="rdfs:label"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <veda-control property="v-s:firstName" data-type="multilingualString" class="-view edit search"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute -view edit search notEditForUsers">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:middleName" property="rdfs:label"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <veda-control property="v-s:middleName" data-type="multilingualString" class="-view edit search"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:birthday" property="rdfs:label"></label>
+          </div>
+          <div class="col-sm-3 col-xs-3">
+            <span class="view -edit -search" about="@" property="v-s:birthday"></span>
+            <veda-control property="v-s:birthday" data-type="date" class="-view edit search"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:tabNumber" property="rdfs:label"></label>
+          </div>
+          <div class="col-sm-3 col-xs-3">
+            <span class="view -edit -search" about="@" property="v-s:tabNumber"></span>
+            <veda-control property="v-s:tabNumber" data-type="string" class="-view edit search"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:parentOrganization" property="rdfs:label"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <div about="@" rel="v-s:parentOrganization" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+            <veda-control rel="v-s:parentOrganization" data-query-prefix = "'rdf:type'=='v-s:Organization'" data-type="link" class="-view edit search fulltext dropdown notEditForUsers"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:defaultAppointment" property="rdfs:label" class="view edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <div about="@" rel="v-s:defaultAppointment" class="view -edit -search" data-template="v-ui:LabelTemplate">
+            </div>
+            <veda-control rel="v-s:defaultAppointment" data-type="link" class="-view edit -search fulltext dropdown"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:hasAppointment" property="rdfs:label" class="view edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <table class="table table-bordered view edit -search">
+              <thead>
+                <tr class="view edit -search">
+                  <th width="1%"><span class="glyphicon glyphicon-search"></th>
+                  <th about="rdfs:label" property="rdfs:label"></th>
+                  <th about="v-s:dateFrom" property="rdfs:label"></th>
+                  <th about="v-s:dateTo" property="rdfs:label"></th>
+                </tr>
+              </thead>
+              <tbody about="@" rel="v-s:hasAppointment" data-embedded="true" data-template="v-s:AppointmentEmbeddedTableTemplate"></tbody>
+
+            </table>
+            <div class="view -edit -search">
+                <button class="btn btn-xs btn-success" id="add-Appointment">
+                  <span class="glyphicon glyphicon-zoom-in"></span>
+                  <span  about="v-s:Appointment" property="rdfs:label"> </span>
+                </button>
+              </div>
+            <veda-control data-type="link" rel="v-s:hasAppointment" class="-view edit -search create"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:hasCommunicationMean" property="rdfs:label" class="view edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <table class="table table-bordered view edit -search">
+              <thead>
+                <tr class="view edit -search">
+                  <th width="1%"><span class="glyphicon glyphicon-search"></th>
+                  <th about="v-s:hasCommunicationMeanChannel" property="rdfs:label"></th>
+                  <th about="v-s:hasCommunicationMeanTarget" property="rdfs:label"></th>
+                  <th about="v-s:description" property="rdfs:label"></th>
+                  <th about="rdfs:comment" property="rdfs:label"></th>
+                </tr>
+              </thead>
+              <tbody rel="v-s:hasCommunicationMean" data-embedded="true" data-template="v-s:CommunicationMeanTemplateEmbedded"></tbody>
+            </table>
+            <veda-control data-type="link" rel="v-s:hasCommunicationMean" class="-view edit -search create"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:login" property="rdfs:label" class="view -edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <span about="@" rel="v-s:hasAccount">
+              <span about="@" property="v-s:login"></span>
+            </span>
+            <button class="btn btn-xs btn-success view -edit -search" id="add-Account">
+              <span class="glyphicon glyphicon-zoom-in"></span>
+              <span  about="v-s:hasAccount" property="rdfs:label"> </span>
+            </button>
+          </div>
+        </div>
+        <div class="row row-attribute notEditForUsers">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:description" property="rdfs:label" class="-view edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <veda-control property="v-s:description" data-type="string" class="-view edit -search"></veda-control>
+          </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+      <div rel="v-s:hasImage">
+        <div class="img-thumbnail" about="@" data-template="v-ui:ModalImageTemplate"></div>
+      </div>
+      <br class="-view edit search"/>
+      <veda-control rel="v-s:hasImage" data-type="file" accept=".png, .jpg, .jpeg" class="-view edit -search"></veda-control>
+    </div>
+    
+  </div>
+
+    <div class="col-sm-12 col-xs-12"> 
+      <br/>
+      <hr>
+    </div>
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <div class="actions">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete cancel"></span>
+    </div>
+</div>
+<script>
+  if ( individual.hasValue('rdfs:isDefinedBy') ) {
+    $(".actions #edit", template).attr('disabled', 'disabled');
+  }
+  if (!individual.hasValue('v-s:birthday')) {
+    $('span[property="v-s:birthday"]').text('Не указано');
+  }
+
+  //Для формирования id
+  veda.Util.registerHandler(individual, template, "beforeSave", function () {
+   if(individual.isNew()) individual.id = individual["v-s:description"][0];
+  });
+  function autoID() {
+    var org1 = individual["v-s:parentOrganization"][0].id;
+    var org = org1.slice(6);
+    var number = individual["v-s:tabNumber"];
+    individual["v-s:description"] = ["d:"+ org +"_emp_"+ number];
+  }
+  individual.on("v-s:tabNumber", autoID);
+  individual.on("v-s:parentOrganization", autoID);
+  template.one("remove", function () {
+    individual.off("v-s:tabNumber", autoID);
+    individual.off("v-s:parentOrganization", autoID);
+  });
+
+  //Скрываем поле ФИ и орг от редактирования пользователем
+  if(!individual.isNew() && veda.appointment.id != 'cfg:AdministratorAppointment'){
+    $('.notEditForUsers').addClass('hide'); 
+    $('#notEditForUsers').removeClass('hide');
+  }
+
+  //добавить аккаунт
+ $("#add-Account", template).click(function() {
+    var NewAccount = new veda.IndividualModel(individual.id + "_account");
+    var _class = new veda.IndividualModel('v-s:Account');
+    var tmpl = new veda.IndividualModel('v-s:AccountTemplate');
+    NewAccount['rdf:type'] = [_class];
+    NewAccount["v-s:backwardTarget"] = [individual];
+    NewAccount["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasAccount")];
+    NewAccount["v-s:owner"] = [individual];
+    var modal = veda.Util.showModal(NewAccount, tmpl, "edit");
+    NewAccount.one("afterSave", function () {
+      individual.save();
+      modal.modal("hide").remove();
+    });
+  });
+
+  //добавить назначение
+  $("#add-Appointment", template).click(function() {
+    var NewAppointment = new veda.IndividualModel();
+    var _class = new veda.IndividualModel('v-s:Appointment');
+    var tmpl = new veda.IndividualModel('v-s:NewAppointmentTemplate');
+    NewAppointment['rdf:type'] = [_class];
+    //NewAppointment['v-s:parentUnit'] = [new veda.IndividualModel(parentUri)];
+    NewAppointment['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+    NewAppointment['v-s:employee'] = [individual];
+    var modal = veda.Util.showModal(NewAppointment, tmpl, "edit");
+    NewAppointment.one("afterSave", function () {
+      individual.save();
+      modal.modal("hide").remove();
+    });
+  });
+
+  function handlerAccount(){
+    if (individual.hasValue("v-s:hasAccount")) {
+      $("#add-Account", template).remove();
+    }
+  }
+  handlerAccount();
+
+  
+  function deletedHandler() {
+    if (individual.hasValue("v-s:deleted", true)) {
+      console.log("deleted");
+      individual["v-s:hasAppointment"].forEach(function(appointment) {
+        appointment.delete();
+      });
+    }
+  }
+
+  
+  individual.on("v-s:deleted", deletedHandler);
+  individual.on("v-s:hasAccount", handlerAccount);
+  template.one("remove", function () {
+    individual.off("v-s:hasAccount", handlerAccount);
+    individual.off("v-s:deleted", deletedHandler);
+  });
+  
+  
+  //# sourceURL=v-s:PersonTemplate_post
+</script>
+  """;
+.
+#-------шаблон создания ПЕРСОНЫ для админа (вложенный)
+v-s:PersonEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения персональной информации"@ru ;
+  rdfs:label "Personal information template"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:lastName')) {
+      result["v-s:lastName"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:firstName')) {
+      result["v-s:firstName"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    } 
+    if (!individual.hasValue('v-s:tabNumber')) {
+      result["v-s:tabNumber"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:parentOrganization')) {
+      result["v-s:parentOrganization"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if ( individual.hasValue('v-s:lastName') && individual.hasValue('v-s:firstName') && individual.hasValue('v-s:parentOrganization') && individual.isNew()) {
+      var queryString = "'rdf:type'==='v-s:Person' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'v-s:lastName'=='" + individual['v-s:lastName'][0] + "' && 'v-s:firstName'=='" + individual['v-s:firstName'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningPersonFIO').addClass('hide'); 
+        } else {
+          $('#warningPersonFIO').removeClass('hide');
+        }
+      });
+    }
+    if ( individual.hasValue('v-s:description') && individual.isNew()) {
+      var queryString = "'@'=='" + individual['v-s:description'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningID').addClass('hide'); 
+        } else {
+          $('#warningID').removeClass('hide');
+        }
+      });
+    }
+    template.trigger("validated", result);
+  });
+
+
+
+  var canCreateSubsidiary = (new veda.IndividualModel("v-s:Subsidiary")).canCreate();
+  Promise.all([canCreateSubsidiary]).then(function(results) {
+    if ( !results[0] || !results[1]) {
+      $("#add-subsidiary", template).remove();
+    }
+  });
+  
+  var queryString = "'rdf:type'==='v-s:Appointment' && 'v-s:employee'==='"+individual.id+"'";
+  $("veda-control[rel='v-s:defaultAppointment']", template).attr("data-query-prefix", queryString);
+  //$('veda-control[rel="v-s:parentUnit"]', template).attr('data-query-prefix', departmentQueryPrefix);
+</script>
+<div class="container sheet">
+  
+    <div id="warningPersonFIO" class="alert alert-warning hide">
+      <span>Внимание. Пользователь с такими ФИО уже существует в данной организации. Возможно Вам следует выбрать его.</span>
+    </div>
+    <div id="warningID" class="alert alert-danger hide">
+      <span>Внимание. Такой ID уже существует.</span>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:lastName" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <veda-control property="v-s:lastName" data-type="multilingualString" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:firstName" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <veda-control property="v-s:firstName" data-type="multilingualString" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:middleName" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <veda-control property="v-s:middleName" data-type="multilingualString" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:birthday" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-3 col-xs-3">
+        <span class="view -edit -search" about="@" property="v-s:birthday"></span>
+        <veda-control property="v-s:birthday" data-type="date" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:tabNumber" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-3 col-xs-3">
+        <span class="view -edit -search" about="@" property="v-s:tabNumber"></span>
+            <veda-control property="v-s:tabNumber" data-type="string" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:description" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:description" class="view -edit search"></div>
+        <veda-control property="v-s:description" data-type="string" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:hasCommunicationMean" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <span class="view -edit -search" about="@" property="v-s:tabNumber"></span>
+          <table class="table table-bordered">
+            <thead>
+              <tr class="view edit -search">
+                <th width="1%"><span class="glyphicon glyphicon-search"></th>
+                <th about="v-s:hasCommunicationMeanChannel" property="rdfs:label"></th>
+                <th about="v-s:hasCommunicationMeanTarget" property="rdfs:label"></th>
+                <th about="v-s:description" property="rdfs:label"></th>
+                <th about="rdfs:comment" property="rdfs:label"></th>
+              </tr>
+            </thead>
+            <tbody rel="v-s:hasCommunicationMean" data-embedded="true" data-template="v-s:CommunicationMeanTemplateEmbedded"></tbody>
+          </table>
+          <veda-control data-type="link" rel="v-s:hasCommunicationMean" class="-view edit -search create"></veda-control>
+      </div>
+    </div>
+    <section id="Account">
+      <h4 class="section-header -view edit search">
+        <span about="v-s:Account" property="rdfs:label"></span>
+        <div class="btn-group -view edit -search"></div>
+        <veda-control data-type="link" rel="v-s:hasAccount" class="-view edit -search create pull-right"></veda-control>
+      </h4>
+      <div rel="v-s:hasAccount" data-embedded="true" data-template="v-s:AccountEmbeddedTemplate"></div>
+    </section>
+   
+</div>
+<script>
+
+  function autoID() {
+    var org1 = individual["v-s:parentOrganization"][0].id;
+    var org = org1.slice(6);
+    var number = individual["v-s:tabNumber"];
+    individual["v-s:description"] = ["d:"+ org +"_emp_"+ number];
+  }
+  individual.on("v-s:tabNumber", autoID);
+  template.one("remove", function () {
+    individual.off("v-s:tabNumber", autoID);
+  });
+
+
+
+
+
+  if ( individual.hasValue('rdfs:isDefinedBy') ) {
+    $(".actions #edit", template).attr('disabled', 'disabled');
+  }
+  if (!individual.hasValue('v-s:birthday')) {
+    $('span[property="v-s:birthday"]').text('Не указано');
+  }
+  
+  //# sourceURL=v-s:PersonEmbeddedTemplate_post
+</script>
+  """;
+.
+#-------шаблон создания Должности для админа
+v-s:PositionTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Position при создании v-s:Appoinment"@ru ;
+  rdfs:label "Template for v-s:Position to create v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:subjectCode')) {
+      result["v-s:subjectCode"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('rdfs:label')) {
+      result["rdfs:label"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    } 
+    if (!individual.hasValue('v-s:parentOrganization')) {
+      result["v-s:parentOrganization"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:parentUnit')) {
+      result["v-s:parentUnit"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if( individual.hasValue('rdfs:label') && individual.hasValue('v-s:parentOrganization') && individual.isNew())  {
+      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningOccupationName').addClass('hide');
+        } else {
+          $('#warningOccupationName').removeClass('hide');
+        }
+      });
+    }
+    if( individual.hasValue('v-s:subjectCode') && individual.hasValue('v-s:parentOrganization') && individual.isNew())  {
+      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'v-s:subjectCode'=='" + individual['v-s:subjectCode'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningOccupationSubCode').addClass('hide');
+        } else {
+          $('#warningOccupationSubCode').removeClass('hide');
+        }
+      });
+    }
+    template.trigger("validated", result);
+  });
+</script>
+<div>
+  <div class="container sheet">
+    <h2>
+      <span about="v-s:Position" property="rdfs:label"></span>
+      <small about="@" property="rdfs:label"></small>
+    </h2>
+    <hr>
+    <div id="warningOccupationName" class="alert alert-warning hide">
+      <span>Внимание. Должность с похожим названием уже существует в данной организации. Возможно Вам следует использовать ее.</span>
+    </div>
+    <div id="warningOccupationSubCode" class="alert alert-danger hide">
+      <span>Внимание. Должность с таким кодом уже существует в данной организации. </span>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:Organization" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div about="@" rel="v-s:parentOrganization" class="view edit search" data-template="v-ui:LabelLinkTemplate"></div>
+        <veda-control rel="v-s:parentOrganization" data-query-prefix = "'rdf:type'=='v-s:Organization'" data-type="link" class="-view edit search fulltext dropdown notEditForUsers"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:Department" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div about="@" rel="v-s:parentUnit" class="view edit search" data-template="v-ui:LabelLinkTemplate"></div>
+        <veda-control rel="v-s:parentUnit" data-query-prefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='{individual['v-s:parentOrganization'][0].id}') || '@'=='{individual['v-s:parentOrganization'][0].id}'" data-type="link" class="-view edit search fulltext dropdown notEditForUsers"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:title" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="rdfs:label" class="view -edit -search"></div>
+        <veda-control data-type="multilingualText" property="rdfs:label" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:PositionCode" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:subjectCode" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute notEditForUsers">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:origin" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:origin" class="view -edit -search"></div>
+        <veda-control property="v-s:origin" data-type="string" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute notEditForUsers">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:description" property="rdfs:label"  class="-view edit -search"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:description" class="-view -edit -search "></div>
+        <veda-control property="v-s:description" data-type="string" class="-view edit -search"></veda-control>
+      </div>
+    </div>
+    <hr>
+    <br>
+    <!--Системные свойства-->
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <!-- BUTTONS -->
+    <div class="actions view edit -search">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+    </div> 
+  </div>
+</div>
+<script>
+  if(mode === "edit" && individual.isNew()) individual["v-s:origin"]=["ExternalUser"];
+
+
+
+  if(!individual.isNew() && veda.appointment.id != 'cfg:AdministratorAppointment')
+    $('.notEditForUsers').addClass('hide'); 
+  
+
+
+  veda.Util.registerHandler(individual, template, "beforeSave", function () {
+    if(individual.isNew()) individual.id = individual["v-s:description"][0];
+  });
+  function autoID() {
+    var org1 = individual["v-s:parentOrganization"][0].id;
+    var org = org1.slice(6);
+    var number = individual["v-s:subjectCode"];
+    individual["v-s:description"] = ["d:"+ org +"_pos_"+ number];
+  }
+  individual.on("v-s:subjectCode", autoID);
+  individual.on("v-s:parentOrganization", autoID);
+  template.one("remove", function () {
+    individual.off("v-s:subjectCode", autoID);
+    individual.off("v-s:parentOrganization", autoID);
+  });
+
+
+  //# sourceURL=v-s:PositionTemplate_post
+</script>
+  """ ;
+.
+
+
+#-------шаблон создания Должности для админа
+v-s:PositionEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Position при создании v-s:Appoinment"@ru ;
+  rdfs:label "Template for v-s:Position to create v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:subjectCode')) {
+      result["v-s:subjectCode"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('rdfs:label')) {
+      result["rdfs:label"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    } 
+    if (!individual.hasValue('v-s:parentOrganization')) {
+      result["v-s:parentOrganization"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:parentUnit')) {
+      result["v-s:parentUnit"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if( individual.hasValue('rdfs:label') && individual.hasValue('v-s:parentOrganization') && individual.isNew())  {
+      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningOccupationName').addClass('hide');
+        } else {
+          $('#warningOccupationName').removeClass('hide');
+        }
+      });
+    }
+    if ( individual.hasValue('v-s:description')) {
+      var queryString = "'@'=='" + individual['v-s:description'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningID').addClass('hide'); 
+        } else {
+          $('#warningID').removeClass('hide');
+        }
+      });
+    }
+    template.trigger("validated", result);
+  });
+</script>
+<div>
+  <div class="container sheet">
+    <div id="warningOccupationName" class="alert alert-warning hide">
+      <span>Внимание. Должность с похожим названием уже существует в данной организации. Возможно Вам следует использовать ее.</span>
+    </div>
+    <div id="warningID" class="alert alert-danger hide">
+      <span>Внимание. Такой ID уже существует.</span>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:title" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="rdfs:label" class="view -edit -search"></div>
+        <veda-control data-type="multilingualText" property="rdfs:label" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:PositionCode" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-3 col-xs-3">
+        <div property="v-s:subjectCode" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:origin" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:origin" class="view -edit -search"></div>
+        <veda-control property="v-s:origin" data-type="string" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:description" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:description" class="view -edit search"></div>
+        <veda-control property="v-s:description" data-type="string" class="-view edit search"></veda-control>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  if(mode === "edit" && individual.isNew()) individual["v-s:origin"]=["ExternalUser"];
+
+  function autoID() {
+    var org1 = individual["v-s:parentOrganization"][0].id;
+    var org = org1.slice(6);
+    var number = individual["v-s:subjectCode"];
+    individual["v-s:description"] = ["d:"+ org +"_pos_"+ number];
+  }
+  individual.on("v-s:subjectCode", autoID);
+  individual.on("v-s:parentOrganization", autoID);
+  template.one("remove", function () {
+    individual.off("v-s:subjectCode", autoID);
+    individual.off("v-s:parentOrganization", autoID);
+  });
+
+
+  //# sourceURL=v-s:PositionEmbeddedTemplate
+</script>
+  """ ;
+.
+
+
+v-s:AccountTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Account при создании v-s:Person"@ru ;
+  rdfs:label "Template for v-s:Accountn to create v-s:Person class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:login')) {
+      result["v-s:login"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:mailbox')) {
+      result["v-s:mailbox"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:origin')) {
+      result["v-s:origin"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    } 
+    if (!individual.hasValue('v-s:authOrigin')) {
+      result["v-s:authOrigin"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+
+    if( individual.hasValue('v-s:login'))  {
+      var queryString = "'rdf:type'==='v-s:Account'" + "' && 'v-s:login'=='" + individual['v-s:login'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningAccount').addClass('hide');
+        } else {
+          $('#warningAccount').removeClass('hide');
+        }
+      });
+    }
+    template.trigger("validated", result);
+  });
+</script>
+<div>
+  <div class="container sheet">
+    <div id="warningAccount" class="alert alert-warning hide">
+      <span>Внимание. Аккаунтс таким логином уже существует!!!</span>
+    </div>
+    <h2>
+      <span about="v-s:Account" property="rdfs:label"></span>
+      <small about="@" property="rdfs:label"></small>
+    </h2>
+    <hr>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:login" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:login" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:login" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:mailbox" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:mailbox" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:mailbox" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:origin" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:origin" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:origin" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:authOrigin" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:authOrigin" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:authOrigin" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:description" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:description" class="view -edit search"></div>
+        <veda-control property="v-s:description" data-type="string" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <hr>
+    <!--Системные свойства-->
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <!-- BUTTONS -->
+    <div class="actions view edit -search">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+    </div> 
+  </div>
+</div>
+<script>
+
+  if(mode === "edit" && individual.isNew()){
+    individual["v-s:origin"]=["ExternalUser"];
+    individual["v-s:authOrigin"]=["veda"];
+  }
+
+  //# sourceURL=v-s:AccountTemplate_post
+</script>
+  """ ;
+.
+
+v-s:AccountEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Account при создании v-s:Person"@ru ;
+  rdfs:label "Template for v-s:Accountn to create v-s:Person class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:login')) {
+      result["v-s:login"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:mailbox')) {
+      result["v-s:mailbox"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:origin')) {
+      result["v-s:origin"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    } 
+    if (!individual.hasValue('v-s:authOrigin')) {
+      result["v-s:authOrigin"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    
+    //var login = "RimertO" ;
+    /*if( individual.hasValue('v-s:login') && individual.isNew())  {
+      var queryString = "'rdf:type'=='v-s:Account'" + "' && 'v-s:login'=='" + login + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningAccount').addClass('hide');
+        } else {
+          $('#warningAccount').removeClass('hide');
+        }
+      });
+    }*/
+    if ( individual.hasValue('v-s:login')) {
+      var queryString = "'rdf:type'=='v-s:Account' && 'v-s:login'=='" + individual["v-s:login"][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningAccount').addClass('hide'); 
+        } else {
+          $('#warningAccount').removeClass('hide');
+        }
+      });
+    }
+    template.trigger("validated", result);
+  });
+   //# sourceURL=v-s:AccountEmbeddedTemplate_pre
+</script>
+<div>
+  <div class="container sheet">
+    <div id="warningAccount" class="alert alert-danger hide">
+      <span>Внимание. Аккаунтс таким логином уже существует!!!</span>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:login" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:login" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:login" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:mailbox" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:mailbox" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:mailbox" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row row-attribute">
+      <div class="col-sm-3 col-xs-5">
+        <label about="v-s:authOrigin" property="rdfs:label"></label>
+      </div>
+      <div class="col-sm-9 col-xs-7">
+        <div property="v-s:authOrigin" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:authOrigin" class="-view edit search"></veda-control>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+  if(mode === "edit" && individual.isNew()){
+    individual["v-s:authOrigin"]=["veda"];
+  }
+
+ 
+
+  //# sourceURL=v-s:AccountEmbeddedTemplate_post
+</script>
+  """ ;
+.
+v-s:AppointmentEmbeddedTableTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Appoitnment ;
+  rdfs:label "Шаблон для класса v-s:CommunicationMean"@ru ;
+  rdfs:label "Template for v-s:CommunicationMean class"@en ;
+  v-ui:template """
+<tr>
+  <td about="@" data-template="v-ui:IconModalTemplate"></td>
+  <td>
+    <div about="@" property="rdfs:label" class="view edit -search"></div>
+  </td>
+  <td>
+    <div about="@" property="v-s:dateFrom" class="view -edit -search"></div>
+    <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
+  </td>
+  <td>
+    <div about="@" property="v-s:dateTo" class="view -edit -search"></div>
+    <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
+  </td>
+ </tr>
+<script>
+</script>
   """ ;
 .

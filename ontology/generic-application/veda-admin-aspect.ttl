@@ -731,6 +731,12 @@ v-s:NewsBundle
   rdfs:label "News"@en ;
 .
 
+v-s:OrgStructureBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Оргструктура"@ru ;
+  rdfs:label "Organizational structure"@en ;
+.
+
 v-s:TrustedTicketBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Доверенный вход"@ru ;
@@ -756,6 +762,7 @@ v-ui:AdministrationAspectTemplate
     <li role="presentation"><a href="#Modules" aria-controls="Modules" role="tab" data-toggle="tab" about="v-s:ModulesBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#BugReports" aria-controls="BugReports" role="tab" data-toggle="tab" about="v-s:BugReportsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#News" aria-controls="News" role="tab" data-toggle="tab" about="v-s:NewsBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#OrgStructure" aria-controls="OrgStructure" role="tab" data-toggle="tab" about="v-s:OrgStructureBundle" property="rdfs:label"></a></li>
     <li role="presentation" class="trusted-ticket"><a href="#TrustedTicket" aria-controls="TrustedTicket" role="tab" data-toggle="tab" about="v-s:TrustedTicketBundle" property="rdfs:label"></a></li>
   </ul>
   <br>
@@ -928,6 +935,10 @@ v-ui:AdministrationAspectTemplate
         </div>
         <div class="panel-body" about="v-s:NewsSearch" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="OrgStructure">
+      <div about="v-s:OrganizationStructureApplication" data-template="v-s:ApplicationTemplate"></div>
     </div>
 
     <div role="tabpanel" class="tab-pane trusted-ticket" id="TrustedTicket">
