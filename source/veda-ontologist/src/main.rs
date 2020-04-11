@@ -17,6 +17,7 @@ use v_onto::onto_index::OntoIndex;
 use v_onto::{individual::*, parser::*};
 use v_queue::consumer::*;
 use v_search::ft_client::FTQuery;
+use v_onto::individual2turtle::to_turtle;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -123,10 +124,11 @@ fn heartbeat(module: &mut Module, ctx: &mut Context) {
     }
 
     if !Path::new(&ctx.ontology_file_path).exists() {
-        generate_file(ctx, module);
+        generate_turtle_file(ctx, module);
+        generate_json_file(ctx, module);
     } else {
         if ctx.is_need_generate && Instant::now().duration_since(ctx.last_found_changes).as_secs() > 5 {
-            if generate_file(ctx, module) {
+            if generate_json_file(ctx, module) {
                 ctx.is_need_generate = false;
             }
         }
@@ -185,8 +187,42 @@ fn recover_index_from_ft(ctx: &mut Context, module: &mut Module) -> bool {
     false
 }
 
-fn generate_file(ctx: &mut Context, module: &mut Module) -> bool {
-    info!("generate file use onto index");
+fn generate_turtle_file(ctx: &mut Context, module: &mut Module) -> bool {
+    info!("generate TURTLE file use onto index");
+
+    let mut indvs_count = 0;
+    let mut indvs = vec![];
+
+    for id in ctx.onto_index.data.keys() {
+        let mut rindv: Individual = Individual::default();
+        if module.storage.get_individual(id, &mut rindv) {
+            rindv.parse_all();
+            indvs.push(rindv);
+            indvs_count += 1;
+        } else {
+            error!("fail read, uri={}", id);
+        }
+    }
+
+    if let Ok (buf) = to_turtle (indvs) {
+        let file_path = ctx.ontology_file_path.clone()+".ttl";
+        if let Ok(mut file) = File::create(&(file_path)) {
+            if let Err(e) = file.write_all(buf.as_slice()) {
+                error!("fail write to file {:?}", e);
+            } else {
+                info!("stored: count:{}, bytes:{}", indvs_count, buf.len());
+                return true;
+            }
+        } else {
+            error!("fail create file {}", file_path);
+        }
+    }
+
+    false
+}
+
+fn generate_json_file(ctx: &mut Context, module: &mut Module) -> bool {
+    info!("generate JSON file use onto index");
 
     let mut indvs_count = 0;
     let mut buf = String::new();
