@@ -1,4 +1,4 @@
-use crate::datatype::{DataType, Lang};
+use crate::datatype::{exponent_to_scale, DataType, Lang};
 use crate::individual::*;
 use crate::resource::{Resource, Value};
 use chrono::{TimeZone, Utc};
@@ -85,18 +85,7 @@ impl Serialize for Value {
     {
         match &self {
             Value::Num(m, e) => {
-                let scale = if *e < 0 {
-                    (*e * -1) as u32
-                } else {
-                    0
-                };
-
-                let num = if *e > 0 {
-                    *m * 10_i64.pow(*e as u32)
-                } else {
-                    *m
-                };
-
+                let (num, scale) = exponent_to_scale(m, e);
                 let d = Decimal::new(num, scale);
                 serializer.serialize_str(&d.to_string())
             }

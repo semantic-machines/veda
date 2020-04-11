@@ -73,3 +73,19 @@ impl Lang {
         }
     }
 }
+
+pub fn exponent_to_scale(m: &i64, e: &i64) -> (i64, u32) {
+    let scale = if *e < 0 {
+        (*e * -1) as u32
+    } else {
+        0
+    };
+
+    let num = if *e > 0 {
+        *m * 10_i64.pow(*e as u32)
+    } else {
+        *m
+    };
+
+    (num, scale)
+}
