@@ -21,3 +21,5 @@ serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0"
 log = "0.4"
 rust_decimal = "1.0.3"
+rio_turtle = {git="https://github.com/semantic-machines/rio.git", rev="cab2cb9863df496478da6a247cc8403414d9e9eb"}
+rio_api = "0.4"
