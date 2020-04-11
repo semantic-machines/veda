@@ -6,6 +6,7 @@ pub mod datatype;
 pub mod individual;
 pub mod individual2json;
 pub mod individual2msgpack;
+pub mod individual2triplets;
 pub mod json2individual;
 pub mod msgpack2individual;
 pub mod onto;
