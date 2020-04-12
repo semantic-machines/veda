@@ -14,13 +14,14 @@ use rio_api::parser::TriplesParser;
 use rio_turtle::{TurtleError, TurtleParser};
 use ron::de::from_reader;
 use ron::ser::{to_string_pretty, PrettyConfig};
+use serde::export::Formatter;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs::{DirEntry, File};
 use std::io::BufReader;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::{fs, io};
+use std::{fmt, fs, io};
 use std::{thread, time as std_time};
 use v_api::app::ResultCode;
 use v_api::*;
@@ -34,6 +35,28 @@ use v_onto::onto::*;
 #[derive(Serialize, Deserialize)]
 struct FileHash {
     data: HashMap<String, String>,
+}
+
+struct Prefixes {
+    namespaces2id: HashMap<String, String>,
+    id2orignamespaces: HashMap<String, String>,
+    id2namespaces: HashMap<String, String>,
+}
+
+impl Default for Prefixes {
+    fn default() -> Self {
+        Self {
+            namespaces2id: HashMap::new(),
+            id2orignamespaces: HashMap::new(),
+            id2namespaces: HashMap::new(),
+        }
+    }
+}
+
+impl fmt::Display for Prefixes {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:#?}", self.namespaces2id)
+    }
 }
 
 fn main() -> NotifyResult<()> {
@@ -236,6 +259,8 @@ fn processing_files(files_paths: Vec<PathBuf>, hash_list: &mut HashMap<String, S
     let mut file2indv: HashMap<String, HashMap<String, Individual>> = HashMap::new();
     let mut priority_list: Vec<(i64, String, String)> = Vec::new();
 
+    let mut prefixes = Prefixes::default();
+
     for file_path_buf in files_paths {
         let file_path = file_path_buf.to_str().unwrap_or_default().to_string();
         if let Some(ext) = file_path_buf.extension() {
@@ -282,12 +307,15 @@ fn processing_files(files_paths: Vec<PathBuf>, hash_list: &mut HashMap<String, S
 
         if file_need_for_load {
             let mut individuals = file2indv.entry(path.to_owned()).or_default();
-            let (onto_id, _onto_url, load_priority) = parse_file(path, &mut individuals);
+            let (onto_id, _onto_url, load_priority) = parse_file(path, &mut individuals, &mut prefixes);
             //        info!("ontology: {} {} {}", &file, onto_id, load_priority);
             full_file_info_indv(&onto_id, individuals, &mut file_info_indv, new_hash, path, name);
             priority_list.push((load_priority, onto_id, path.to_owned()));
         }
     }
+
+    info!("load prefixes: {}", prefixes);
+    let mut loaded_owl_ontology = HashSet::new();
 
     priority_list.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
     //info!("priority_list: {:?}", priority_list);
@@ -308,6 +336,10 @@ fn processing_files(files_paths: Vec<PathBuf>, hash_list: &mut HashMap<String, S
                 };
 
                 if is_need_store {
+                    if indv_file.any_exists("rdf:type", &["owl:Ontology"]) {
+                        loaded_owl_ontology.insert(indv_file.get_id().to_owned());
+                    }
+
                     let res = module.api.update(systicket, IndvOp::Put, &indv_file);
 
                     // thread::sleep(std::time::Duration::from_millis(100));
@@ -322,6 +354,26 @@ fn processing_files(files_paths: Vec<PathBuf>, hash_list: &mut HashMap<String, S
                         }
                     }
                 }
+            }
+        }
+    }
+
+    for (prefix, full_url) in prefixes.id2namespaces.iter() {
+        if !loaded_owl_ontology.contains(prefix) {
+            warn!("prefix not found {}, generate individual", prefix);
+            let mut prefix_indv = Individual::default();
+            prefix_indv.set_id(prefix);
+            prefix_indv.set_uri("rdf:type", "owl:Ontology");
+            let mut url = full_url.to_owned();
+
+            if !full_url.ends_with('/') {
+                url += "/";
+            }
+
+            prefix_indv.set_string("v-s:fullUrl", &url, Lang::NONE);
+            let res = module.api.update(systicket, IndvOp::Put, &prefix_indv);
+            if res.result != ResultCode::Ok {
+                error!("fail store {}", prefix_indv.get_obj().as_json_str());
             }
         }
     }
@@ -354,26 +406,8 @@ fn full_file_info_indv(onto_id: &str, individuals: &mut HashMap<String, Individu
     }
 }
 
-struct Prefixes {
-    namespaces2id: HashMap<String, String>,
-    id2orignamespaces: HashMap<String, String>,
-    id2namespaces: HashMap<String, String>,
-}
-
-impl Default for Prefixes {
-    fn default() -> Self {
-        Self {
-            namespaces2id: HashMap::new(),
-            id2orignamespaces: HashMap::new(),
-            id2namespaces: HashMap::new(),
-        }
-    }
-}
-
-fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) -> (String, String, i64) {
+fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>, prefixes: &mut Prefixes) -> (String, String, i64) {
     let mut parser = TurtleParser::new(BufReader::new(File::open(file_path).unwrap()), "").unwrap();
-
-    let mut prefixes = Prefixes::default();
 
     let mut onto_id = String::default();
     let mut onto_url = String::default();
