@@ -354,12 +354,26 @@ fn full_file_info_indv(onto_id: &str, individuals: &mut HashMap<String, Individu
     }
 }
 
+struct Prefixes {
+    namespaces2id: HashMap<String, String>,
+    id2orignamespaces: HashMap<String, String>,
+    id2namespaces: HashMap<String, String>,
+}
+
+impl Default for Prefixes {
+    fn default() -> Self {
+        Self {
+            namespaces2id: HashMap::new(),
+            id2orignamespaces: HashMap::new(),
+            id2namespaces: HashMap::new(),
+        }
+    }
+}
+
 fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) -> (String, String, i64) {
     let mut parser = TurtleParser::new(BufReader::new(File::open(file_path).unwrap()), "").unwrap();
 
-    let mut namespaces2id: HashMap<String, String> = HashMap::new();
-    let mut id2orignamespaces: HashMap<String, String> = HashMap::new();
-    let mut id2namespaces: HashMap<String, String> = HashMap::new();
+    let mut prefixes = Prefixes::default();
 
     let mut onto_id = String::default();
     let mut onto_url = String::default();
@@ -367,11 +381,11 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
 
     loop {
         for ns in &parser.namespaces {
-            if !namespaces2id.contains_key(ns.1) {
+            if !prefixes.namespaces2id.contains_key(ns.1) {
                 if let Some(s) = ns.1.get(0..ns.1.len() - 1) {
-                    namespaces2id.insert(s.to_owned(), ns.0.clone());
-                    id2orignamespaces.insert(ns.0.to_owned() + ":", ns.1.to_owned());
-                    id2namespaces.insert(ns.0.to_owned() + ":", s.to_string());
+                    prefixes.namespaces2id.insert(s.to_owned(), ns.0.clone());
+                    prefixes.id2orignamespaces.insert(ns.0.to_owned() + ":", ns.1.to_owned());
+                    prefixes.id2namespaces.insert(ns.0.to_owned() + ":", s.to_string());
                 }
             }
         }
@@ -386,7 +400,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                 NamedOrBlankNode::NamedNode(n) => n.iri,
             };
 
-            let s = to_prefix_form(&subject, &namespaces2id);
+            let s = to_prefix_form(&subject, &prefixes.namespaces2id);
             if s.is_empty() {
                 error!("invalid subject={:?}", subject);
             }
@@ -398,12 +412,12 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                 indv.set_id(&s);
             }
 
-            let predicate = to_prefix_form(t.predicate.iri, &namespaces2id);
+            let predicate = to_prefix_form(t.predicate.iri, &prefixes.namespaces2id);
 
             //info!("[{:?}]", predicate);
             match t.object {
                 BlankNode(n) => error!("BlankNode {}", n.id),
-                NamedNode(n) => indv.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces2id)),
+                NamedNode(n) => indv.add_uri(&predicate, &to_prefix_form(n.iri, &prefixes.namespaces2id)),
 
                 Literal(l) => match l {
                     Simple {
@@ -475,11 +489,11 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                     load_priority = v;
                 }
 
-                if let Some(s) = id2orignamespaces.get(indv.get_id()) {
+                if let Some(s) = prefixes.id2orignamespaces.get(indv.get_id()) {
                     indv.set_string("v-s:fullUrl", &s, Lang::NONE);
                 }
 
-                if let Some(s) = id2namespaces.get(indv.get_id()) {
+                if let Some(s) = prefixes.id2namespaces.get(indv.get_id()) {
                     onto_url.insert_str(0, s.as_str());
                 }
 
