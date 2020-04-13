@@ -397,7 +397,7 @@ v-fc:CreateManagementTemplate
         }).then(function (personalCreate) {
           return veda.user.aspect.load().then(function (aspect) {
             aspect.addValue("v-s:hasCreate", personalCreate);
-          return aspect.save();
+            return aspect.save();
           }).then(function() {
             return new veda.IndividualModel("v-fc:BlankSuccessfullySaved").load();
           }).then(function(message) {
@@ -423,6 +423,8 @@ v-fc:CreateManagementTemplate
             return new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").load();
           }).then(function (message) {
             notify("success", { message: message});
+          }).catch(function (error) {
+            notify("danger", { message: error });
           });
         }
       });
@@ -435,10 +437,13 @@ v-fc:CreateManagementTemplate
           aspect.removeValue("v-s:hasCreate", individual);
           return aspect.save();
         }).then(function () {
+          return individual.delete();
+        }).then(function () {
           return new veda.IndividualModel("v-fc:BlankSuccessfullyDeleted").load();
         }).then(function (message) {
           notify("success", { message: message });
-          template.trigger("delete");
+        }).catch(function (error) {
+          notify("danger", { message: error });
         });
       });
     } else {
