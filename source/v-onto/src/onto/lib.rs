@@ -13,3 +13,4 @@ pub mod onto;
 pub mod onto_index;
 pub mod parser;
 pub mod resource;
+mod turtle_formatters_with_prefixes;

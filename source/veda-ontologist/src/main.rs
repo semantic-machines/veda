@@ -5,6 +5,7 @@ extern crate env_logger;
 use chrono::Local;
 use env_logger::Builder;
 use log::LevelFilter;
+use std::collections::{HashMap};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -13,11 +14,11 @@ use v_api::app::ResultCode;
 use v_api::IndvOp;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
+use v_onto::individual2turtle::to_turtle;
 use v_onto::onto_index::OntoIndex;
 use v_onto::{individual::*, parser::*};
 use v_queue::consumer::*;
 use v_search::ft_client::FTQuery;
-use v_onto::individual2turtle::to_turtle;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -193,10 +194,22 @@ fn generate_turtle_file(ctx: &mut Context, module: &mut Module) -> bool {
     let mut indvs_count = 0;
     let mut indvs = vec![];
 
+    let mut prefixes = HashMap::new();
+
     for id in ctx.onto_index.data.keys() {
         let mut rindv: Individual = Individual::default();
         if module.storage.get_individual(id, &mut rindv) {
             rindv.parse_all();
+
+            if rindv.any_exists("rdf:type", &["owl:Ontology"]) {
+                if let Some(full_url) = rindv.get_first_literal("v-s:fullUrl") {
+                    debug!("prefix : {} -> {}", rindv.get_id(), full_url);
+                    let short_prefix = rindv.get_id().trim_end_matches(':');
+                        prefixes.insert(short_prefix.to_owned(), full_url);
+
+                }
+            }
+
             indvs.push(rindv);
             indvs_count += 1;
         } else {
@@ -204,8 +217,8 @@ fn generate_turtle_file(ctx: &mut Context, module: &mut Module) -> bool {
         }
     }
 
-    if let Ok (buf) = to_turtle (indvs) {
-        let file_path = ctx.ontology_file_path.clone()+".ttl";
+    if let Ok(buf) = to_turtle(indvs, &mut prefixes) {
+        let file_path = ctx.ontology_file_path.clone() + ".ttl";
         if let Ok(mut file) = File::create(&(file_path)) {
             if let Err(e) = file.write_all(buf.as_slice()) {
                 error!("fail write to file {:?}", e);
