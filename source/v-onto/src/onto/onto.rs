@@ -13,7 +13,7 @@ pub enum RelType {
 #[derive(Debug)]
 pub struct Onto {
     pub relations: HashMap<String, HashMap<String, RelType>>,
-    pub prefixes: HashMap<String, String>,
+    prefixes: HashMap<String, String>,
 }
 
 impl fmt::Display for Onto {
@@ -73,7 +73,8 @@ impl Onto {
             //}
             } else if vtype == "owl:Ontology" {
                 if let Some(full_url) = indv.get_first_literal("v-s:fullUrl") {
-                    info!("ontology : {} -> {}", indv.get_id(), full_url);
+                    debug!("prefix : {} -> {}", indv.get_id(), full_url);
+                    self.prefixes.insert(indv.get_id().to_owned(), full_url);
                 }
             } else {
                 debug!("is not onto element: {}", indv.obj.uri)
@@ -126,5 +127,7 @@ impl Onto {
         }
     }
 
-    pub fn get_prefixs(&mut self) {}
+    pub fn get_full_prefix(&self, short_prefix: &str) -> Option<&String> {
+        self.prefixes.get(short_prefix)
+    }
 }
