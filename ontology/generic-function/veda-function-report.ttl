@@ -114,26 +114,43 @@ v-s:ReportManagementTemplate
       enterLabel.load().then(function (enterLabel) {
         var personalLabel = prompt( enterLabel.toString(), individual.toString() );
         if (!personalLabel) { return; }
-        var personalReport = individual.clone();
-        personalReport["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalReport") ];
-        personalReport["v-s:creator"] = [];
-        personalReport["v-s:created"] = [];
-        personalReport["rdfs:isDefinedBy"] = [];
-        personalReport["rdfs:label"] = [ personalLabel ];
-        var reportBlank = individual.hasValue("v-s:reportBlank") ? individual["v-s:reportBlank"][0] : undefined;
-        if (reportBlank && reportBlank.object) {
-          var personalReportBlank = reportBlank.clone();
-          personalReport["v-s:reportBlank"] = [ personalReportBlank ];
-          personalReportBlank["rdfs:isDefinedBy"] = [];
-          personalReportBlank.object = reportBlank.object;
-          personalReportBlank.updateBlank();
-          personalReportBlank.save();
-        }
-        personalReport.save();
-        var aspect = veda.user.aspect;
-        aspect.addValue("v-s:hasReport", personalReport);
-        aspect.save();
-        notify("success", { message: new veda.IndividualModel("v-s:ReportSuccessfullySaved").toString() });
+        individual.clone()
+        .then(function (personalReport) {
+          personalReport["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalReport") ];
+          personalReport["v-s:creator"] = [];
+          personalReport["v-s:created"] = [];
+          personalReport["rdfs:isDefinedBy"] = [];
+          personalReport["rdfs:label"] = [ personalLabel ];
+          var reportBlank = individual.hasValue("v-s:reportBlank") ? individual["v-s:reportBlank"][0] : undefined;
+          if (reportBlank && reportBlank.object) {
+            return reportBlank.clone().then(function (personalReportBlank) {
+              personalReport["v-s:reportBlank"] = [ personalReportBlank ];
+              personalReportBlank["rdfs:isDefinedBy"] = [];
+              personalReportBlank.object = reportBlank.object;
+              personalReportBlank.updateBlank();
+              personalReportBlank.save();
+              return personalReport.save();
+            });
+          } else {
+            return personalReport.save();
+          }
+        })
+        .then(function (personalReport) {
+          veda.user.aspect.load()
+          .then(function (aspect) {
+            aspect.addValue("v-s:hasReport", personalReport);
+            return aspect.save();
+          });
+        })
+        .then(function () {
+          return new veda.IndividualModel("v-s:ReportSuccessfullySaved").load();
+        })
+        .then(function (message) {
+          notify("success", { message: message });
+        })
+        .catch(function (error) {
+          notify("danger", { message: error });
+        });
       });
     });
   } else {
@@ -145,28 +162,43 @@ v-s:ReportManagementTemplate
       $(".action.update-report", template).click(function () {
         var reportBlank = individual.hasValue("v-s:reportBlank") ? individual["v-s:reportBlank"][0] : undefined;
         if (reportBlank && reportBlank.object) {
-          reportBlank.updateBlank();
-          reportBlank.save().then(function () {
-            return new veda.IndividualModel("v-fc:ReportSuccessfullyUpdated").load();
-          }).then(function (message) {
+          reportBlank.updateBlank()
+          .then(function () {
+            reportBlank.save()
+          })
+          .then(function () {
+            return new veda.IndividualModel("v-s:ReportSuccessfullyUpdated").load();
+          })
+          .then(function (message) {
             notify("success", { message: message});
+          })
+          .catch(function (error) {
+            notify("danger", { message: error });
           });
         }
       });
     } else {
       $(".action.update-report", template).remove();
     }
+
     if ( rights.hasValue("v-s:canDelete", true) ) {
       $(".action.delete-report", template).click(function () {
-        veda.user.aspect.load().then(function (aspect) {
+        veda.user.aspect.load()
+        .then(function (aspect) {
           aspect.removeValue("v-s:hasReport", individual);
           return aspect.save();
-        }).then(function () {
-          return new veda.IndividualModel("v-fc:ReportSuccessfullyDeleted").load();
-        }).then(function (message) {
-          notify("success", { message: message });
-          template.trigger("delete");
-          window.history.back();
+        })
+        .then(function () {
+          return individual.delete();
+        })
+        .then(function () {
+          return new veda.IndividualModel("v-s:ReportSuccessfullyDeleted").load();
+        })
+        .then(function (message) {
+          return notify("success", { message: message });
+        })
+        .catch(function (error) {
+          notify("danger", { message: error });
         });
       });
     } else {
