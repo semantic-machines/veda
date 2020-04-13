@@ -919,6 +919,8 @@ veda-control {
   margin-right: 10px;
   display: inline-block;
   white-space: pre-line;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 .prop-actions, .rel-actions {
