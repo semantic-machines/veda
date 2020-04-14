@@ -1,20 +1,8 @@
 use std::collections::HashMap;
-use v_authorization::common::Access;
+use v_authorization::common::{Access, M_IGNORE_EXCLUSIVE, M_IS_EXCLUSIVE};
+use v_authorization::Right;
 use v_onto::individual::Individual;
 use v_storage::storage::{StorageId, VStorage};
-
-pub const PERMISSION_PREFIX: &str = "P";
-pub const MEMBERSHIP_PREFIX: &str = "M";
-pub const FILTER_PREFIX: &str = "F";
-const M_IS_EXCLUSIVE: char = 'X';
-const M_IGNORE_EXCLUSIVE: char = 'N';
-
-pub struct Right {
-    pub id: String,
-    pub access: u8,
-    pub marker: char,
-    pub is_deleted: bool,
-}
 
 pub type RightSet = HashMap<String, Right>;
 
@@ -130,6 +118,7 @@ pub fn update_right_set(
                         access,
                         marker,
                         is_deleted,
+                        level: 0,
                     },
                 );
             }
@@ -205,6 +194,7 @@ pub fn rights_from_string(src: &str, new_rights: &mut RightSet) -> bool {
                     access: access as u8,
                     marker,
                     is_deleted: false,
+                    level: 0,
                 },
             );
         } else {

@@ -2,13 +2,13 @@ use crate::{AzContext, Right};
 use core::fmt;
 use std::collections::HashMap;
 
-pub(crate) const PERMISSION_PREFIX: &str = "P";
-pub(crate) const FILTER_PREFIX: &str = "F";
-pub(crate) const MEMBERSHIP_PREFIX: &str = "M";
-pub(crate) const M_IS_EXCLUSIVE: char = 'X';
-pub(crate) const M_IGNORE_EXCLUSIVE: char = 'N';
-pub(crate) static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
-pub(crate) static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
+pub const PERMISSION_PREFIX: &str = "P";
+pub const FILTER_PREFIX: &str = "F";
+pub const MEMBERSHIP_PREFIX: &str = "M";
+pub const M_IS_EXCLUSIVE: char = 'X';
+pub const M_IGNORE_EXCLUSIVE: char = 'N';
+pub static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
+pub static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 
 /// Битовые поля для прав
 #[repr(u8)]

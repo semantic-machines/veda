@@ -8,9 +8,9 @@ use crate::common::*;
 pub struct Right {
     pub id: String,
     pub access: u8,
-    marker: char,
-    is_deleted: bool,
-    level: u8,
+    pub marker: char,
+    pub is_deleted: bool,
+    pub level: u8,
 }
 
 impl Right {
