@@ -76,13 +76,13 @@ impl<W: Write> TriplesFormatter for TurtleFormatterWithPrefixes<W> {
                 if self.current_predicate == *triple.predicate.iri {
                     write!(self.write, " , {:?}", triple.object)?;
                 } else {
-                    write!(self.write, " ;\n\t{:?} {:?}", triple.predicate, triple.object)?;
+                    write!(self.write, " ;\n  {:?} {:?}", triple.predicate, triple.object)?;
                 }
             } else {
-                write!(self.write, " .\n\n{:?} \n\t{:?} {:?}", triple.subject, triple.predicate, triple.object)?;
+                write!(self.write, " .\n\n{:?} \n  {:?} {:?}", triple.subject, triple.predicate, triple.object)?;
             }
         } else {
-            write!(self.write, "{:?} \n\t{:?} {:?}", triple.subject, triple.predicate, triple.object)?;
+            write!(self.write, "{:?} \n  {:?} {:?}", triple.subject, triple.predicate, triple.object)?;
         }
 
         self.current_subject.clear();
