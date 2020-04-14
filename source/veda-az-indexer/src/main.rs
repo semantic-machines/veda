@@ -2,7 +2,7 @@
 extern crate log;
 
 use crate::common::*;
-use v_authorization::common::Access;
+use v_authorization::common::{Access, FILTER_PREFIX, MEMBERSHIP_PREFIX, PERMISSION_PREFIX};
 use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_onto::individual::*;
