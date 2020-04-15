@@ -90,7 +90,7 @@ fn authorize_obj_group(
         Ok(str) => {
             let permissions: &mut Vec<Right> = &mut Vec::new();
 
-            decode_elements_from_index(&str, permissions);
+            decode_rec_to_rights(&str, permissions);
 
             for permission in permissions {
                 let subj_id = &permission.id;
@@ -193,7 +193,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
     match db.get(&(MEMBERSHIP_PREFIX.to_owned() + uri)) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
-            decode_elements_from_index(&groups_str, groups_set);
+            decode_rec_to_rights(&groups_str, groups_set);
 
             groups_set_len = groups_set.len();
 
@@ -359,7 +359,7 @@ pub fn authorize(id: &str, user_id: &str, request_access: u8, db: &dyn Storage, 
     first_level_object_groups.push(Right::new(id));
     match db.get(&(MEMBERSHIP_PREFIX.to_owned() + id)) {
         Ok(groups_str) => {
-            decode_elements_from_index(&groups_str, first_level_object_groups);
+            decode_rec_to_rights(&groups_str, first_level_object_groups);
         }
         Err(_e) => {}
     }

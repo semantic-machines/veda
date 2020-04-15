@@ -62,7 +62,16 @@ pub struct Trace<'a> {
     pub str_num: u32,
 }
 
-pub(crate) fn decode_elements_from_index(src: &str, results: &mut Vec<Right>) -> bool {
+pub fn decode_rec_to_rights(src: &str, result: &mut Vec<Right>) -> bool {
+    decode_index_record(src, |_key, right| {
+        result.push(right);
+    })
+}
+
+pub fn decode_index_record<F>(src: &str, mut drain: F) -> bool
+where
+    F: FnMut(&str, Right),
+{
     if src.is_empty() {
         return false;
     }
@@ -99,7 +108,9 @@ pub(crate) fn decode_elements_from_index(src: &str, results: &mut Vec<Right>) ->
                 is_deleted: false,
                 level: 0,
             };
-            results.push(rr);
+
+            drain(key, rr);
+        //results.push(rr);
         } else {
             break;
         }
@@ -132,7 +143,7 @@ pub(crate) fn get_resource_groups(
     match db.get(&(MEMBERSHIP_PREFIX.to_owned() + uri)) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
-            decode_elements_from_index(&groups_str, groups_set);
+            decode_rec_to_rights(&groups_str, groups_set);
 
             for (idx, group) in groups_set.iter_mut().enumerate() {
                 if group.id.is_empty() {
@@ -318,7 +329,7 @@ pub(crate) fn get_filter(id: &str, db: &dyn Storage) -> Option<(String, u8)> {
                 filter_value.clear();
             } else {
                 let filters_set: &mut Vec<Right> = &mut Vec::new();
-                decode_elements_from_index(&filter_value, filters_set);
+                decode_rec_to_rights(&filter_value, filters_set);
 
                 if !filters_set.is_empty() {
                     let el = &mut filters_set[0];

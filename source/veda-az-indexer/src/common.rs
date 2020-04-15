@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use v_authorization::common::decode_index_record;
 use v_authorization::common::{Access, M_IGNORE_EXCLUSIVE, M_IS_EXCLUSIVE};
 use v_authorization::Right;
 use v_onto::individual::Individual;
@@ -102,7 +103,7 @@ pub fn update_right_set(
 
         let mut new_right_set = RightSet::new();
         if let Some(prev_data_str) = ctx.storage.get_value(StorageId::Az, &key) {
-            rights_from_string(&prev_data_str, &mut new_right_set);
+            decode_rec_to_rightset(&prev_data_str, &mut new_right_set);
         }
 
         for mb in in_set.iter() {
@@ -157,57 +158,10 @@ pub fn get_disappeared(a: &[String], b: &[String]) -> Vec<String> {
     delta
 }
 
-pub fn rights_from_string(src: &str, new_rights: &mut RightSet) -> bool {
-    if src.is_empty() {
-        return false;
-    }
-
-    let tokens: Vec<&str> = src.split(';').collect();
-
-    let mut idx = 0;
-    loop {
-        if idx + 1 < tokens.len() {
-            let key = tokens[idx];
-            let mut access = 0;
-            let mut shift = 0;
-            let mut marker = 0 as char;
-
-            for c in tokens[idx + 1].chars() {
-                if c == M_IS_EXCLUSIVE || c == M_IGNORE_EXCLUSIVE {
-                    marker = c;
-                } else {
-                    match c.to_digit(16) {
-                        Some(v) => access |= v << shift,
-                        None => {
-                            eprintln!("ERR! rights_from_string, fail parse, access is not hex digit {}", src);
-                            continue;
-                        }
-                    }
-                    shift += 4;
-                }
-            }
-
-            new_rights.insert(
-                key.to_string(),
-                Right {
-                    id: key.to_string(),
-                    access: access as u8,
-                    marker,
-                    is_deleted: false,
-                    level: 0,
-                },
-            );
-        } else {
-            break;
-        }
-
-        idx += 2;
-        if idx >= tokens.len() {
-            break;
-        }
-    }
-
-    true
+pub fn decode_rec_to_rightset(src: &str, new_rights: &mut RightSet) -> bool {
+    decode_index_record(src, |key, right| {
+        new_rights.insert(key.to_owned(), right);
+    })
 }
 
 fn rights_as_string(new_rights: RightSet) -> String {
