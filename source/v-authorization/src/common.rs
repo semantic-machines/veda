@@ -1,3 +1,4 @@
+use crate::formats::*;
 use crate::{AzContext, Right};
 use core::fmt;
 use std::collections::HashMap;
@@ -5,8 +6,6 @@ use std::collections::HashMap;
 pub const PERMISSION_PREFIX: &str = "P";
 pub const FILTER_PREFIX: &str = "F";
 pub const MEMBERSHIP_PREFIX: &str = "M";
-pub const M_IS_EXCLUSIVE: char = 'X';
-pub const M_IGNORE_EXCLUSIVE: char = 'N';
 pub static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
 pub static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 
@@ -60,68 +59,6 @@ pub struct Trace<'a> {
     pub is_info: bool,
 
     pub str_num: u32,
-}
-
-pub fn decode_rec_to_rights(src: &str, result: &mut Vec<Right>) -> bool {
-    decode_index_record(src, |_key, right| {
-        result.push(right);
-    })
-}
-
-pub fn decode_index_record<F>(src: &str, mut drain: F) -> bool
-where
-    F: FnMut(&str, Right),
-{
-    if src.is_empty() {
-        return false;
-    }
-
-    let tokens: Vec<&str> = src.split(';').collect();
-
-    let mut idx = 0;
-    loop {
-        if idx + 1 < tokens.len() {
-            let key = tokens[idx];
-            let mut access = 0;
-            let mut shift = 0;
-            let mut marker = 0 as char;
-
-            for c in tokens[idx + 1].chars() {
-                if c == M_IS_EXCLUSIVE || c == M_IGNORE_EXCLUSIVE {
-                    marker = c;
-                } else {
-                    match c.to_digit(16) {
-                        Some(v) => access |= v << shift,
-                        None => {
-                            eprintln!("ERR! rights_from_string, fail parse, access is not hex digit {}", src);
-                            continue;
-                        }
-                    }
-                    shift += 4;
-                }
-            }
-
-            let rr = Right {
-                id: key.to_string(),
-                access: access as u8,
-                marker,
-                is_deleted: false,
-                level: 0,
-            };
-
-            drain(key, rr);
-        //results.push(rr);
-        } else {
-            break;
-        }
-
-        idx += 2;
-        if idx >= tokens.len() {
-            break;
-        }
-    }
-
-    true
 }
 
 pub(crate) fn get_resource_groups(

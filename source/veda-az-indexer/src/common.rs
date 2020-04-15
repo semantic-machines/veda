@@ -1,11 +1,8 @@
-use std::collections::HashMap;
-use v_authorization::common::decode_index_record;
-use v_authorization::common::{Access, M_IGNORE_EXCLUSIVE, M_IS_EXCLUSIVE};
-use v_authorization::Right;
+use v_authorization::common::Access;
+use v_authorization::formats::{decode_rec_to_rightset, encode_rightset, M_IGNORE_EXCLUSIVE, M_IS_EXCLUSIVE};
+use v_authorization::{Right, RightSet};
 use v_onto::individual::Individual;
 use v_storage::storage::{StorageId, VStorage};
-
-pub type RightSet = HashMap<String, Right>;
 
 pub struct Context {
     pub permission_statement_counter: u32,
@@ -125,7 +122,7 @@ pub fn update_right_set(
             }
         }
 
-        let mut new_record = rights_as_string(new_right_set);
+        let mut new_record = encode_rightset(new_right_set);
 
         if new_record.is_empty() {
             new_record = "X".to_string();
@@ -156,30 +153,4 @@ pub fn get_disappeared(a: &[String], b: &[String]) -> Vec<String> {
     }
 
     delta
-}
-
-pub fn decode_rec_to_rightset(src: &str, new_rights: &mut RightSet) -> bool {
-    decode_index_record(src, |key, right| {
-        new_rights.insert(key.to_owned(), right);
-    })
-}
-
-fn rights_as_string(new_rights: RightSet) -> String {
-    let mut outbuff = String::new();
-
-    for key in new_rights.keys() {
-        if let Some(right) = new_rights.get(key) {
-            if !right.is_deleted {
-                outbuff.push_str(&right.id);
-                outbuff.push(';');
-                outbuff.push_str(&format!("{:X}", right.access));
-
-                if right.marker == M_IS_EXCLUSIVE || right.marker == M_IGNORE_EXCLUSIVE {
-                    outbuff.push(right.marker);
-                }
-                outbuff.push(';');
-            }
-        }
-    }
-    outbuff
 }
