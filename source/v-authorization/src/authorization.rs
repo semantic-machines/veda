@@ -1,9 +1,13 @@
 /// This module gives function to check access of user to individual
 pub mod common;
+pub mod formats;
 
 use std::collections::HashMap;
 
 use crate::common::*;
+use crate::formats::*;
+
+pub type RightSet = HashMap<String, Right>;
 
 pub struct Right {
     pub id: String,
