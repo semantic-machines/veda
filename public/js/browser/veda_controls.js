@@ -163,6 +163,43 @@
     isSingle: true
   };
 
+  // Uri input
+  $.fn.veda_uri = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_uri.defaults, options ),
+        control = $( opts.template ),
+        individual = opts.individual,
+        property_uri = opts.property_uri,
+        spec = opts.spec,
+        timeout;
+
+    var tabindex = this.attr("tabindex");
+    if (tabindex) {
+      this.removeAttr("tabindex");
+      control.attr("tabindex", tabindex);
+    }
+
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+    });
+
+    control.attr({
+      "placeholder": individual.id
+    }).on("change focusout", changeHandler);
+    
+    function changeHandler() {
+      if (control.val()) {
+        individual.id = control.val();
+      };
+      console.log(individual.id);
+    }
+    
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_uri.defaults = {
+    template: $("#string-control-template").html()    
+  };  
+
   // Password input
   $.fn.veda_password = function( options ) {
     var opts = $.extend( {}, $.fn.veda_password.defaults, options ),
