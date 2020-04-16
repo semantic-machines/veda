@@ -11,15 +11,11 @@ import { Selector, t } from 'testcafe';
     basic.createTestUI('Тест комментария', timeStamp);
     await t
       .setNativeDialogHandler(() => true)
-      .wait(1000)
       .expect(Selector('#user-info').innerText).contains('Администратор2 .')
-      .wait(1000)
       .navigateTo( pageForNavigateFromConfig )
-      .wait(1000)
+      .wait(3000)
       .typeText('veda-control#comment', timeStamp)
-      .wait(1000)
       .click('button#search-button')
-      .wait(1000)
       .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       //ccus init timeout
       .wait(1000)
