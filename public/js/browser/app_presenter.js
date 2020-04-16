@@ -128,7 +128,7 @@ veda.Module(function (veda) { "use strict";
         var main_uri = manifest.veda_main;
         var start_url = manifest.start_url;
         if (!layout_uri || !main_uri || !start_url) {
-          throw "No params in manifest";
+          throw "Incomplete layout params in manifest";
         } else {
           var layout = new veda.IndividualModel(layout_uri);
           layout.present("#app")
