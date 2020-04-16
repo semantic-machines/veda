@@ -13,6 +13,7 @@ import { Selector, t } from 'testcafe';
       .expect(Selector('#user-info').innerText).contains('Администратор2 .')
       .navigateTo( pageForNavigateFromConfig )
       .typeText('veda-control#comment', timeStamp)
+      .wait(1000)
       .click('button#search-button')
       .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('1')
 });
