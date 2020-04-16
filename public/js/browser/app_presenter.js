@@ -296,7 +296,7 @@ veda.Module(function (veda) { "use strict";
   if ("serviceWorker" in navigator) {
 
     // Install SW
-    navigator.serviceWorker.register("/sw-simple.js", { scope: "/" }).then(function(worker) {
+    navigator.serviceWorker.register("/sw-simple.js", { scope: window.location.pathname }).then(function(worker) {
       console.log("Service worker registered:", worker.scope);
     }).catch(function(error) {
       console.log("Registration failed with " + error);
