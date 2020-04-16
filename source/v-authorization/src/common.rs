@@ -12,6 +12,8 @@ pub static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRea
 /// Битовые поля для прав
 #[repr(u8)]
 pub enum Access {
+    None = 0,
+
     /// Создание
     CanCreate = 1u8,
 
@@ -35,6 +37,30 @@ pub enum Access {
 
     /// Запрет удаления
     CantDelete = 128u8,
+}
+
+impl Access {
+    pub fn from_char(c: char) -> Access {
+        if c == 'C' {
+            return Access::CanCreate;
+        } else if c == 'R' {
+            return Access::CanRead;
+        } else if c == 'U' {
+            return Access::CanUpdate;
+        } else if c == 'D' {
+            return Access::CanDelete;
+        } else if c == 'c' {
+            return Access::CantCreate;
+        } else if c == 'r' {
+            return Access::CantRead;
+        } else if c == 'u' {
+            return Access::CantUpdate;
+        } else if c == 'd' {
+            return Access::CantDelete;
+        }
+
+        Access::None
+    }
 }
 
 pub trait Storage {

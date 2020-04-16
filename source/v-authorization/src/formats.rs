@@ -1,6 +1,66 @@
+use crate::common::Access;
 use crate::{Right, RightSet};
+
 pub const M_IS_EXCLUSIVE: char = 'X';
 pub const M_IGNORE_EXCLUSIVE: char = 'N';
+
+#[derive(Debug)]
+pub struct TagCount {
+    tag: char,
+    count: u16,
+}
+
+impl TagCount {
+    fn new(tag: char, val: &str) -> Self {
+        let count = val.parse::<u16>().unwrap_or_default();
+
+        println!("{:?} {:?}", tag, count);
+
+        Self {
+            tag,
+            count,
+        }
+    }
+}
+
+fn decode_value_v2(value: &str, rr: &mut Right, with_count: bool) -> Vec<TagCount> {
+    let mut access = 0;
+
+    let mut tags_counters = vec![];
+    let mut tag: Option<char> = None;
+    let mut val = String::new();
+    for c in value.chars() {
+        if c == 'C' || c == 'R' || c == 'U' || c == 'D' || c == 'c' || c == 'r' || c == 'u' || c == 'd' || c == M_IS_EXCLUSIVE || c == M_IGNORE_EXCLUSIVE {
+            if c == M_IS_EXCLUSIVE || c == M_IGNORE_EXCLUSIVE {
+                rr.marker = c;
+            } else {
+                access |= Access::from_char(c) as u8;
+            }
+
+            if with_count {
+                if let Some(t) = tag {
+                    tags_counters.push(TagCount::new(t, &val));
+                }
+            }
+
+            tag = Some(c);
+            val = String::new();
+        } else {
+            val.push(c);
+        }
+    }
+
+    if with_count {
+        if let Some(t) = tag {
+            tags_counters.push(TagCount::new(t, &val));
+        }
+
+        println!("{:?}", tags_counters);
+    }
+
+    rr.access = access as u8;
+    tags_counters
+}
 
 fn decode_value_v1(value: &str, rr: &mut Right) {
     let mut access = 0;
@@ -48,7 +108,7 @@ where
             if value.len() < 3 {
                 decode_value_v1(value, &mut rr);
             } else {
-                // format value, ver 2
+                decode_value_v2(value, &mut rr, false);
             }
 
             drain(key, rr);
