@@ -10,6 +10,10 @@ veda.Module(function (veda) { "use strict";
 
     var toEmpty;
 
+    if (typeof container === "undefined" || container === "") {
+      container = "#main";
+    }
+
     if (typeof container === "string") {
       container = $(container);
       toEmpty = true;

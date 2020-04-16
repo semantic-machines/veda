@@ -323,6 +323,13 @@ func main() {
         ctx.Response.Header.Set("Cache-Control", "max-age=43200, no-cache, must-revalidate, private")
         ctx.SendFile("public/ontology.json")
       default:
+        if len(routeParts) >= 2 && routeParts[1] == "apps" {
+          var last = routeParts[len(routeParts) - 1];
+          if last != "manifest" {
+            ctx.SendFile("public/index.html")
+            return;
+          }
+        }
         fsHandler(ctx)
     }
   }
