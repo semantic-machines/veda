@@ -661,7 +661,7 @@ v-fs:AttributiveSearchTemplate
         }
         file.name = name;
         unique[file.name] = true;
-        $("[href=" + veda.Util.escape4$(file.url) + "]", resultTable).attr("href", "./files/" + file.name).text(file.name);
+        $("[href=" + veda.Util.escape4$(file.url) + "]", resultTable).attr("href", "/files/" + file.name).text(file.name);
         folder.file(file.name, file);
       });
       var registry = exportTable(resultTable.get(0), individual["rdfs:label"].join(", "), "blob");
