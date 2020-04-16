@@ -146,11 +146,19 @@ veda.Module(function (veda) { "use strict";
     .then(function (welcome) {
       // Router function
       riot.route( function (hash) {
-        if ( !hash ) { return welcome.present("#main"); }
-        if ( hash.indexOf("#/") < 0 ) { return; }
+        if (typeof hash === "string") {
+          var hash_index = hash.indexOf("#");
+          if (hash_index >= 0) {
+            hash = hash.substring(hash_index);
+          } else {
+            return welcome.present();
+          }
+        } else {
+          return welcome.present();
+        }
         var tokens = decodeURI(hash).slice(2).split("/"),
             uri = tokens[0],
-            container = tokens[1] || "#main",
+            container = tokens[1],
             template = tokens[2],
             mode = tokens[3],
             extra = tokens[4];
@@ -180,12 +188,25 @@ veda.Module(function (veda) { "use strict";
           riot.route("#/" + welcome.id);
         }
       });
-      riot.route(location.hash);
+    })
+
+    .then(function () {
+      return veda.Backend.loadFile("./manifest")
+        .then(JSON.parse)
+        .then(function (manifest) {
+          return manifest.start_url;
+        })
+        .then(riot.route)
+        .catch(function (err) {
+          console.log(err);
+          riot.route();
+        });
     })
 
     .catch( function (error) {
       var notify = new veda.Notify();
       notify("danger", error);
+      riot.route();
     });
 
   });
