@@ -2032,35 +2032,68 @@
   }
 
   function resizeImage (image, maxWidth) {
-    if (image.width <= maxWidth) {
-      return image;
-    }
-    var canvas = document.createElement('canvas'),
-        ctx = canvas.getContext("2d"),
-        oc = document.createElement('canvas'),
-        octx = oc.getContext('2d');
-    canvas.width = maxWidth;
-    canvas.height = canvas.width * image.height / image.width;
-    var cur = {
-      width: Math.floor(image.width * 0.5),
-      height: Math.floor(image.height * 0.5)
-    }
-    oc.width = cur.width;
-    oc.height = cur.height;
-    octx.drawImage(image, 0, 0, cur.width, cur.height);
-    while (cur.width * 0.5 > maxWidth) {
-      cur = {
-        width: Math.floor(cur.width * 0.5),
-        height: Math.floor(cur.height * 0.5)
-      };
-      octx.drawImage(oc, 0, 0, cur.width * 2, cur.height * 2, 0, 0, cur.width, cur.height);
-    }
-    ctx.drawImage(oc, 0, 0, cur.width, cur.height, 0, 0, canvas.width, canvas.height);
-    var resizedSrc = canvas.toDataURL("image/jpeg");
-    var resized = new Image();
-    resized.src = resizedSrc;
-    return resized;
+    return new Promise(function (resolve, reject) {
+      if (image.width <= maxWidth) {
+        resolve(image);
+      } else {
+        var temp = $("<div></div>").append(image);
+        var cropper = new Cropper(image, {
+          autoCrop: false,
+          ready(event) {
+            console.log("Crop ready");
+            var ratio = image.height / image.width;
+            var resized = new Image();
+            resized.src = cropper.getCroppedCanvas({
+              maxWidth: maxWidth,
+              maxHeight: Math.floor(maxWidth * ratio),
+            }).toDataURL("image/jpeg");
+            resolve(resized);
+            cropper.destroy();
+          }
+        });
+      }
+    });
   }
+
+  function cropImage(imageForCrop, ratio){
+    var modal = $( $("#confirm-modal-template").html() );
+    modal.modal();
+    $("body").append(modal);
+    var container = $(".modal-body", modal);
+    imageForCrop.style.cssText = "display:block; width:100%";
+    var temp = $("<div></div>").append(imageForCrop);
+    container.append(temp);
+
+    var cropper = new Cropper(imageForCrop, {
+      aspectRatio: ratio,
+      movable: false,
+      rotable: false,
+      scalable: false,
+      ready(event) {
+        console.log("Crop ready");
+      }
+    });
+
+    return new Promise(function (resolve, reject) {
+      $(".modal-footer > .ok", modal).click(function () {
+        var img = new Image();
+        img.src = cropper.getCroppedCanvas({
+          maxWidth: 900,
+          maxHeight: Math.floor(900*ratio),
+        }).toDataURL("image/jpeg");;
+        resolve(img);
+        cropper.destroy();
+      });
+      $(".modal-footer > .cancel", modal).click(function () { resolve(false); });
+      modal.on("hidden.bs.modal", function () {
+        modal.remove();
+        resolve(false);
+        cropper.destroy();
+      });
+    });
+  };
+
+
 
   $.fn.veda_file = function( options ) {
     var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
@@ -2075,7 +2108,9 @@
         rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
         range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
         isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
-        accept = this.attr("accept");
+        accept = this.attr("accept"),
+        maxWidth = this.data("max-width") || 2048,
+        targetRatio = this.data("ratio");
 
     if (!isSingle) { fileInput.attr("multiple", "multiple"); }
     if (accept) { fileInput.attr("accept", accept); }
@@ -2147,15 +2182,30 @@
         if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|bmp|svg)$/i).test(file.name) ) {
           loadImage(file)
           .then(function (image) {
-            var resized = resizeImage(image, 2048);
-            var thumbnail = resizeImage(image, 256);
-            fileIndividual.image = resized;
-            createFileIndividual(thumbnail, "thumbnail-" + fileName, fileIndividual)
-            .then(function (thumbnailIndividual) {
-              thumbnailIndividual.image = thumbnail;
-              fileIndividual["v-s:thumbnail"] = [ thumbnailIndividual ];
-              resolve(fileIndividual);
-            });
+            if (targetRatio) {
+              var curRatio =  image.height / image.width;
+              console.log("curRatio: ", curRatio);
+              if ( !((targetRatio - 0.2) < curRatio && curRatio < (targetRatio + 0.2)) ) {
+                return cropImage(image, targetRatio);
+              };
+            };
+            return image;
+          }).then(function(image) {
+            if (image === false) {
+              reject("Cropper canceled");
+            } else {
+              return resizeImage(image, maxWidth).then(function(resized) {
+                file = resized;
+                return resizeImage(resized, 256);
+              }).then(function(thumbnail) {
+                createFileIndividual(thumbnail, "thumbnail-" + fileName, fileIndividual)
+                .then(function (thumbnailIndividual) {
+                  //thumbnailIndividual.image = thumbnail;
+                  fileIndividual["v-s:thumbnail"] = [ thumbnailIndividual ];
+                  resolve(fileIndividual);
+                });
+              });
+            };
           });
         } else {
           resolve(fileIndividual);
@@ -2180,6 +2230,7 @@
     this.append(control);
     return this;
   };
+
   $.fn.veda_file.defaults = {
     template: $("#file-control-template").html()
   };
