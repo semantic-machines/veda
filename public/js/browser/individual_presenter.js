@@ -696,14 +696,18 @@ veda.Module(function (veda) { "use strict";
         } else {
           control.addClass("has-error");
           var explanation;
-          var causesPromises = validation[property_uri].cause.map(function (cause_uri) {
-            return new veda.IndividualModel(cause_uri).load();
-          });
-          Promise.all(causesPromises).then(function (causes) {
-            explanation = causes.map(function (cause) {
-              return cause["rdfs:comment"].join(", ");
-            }).join("\n");
-          });
+          if (validation[property_uri].message) {
+            explanation = validation[property_uri].message;
+          } else {
+            var causesPromises = validation[property_uri].cause.map(function (cause_uri) {
+              return new veda.IndividualModel(cause_uri).load();
+            });
+            Promise.all(causesPromises).then(function (causes) {
+              explanation = causes.map(function (cause) {
+                return cause["rdfs:comment"].join(", ");
+              }).join("\n");
+            });  
+          }
           control.popover({
             content: function () {
               return explanation;
