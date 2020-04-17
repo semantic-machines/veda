@@ -2,12 +2,26 @@
 pub mod common;
 pub mod formats;
 
-use std::collections::HashMap;
-
 use crate::common::*;
 use crate::formats::*;
+use std::collections::HashMap;
 
-pub type RightSet = HashMap<String, Right>;
+#[derive(Debug)]
+pub struct TagCount {
+    tag: char,
+    count: u16,
+}
+
+impl TagCount {
+    fn new(tag: char, val: &str) -> Self {
+        let count = val.parse::<u16>().unwrap_or_default();
+
+        Self {
+            tag,
+            count,
+        }
+    }
+}
 
 pub struct Right {
     pub id: String,
@@ -15,6 +29,7 @@ pub struct Right {
     pub marker: char,
     pub is_deleted: bool,
     pub level: u8,
+    pub counters: Vec<TagCount>,
 }
 
 impl Right {
@@ -25,9 +40,12 @@ impl Right {
             marker: 0 as char,
             is_deleted: false,
             level: 0,
+            counters: vec![],
         }
     }
 }
+
+pub type RightSet = HashMap<String, Right>;
 
 pub struct AzContext<'a> {
     id: &'a str,

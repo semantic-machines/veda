@@ -1,45 +1,56 @@
-use crate::common::Access;
-use crate::{Right, RightSet};
+use crate::common::*;
+use crate::{Right, RightSet, TagCount};
 
 pub const M_IS_EXCLUSIVE: char = 'X';
 pub const M_IGNORE_EXCLUSIVE: char = 'N';
 
-#[derive(Debug)]
-pub struct TagCount {
-    tag: char,
-    count: u16,
-}
-
-impl TagCount {
-    fn new(tag: char, val: &str) -> Self {
-        let count = val.parse::<u16>().unwrap_or_default();
-
-        println!("{:?} {:?}", tag, count);
-
-        Self {
-            tag,
-            count,
-        }
+fn access_from_char(c: char) -> Option<Access> {
+    match c {
+        'M' => Some(Access::CanCreate),
+        'R' => Some(Access::CanRead),
+        'U' => Some(Access::CanUpdate),
+        'P' => Some(Access::CanDelete),
+        'm' => Some(Access::CantCreate),
+        'r' => Some(Access::CantRead),
+        'u' => Some(Access::CantUpdate),
+        'p' => Some(Access::CantDelete),
+        _ => None,
     }
 }
 
-fn decode_value_v2(value: &str, rr: &mut Right, with_count: bool) -> Vec<TagCount> {
+fn access8_to_char(a: u8) -> Option<char> {
+    match a {
+        1 => Some('M'),
+        2 => Some('R'),
+        4 => Some('U'),
+        8 => Some('P'),
+        16 => Some('m'),
+        32 => Some('r'),
+        64 => Some('u'),
+        128 => Some('p'),
+        _ => None,
+    }
+}
+
+fn decode_value_v2(value: &str, rr: &mut Right, with_count: bool) {
     let mut access = 0;
 
     let mut tags_counters = vec![];
     let mut tag: Option<char> = None;
     let mut val = String::new();
     for c in value.chars() {
-        if c == 'C' || c == 'R' || c == 'U' || c == 'D' || c == 'c' || c == 'r' || c == 'u' || c == 'd' || c == M_IS_EXCLUSIVE || c == M_IGNORE_EXCLUSIVE {
+        if c == 'M' || c == 'R' || c == 'U' || c == 'P' || c == 'm' || c == 'r' || c == 'u' || c == 'p' || c == M_IS_EXCLUSIVE || c == M_IGNORE_EXCLUSIVE {
             if c == M_IS_EXCLUSIVE || c == M_IGNORE_EXCLUSIVE {
                 rr.marker = c;
             } else {
-                access |= Access::from_char(c) as u8;
+                if let Some(a) = access_from_char(c) {
+                    access |= a as u8;
+                }
             }
 
             if with_count {
                 if let Some(t) = tag {
-                    tags_counters.push(TagCount::new(t, &val));
+                    rr.counters.push(TagCount::new(t, &val));
                 }
             }
 
@@ -59,7 +70,6 @@ fn decode_value_v2(value: &str, rr: &mut Right, with_count: bool) -> Vec<TagCoun
     }
 
     rr.access = access as u8;
-    tags_counters
 }
 
 fn decode_value_v1(value: &str, rr: &mut Right) {
@@ -75,7 +85,7 @@ fn decode_value_v1(value: &str, rr: &mut Right) {
             match c.to_digit(16) {
                 Some(v) => access |= v << shift,
                 None => {
-                    eprintln!("ERR! rights_from_string, fail parse, access is not hex digit {}", value);
+                    eprintln!("ERR! decode_value_v1, fail parse, access is not hex digit {}", value);
                     continue;
                 }
             }
@@ -103,15 +113,19 @@ where
             let key = tokens[idx];
             let value = tokens[idx + 1];
 
-            let mut rr = Right::new(key);
+            if !value.is_empty() {
+                let mut rr = Right::new(key);
 
-            if value.len() < 3 {
-                decode_value_v1(value, &mut rr);
-            } else {
-                decode_value_v2(value, &mut rr, false);
+                if access_from_char(value.chars().next().unwrap()).is_none() {
+                    decode_value_v1(value, &mut rr);
+                } else {
+                    decode_value_v2(value, &mut rr, false);
+                }
+
+                //println!("{} -> {}", value, access_to_pretty_string(rr.access));
+
+                drain(key, rr);
             }
-
-            drain(key, rr);
         } else {
             break;
         }
@@ -145,6 +159,34 @@ fn encode_value_v1(right: &Right, outbuff: &mut String) {
     }
 }
 
+fn encode_value_v2(right: &Right, outbuff: &mut String) {
+    let mut set_access = 0;
+    for t in right.counters.iter() {
+        if let Some(c) = access_from_char(t.tag) {
+            set_access = set_access | c as u8;
+        }
+
+        outbuff.push(t.tag);
+        if t.count > 0 {
+            outbuff.push_str(&t.count.to_string());
+        }
+    }
+
+    for a in ACCESS_FULL_LIST.iter() {
+        if a & right.access & set_access == 0 {
+            if let Some(c) = access8_to_char(a & right.access) {
+                outbuff.push(c);
+            }
+        }
+    }
+
+    if right.marker == M_IS_EXCLUSIVE || right.marker == M_IGNORE_EXCLUSIVE {
+        outbuff.push(right.marker);
+    }
+
+    //println!("{} -> {}", access_to_pretty_string(right.access), outbuff)
+}
+
 pub fn encode_rightset(new_rights: RightSet) -> String {
     let mut outbuff = String::new();
 
@@ -154,7 +196,11 @@ pub fn encode_rightset(new_rights: RightSet) -> String {
                 outbuff.push_str(&right.id);
                 outbuff.push(';');
 
-                encode_value_v1(right, &mut outbuff);
+                if right.access == 0 {
+                    encode_value_v1(right, &mut outbuff);
+                } else {
+                    encode_value_v2(right, &mut outbuff);
+                }
 
                 outbuff.push(';');
             }

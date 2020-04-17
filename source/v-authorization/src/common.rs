@@ -7,13 +7,13 @@ pub const PERMISSION_PREFIX: &str = "P";
 pub const FILTER_PREFIX: &str = "F";
 pub const MEMBERSHIP_PREFIX: &str = "M";
 pub static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
+pub static ACCESS_FULL_LIST: [u8; 8] = [1, 2, 4, 8, 16, 32, 64, 128];
 pub static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 
 /// Битовые поля для прав
+#[derive(PartialEq)]
 #[repr(u8)]
 pub enum Access {
-    None = 0,
-
     /// Создание
     CanCreate = 1u8,
 
@@ -37,30 +37,6 @@ pub enum Access {
 
     /// Запрет удаления
     CantDelete = 128u8,
-}
-
-impl Access {
-    pub fn from_char(c: char) -> Access {
-        if c == 'C' {
-            return Access::CanCreate;
-        } else if c == 'R' {
-            return Access::CanRead;
-        } else if c == 'U' {
-            return Access::CanUpdate;
-        } else if c == 'D' {
-            return Access::CanDelete;
-        } else if c == 'c' {
-            return Access::CantCreate;
-        } else if c == 'r' {
-            return Access::CantRead;
-        } else if c == 'u' {
-            return Access::CantUpdate;
-        } else if c == 'd' {
-            return Access::CantDelete;
-        }
-
-        Access::None
-    }
 }
 
 pub trait Storage {
@@ -179,6 +155,7 @@ pub(crate) fn get_resource_groups(
                         marker: new_group_marker,
                         is_deleted: group.is_deleted,
                         level,
+                        counters: vec![],
                     },
                 );
             }

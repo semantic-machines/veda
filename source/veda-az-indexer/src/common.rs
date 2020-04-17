@@ -117,6 +117,7 @@ pub fn update_right_set(
                         marker,
                         is_deleted,
                         level: 0,
+                        counters: vec![]
                     },
                 );
             }
