@@ -13,9 +13,10 @@ import { Selector, t } from 'testcafe';
       .setNativeDialogHandler(() => true)
       .expect(Selector('#user-info').innerText).contains('Администратор2 .')
       .navigateTo( pageForNavigateFromConfig )
-      .wait(3000)
+      .wait(2000)
       .typeText('veda-control#comment', timeStamp)
       .click('button#search-button')
+      .wait(1000)
       .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       //ccus init timeout
       .wait(1000)

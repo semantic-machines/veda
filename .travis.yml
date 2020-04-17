@@ -46,8 +46,8 @@ script:
   - travis_wait 3 grunt test --stack --verbose
   - travis_wait 6 testcafe chrome qa/testcafe/testLogin.js --screenshots screens --screenshots-on-fails screens --speed 0.8
   - travis_wait 6 testcafe chrome qa/testcafe/testPerson.js --screenshots screens --screenshots-on-fails screens --speed 0.7
-  - travis_wait 6 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.6
   - travis_wait 6 testcafe chrome qa/testcafe/testLanguage.js --screenshots screens --screenshots-on-fails screens --speed 0.8
+  - travis_wait 6 testcafe chrome qa/testcafe/testComment.js --screenshots screens --screenshots-on-fails screens --speed 0.6
   - travis_wait 6 testcafe chrome qa/testcafe/testSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.8
   - travis_wait 6 testcafe chrome qa/testcafe/testCreatingNetInterface.js --screenshots screens --screenshots-on-fails screens --speed 0.8
   - travis_wait 6 testcafe chrome qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens --speed 0.7
