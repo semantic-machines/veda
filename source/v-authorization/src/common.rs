@@ -6,9 +6,9 @@ use std::collections::HashMap;
 pub const PERMISSION_PREFIX: &str = "P";
 pub const FILTER_PREFIX: &str = "F";
 pub const MEMBERSHIP_PREFIX: &str = "M";
-pub static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
-pub static ACCESS_FULL_LIST: [u8; 8] = [1, 2, 4, 8, 16, 32, 64, 128];
-pub static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
+pub static ACCESS_8_LIST: [u8; 4] = [1, 2, 4, 8];
+pub static ACCESS_8_FULL_LIST: [u8; 8] = [1, 2, 4, 8, 16, 32, 64, 128];
+pub static ACCESS_PREDICATE_LIST: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 
 /// Битовые поля для прав
 #[derive(PartialEq)]
@@ -155,7 +155,7 @@ pub(crate) fn get_resource_groups(
                         marker: new_group_marker,
                         is_deleted: group.is_deleted,
                         level,
-                        counters: vec![],
+                        counters: HashMap::default(),
                     },
                 );
             }
