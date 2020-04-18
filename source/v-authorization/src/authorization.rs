@@ -6,30 +6,13 @@ use crate::common::*;
 use crate::formats::*;
 use std::collections::HashMap;
 
-#[derive(Debug)]
-pub struct TagCount {
-    tag: char,
-    count: u16,
-}
-
-impl TagCount {
-    fn new(tag: char, val: &str) -> Self {
-        let count = val.parse::<u16>().unwrap_or_default();
-
-        Self {
-            tag,
-            count,
-        }
-    }
-}
-
 pub struct Right {
     pub id: String,
     pub access: u8,
     pub marker: char,
     pub is_deleted: bool,
     pub level: u8,
-    pub counters: Vec<TagCount>,
+    pub counters: HashMap<char, u16>,
 }
 
 impl Right {
@@ -40,7 +23,7 @@ impl Right {
             marker: 0 as char,
             is_deleted: false,
             level: 0,
-            counters: vec![],
+            counters: HashMap::default(),
         }
     }
 }
@@ -126,7 +109,7 @@ fn authorize_obj_group(
                         permission.access
                     };
 
-                    for i_access in ACCESS_LIST.iter() {
+                    for i_access in ACCESS_8_LIST.iter() {
                         let access = *i_access;
                         if (request_access & access & obj_restriction_access & subj_restriction_access) != 0 {
                             calc_bits = access & permission_access;
@@ -176,7 +159,7 @@ fn authorize_obj_group(
                                 }
 
                                 if trace.is_acl {
-                                    print_to_trace_acl(trace, format!("{};{};{}\n", object_group_id, subj_id, ACCESS_LIST_PREDICATES[*i_access as usize]));
+                                    print_to_trace_acl(trace, format!("{};{};{}\n", object_group_id, subj_id, ACCESS_PREDICATE_LIST[*i_access as usize]));
                                 }
                             }
                         }
