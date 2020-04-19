@@ -67,7 +67,7 @@ pub fn update_counters(counters: &mut HashMap<char, u16>, prev_access: u8, cur_a
                     }
                 }
             } else {
-                if out_access & check_bit > 0 {
+                if !is_deleted && (out_access & check_bit > 0) {
                     counters.insert(*access_c, 1);
                 }
             }
@@ -206,11 +206,11 @@ fn encode_value_v2(right: &Right, outbuff: &mut String) {
     for (tag, count) in right.counters.iter() {
         if let Some(c) = access_from_char(*tag) {
             set_access = set_access | c as u8;
-        }
 
-        outbuff.push(*tag);
-        if *count > 1 {
-            outbuff.push_str(&count.to_string());
+            outbuff.push(*tag);
+            if *count > 1 {
+                outbuff.push_str(&count.to_string());
+            }
         }
     }
 
@@ -238,7 +238,7 @@ pub fn encode_rightset(new_rights: RightSet) -> String {
                 outbuff.push_str(&right.id);
                 outbuff.push(';');
 
-                if right.access == 0 {
+                if right.counters.is_empty() {
                     encode_value_v1(right, &mut outbuff);
                 } else {
                     encode_value_v2(right, &mut outbuff);

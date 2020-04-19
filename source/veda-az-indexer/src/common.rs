@@ -1,9 +1,9 @@
-use v_authorization::common::{Access};
-use v_authorization::formats::{decode_rec_to_rightset, encode_rightset, M_IGNORE_EXCLUSIVE, M_IS_EXCLUSIVE, update_counters};
+use std::collections::HashMap;
+use v_authorization::common::Access;
+use v_authorization::formats::{decode_rec_to_rightset, encode_rightset, update_counters, M_IGNORE_EXCLUSIVE, M_IS_EXCLUSIVE};
 use v_authorization::{Right, RightSet};
 use v_onto::individual::Individual;
 use v_storage::storage::{StorageId, VStorage};
-use std::collections::HashMap;
 
 pub struct Context {
     pub permission_statement_counter: u32,
@@ -11,8 +11,8 @@ pub struct Context {
     pub storage: VStorage,
 }
 
-fn get_access_from_individual (state: &mut Individual, default_access: u8) -> u8 {
-    let mut access= 0;
+fn get_access_from_individual(state: &mut Individual, default_access: u8) -> u8 {
+    let mut access = 0;
 
     if let Some(v) = state.get_first_bool("v-s:canCreate") {
         if v {
@@ -54,8 +54,8 @@ fn get_access_from_individual (state: &mut Individual, default_access: u8) -> u8
 }
 
 pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
-    let new_access = get_access_from_individual (new_state, default_access);
-    let prev_access = get_access_from_individual (prev_state, default_access);
+    let new_access = get_access_from_individual(new_state, default_access);
+    let prev_access = get_access_from_individual(prev_state, default_access);
 
     let is_deleted = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
 
@@ -81,7 +81,7 @@ pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual
         0 as char
     };
 
-    if is_deleted && resource.is_empty() && in_set.is_empty(){
+    if is_deleted && resource.is_empty() && in_set.is_empty() {
         update_right_set(new_state.get_id(), &prev_resource, &prev_in_set, marker, is_deleted, &use_filter, prefix, prev_access, new_access, ctx);
     } else {
         update_right_set(new_state.get_id(), &resource, &in_set, marker, is_deleted, &use_filter, prefix, prev_access, new_access, ctx);
@@ -121,12 +121,12 @@ pub fn update_right_set(
                 rr.is_deleted = is_deleted;
                 rr.marker = marker;
                 if is_deleted {
-                    rr.access = update_counters(&mut rr.counters, prev_access, rr.access, is_deleted);
-                    if rr.access != 0 {
+                    rr.access = update_counters(&mut rr.counters, prev_access, rr.access | new_access, is_deleted);
+                    if rr.access != 0 && !rr.counters.is_empty() {
                         rr.is_deleted = false;
                     }
                 } else {
-                    rr.access = update_counters(&mut rr.counters, prev_access, new_access, is_deleted);
+                    rr.access = update_counters(&mut rr.counters, prev_access, rr.access | new_access, is_deleted);
                 }
             } else {
                 new_right_set.insert(
@@ -137,7 +137,7 @@ pub fn update_right_set(
                         marker,
                         is_deleted,
                         level: 0,
-                        counters: HashMap::default()
+                        counters: HashMap::default(),
                     },
                 );
             }
