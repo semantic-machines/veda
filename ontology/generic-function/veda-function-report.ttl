@@ -123,12 +123,13 @@ v-s:ReportManagementTemplate
           personalReport["rdfs:label"] = [ personalLabel ];
           var reportBlank = individual.hasValue("v-s:reportBlank") ? individual["v-s:reportBlank"][0] : undefined;
           if (reportBlank && reportBlank.object) {
-            return reportBlank.clone().then(function (personalReportBlank) {
-              personalReport["v-s:reportBlank"] = [ personalReportBlank ];
-              personalReportBlank["rdfs:isDefinedBy"] = [];
+            return reportBlank.clone()
+            .then(function (personalReportBlank) {
               personalReportBlank.object = reportBlank.object;
-              personalReportBlank.updateBlank();
-              personalReportBlank.save();
+              return personalReportBlank.updateBlank();
+            })
+            .then(function (personalReportBlank) {
+              personalReport["v-s:reportBlank"] = [ personalReportBlank ];
               return personalReport.save();
             });
           } else {
@@ -163,9 +164,6 @@ v-s:ReportManagementTemplate
         var reportBlank = individual.hasValue("v-s:reportBlank") ? individual["v-s:reportBlank"][0] : undefined;
         if (reportBlank && reportBlank.object) {
           reportBlank.updateBlank()
-          .then(function () {
-            reportBlank.save()
-          })
           .then(function () {
             return new veda.IndividualModel("v-s:ReportSuccessfullyUpdated").load();
           })

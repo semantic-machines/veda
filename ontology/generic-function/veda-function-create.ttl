@@ -173,95 +173,90 @@ var stopList = [
 
 this.initBlank = function (blankObject) {
   var blank = this;
-  return new Promise(function (resolve, reject) {
-    if (blankObject) {
-      blank.object = blankObject;
+  if (blankObject) {
+    blank.object = blankObject;
+  }
+  if (blank.object) {
+    return Promise.resolve(blank.object);
+  }
+  blank.object = new veda.IndividualModel();
+  blank.object["rdf:type"] = blank["v-fc:targetType"].slice(0);
+  blank.object.one("afterSave afterReset", function () {
+    delete blank.object;
+  });
+  var relations = Object.keys(blank.properties).filter(function (property_uri) {
+    if ( stopList.indexOf(property_uri) >= 0 ) { return false; }
+    if ( blank.hasValue(property_uri) && blank.get(property_uri)[0] instanceof veda.IndividualModel) {
+      return true;
+    } else {
+      blank.object.set(property_uri, blank.get(property_uri).slice(0));
+      return false;
     }
-    if (blank.object) {
-      return resolve(blank.object);
-    }
-    blank.object = new veda.IndividualModel();
-    blank.object["rdf:type"] = blank["v-fc:targetType"].slice(0);
-    blank.object.one("afterSave afterReset", function () {
-      delete blank.object;
+  });
+  var relations_done_promises = relations.map(function (property_uri) {
+    var values_promises = blank.get(property_uri).map(function (value) {
+      return value.load();
     });
-    var relations = Object.keys(blank.properties).filter(function (property_uri) {
-      if ( stopList.indexOf(property_uri) >= 0 ) { return false; }
-      if ( blank.hasValue(property_uri) && blank.get(property_uri)[0] instanceof veda.IndividualModel) {
-        return true;
-      } else {
-        blank.object.set(property_uri, blank.get(property_uri).slice(0));
-        return false;
-      }
-    });
-    var relations_done_promises = relations.map(function (property_uri) {
-      var values_promises = blank.get(property_uri).map(function (value) {
-        return value.load();
-      });
-      return Promise.all(values_promises).then(function (values) {
-        var result_values_promises = values.map(function (value) {
-          if (value.hasValue("rdf:type", "v-fc:Blank")) {
-            return value.initBlank().then(function (blankObject) {
-              blankObject.is("v-s:Embedded").then(function (isEmbedded) {
-                if ( isEmbedded && property_uri !== "v-s:parent" ) {
-                  blankObject["v-s:parent"] = [ blank.object ];
-                }
-              });
-              return blankObject;
+    return Promise.all(values_promises).then(function (values) {
+      var result_values_promises = values.map(function (value) {
+        if (value.hasValue("rdf:type", "v-fc:Blank")) {
+          return value.initBlank().then(function (blankObject) {
+            blankObject.is("v-s:Embedded").then(function (isEmbedded) {
+              if ( isEmbedded && property_uri !== "v-s:parent" ) {
+                blankObject["v-s:parent"] = [ blank.object ];
+              }
             });
-          } else {
-            return value;
-          }
-        });
-        return Promise.all(result_values_promises).then(function (result_values) {
-          blank.object.set(property_uri, result_values);
-        });
+            return blankObject;
+          });
+        } else {
+          return value;
+        }
+      });
+      return Promise.all(result_values_promises).then(function (result_values) {
+        blank.object.set(property_uri, result_values);
       });
     });
-    Promise.all(relations_done_promises).then(function () {
-      resolve(blank.object);
-    });
+  });
+  return Promise.all(relations_done_promises).then(function () {
+    return blank.object;
   });
 }
 
 this.updateBlank = function () {
   var blank = this;
-  return new Promise(function (resolve, reject) {
-    var relations = Object.keys(blank.object.properties).filter(function (property_uri) {
-      if ( stopList.indexOf(property_uri) >= 0 ) { return false; }
-      if ( blank.object.hasValue(property_uri) && blank.object.get(property_uri)[0] instanceof veda.IndividualModel ) {
-        blank[property_uri] = [];
-        return true;
-      } else {
-        blank.set(property_uri, blank.object.get(property_uri).slice(0));
-      }
-    });
-    var relations_done_promises = relations.map(function (property_uri) {
-      return blank.object.get(property_uri).map(function (value) {
-        return value.is("v-s:Embedded").then(function (isEmbedded) {
-          if ( isEmbedded && value.hasValue("v-s:parent", blank.object) ) {
-            return value.clone().then(function (embeddedBlank) {
-              var types = embeddedBlank["rdf:type"];
-              embeddedBlank["v-fc:targetType"] = types;
-              embeddedBlank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-              blank.addValue(property_uri, embeddedBlank);
-              return embeddedBlank.init().then(function (embeddedBlank) {
-                return embeddedBlank.initBlank(value);
-              }).then(function () {
-                return embeddedBlank.updateBlank();
-              });
+  var relations = Object.keys(blank.object.properties).filter(function (property_uri) {
+    if ( stopList.indexOf(property_uri) >= 0 ) { return false; }
+    if ( blank.object.hasValue(property_uri) && blank.object.get(property_uri)[0] instanceof veda.IndividualModel ) {
+      blank[property_uri] = [];
+      return true;
+    } else {
+      blank.set(property_uri, blank.object.get(property_uri).slice(0));
+    }
+  });
+  var relations_done_promises = relations.map(function (property_uri) {
+    return blank.object.get(property_uri).map(function (value) {
+      return value.is("v-s:Embedded").then(function (isEmbedded) {
+        if ( isEmbedded && value.hasValue("v-s:parent", blank.object) ) {
+          return value.clone().then(function (embeddedBlank) {
+            var types = embeddedBlank["rdf:type"];
+            embeddedBlank["v-fc:targetType"] = types;
+            embeddedBlank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+            blank.addValue(property_uri, embeddedBlank);
+            return embeddedBlank.init().then(function (embeddedBlank) {
+              return embeddedBlank.initBlank(value);
+            }).then(function () {
+              return embeddedBlank.updateBlank();
             });
-          } else {
-            blank.set(property_uri, blank.object.get(property_uri));
-          }
-        });
+          });
+        } else {
+          return blank.set(property_uri, blank.object.get(property_uri));
+        }
       });
     });
-    Promise.all(relations_done_promises).then(function () {
-      return blank.save();
-    }).then(function (blank) {
-      resolve(blank);
-    });
+  });
+  var relations_done_promises_flat = veda.Util.flatten(relations_done_promises);
+  return Promise.all(relations_done_promises_flat).then(function () {
+    return blank.save();
   });
 }
 //# sourceURL=v-fc:BlankModel
@@ -382,28 +377,32 @@ v-fc:CreateManagementTemplate
           personalCreate["rdfs:label"] = [ personalLabel ];
           var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
           if (createBlank && createBlank.object) {
-            return createBlank.clone().then(function(personalCreateBlank) {
+            return createBlank.clone()
+            .then(function(personalCreateBlank) {
               personalCreateBlank.object = createBlank.object;
               return personalCreateBlank.updateBlank();
-            }).then(function(personalCreateBlank) {
-              personalCreateBlank["rdfs:isDefinedBy"] = [];
-              personalCreateBlank.save();
+            })
+            .then(function(personalCreateBlank) {
               personalCreate["v-fc:hasBlank"] = [ personalCreateBlank ];
               return personalCreate.save();
             });
           } else {
             return personalCreate.save();
           }
-        }).then(function (personalCreate) {
+        })
+        .then(function (personalCreate) {
           return veda.user.aspect.load().then(function (aspect) {
             aspect.addValue("v-s:hasCreate", personalCreate);
             return aspect.save();
-          }).then(function() {
-            return new veda.IndividualModel("v-fc:BlankSuccessfullySaved").load();
-          }).then(function(message) {
-            notify("success", { message: message });
           });
-        }).catch(function (error) {
+        })
+        .then(function() {
+          return new veda.IndividualModel("v-fc:BlankSuccessfullySaved").load();
+        })
+        .then(function(message) {
+          notify("success", { message: message });
+        })
+        .catch(function (error) {
           notify("danger", { message: error });
         });
       });
@@ -417,13 +416,14 @@ v-fc:CreateManagementTemplate
       $(".action.update-create", template).click(function () {
         var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
         if (createBlank && createBlank.object) {
-          createBlank.updateBlank().then(function(blank) {
-            return blank.save();
-          }).then(function () {
+          createBlank.updateBlank()
+          .then(function () {
             return new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").load();
-          }).then(function (message) {
+          })
+          .then(function (message) {
             notify("success", { message: message});
-          }).catch(function (error) {
+          })
+          .catch(function (error) {
             notify("danger", { message: error });
           });
         }
