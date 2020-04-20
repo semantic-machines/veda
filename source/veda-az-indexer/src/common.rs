@@ -50,47 +50,57 @@ fn get_access_from_individual(state: &mut Individual) -> u8 {
 }
 
 pub fn index_right_sets(prev_state: &mut Individual, new_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
-    let is_deleted = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
+    let is_del = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
 
-    let mut new_access = get_access_from_individual(new_state);
-    let mut prev_access = get_access_from_individual(prev_state);
+    let mut new_acs = get_access_from_individual(new_state);
+    let mut pre_acs = get_access_from_individual(prev_state);
 
-    if new_access == 0 {
-        new_access = default_access;
+    if new_acs == 0 {
+        new_acs = default_access;
     }
 
-    if prev_access == 0 {
-        prev_access = default_access;
+    if pre_acs == 0 {
+        pre_acs = default_access;
     }
 
-    let prev_resc = prev_state.get_literals(p_resource).unwrap_or_default();
-    let prev_in_set = prev_state.get_literals(p_in_set).unwrap_or_default();
+    let pre_resc = prev_state.get_literals(p_resource).unwrap_or_default();
+    let pre_in_set = prev_state.get_literals(p_in_set).unwrap_or_default();
 
     let use_filter = new_state.get_first_literal("v-s:useFilter").unwrap_or_default();
 
-    let resource = new_state.get_literals(p_resource).unwrap_or_default();
+    let resc = new_state.get_literals(p_resource).unwrap_or_default();
     let in_set = new_state.get_literals(p_in_set).unwrap_or_default();
 
-    let ignore_exclusive = new_state.get_first_bool("v-s:ignoreExclusive").unwrap_or_default();
-    let is_exclusive = new_state.get_first_bool("v-s:isExclusive").unwrap_or_default();
+    let ignr_excl = new_state.get_first_bool("v-s:ignoreExclusive").unwrap_or_default();
+    let is_excl = new_state.get_first_bool("v-s:isExclusive").unwrap_or_default();
 
-    let marker = if is_exclusive {
+    let marker = if is_excl {
         M_IS_EXCLUSIVE
-    } else if ignore_exclusive {
+    } else if ignr_excl {
         M_IGNORE_EXCLUSIVE
     } else {
         0 as char
     };
 
-    if is_deleted {
-        add_or_sub_right_sets(new_state.get_id(), &use_filter, &resource, &in_set, &prev_resc, &prev_in_set, marker, prev_access, new_access, is_deleted, prefix, ctx);
+    let id = new_state.get_id();
+
+    if is_del {
+        add_or_sub_right_sets(id, &use_filter, &resc, &in_set, &pre_resc, &pre_in_set, marker, pre_acs, new_acs, is_del, prefix, ctx, &mut HashMap::new(), &Cache::None);
     } else {
-        if !prev_resc.is_empty() {
-            add_or_sub_right_sets(new_state.get_id(), &use_filter, &prev_resc, &prev_in_set, &vec![], &vec![], marker, prev_access, prev_access, true, prefix, ctx);
+        let mut cache = HashMap::new();
+        if !pre_resc.is_empty() {
+            add_or_sub_right_sets(id, &use_filter, &pre_resc, &pre_in_set, &vec![], &vec![], marker, pre_acs, pre_acs, true, prefix, ctx, &mut cache, &Cache::Write);
         }
 
-        add_or_sub_right_sets(new_state.get_id(), &use_filter, &resource, &in_set, &prev_resc, &prev_in_set, marker, prev_access, new_access, false, prefix, ctx);
+        add_or_sub_right_sets(id, &use_filter, &resc, &in_set, &pre_resc, &pre_in_set, marker, pre_acs, new_acs, false, prefix, ctx, &mut cache, &Cache::Read);
     }
+}
+
+#[derive(PartialEq, Debug)]
+enum Cache {
+    Write,
+    Read,
+    None,
 }
 
 fn add_or_sub_right_sets(
@@ -106,26 +116,28 @@ fn add_or_sub_right_sets(
     is_deleted: bool,
     prefix: &str,
     ctx: &mut Context,
+    cache: &mut HashMap<String, String>,
+    mode: &Cache,
 ) {
     let removed_resource = get_disappeared(&prev_resource, &resource);
     let removed_in_set = get_disappeared(&prev_in_set, &in_set);
 
     if is_deleted && resource.is_empty() && in_set.is_empty() {
-        update_right_set(id, &prev_resource, &prev_in_set, marker, is_deleted, &use_filter, prefix, prev_access, new_access, ctx);
+        update_right_set(id, &prev_resource, &prev_in_set, marker, is_deleted, &use_filter, prefix, prev_access, new_access, ctx, cache, mode);
     } else {
-        update_right_set(id, &resource, &in_set, marker, is_deleted, &use_filter, prefix, prev_access, new_access, ctx);
+        update_right_set(id, &resource, &in_set, marker, is_deleted, &use_filter, prefix, prev_access, new_access, ctx, cache, mode);
     }
 
     if !removed_resource.is_empty() {
-        update_right_set(id, &removed_resource, &in_set, marker, true, &use_filter, prefix, prev_access, new_access, ctx);
+        update_right_set(id, &removed_resource, &in_set, marker, true, &use_filter, prefix, prev_access, new_access, ctx, cache, mode);
     }
 
     if !removed_in_set.is_empty() {
-        update_right_set(id, &resource, &removed_in_set, marker, true, &use_filter, prefix, prev_access, new_access, ctx);
+        update_right_set(id, &resource, &removed_in_set, marker, true, &use_filter, prefix, prev_access, new_access, ctx, cache, mode);
     }
 }
 
-pub fn update_right_set(
+fn update_right_set(
     source_id: &str,
     resources: &[String],
     in_set: &[String],
@@ -136,6 +148,8 @@ pub fn update_right_set(
     prev_access: u8,
     new_access: u8,
     ctx: &mut Context,
+    cache: &mut HashMap<String, String>,
+    mode: &Cache,
 ) {
     for rs in resources.iter() {
         let key = prefix.to_owned() + filter + rs;
@@ -146,9 +160,15 @@ pub fn update_right_set(
         }
 
         let mut new_right_set = RightSet::new();
-        if let Some(prev_data_str) = ctx.storage.get_value(StorageId::Az, &key) {
-            debug!("PRE: {} {} {:?}", source_id, rs, prev_data_str);
+
+        if let Some(prev_data_str) = cache.get(&key) {
+            debug!("PRE(MEM): {} {} {:?}", source_id, rs, prev_data_str);
             decode_rec_to_rightset(&prev_data_str, &mut new_right_set);
+        } else {
+            if let Some(prev_data_str) = ctx.storage.get_value(StorageId::Az, &key) {
+                debug!("PRE(STORAGE): {} {} {:?}", source_id, rs, prev_data_str);
+                decode_rec_to_rightset(&prev_data_str, &mut new_right_set);
+            }
         }
 
         for in_set_id in in_set.iter() {
@@ -184,9 +204,13 @@ pub fn update_right_set(
             new_record = "X".to_string();
         }
 
-        debug!("NEW: {} {} {:?}", source_id, rs, new_record);
-
-        ctx.storage.put_kv(StorageId::Az, &key, &new_record);
+        if *mode == Cache::Write {
+            debug!("NEW(MEM): {} {} {:?}", source_id, rs, new_record);
+            cache.insert(key, new_record);
+        } else {
+            debug!("NEW(STORAGE): {} {} {:?}", source_id, rs, new_record);
+            ctx.storage.put_kv(StorageId::Az, &key, &new_record);
+        }
     }
 }
 
