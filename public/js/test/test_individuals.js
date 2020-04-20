@@ -2798,6 +2798,32 @@ for (i = 0; i < 1; i++) {
         check_rights_fail(assert, ticket1.id, doc2, [can_update]);
         check_rights_fail(assert, ticket1.id, doc2, [can_delete]);
 
+
+        // Check change permission rights
+
+        res = addRight(ticket_admin.id, [can_read, can_update, can_delete], user1, doc2);
+
+        var right5 = res[0];
+
+        assert.ok(res[1].result == 200);
+
+        Backend.wait_module(m_acl, res[1].op_id);
+
+        check_rights_success(assert, ticket1.id, doc2, [can_read]);
+        check_rights_success(assert, ticket1.id, doc2, [can_update]);
+        check_rights_success(assert, ticket1.id, doc2, [can_delete]);
+
+        delete right5["v-s:CanUpdate"];
+        delete right5["v-s:CanDelete"];
+
+        res = Backend.put_individual(ticket_admin.id, right5);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+        check_rights_success(assert, ticket1.id, doc2, [can_read]);
+        check_rights_fail(assert, ticket1.id, doc2, [can_update]);
+        check_rights_fail(assert, ticket1.id, doc2, [can_delete]);
+
     });
 
 }
