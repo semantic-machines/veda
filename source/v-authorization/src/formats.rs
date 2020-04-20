@@ -238,7 +238,9 @@ pub fn encode_rightset(new_rights: RightSet) -> String {
                 outbuff.push_str(&right.id);
                 outbuff.push(';');
 
-                if right.counters.is_empty() {
+                let summ_counters: u16 = right.counters.values().sum();
+
+                if summ_counters == 0 {
                     encode_value_v1(right, &mut outbuff);
                 } else {
                     encode_value_v2(right, &mut outbuff);
