@@ -2754,6 +2754,50 @@ for (i = 0; i < 1; i++) {
 
         check_rights_fail(assert, ticket1.id, doc1, [can_delete]);
 
+
+        // Check multiple permission update & remove
+
+        var doc2 = create_test_document2(ticket_admin)["@"];
+
+        var res;
+
+        res = addRight(ticket_admin.id, [can_read, can_update, can_delete], user1, doc2);
+
+        var right4 = res[0];
+
+        assert.ok(res[1].result == 200);
+
+        Backend.wait_module(m_acl, res[1].op_id);
+
+        res = Backend.put_individual(ticket_admin.id, right4);
+
+        assert.ok(res.result == 200);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+        res = Backend.put_individual(ticket_admin.id, right4);
+
+        assert.ok(res.result == 200);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+
+        check_rights_success(assert, ticket1.id, doc2, [can_read]);
+        check_rights_success(assert, ticket1.id, doc2, [can_update]);
+        check_rights_success(assert, ticket1.id, doc2, [can_delete]);
+
+
+        res = Backend.remove_individual(ticket_admin.id, right4["@"]);
+
+        assert.ok(res.result == 200);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+
+        check_rights_fail(assert, ticket1.id, doc2, [can_read]);
+        check_rights_fail(assert, ticket1.id, doc2, [can_update]);
+        check_rights_fail(assert, ticket1.id, doc2, [can_delete]);
+
     });
 
 }
