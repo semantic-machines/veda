@@ -11,7 +11,7 @@ pub struct Context {
     pub storage: VStorage,
 }
 
-fn get_access_from_individual(state: &mut Individual, default_access: u8) -> u8 {
+fn get_access_from_individual(state: &mut Individual) -> u8 {
     let mut access = 0;
 
     if let Some(v) = state.get_first_bool("v-s:canCreate") {
@@ -46,18 +46,26 @@ fn get_access_from_individual(state: &mut Individual, default_access: u8) -> u8 
         }
     }
 
-    if access == 0 {
-        access = default_access;
-    }
-
     access
 }
 
 pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
-    let new_access = get_access_from_individual(new_state, default_access);
-    let prev_access = get_access_from_individual(prev_state, default_access);
+    let mut new_access = get_access_from_individual(new_state);
+    let mut prev_access = get_access_from_individual(prev_state);
 
     let is_deleted = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
+
+    if !is_deleted && prev_access > 0 && new_access == prev_access {
+        return;
+    }
+
+    if new_access == 0 {
+        new_access = default_access;
+    }
+
+    if prev_access == 0 {
+        prev_access = default_access;
+    }
 
     let use_filter = new_state.get_first_literal("v-s:useFilter").unwrap_or_default();
 
