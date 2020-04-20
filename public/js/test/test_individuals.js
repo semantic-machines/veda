@@ -2813,8 +2813,8 @@ for (i = 0; i < 1; i++) {
         check_rights_success(assert, ticket1.id, doc2, [can_update]);
         check_rights_success(assert, ticket1.id, doc2, [can_delete]);
 
-        delete right5["v-s:CanUpdate"];
-        delete right5["v-s:CanDelete"];
+        delete right5["v-s:canUpdate"];
+        delete right5["v-s:canDelete"];
 
         res = Backend.put_individual(ticket_admin.id, right5);
 
