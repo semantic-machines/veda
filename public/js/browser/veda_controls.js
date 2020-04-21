@@ -185,20 +185,20 @@
     control.attr({
       "placeholder": individual.id
     }).on("change focusout", changeHandler);
-    
+
     function changeHandler() {
       if (control.val()) {
         individual.id = control.val();
       };
       console.log(individual.id);
     }
-    
+
     this.append(control);
     return this;
   };
   $.fn.veda_uri.defaults = {
-    template: $("#string-control-template").html()    
-  };  
+    template: $("#string-control-template").html()
+  };
 
   // Password input
   $.fn.veda_password = function( options ) {
@@ -1135,9 +1135,7 @@
           $(document).off("click", clickOutsideMenuHandler);
           $(document).off("keydown", arrowHandler);
         } else {
-          selected = selected.filter(function (value) {
-            return value !== suggestion;
-          }).concat(suggestion);
+          selected.push(suggestion);
         }
       }
       dblTimeout = setTimeout(function () {
@@ -2565,9 +2563,7 @@
             $(document).off("click", clickOutsideMenuHandler);
             $(document).off("keydown", arrowHandler);
           } else {
-            selected = selected.filter(function (value) {
-              return value !== suggestion;
-            }).concat(suggestion);
+            selected.push(suggestion);
           }
         }
         dblTimeout = setTimeout(function () {
