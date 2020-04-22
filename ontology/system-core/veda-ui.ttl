@@ -726,6 +726,37 @@ v-ui:StandardButtonsTemplate
   rdfs:comment "Actions"@en ;
   v-ui:template """
 <script>
+  $("#refresh", template).on("click", refresh);
+
+  function refresh() {
+    template.parent().closest("[resource]").find("[resource]").addBack("[resource]").each(function () {
+      var uri = $(this).attr("resource");
+      var resource = new veda.IndividualModel(uri);
+      resource.is("v-s:UserThing").then(function (isUserThing) {
+        if (isUserThing) { resource.reset(); }
+      });
+    });
+  }
+
+  var toRefresh;
+
+  function statusHandler(status) {
+    if ( status.line && status.ccus ) {
+      toRefresh = false;
+      $("#refresh", template).addClass("hidden");
+    } else if ( status.line && !status.ccus ) {
+      toRefresh = true;
+      $("#refresh", template).removeClass("hidden");
+    } else {
+      toRefresh = false;
+      $("#refresh", template).addClass("hidden");
+    }
+  }
+  veda.on("status", statusHandler);
+  template.one("remove", function () {
+    veda.off("status", statusHandler);
+  });
+
   // var allButtons = "send edit save cancel delete destroy journal journal-dms task rights";
   var defaultButtons = "send edit save cancel delete journal task";
   individual.rights.then(function (rights) {
@@ -754,11 +785,9 @@ v-ui:StandardButtonsTemplate
       template.parent().closest("[resource]").trigger(action);
     }
   });
-
   $("#cancel", template).on("click", function () {
     template.closest(".modal").modal("hide").remove();
   });
-
   $("#journal", template).on("click", function (e) {
     e.preventDefault();
     var journal_uri = individual.id + "j",
@@ -768,7 +797,7 @@ v-ui:StandardButtonsTemplate
         riot.route("#/" + journal_uri);
       } else {
         var journalEmpty = new veda.IndividualModel("v-s:JournalEmpty").load().then(function (journalEmpty) {
-          alert(journalEmpty["rdfs:label"].join(" "));
+          alert(journalEmpty.toString());
         });
       }
     });
@@ -788,32 +817,13 @@ v-ui:StandardButtonsTemplate
   $("#send", template).on("click", function (e) {
     veda.Util.send(individual, template.parent().closest("[resource]"));
   });
+  $("#edit", template).on("click", function (e) {
+    if (toRefresh) {
+      refresh();
+    }
+  });
   $("#rights", template).on("click", function () {
     veda.Util.showRights(individual);
-  });
-
-  $("#refresh", template).on("click", function () {
-    $("[resource]").each(function () {
-      var uri = $(this).attr("resource");
-      var resource = new veda.IndividualModel(uri);
-      resource.is("v-s:UserThing").then(function (is) {
-        if (is) { resource.reset(); }
-      });
-    });
-  });
-
-  function statusHandler(status) {
-    if ( status.line && status.ccus ) {
-      $("#refresh", template).addClass("hidden");
-    } else if ( status.line && !status.ccus ) {
-      $("#refresh", template).removeClass("hidden");
-    } else {
-      $("#refresh", template).addClass("hidden");
-    }
-  }
-  veda.on("status", statusHandler);
-  template.one("remove", function () {
-    veda.off("status", statusHandler);
   });
 
   // Standard tasks
