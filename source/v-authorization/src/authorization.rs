@@ -2,12 +2,9 @@
 pub mod common;
 pub mod formats;
 
-use std::collections::HashMap;
-
 use crate::common::*;
 use crate::formats::*;
-
-pub type RightSet = HashMap<String, Right>;
+use std::collections::HashMap;
 
 pub struct Right {
     pub id: String,
@@ -15,6 +12,7 @@ pub struct Right {
     pub marker: char,
     pub is_deleted: bool,
     pub level: u8,
+    pub counters: HashMap<char, u16>,
 }
 
 impl Right {
@@ -25,9 +23,12 @@ impl Right {
             marker: 0 as char,
             is_deleted: false,
             level: 0,
+            counters: HashMap::default(),
         }
     }
 }
+
+pub type RightSet = HashMap<String, Right>;
 
 pub struct AzContext<'a> {
     id: &'a str,
@@ -108,7 +109,7 @@ fn authorize_obj_group(
                         permission.access
                     };
 
-                    for i_access in ACCESS_LIST.iter() {
+                    for i_access in ACCESS_8_LIST.iter() {
                         let access = *i_access;
                         if (request_access & access & obj_restriction_access & subj_restriction_access) != 0 {
                             calc_bits = access & permission_access;
@@ -158,7 +159,7 @@ fn authorize_obj_group(
                                 }
 
                                 if trace.is_acl {
-                                    print_to_trace_acl(trace, format!("{};{};{}\n", object_group_id, subj_id, ACCESS_LIST_PREDICATES[*i_access as usize]));
+                                    print_to_trace_acl(trace, format!("{};{};{}\n", object_group_id, subj_id, ACCESS_PREDICATE_LIST[*i_access as usize]));
                                 }
                             }
                         }

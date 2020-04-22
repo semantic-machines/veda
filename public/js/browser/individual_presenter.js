@@ -10,6 +10,10 @@ veda.Module(function (veda) { "use strict";
 
     var toEmpty;
 
+    if (typeof container === "undefined" || container === "") {
+      container = "#main";
+    }
+
     if (typeof container === "string") {
       container = $(container);
       toEmpty = true;
@@ -511,22 +515,15 @@ veda.Module(function (veda) { "use strict";
           about.off(rel_uri, propertyModifiedHandler);
         });
 
-        var rendered = {};
-        var counter = 0;
-
         return propertyModifiedHandler(values, limit);
 
         function propertyModifiedHandler (values, limit_param) {
-          counter++;
           limit = limit_param || limit;
-          //relContainer.empty();
+          relContainer.empty();
           var templatesPromises = [];
           var i = 0, value;
           while( i < limit && (value = values[i]) ) {
-            if ( !(value.id in rendered) ) {
-              templatesPromises.push( renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded, false) );
-            }
-            rendered[value.id] = counter;
+            templatesPromises.push( renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded, false) );
             i++;
           }
           return Promise.all(templatesPromises).then(function (renderedTemplates) {
@@ -534,15 +531,6 @@ veda.Module(function (veda) { "use strict";
             if (limit < values.length && more) {
               relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
             }
-            relContainer.children().each(function () {
-              var that = $(this);
-              if ( that.hasClass("more") ) { return; }
-              var resource = that.attr("resource");
-              if (rendered[resource] !== counter) {
-                that.remove();
-                delete rendered[resource];
-              }
-            });
           });
         }
 
@@ -692,14 +680,18 @@ veda.Module(function (veda) { "use strict";
         } else {
           control.addClass("has-error");
           var explanation;
-          var causesPromises = validation[property_uri].cause.map(function (cause_uri) {
-            return new veda.IndividualModel(cause_uri).load();
-          });
-          Promise.all(causesPromises).then(function (causes) {
-            explanation = causes.map(function (cause) {
-              return cause["rdfs:comment"].join(", ");
-            }).join("\n");
-          });
+          if (validation[property_uri].message) {
+            explanation = validation[property_uri].message;
+          } else {
+            var causesPromises = validation[property_uri].cause.map(function (cause_uri) {
+              return new veda.IndividualModel(cause_uri).load();
+            });
+            Promise.all(causesPromises).then(function (causes) {
+              explanation = causes.map(function (cause) {
+                return cause["rdfs:comment"].join(", ");
+              }).join("\n");
+            });
+          }
           control.popover({
             content: function () {
               return explanation;

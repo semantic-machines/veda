@@ -1128,7 +1128,7 @@ for (i = 0; i < 1; i++) {
             //#1
             assert.ok(ticket_user1.id.length > 0);
 
-	    var now = newDate(new Date());
+      var now = newDate(new Date());
 
             var new_test_doc1_uri = "test14:" + guid();
             var new_test_doc1 = {
@@ -2615,7 +2615,7 @@ for (i = 0; i < 1; i++) {
         });
     */
 
-    
+
     QUnit.test("#051 test restrictions in subject groups", function (assert) {
         var ticket_admin = get_admin_ticket();
 
@@ -2672,5 +2672,158 @@ for (i = 0; i < 1; i++) {
         //#10
         check_rights_success(assert, ticket2.id, doc1, [can_delete]);
     });
-    
+
+    QUnit.test("#052 test rights counter", function (assert) {
+        var ticket_admin = get_admin_ticket();
+
+        var ticket1 = get_user1_ticket();
+
+        var user1 = ticket1.user_uri;
+
+        var doc1 = create_test_document1(ticket_admin)["@"];
+
+        var res;
+
+        // Right1 = R
+        res = addRight(ticket_admin.id, [can_read], user1, doc1);
+
+        var right1 = res[0];
+
+        assert.ok(res[1].result == 200);
+
+        Backend.wait_module(m_acl, res[1].op_id);
+
+        // Right2 = RU
+        res = addRight(ticket_admin.id, [can_read, can_update], user1, doc1);
+
+        var right2 = res[0];
+
+        assert.ok(res[1].result == 200);
+
+        Backend.wait_module(m_acl, res[1].op_id);
+
+        // Right3 = RUD
+        res = addRight(ticket_admin.id, [can_read, can_update, can_delete], user1, doc1);
+
+        var right3 = res[0];
+
+        assert.ok(res[1].result == 200);
+
+        Backend.wait_module(m_acl, res[1].op_id);
+
+
+        check_rights_success(assert, ticket1.id, doc1, [can_read]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_update]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_delete]);
+
+
+        res = Backend.remove_individual(ticket_admin.id, right1["@"]);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+
+        check_rights_success(assert, ticket1.id, doc1, [can_read]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_update]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_delete]);
+
+
+        res = Backend.remove_individual(ticket_admin.id, right2["@"]);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+
+        check_rights_success(assert, ticket1.id, doc1, [can_read]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_update]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_delete]);
+
+
+        res = Backend.remove_individual(ticket_admin.id, right3["@"]);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+
+        check_rights_fail(assert, ticket1.id, doc1, [can_read]);
+
+        check_rights_fail(assert, ticket1.id, doc1, [can_update]);
+
+        check_rights_fail(assert, ticket1.id, doc1, [can_delete]);
+
+
+        // Check multiple permission update & remove
+
+        var doc2 = create_test_document2(ticket_admin)["@"];
+
+        var res;
+
+        res = addRight(ticket_admin.id, [can_read, can_update, can_delete], user1, doc2);
+
+        var right4 = res[0];
+
+        assert.ok(res[1].result == 200);
+
+        Backend.wait_module(m_acl, res[1].op_id);
+
+        res = Backend.put_individual(ticket_admin.id, right4);
+
+        assert.ok(res.result == 200);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+        res = Backend.put_individual(ticket_admin.id, right4);
+
+        assert.ok(res.result == 200);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+
+        check_rights_success(assert, ticket1.id, doc2, [can_read]);
+        check_rights_success(assert, ticket1.id, doc2, [can_update]);
+        check_rights_success(assert, ticket1.id, doc2, [can_delete]);
+
+
+        res = Backend.remove_individual(ticket_admin.id, right4["@"]);
+
+        assert.ok(res.result == 200);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+
+        check_rights_fail(assert, ticket1.id, doc2, [can_read]);
+        check_rights_fail(assert, ticket1.id, doc2, [can_update]);
+        check_rights_fail(assert, ticket1.id, doc2, [can_delete]);
+
+
+        // Check change permission rights
+
+        res = addRight(ticket_admin.id, [can_read, can_update, can_delete], user1, doc2);
+
+        var right5 = res[0];
+
+        assert.ok(res[1].result == 200);
+
+        Backend.wait_module(m_acl, res[1].op_id);
+
+        check_rights_success(assert, ticket1.id, doc2, [can_read]);
+        check_rights_success(assert, ticket1.id, doc2, [can_update]);
+        check_rights_success(assert, ticket1.id, doc2, [can_delete]);
+
+        delete right5["v-s:canUpdate"];
+        delete right5["v-s:canDelete"];
+
+        res = Backend.put_individual(ticket_admin.id, right5);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+        check_rights_success(assert, ticket1.id, doc2, [can_read]);
+        check_rights_fail(assert, ticket1.id, doc2, [can_update]);
+        check_rights_fail(assert, ticket1.id, doc2, [can_delete]);
+
+    });
+
 }
