@@ -2055,7 +2055,7 @@
     });
   }
 
-  function cropImage(imageForCrop, ratio){
+  function cropImage(imageForCrop, ratio, maxWidth){
     var modal = $( $("#confirm-modal-template").html() );
     modal.modal();
     $("body").append(modal);
@@ -2063,9 +2063,9 @@
     imageForCrop.style.cssText = "display:block; width:100%";
     var temp = $("<div></div>").append(imageForCrop);
     container.append(temp);
-
+    //in templates ratio=h/w, in crop ratio=w/h
     var cropper = new Cropper(imageForCrop, {
-      aspectRatio: ratio,
+      aspectRatio: 1 / ratio,
       movable: false,
       rotable: false,
       scalable: false,
@@ -2078,8 +2078,8 @@
       $(".modal-footer > .ok", modal).click(function () {
         var img = new Image();
         img.src = cropper.getCroppedCanvas({
-          maxWidth: 900,
-          maxHeight: Math.floor(900*ratio),
+          maxWidth: maxWidth,
+          maxHeight: Math.floor(maxWidth*ratio),
         }).toDataURL("image/jpeg");;
         resolve(img);
         cropper.destroy();
@@ -2185,8 +2185,8 @@
             if (targetRatio) {
               var curRatio =  image.height / image.width;
               console.log("curRatio: ", curRatio);
-              if ( !((targetRatio - 0.2) < curRatio && curRatio < (targetRatio + 0.2)) ) {
-                return cropImage(image, targetRatio);
+              if ( !((targetRatio - 0.1) < curRatio && curRatio < (targetRatio + 0.1)) ) {
+                return cropImage(image, targetRatio, maxWidth);
               };
             };
             return image;
@@ -2194,13 +2194,10 @@
             if (image === false) {
               reject("Cropper canceled");
             } else {
-              return resizeImage(image, maxWidth).then(function(resized) {
-                file = resized;
-                return resizeImage(resized, 256);
-              }).then(function(thumbnail) {
+              file = image;
+              return resizeImage(image, 256).then(function(thumbnail) {
                 createFileIndividual(thumbnail, "thumbnail-" + fileName, fileIndividual)
                 .then(function (thumbnailIndividual) {
-                  //thumbnailIndividual.image = thumbnail;
                   fileIndividual["v-s:thumbnail"] = [ thumbnailIndividual ];
                   resolve(fileIndividual);
                 });
