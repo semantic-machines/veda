@@ -229,7 +229,7 @@ fn encode_value_v2(right: &Right, outbuff: &mut String) {
     //println!("{} -> {}", access_to_pretty_string(right.access), outbuff)
 }
 
-pub fn encode_rightset(new_rights: RightSet) -> String {
+pub fn encode_rightset(new_rights: RightSet, version_of_index_format: u8) -> String {
     let mut outbuff = String::new();
 
     for key in new_rights.keys() {
@@ -240,7 +240,7 @@ pub fn encode_rightset(new_rights: RightSet) -> String {
 
                 let summ_counters: u16 = right.counters.values().sum();
 
-                if summ_counters == 0 {
+                if summ_counters == 0 || version_of_index_format == 1 {
                     encode_value_v1(right, &mut outbuff);
                 } else {
                     encode_value_v2(right, &mut outbuff);

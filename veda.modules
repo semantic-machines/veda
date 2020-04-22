@@ -5,6 +5,8 @@ mstorage
 auth
 
 az-indexer
+    module = az-indexer
+    args = --use_index_format_v2
 
 ft-indexer
 

@@ -2,6 +2,7 @@
 extern crate log;
 
 use crate::common::*;
+use std::env;
 use v_authorization::common::{Access, FILTER_PREFIX, MEMBERSHIP_PREFIX, PERMISSION_PREFIX};
 use v_module::info::ModuleInfo;
 use v_module::module::*;
@@ -20,6 +21,7 @@ fn main() -> Result<(), i32> {
         permission_statement_counter: 0,
         membership_counter: 0,
         storage: VStorage::new_lmdb("./data", StorageMode::ReadWrite),
+        version_of_index_format: 2,
     };
 
     if ctx.storage.get_value(StorageId::Az, "Pcfg:VedaSystem").is_none() {
@@ -43,6 +45,14 @@ fn main() -> Result<(), i32> {
     //wait_load_ontology();
 
     let mut queue_consumer = Consumer::new("./data/queue", "az-indexer", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+
+    for el in env::args().collect::<Vec<String>>().iter() {
+        if el.starts_with("--use_index_format_v1") {
+            ctx.version_of_index_format = 1;
+        }
+    }
+
+    info!("USE INDEX FORMAT V{}", ctx.version_of_index_format);
 
     module.listen_queue(
         &mut queue_consumer,
