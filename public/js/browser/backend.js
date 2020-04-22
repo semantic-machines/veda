@@ -719,6 +719,29 @@ veda.Module(function Backend(veda) { "use strict";
     });
   };
 
+  veda.Backend.loadFile = function (url) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.timeout = 10 * 60 * 1000;
+      xhr.onload = done;
+      xhr.onerror = fail;
+      xhr.onabort = fail;
+      xhr.ontimeout = fail;
+      xhr.send();
+      function done() {
+        if (xhr.status === 200) {
+          resolve(xhr.response);
+        } else {
+          reject( new Error("File load error") );
+        }
+      }
+      function fail() {
+        reject( new Error("File load error") );
+      }
+    });
+  };
+
 ////////////////////////////////////////////////////////////////////////
 
   // Offline PUT queue

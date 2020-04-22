@@ -103,11 +103,11 @@ fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
 }
 
 fn prepare_permission_statement(prev_state: &mut Individual, new_state: &mut Individual, ctx: &mut Context) {
-    prepare_right_set(prev_state, new_state, "v-s:permissionObject", "v-s:permissionSubject", PERMISSION_PREFIX, 0, ctx);
+    index_right_sets(prev_state, new_state, "v-s:permissionObject", "v-s:permissionSubject", PERMISSION_PREFIX, 0, ctx);
 }
 
 fn prepare_membership(prev_state: &mut Individual, new_state: &mut Individual, ctx: &mut Context) {
-    prepare_right_set(
+    index_right_sets(
         prev_state,
         new_state,
         "v-s:resource",
@@ -119,5 +119,5 @@ fn prepare_membership(prev_state: &mut Individual, new_state: &mut Individual, c
 }
 
 fn prepare_permission_filter(prev_state: &mut Individual, new_state: &mut Individual, ctx: &mut Context) {
-    prepare_right_set(prev_state, new_state, "v-s:permissionObject", "v-s:resource", FILTER_PREFIX, 0, ctx);
+    index_right_sets(prev_state, new_state, "v-s:permissionObject", "v-s:resource", FILTER_PREFIX, 0, ctx);
 }

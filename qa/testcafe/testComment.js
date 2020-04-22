@@ -11,9 +11,7 @@ import { Selector, t } from 'testcafe';
     basic.createTestUI('Тест комментария', timeStamp);
     await t
       .setNativeDialogHandler(() => true)
-      .wait(1000)
       .expect(Selector('#user-info').innerText).contains('Администратор2 .')
-      .wait(1000)
       .navigateTo( pageForNavigateFromConfig )
       .wait(1000)
       .typeText('veda-control#comment', timeStamp)
