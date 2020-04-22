@@ -68,32 +68,32 @@
         <div id="recaptcha" style="width:300px; margin: 1em auto 0 auto;"></div>
       </div>
       <div id="invalid-secret-warning" style="display:none;" class="alert alert-warning">
-        <p>Неверный код.</p>
-        <p>Invalid secret code.</p>
+        <p><strong>Отказ!</strong> Неверный код.</p>
+        <p><strong>Fail!</strong> Invalid secret code.</p>
       </div>
       <div id="empty-password-warning" style="display:none;" class="alert alert-warning">
-        <p>Вы ввели пустой пароль.</p>
-        <p>You have entered empty password.</p>
+        <p><strong>Отказ!</strong> Вы ввели пустой пароль.</p>
+        <p><strong>Fail!</strong> You have entered empty password.</p>
       </div>
       <div id="equal-password-warning" style="display:none;" class="alert alert-warning">
-        <p>Новый пароль совпадает с предыдущим.</p>
-        <p>New password is equal to previous.</p>
+        <p><strong>Отказ!</strong> Новый пароль совпадает с предыдущим.</p>
+        <p><strong>Fail!</strong> New password is equal to previous.</p>
       </div>
       <div id="invalid-password-warning" style="display:none;" class="alert alert-warning">
-        <p>Новый пароль не принят.</p>
-        <p>New password was not accepted.</p>
+        <p><strong>Отказ!</strong> Новый пароль не принят.</p>
+        <p><strong>Fail!</strong> New password was not accepted.</p>
       </div>
       <div id="frequent-pass-change-warning" style="display:none;" class="alert alert-warning">
-        <p>Пароль можно менять не чаще 1 раза в сутки.</p>
-        <p>Password may be changed only once a day.</p>
+        <p><strong>Отказ!</strong> Пароль можно менять не чаще 1 раза в сутки.</p>
+        <p><strong>Fail!</strong> Password may be changed only once a day.</p>
       </div>
       <div id="pass-change-not-allowed-warning" style="display:none;" class="alert alert-warning">
-        <p>Смена пароля для учетной записи запрещена.</p>
-        <p>Password change is not allowed.</p>
+        <p><strong>Отказ!</strong> Смена пароля для учетной записи запрещена.</p>
+        <p><strong>Fail!</strong> Password change is not allowed.</p>
       </div>
       <div id="secret-expired-warning" style="display:none;" class="alert alert-warning">
-        <p>Код просрочен.</p>
-        <p>Secret code expired.</p>
+        <p><strong>Отказ!</strong> Код просрочен.</p>
+        <p><strong>Fail!</strong> Secret code expired.</p>
       </div>
       <div id="password-expired-error" style="display:none;" class="alert alert-danger">
         <p><strong>Ошибка!</strong> Истекло время действия пароля.</p>
@@ -111,6 +111,7 @@
         <p><strong>Инфо!</strong> Вам выслан новый код для смены пароля.</p>
         <p><strong>Info!</strong> New secret code sent. Try to change password with new secret code.</p>
       </div>
+      <button style="display:none;" class="ok btn btn-lg btn-primary">Ok</button>
       <fieldset id="enter-login-password">
         <input class="form-control input-lg" id="login" placeholder="Логин / login" type="text" name="login" autofocus="autofocus"/>
         <input class="form-control input-lg margin-lg" id="password" placeholder="Пароль / password" type="password" name="password"/>
