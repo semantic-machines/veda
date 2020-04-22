@@ -9,6 +9,7 @@ pub struct Context {
     pub permission_statement_counter: u32,
     pub membership_counter: u32,
     pub storage: VStorage,
+    pub version_of_index_format: u8,
 }
 
 fn get_access_from_individual(state: &mut Individual) -> u8 {
@@ -198,7 +199,7 @@ fn update_right_set(
             }
         }
 
-        let mut new_record = encode_rightset(new_right_set);
+        let mut new_record = encode_rightset(new_right_set, ctx.version_of_index_format);
 
         if new_record.is_empty() {
             new_record = "X".to_string();
