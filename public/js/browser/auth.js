@@ -153,78 +153,93 @@ veda.Module(function (veda) { "use strict";
     var authLockedError = $("#auth-locked-error", loginForm).hide();
     var passChangeLockedError = $("#pass-change-locked-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
+    var secretInput = $("#secret", loginForm);
+    var ok = $(".btn.ok", loginForm).hide();
+    var okHandler;
     switch (error.code) {
       case 423: // Password change is allowed once a day
         frequentPassChangeWarning.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
           frequentPassChangeWarning.hide();
           enterLoginPassword.show();
-        }, 10 * 1000);
+        };
         break;
       case 429: // Too many auth fails
         authLockedError.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
           authLockedError.hide();
           enterLoginPassword.show();
-        }, 30 * 60 * 1000);
+        };
         break;
       case 430: // Too many pass change fails
         passChangeLockedError.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
           passChangeLockedError.hide();
           enterLoginPassword.show();
-        }, 30 * 60 * 1000);
+        };
         break;
       case 463: // Password change not allowed
         passChangeNotAllowedWarning.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
           passChangeNotAllowedWarning.hide();
           enterLoginPassword.show();
-        }, 10 * 1000);
+        };
         break;
       case 464: // Secret expired
         secretExpiredWarning.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
           secretExpiredWarning.hide();
+          secretInput.val("");
           enterLoginPassword.show();
-        }, 10 * 1000);
+        };
         break;
       case 465: // Empty password
         emptyPasswordWarning.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
           emptyPasswordWarning.hide();
           enterLoginPassword.show();
-        }, 10 * 1000);
+        };
         break;
       case 466: // New password is equal to old
         equalPasswordWarning.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
           equalPasswordWarning.hide();
           enterLoginPassword.show();
-        }, 10 * 1000);
+        };
         break;
       case 467: // Invalid password
         invalidPasswordWarning.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
           invalidPasswordWarning.hide();
           enterLoginPassword.show();
-        }, 10 * 1000);
+        };
         break;
       case 468: // Invalid secret
         invalidSecretWarning.show();
-        setTimeout(function () {
+        ok.show();
+        okHandler = function () {
+          secretInput.val("");
           invalidSecretWarning.hide();
           enterLoginPassword.show();
-        }, 10 * 1000);
+        };
         break;
       case 469: // Password expired
         if ( !changePasswordPressed ) {
           passwordExpiredError.show();
-          setTimeout(function () {
+          ok.show();
+          okHandler = function () {
             passwordExpiredError.hide();
             enterNewPassword.show();
             secretRequestInfo.show();
-          }, 10 * 1000);
+          };
         } else {
           enterNewPassword.show();
           secretRequestInfo.show();
@@ -235,6 +250,10 @@ veda.Module(function (veda) { "use strict";
         loginFailedError.show();
         reCAPTCHA(onSuccess, onExpired, onSuccess);
         break;
+    }
+    ok.off("click").one("click", okHandler).one("click", okHide);
+    function okHide() {
+      $(this).hide();
     }
     function onSuccess() {
       $(".alert, fieldset", loginForm).hide();
@@ -248,6 +267,7 @@ veda.Module(function (veda) { "use strict";
 
   function handleLoginSuccess(authResult) {
     var enterLoginPassword = $("#enter-login-password", loginForm).show();
+    $(".btn.ok", loginForm).hide();
     var enterNewPassword = $("#enter-new-password", loginForm).hide();
     var loginFailedError = $("#login-failed-error", loginForm).hide();
     var passwordExpiredError = $("#password-expired-error", loginForm).hide();
