@@ -571,11 +571,11 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server_put(params)
-      .then(function () {
-        return localDB.then(function (db) {
-          return db.remove(params.data.uri);
-        });
+    .then(function () {
+      return localDB.then(function (db) {
+        return db.remove(params.data.uri);
       });
+    });
   };
 
   veda.Backend.put_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
@@ -594,7 +594,12 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server_put(params);
+    return call_server_put(params)
+    .then(function () {
+      localDB.then(function (db) {
+        db.put(params.data.individual["@"], params.data.individual);
+      }).catch(console.log);
+    });
   };
 
   veda.Backend.add_to_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
@@ -670,7 +675,15 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server_put(params);
+    return call_server_put(params)
+    .then(function () {
+      localDB.then(function (db) {
+        params.data.individuals.forEach(function (individual) {
+          db.put(individual["@"], individual);
+        });
+      }).catch(console.log);
+    });
+
   };
 
 ////////////////////////////////////////////////////////////////////////
