@@ -55,7 +55,6 @@ veda.Module(function (veda) { "use strict";
     var confirmNewPassword = $("#confirm-new-password", loginForm);
     var passwordStrength = $(".password-strength", loginForm);
     var passwordMustMatch = $(".password-must-match", loginForm);
-    var secretGroup = $("#secret-group", loginForm);
     var secret = $("#secret", loginForm);
     var enterSecret = $(".enter-secret", loginForm);
 
@@ -153,7 +152,7 @@ veda.Module(function (veda) { "use strict";
     var authLockedError = $("#auth-locked-error", loginForm).hide();
     var passChangeLockedError = $("#pass-change-locked-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
-    var secretInput = $("#secret", loginForm);
+    $("input:not(#login)", loginForm).val("");
     var ok = $(".btn.ok", loginForm).hide();
     var okHandler;
     switch (error.code) {
@@ -194,7 +193,6 @@ veda.Module(function (veda) { "use strict";
         ok.show();
         okHandler = function () {
           secretExpiredWarning.hide();
-          secretInput.val("");
           enterLoginPassword.show();
         };
         break;
@@ -226,7 +224,6 @@ veda.Module(function (veda) { "use strict";
         invalidSecretWarning.show();
         ok.show();
         okHandler = function () {
-          secretInput.val("");
           invalidSecretWarning.hide();
           enterLoginPassword.show();
         };
@@ -279,6 +276,7 @@ veda.Module(function (veda) { "use strict";
     var authLockedError = $("#auth-locked-error", loginForm).hide();
     var passChangeLockedError = $("#pass-change-locked-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
+    $("input:not(#login)", loginForm).val("");
     veda.trigger("login:success", authResult);
   }
 
