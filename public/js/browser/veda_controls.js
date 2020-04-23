@@ -2078,7 +2078,7 @@
         img.src = cropper.getCroppedCanvas({
           maxWidth: maxWidth,
           maxHeight: Math.floor(maxWidth*ratio),
-        }).toDataURL("image/jpeg");;
+        }).toDataURL("image/jpeg");
         resolve(img);
         cropper.destroy();
       });
@@ -2242,6 +2242,7 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
       queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
+      source = this.attr("data-source") || undefined,
       sort = this.attr("data-sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       isSingle = this.data("single") || ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ),
       withDeleted = false || this.attr("data-deleted");
@@ -2490,13 +2491,21 @@
       };
 
       var performSearch = function (value) {
-        evalQueryPrefix().then(function (queryPrefix) {
-          ftQuery(queryPrefix, value, sort, withDeleted)
+        if (source) {
+          return Promise.resolve(eval(source))
             .then(renderResults)
             .catch(function (error) {
-              console.log("Fulltext query error", error);
+              console.log("Source error", source);
             });
-        });
+        } else {
+          evalQueryPrefix().then(function (queryPrefix) {
+            ftQuery(queryPrefix, value, sort, withDeleted)
+              .then(renderResults)
+              .catch(function (error) {
+                console.log("Fulltext query error", error);
+              });
+          });
+        }
       };
 
       var inputHandler = (function () {
