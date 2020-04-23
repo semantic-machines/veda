@@ -114,7 +114,7 @@ fn decode_value_v2(value: &str, rr: &mut Right, with_count: bool) {
     rr.access = access as u8;
 }
 
-fn decode_value_v1(value: &str, rr: &mut Right) {
+fn decode_value_v1(value: &str, rr: &mut Right, with_count: bool) {
     let mut access = 0;
     let mut marker = 0 as char;
 
@@ -137,6 +137,16 @@ fn decode_value_v1(value: &str, rr: &mut Right) {
 
     rr.access = access as u8;
     rr.marker = marker;
+
+    if with_count {
+        for a in ACCESS_8_FULL_LIST.iter() {
+            if a & rr.access > 0 {
+                if let Some(ac) = access8_to_char(*a) {
+                    rr.counters.insert(ac, 1);
+                }
+            }
+        }
+    }
 }
 
 pub fn decode_index_record<F>(src: &str, with_counter: bool, mut drain: F) -> bool
@@ -159,7 +169,7 @@ where
                 let mut rr = Right::new(key);
 
                 if access_from_char(value.chars().next().unwrap()).is_none() {
-                    decode_value_v1(value, &mut rr);
+                    decode_value_v1(value, &mut rr, with_counter);
                 } else {
                     decode_value_v2(value, &mut rr, with_counter);
                 }
@@ -205,11 +215,12 @@ fn encode_value_v2(right: &Right, outbuff: &mut String) {
     let mut set_access = 0;
     for (tag, count) in right.counters.iter() {
         if let Some(c) = access_from_char(*tag) {
-            set_access = set_access | c as u8;
-
-            outbuff.push(*tag);
-            if *count > 1 {
-                outbuff.push_str(&count.to_string());
+            if *count > 0 {
+                set_access = set_access | c as u8;
+                outbuff.push(*tag);
+                if *count > 1 {
+                    outbuff.push_str(&count.to_string());
+                }
             }
         }
     }
@@ -226,7 +237,7 @@ fn encode_value_v2(right: &Right, outbuff: &mut String) {
         outbuff.push(right.marker);
     }
 
-    //println!("{} -> {}", access_to_pretty_string(right.access), outbuff)
+    //println!("{} -> {}", access_to_pretty_string(right.access), outbuff);
 }
 
 pub fn encode_rightset(new_rights: RightSet, version_of_index_format: u8) -> String {
@@ -240,7 +251,7 @@ pub fn encode_rightset(new_rights: RightSet, version_of_index_format: u8) -> Str
 
                 let summ_counters: u16 = right.counters.values().sum();
 
-                if summ_counters == 0 || version_of_index_format == 1 {
+                if summ_counters <= 2 || version_of_index_format == 1 {
                     encode_value_v1(right, &mut outbuff);
                 } else {
                     encode_value_v2(right, &mut outbuff);
