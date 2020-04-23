@@ -2824,69 +2824,93 @@ for (i = 0; i < 1; i++) {
         check_rights_fail(assert, ticket1.id, doc2, [can_update]);
         check_rights_fail(assert, ticket1.id, doc2, [can_delete]);
 
-        ////////////////// Delete & restore right
+    });
 
-        res = addRight(ticket_admin.id, [can_update], user1, doc2);
+    QUnit.test("#053 test rights delete & restore", function (assert) {
 
-        var right6 = res[0];
+        var ticket_admin = get_admin_ticket();
+
+        var ticket1 = get_user1_ticket();
+
+        var user1 = ticket1.user_uri;
+
+        var doc1 = create_test_document1(ticket_admin)["@"];
+
+        var res;
+
+        // Right1 = U
+
+        res = addRight(ticket_admin.id, [can_update], user1, doc1);
+
+        var right1 = res[0];
 
         assert.ok(res[1].result == 200);
 
         Backend.wait_module(m_acl, res[1].op_id);
 
-        // Delete first time with RU
+        // Right2 = R
 
-        right5["v-s:canUpdate"] = newBool(true);
+        res = addRight(ticket_admin.id, [can_read], user1, doc1);
 
-        right5["v-s:deleted"] = newBool(true);
+        var right2 = res[0];
 
-        res = Backend.put_individual(ticket_admin.id, right5);
+        assert.ok(res[1].result == 200);
 
-        Backend.wait_module(m_acl, res.op_id);
+        Backend.wait_module(m_acl, res[1].op_id);
 
-        check_rights_fail(assert, ticket1.id, doc2, [can_read]);
+        // Delete Right2 with RU first time
 
-        check_rights_success(assert, ticket1.id, doc2, [can_update]);
+        right2["v-s:canUpdate"] = newBool(true);
 
-        // Delete second time
+        right2["v-s:deleted"] = newBool(true);
 
-        res = Backend.put_individual(ticket_admin.id, right5);
-
-        Backend.wait_module(m_acl, res.op_id);
-
-        check_rights_fail(assert, ticket1.id, doc2, [can_read]);
-
-        check_rights_success(assert, ticket1.id, doc2, [can_update]);
-
-        // Restore with RUD
-
-        delete right5["v-s:deleted"];
-
-        right5["v-s:canDelete"] = newBool(true);
-
-        res = Backend.put_individual(ticket_admin.id, right5);
+        res = Backend.put_individual(ticket_admin.id, right2);
 
         Backend.wait_module(m_acl, res.op_id);
 
-        check_rights_success(assert, ticket1.id, doc2, [can_read]);
+        check_rights_fail(assert, ticket1.id, doc1, [can_read]);
 
-        check_rights_success(assert, ticket1.id, doc2, [can_update]);
+        check_rights_success(assert, ticket1.id, doc1, [can_update]);
 
-        check_rights_success(assert, ticket1.id, doc2, [can_delete]);
+        // Delete Right2 with RU second time
 
-        // Remove right6
+        res = Backend.put_individual(ticket_admin.id, right2);
 
-        res = Backend.remove_individual(ticket_admin.id, right6["@"]);
+        Backend.wait_module(m_acl, res.op_id);
+
+        check_rights_fail(assert, ticket1.id, doc1, [can_read]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_update]);
+
+        // Restore Right2 with RUD
+
+        delete right2["v-s:deleted"];
+
+        right2["v-s:canDelete"] = newBool(true);
+
+        res = Backend.put_individual(ticket_admin.id, right2);
+
+        Backend.wait_module(m_acl, res.op_id);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_read]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_update]);
+
+        check_rights_success(assert, ticket1.id, doc1, [can_delete]);
+
+        // Remove right1
+
+        res = Backend.remove_individual(ticket_admin.id, right1["@"]);
 
         assert.ok(res.result == 200);
 
         Backend.wait_module(m_acl, res.op_id);
 
-        check_rights_success(assert, ticket1.id, doc2, [can_read]);
+        check_rights_success(assert, ticket1.id, doc1, [can_read]);
 
-        check_rights_success(assert, ticket1.id, doc2, [can_update]);
+        check_rights_success(assert, ticket1.id, doc1, [can_update]);
 
-        check_rights_success(assert, ticket1.id, doc2, [can_delete]);
+        check_rights_success(assert, ticket1.id, doc1, [can_delete]);
 
     });
 
