@@ -50,27 +50,28 @@ fn get_access_from_individual(state: &mut Individual) -> u8 {
     access
 }
 
-pub fn index_right_sets(prev_state: &mut Individual, new_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
-    let is_del = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
+pub fn index_right_sets(prev_state: &mut Individual, new_state: &mut Individual, prd_rsc: &str, prd_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
+    let n_is_del = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
+    let p_is_del = prev_state.get_first_bool("v-s:deleted").unwrap_or_default();
 
-    let mut new_acs = get_access_from_individual(new_state);
-    let mut pre_acs = get_access_from_individual(prev_state);
+    let mut n_acs = get_access_from_individual(new_state);
+    let mut p_acs = get_access_from_individual(prev_state);
 
-    if new_acs == 0 {
-        new_acs = default_access;
+    if n_acs == 0 {
+        n_acs = default_access;
     }
 
-    if pre_acs == 0 {
-        pre_acs = default_access;
+    if p_acs == 0 {
+        p_acs = default_access;
     }
 
-    let pre_resc = prev_state.get_literals(p_resource).unwrap_or_default();
-    let pre_in_set = prev_state.get_literals(p_in_set).unwrap_or_default();
+    let pre_resc = prev_state.get_literals(prd_rsc).unwrap_or_default();
+    let pre_in_set = prev_state.get_literals(prd_in_set).unwrap_or_default();
 
     let use_filter = new_state.get_first_literal("v-s:useFilter").unwrap_or_default();
 
-    let resc = new_state.get_literals(p_resource).unwrap_or_default();
-    let in_set = new_state.get_literals(p_in_set).unwrap_or_default();
+    let resc = new_state.get_literals(prd_rsc).unwrap_or_default();
+    let in_set = new_state.get_literals(prd_in_set).unwrap_or_default();
 
     let ignr_excl = new_state.get_first_bool("v-s:ignoreExclusive").unwrap_or_default();
     let is_excl = new_state.get_first_bool("v-s:isExclusive").unwrap_or_default();
@@ -85,15 +86,25 @@ pub fn index_right_sets(prev_state: &mut Individual, new_state: &mut Individual,
 
     let id = new_state.get_id();
 
-    if is_del {
-        add_or_sub_right_sets(id, &use_filter, &resc, &in_set, &pre_resc, &pre_in_set, marker, pre_acs, new_acs, is_del, prefix, ctx, &mut HashMap::new(), &Cache::None);
-    } else {
+    if n_is_del && !p_is_del {
+        // IS DELETE
+        add_or_del_right_sets(id, &use_filter, &resc, &in_set, &pre_resc, &pre_in_set, marker, p_acs, n_acs, n_is_del, prefix, ctx, &mut HashMap::new(), &Cache::None);
+    } else if !n_is_del && p_is_del {
+        // IS RESTORE
+        let mut cache = HashMap::new();
+        //if !pre_resc.is_empty() {
+        //    add_or_sub_right_sets(id, &use_filter, &pre_resc, &pre_in_set, &vec![], &vec![], marker, p_acs, p_acs, true, prefix, ctx, &mut cache, &Cache::Write);
+        //}
+
+        add_or_del_right_sets(id, &use_filter, &resc, &in_set, &pre_resc, &pre_in_set, marker, p_acs, n_acs, false, prefix, ctx, &mut cache, &Cache::Read);
+    } else if !n_is_del && !p_is_del {
+        // IS UPDATE
         let mut cache = HashMap::new();
         if !pre_resc.is_empty() {
-            add_or_sub_right_sets(id, &use_filter, &pre_resc, &pre_in_set, &vec![], &vec![], marker, pre_acs, pre_acs, true, prefix, ctx, &mut cache, &Cache::Write);
+            add_or_del_right_sets(id, &use_filter, &pre_resc, &pre_in_set, &vec![], &vec![], marker, p_acs, p_acs, true, prefix, ctx, &mut cache, &Cache::None);
         }
 
-        add_or_sub_right_sets(id, &use_filter, &resc, &in_set, &pre_resc, &pre_in_set, marker, pre_acs, new_acs, false, prefix, ctx, &mut cache, &Cache::Read);
+        add_or_del_right_sets(id, &use_filter, &resc, &in_set, &pre_resc, &pre_in_set, marker, p_acs, n_acs, false, prefix, ctx, &mut cache, &Cache::Read);
     }
 }
 
@@ -104,7 +115,7 @@ enum Cache {
     None,
 }
 
-fn add_or_sub_right_sets(
+fn add_or_del_right_sets(
     id: &str,
     use_filter: &String,
     resource: &Vec<String>,
@@ -177,7 +188,7 @@ fn update_right_set(
                 rr.is_deleted = is_deleted;
                 rr.marker = marker;
                 if is_deleted {
-                    rr.access = update_counters(&mut rr.counters, prev_access, rr.access | new_access, is_deleted);
+                    rr.access = update_counters(&mut rr.counters, prev_access, rr.access | prev_access, is_deleted);
                     if rr.access != 0 && !rr.counters.is_empty() {
                         rr.is_deleted = false;
                     }
