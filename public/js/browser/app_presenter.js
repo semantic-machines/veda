@@ -293,33 +293,15 @@ veda.Module(function (veda) { "use strict";
   });
 
   // On/off-line status indicator
-  var lineHandler = function (status) {
+  function statusHandler(status) {
     var lineStatus = document.getElementById("line-status");
     lineStatus.style.display = "block";
-    if ( status.line && status.ccus ) {
-      setOnline();
-    } else if ( status.line && !status.ccus) {
-      setLimited();
-    } else {
-      setOffline();
-    }
-    function setOnline () {
-      lineStatus.classList.add("online");
-      lineStatus.classList.remove("offline");
-      lineStatus.classList.remove("limited");
-    }
-    function setOffline () {
-      lineStatus.classList.remove("online");
-      lineStatus.classList.add("offline");
-      lineStatus.classList.remove("limited");
-    }
-    function setLimited () {
-      lineStatus.classList.remove("online");
-      lineStatus.classList.remove("offline");
-      lineStatus.classList.add("limited");
-    }
+    lineStatus.classList.remove("online");
+    lineStatus.classList.remove("limited");
+    lineStatus.classList.remove("offline");
+    lineStatus.classList.add(status);
   }
-  veda.on("status", lineHandler);
+  veda.on("status", statusHandler);
 
   // Service worker
   if ("serviceWorker" in navigator) {

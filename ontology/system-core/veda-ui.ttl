@@ -741,15 +741,12 @@ v-ui:StandardButtonsTemplate
   var toRefresh;
 
   function statusHandler(status) {
-    if ( status.line && status.ccus ) {
+    if ( status === "online" || status === "offline" ) {
       toRefresh = false;
       $("#refresh", template).addClass("hidden");
-    } else if ( status.line && !status.ccus ) {
+    } else if ( status === "limited" ) {
       toRefresh = true;
       $("#refresh", template).removeClass("hidden");
-    } else {
-      toRefresh = false;
-      $("#refresh", template).addClass("hidden");
     }
   }
   veda.on("status", statusHandler);

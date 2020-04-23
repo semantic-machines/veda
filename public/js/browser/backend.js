@@ -24,30 +24,21 @@ veda.Module(function Backend(veda) { "use strict";
     });
   };
 
-  var status = {
-    line: 0,
-    ccus: 0
-  };
-  veda.Backend.status = status;
+  veda.Backend.status = "offline";
+  var status = {};
   function setStatus(state) {
     status.line = state === "online" ? 1 : state === "offline" ? 0 : status.line;
     status.ccus = state === "ccus-online" ? 1 : state === "ccus-offline" ? 0 : status.ccus;
-    this.trigger("status", status);
+    if (status.line && status.ccus) {
+      veda.Backend.status = "online";
+    } else if (status.line && !status.ccus) {
+      veda.Backend.status = "limited";
+    } else {
+      veda.Backend.status = "offline";
+    }
+    this.trigger("status", veda.Backend.status);
   }
   veda.on("online offline ccus-online ccus-offline", setStatus);
-
-  veda.Backend.policy = "cache";
-  function setPolicy(status) {
-    if ( status.line && status.ccus ) {
-      veda.Backend.policy = "cache";
-    } else if ( status.line && !status.ccus ) {
-      veda.Backend.policy = "fetch";
-    } else {
-      veda.Backend.policy = "cache";
-    }
-    console.log("Backend policy =", veda.Backend.policy);
-  }
-  veda.on("status", setPolicy);
 
   var interval;
   var duration = 5000;
@@ -401,7 +392,7 @@ veda.Module(function Backend(veda) { "use strict";
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
     };
-    if (veda.Backend.policy === "cache") {
+    if (veda.Backend.status === "online" || veda.Backend.status === "offline") {
       // Cache first
       return localDB.then(function (db) {
         return db.get(params.data.uri);
@@ -469,7 +460,7 @@ veda.Module(function Backend(veda) { "use strict";
         "uris": isObj ? arg.uris : uris
       }
     };
-    if (veda.Backend.policy === "cache") {
+    if (veda.Backend.status === "online" || veda.Backend.status === "offline") {
       // Cache first
       return localDB.then(function (db) {
         var results = [];
