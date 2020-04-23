@@ -311,13 +311,13 @@ veda.Module(function (veda) { "use strict";
     }
     var self = this;
     this.trigger("beforeLoad");
-    if ( this.isLoaded() && veda.Backend.policy === "cache" ) {
+    if ( this.isLoaded() && ( veda.Backend.status === "online" || veda.Backend.status === "offline" ) ) {
       this.trigger("afterLoad", this);
       return Promise.resolve( this );
-    } else if ( this.isLoaded() && veda.Backend.policy === "fetch" ) {
+    } else if ( this.isLoaded() && veda.Backend.status === "limited" ) {
       this.trigger("afterLoad", this);
       this.is("v-s:UserThing").then(function (isUserThing) {
-        if (isUserThing) self.reset();
+        if (isUserThing) { self.reset(); }
       });
       return Promise.resolve( this );
     }
