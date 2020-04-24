@@ -209,7 +209,7 @@ veda.Module(function (veda) { "use strict";
   Object.defineProperty(proto, "membership", {
     get: function () {
       var self = this;
-      if (this._.membership) { return Promise.resolve(this._.membership); }
+      //if (this._.membership) { return Promise.resolve(this._.membership); }
       if (this.isNew()) {
         this._.membership = new veda.IndividualModel({ cache: false });
         return Promise.resolve(this._.membership);
@@ -244,7 +244,7 @@ veda.Module(function (veda) { "use strict";
   Object.defineProperty(proto, "rights", {
     get: function () {
       var self = this;
-      if (this._.rights) { return Promise.resolve(this._.rights); }
+      //if (this._.rights) { return Promise.resolve(this._.rights); }
       if (this.isNew()) {
         this._.rights = new veda.IndividualModel({ cache: false });
         this._.rights["v-s:canCreate"] = [ true ];
@@ -286,7 +286,7 @@ veda.Module(function (veda) { "use strict";
   Object.defineProperty(proto, "rightsOrigin", {
     get: function () {
       var self = this;
-      if (this._.rightsOrigin) { return Promise.resolve(this._.rightsOrigin); }
+      //if (this._.rightsOrigin) { return Promise.resolve(this._.rightsOrigin); }
       return veda.Backend.get_rights_origin(veda.ticket, this.id).then(function (rightsOriginArr) {
         return self._.rightsOrigin = Promise.all(rightsOriginArr.map(function (item) {
           return new veda.IndividualModel( item, false );
