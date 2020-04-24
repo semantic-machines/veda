@@ -12,7 +12,7 @@ addons:
 
 jobs: 
   include:
-    - stage: install
+    - stage: pre-install
       script:
       - sudo apt-get clean
       - sudo apt-get update
@@ -23,6 +23,9 @@ jobs:
       - npm install -g grunt-cli
       - npm install grunt-contrib-qunit --save-dev
       - npm install grunt --save-dev
+
+    - stage: install
+      script:
       - ./tools/install-tarantool.sh
       - ./tools/install-clickhouse.sh
       - ./control-install.sh
@@ -31,9 +34,6 @@ jobs:
       - go version
       - dmd --version
       - rustc -V
-
-    - stage: build
-      script:
       - ./build.sh
 
     - stage: start
