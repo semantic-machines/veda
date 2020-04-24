@@ -64,10 +64,12 @@ pub fn update_counters(counters: &mut HashMap<char, u16>, prev_access: u8, cur_a
                         }
                     } else {
                         *cc += 1;
+                        out_access |= check_bit;
                     }
                 }
             } else {
                 if !is_deleted && (out_access & check_bit > 0) {
+                    out_access |= check_bit;
                     counters.insert(*access_c, 1);
                 }
             }

@@ -193,7 +193,7 @@ fn update_right_set(
                         rr.is_deleted = false;
                     }
                 } else {
-                    rr.access = update_counters(&mut rr.counters, prev_access, rr.access | new_access, is_deleted);
+                    rr.access = update_counters(&mut rr.counters, prev_access, new_access, is_deleted);
                 }
             } else {
                 new_right_set.insert(
