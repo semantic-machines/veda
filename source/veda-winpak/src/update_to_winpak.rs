@@ -72,8 +72,11 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut date_to = None;
     let mut access_levels: Vec<i64> = Vec::new();
     let mut is_update_access_levels = false;
+    let mut is_update_access_levels_without_clean = false;
     let mut is_update_equipment = false;
     let mut is_need_block_card = false;
+    let mut cardholder_family: Option<String> = None;
+    let mut ts_number: Option<String> = None;
 
     if btype == "mnd-s:Pass" {
         is_update_equipment = true;
@@ -100,12 +103,20 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             } else if has_change_kind_for_pass == "d:e8j2tpz9r613hxq4g4rbbxtfqe" {
                 date_from = indv_b.get_first_datetime("v-s:dateFromFact");
                 is_need_block_card = true;
+            } else if has_change_kind_for_pass == "d:a8kf3r1ryfotqg695yckpm2isih" {
+                cardholder_family = indv_b.get_first_literal_with_lang("mnd-s:passLastName", &[Lang::RU, Lang::NONE]);
+            } else if has_change_kind_for_pass == "d:a5y91zferr8t41abib4ecdlggn0" {
+                ts_number = indv_b.get_first_literal("mnd-s:passVehicleRegistrationNumber");
+            } else if has_change_kind_for_pass == "d:efbibmgvxpr46t1qksmtkkautw" {
+                is_update_access_levels = false;
+                is_update_access_levels_without_clean = true;
+                get_access_level(&mut indv_b, "mnd-s:hasTemporaryAccessLevel", &mut access_levels);
             }
         }
     }
 
     if is_update_access_levels {
-        get_access_level(&mut indv_b, &mut access_levels);
+        get_access_level(&mut indv_b, "mnd-s:hasAccessLevel", &mut access_levels);
     }
 
     let now = Utc::now().naive_utc();
@@ -116,8 +127,10 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         .and_then(|trans| update_card_date(Some(get_now_00_00_00().timestamp()), date_to, card_number.to_string(), trans))
         .and_then(|trans| block_card(is_need_block_card, date_from, now, card_number.to_string(), trans))
         .and_then(|trans| clear_access_level(is_update_access_levels, card_number.to_string(), trans))
-        .and_then(|trans| update_access_level(is_update_access_levels, now, 0, access_levels, card_number.to_string(), trans))
+        .and_then(|trans| insert_access_levels(is_update_access_levels | is_update_access_levels_without_clean, now, 0, access_levels, card_number.to_string(), trans))
         .and_then(|trans| create_winpak_change_card_event(is_update_access_levels, card_number.to_string(), trans))
+        .and_then(|trans| update_cardholder_family(cardholder_family, card_number.to_string(), trans))
+        .and_then(|trans| update_ts_number(ts_number, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
     match current_thread::block_on_all(future) {
         Ok(_) => {

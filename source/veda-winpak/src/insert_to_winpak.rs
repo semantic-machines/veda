@@ -93,7 +93,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let date_to = indv_b.get_first_datetime("v-s:dateToFact");
 
     let mut access_levels: Vec<i64> = Vec::new();
-    get_access_level(&mut indv_b, &mut access_levels);
+    get_access_level(&mut indv_b, "mnd-s:hasAccessLevel", &mut access_levels);
 
     let now = Utc::now().naive_utc();
     let id = now.format("%Y-%m-%d %H:%M:%S.f").to_string();
@@ -144,7 +144,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             //.and_then(|trans| insert_card(now, card_number.to_string(), date_from, date_to, cardholder_id.get(), trans))
             .and_then(|trans| update_card(date_from, date_to, card_number.to_string(), cardholder_id.get(), trans))
             .and_then(|trans| clear_access_level(true, card_number.to_string(), trans))
-            .and_then(|trans| update_access_level(true, now, 0, access_levels, card_number.to_string(), trans))
+            .and_then(|trans| insert_access_levels(true, now, 0, access_levels, card_number.to_string(), trans))
             //            .and_then(|trans| create_winpak_change_card_event(is_access_level, date_to, card_number.to_string(), trans))
             .and_then(|trans| trans.commit());
         match current_thread::block_on_all(ftran) {

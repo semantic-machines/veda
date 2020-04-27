@@ -1,4 +1,5 @@
 mod common_winpak;
+mod delete_from_winpak;
 mod from_winpak;
 mod insert_to_winpak;
 mod update_to_winpak;
@@ -6,20 +7,20 @@ mod update_to_winpak;
 #[macro_use]
 extern crate log;
 
+use crate::delete_from_winpak::delete_from_winpak;
+use crate::from_winpak::sync_data_from_winpak;
+use crate::insert_to_winpak::insert_to_winpak;
+use crate::update_to_winpak::update_to_winpak;
 use chrono::prelude::*;
-//use chrono::{Local, NaiveDateTime};
 use env_logger::Builder;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time as std_time};
+use v_api::app::ResultCode;
 use v_api::*;
 use v_module::module::*;
 use v_onto::{individual::*, parser::*};
 use v_queue::{consumer::*, record::*};
-use crate::from_winpak::sync_data_from_winpak;
-use crate::insert_to_winpak::insert_to_winpak;
-use crate::update_to_winpak::update_to_winpak;
-use v_api::app::ResultCode;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -227,6 +228,13 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
 
                         if module_label == "winpak pe44 update" {
                             let res = update_to_winpak(module, systicket, conn_str, &mut new_state_indv);
+                            if res == ResultCode::ConnectError {
+                                return Err(res);
+                            }
+                        }
+
+                        if module_label == "winpak pe44 delete" {
+                            let res = delete_from_winpak(module, systicket, conn_str, &mut new_state_indv);
                             if res == ResultCode::ConnectError {
                                 return Err(res);
                             }
