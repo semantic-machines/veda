@@ -19,6 +19,7 @@ veda.Module(function Backend(veda) { "use strict";
       xhr.onerror = reject;
       xhr.ontimeout = reject;
       xhr.open("GET", "/ping");
+      xhr.setRequestHeader("Cache-Control", "no-store");
       xhr.timeout = 5000;
       xhr.send();
     });
@@ -152,6 +153,7 @@ veda.Module(function Backend(veda) { "use strict";
         queryParams = queryParams.join("&");
       }
       xhr.open(method, url + "?" + queryParams, true);
+      xhr.setRequestHeader("Cache-Control", "no-store");
       xhr.timeout = timeout;
       if (method !== "GET") {
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
