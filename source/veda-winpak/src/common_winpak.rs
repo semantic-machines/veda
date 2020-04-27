@@ -199,6 +199,12 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
             birthday = indv.get_first_datetime("v-s:birthday").unwrap_or_default();
         }
 
+        let p15 = if indv.get_first_bool("mnd-s:isNewSubContractor").unwrap_or(false) {
+            indv.get_first_literal_with_lang("mnd-s:passOrganizationDescription", &[Lang::RU, Lang::NONE]).unwrap_or_default()
+        } else {
+            module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default()
+        };
+
         Box::new(
             transaction
                 .exec(
@@ -223,8 +229,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         )
                         .as_str(), // @P13
                         &0,                   // note5 // @P14
-                        &chop::substring(&module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(), 0, 63)
-                            .as_str(), // @P15
+                        &chop::substring(p15.as_str(), 0, 63).as_str(), // @P15
                         &chop::substring(&module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default(), 0, 63)
                             .as_str(), // @P16
                         &chop::substring(&occupation, 0, 63).as_str(), // @P17
@@ -378,7 +383,7 @@ pub fn clear_access_level<I: BoxableIo + 'static>(
     }
 }
 
-// INSERT ACCESS LEVEL
+// INSERT ACCESS LEVELS
 
 pub const INSERT_ACCESS_LEVEL: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardAccessLevels]  (AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,CardID,AccessLevelID,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
@@ -386,7 +391,7 @@ VALUES (0,@P1,0,0,0,0,
     (SELECT RecordID FROM [WIN-PAK PRO].[dbo].[Card] WHERE LTRIM([CardNumber])=@P2 and [Deleted]=0),
     @P3,0,0,0,0,0,0,0,0)";
 
-pub fn update_access_level<I: BoxableIo + 'static>(
+pub fn insert_access_levels<I: BoxableIo + 'static>(
     is_execute: bool,
     now: NaiveDateTime,
     idx: usize,
@@ -399,7 +404,7 @@ pub fn update_access_level<I: BoxableIo + 'static>(
             transaction
                 .exec(INSERT_ACCESS_LEVEL, &[&now, &card_number.as_str(), levels.get(idx).unwrap()])
                 .and_then(|(_result, trans)| Ok(trans))
-                .and_then(move |trans| update_access_level(is_execute, now, idx + 1, levels, card_number, trans)),
+                .and_then(move |trans| insert_access_levels(is_execute, now, idx + 1, levels, card_number, trans)),
         )
     } else {
         Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
@@ -501,8 +506,8 @@ pub fn split_str_for_winpak_db_columns(src: &str, len: usize, res: &mut Vec<Stri
     }
 }
 
-pub fn get_access_level(indv: &mut Individual, access_levels: &mut Vec<i64>) {
-    if let Some(access_levels_uris) = indv.get_literals("mnd-s:hasAccessLevel") {
+pub fn get_access_level(indv: &mut Individual, level_predicate: &str, access_levels: &mut Vec<i64>) {
+    if let Some(access_levels_uris) = indv.get_literals(level_predicate) {
         for l in access_levels_uris {
             if let Some(nl) = l.rsplit("_").next() {
                 if let Ok(n) = &nl.parse::<i64>() {
@@ -523,4 +528,74 @@ pub fn get_now_00_00_00() -> NaiveDateTime {
     let d = NaiveDateTime::from_timestamp(Utc::now().timestamp(), 0);
     let d_0 = NaiveDate::from_ymd(d.year(), d.month(), d.day()).and_hms(0, 0, 0);
     d_0
+}
+
+// UPDATE CARDHOLDER FAMILY
+
+pub const UPDATE_CARDHOLDER_FAMILY: &str = "\
+UPDATE t1 SET
+    [t1].[LastName] = @P1, [t1].[Note15] = @P2
+FROM [WIN-PAK PRO].[dbo].[CardHolder] t1
+JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[CardHolderID]=[t1].[RecordId]
+WHERE LTRIM([t2].[CardNumber])= @P3 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
+
+pub fn update_cardholder_family<I: BoxableIo + 'static>(
+    family: Option<String>,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if family.is_some() {
+        let f = family.unwrap();
+        Box::new(transaction.exec(UPDATE_CARDHOLDER_FAMILY, &[&f.as_str(), &f.as_str(), &card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
+
+// UPDATE TS NUMBER
+
+pub const UPDATE_TS_NUMBER: &str = "\
+UPDATE t1 SET
+    [t1].[LastName] = @P1, [t1].[Note16] = @P2, [t1].[Note18] = @P3
+FROM [WIN-PAK PRO].[dbo].[CardHolder] t1
+JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[CardHolderID]=[t1].[RecordId]
+WHERE LTRIM([t2].[CardNumber])=@P4 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
+
+pub fn update_ts_number<I: BoxableIo + 'static>(
+    ts_number: Option<String>,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if ts_number.is_some() {
+        let f = ts_number.unwrap();
+        Box::new(transaction.exec(UPDATE_TS_NUMBER, &[&f.as_str(), &f.as_str(), &f.as_str(), &card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
+
+// DELETE ACCESS LEVELS
+
+pub const DELETE_ACCESS_LEVEL: &str = "\
+DELETE t1 FROM [WIN-PAK PRO].[dbo].[CardAccessLevels] t1
+  JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[RecordID]=[t1].[CardID]
+WHERE [t1].[AccessLevelID]=@P1 and LTRIM([t2].[CardNumber])=@P2";
+
+pub fn delete_access_levels<I: BoxableIo + 'static>(
+    is_execute: bool,
+    idx: usize,
+    levels: Vec<i64>,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if idx < levels.len() && is_execute {
+        Box::new(
+            transaction
+                .exec(DELETE_ACCESS_LEVEL, &[&card_number.as_str(), levels.get(idx).unwrap()])
+                .and_then(|(_result, trans)| Ok(trans))
+                .and_then(move |trans| delete_access_levels(is_execute, idx + 1, levels, card_number, trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
 }
