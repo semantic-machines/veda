@@ -562,15 +562,20 @@
             db.createObjectStore("store");
           };
           dbReq.onsuccess = function(event) {
-            var db = event.target.result;
-            var tr = db.transaction(["store"], "readwrite");
-            tr.oncomplete = start;
-            tr.onerror = start;
-            var store = tr.objectStore("store");
-            var clearReq = store.clear();
-            clearReq.onsuccess = console.log;
-            clearReq.onerror = console.log;
-            function start (event) {
+            try {
+              var db = event.target.result;
+              var tr = db.transaction(["store"], "readwrite");
+              tr.oncomplete = start;
+              tr.onerror = start;
+              var store = tr.objectStore("store");
+              var clearReq = store.clear();
+              clearReq.onsuccess = console.log;
+              clearReq.onerror = console.log;
+            } catch (error) {
+              console.log(error);
+              start();
+            }
+            function start () {
               localStorage.version = version;
               veda.Module({/* configuration object */});
             }
