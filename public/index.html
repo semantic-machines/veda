@@ -571,7 +571,6 @@
             clearReq.onsuccess = console.log;
             clearReq.onerror = console.log;
             function start (event) {
-              localStorage.clear();
               localStorage.version = version;
               veda.Module({/* configuration object */});
             }
