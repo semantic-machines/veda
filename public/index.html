@@ -555,7 +555,7 @@
     <script type="text/javascript">
       $(function () {
         var version = "?v=5.8";
-        if (localStorage && localStorage.version !== "version") {
+        if (localStorage && localStorage.version !== version) {
           var dbReq = window.indexedDB.open("veda", 1);
           dbReq.onupgradeneeded = function (event) {
             var db = event.target.result;
