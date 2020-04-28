@@ -3124,7 +3124,7 @@ rdf:type v-ui:ClassTemplate ;
   v-ui:template """
 <div class="container sheet">
   <h2>
-    <span about="@" property="rdf:type"></span>
+    <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
   </h2>
   <!-- <div class="row">
     <div class="col-md-5 col-xs-5 text-right name">
@@ -3159,7 +3159,7 @@ v-wf:RuleTemplate
   v-ui:template """
 <div class="container sheet">
   <h2>
-    <span about="@" property="rdf:type"></span>
+    <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
   </h2>
   <div class="row">
     <div class="col-md-5 text-right">

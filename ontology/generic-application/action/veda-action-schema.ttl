@@ -29,7 +29,7 @@ v-s:Action
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:BackwardLink ;  
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:Labeled ;
   v-s:labelPattern "{@.v-s:registrationNumber} - {@.v-s:description [0,100]}" ;
   rdfs:label "Мероприятие"@ru ;
@@ -353,7 +353,7 @@ v-s:NewSingleScheduledActionTemplate
 <div>
   <div class="container sheet">
     <h3 class="margin-sm">
-      <span about="@" property="rdf:type"></span><br>
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><br>
       <small about="@" property="rdfs:label" class="view edit -search"></small>
     </h3>
     <section id="MainProperties">
