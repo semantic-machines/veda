@@ -1101,7 +1101,7 @@ v-ui:ModuleTemplate
   v-ui:template """
 <div class="container sheet">
   <h2>
-    <span about="@" property="rdf:type"></span><br>
+    <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><br>
     <small property="@"></small>
   </h2>
   <div class="row">
