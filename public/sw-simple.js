@@ -1,7 +1,8 @@
 // This is the "Simple offline" service worker
 
-var FILES = "files-0";
-var STATIC = "static-0";
+var version = 6;
+var FILES = "files" + version;
+var STATIC = "static" + version;
 var API = [
   "/ping",
   "/get_rights",
