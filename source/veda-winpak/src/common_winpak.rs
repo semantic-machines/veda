@@ -362,6 +362,31 @@ pub fn block_card<I: BoxableIo + 'static>(
         Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
     }
 }
+
+// DELETE CARD
+
+pub const DEACTIVATE_CARD: &str = "\
+UPDATE [WIN-PAK PRO].[dbo].[Card]
+    SET [ActivationDate]=@P1, [CardStatus]=2
+    WHERE LTRIM([CardNumber])=@P2 and [deleted]=0";
+
+pub fn deactivate_card<I: BoxableIo + 'static>(
+    is_need_op: bool,
+    date_from: Option<i64>,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if is_need_op && date_from.is_some() {
+        Box::new(
+            transaction
+                .exec(DEACTIVATE_CARD, &[&NaiveDateTime::from_timestamp(date_from.unwrap(), 0).add(Duration::hours(WINPAK_TIMEZONE)), &card_number.as_str()])
+                .and_then(|(_result, trans)| Ok(trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
+
 // CLEAR ACCESS LEVEL
 
 pub const CLEAR_ACCESS_LEVEL: &str = "\
@@ -579,7 +604,7 @@ pub fn update_ts_number<I: BoxableIo + 'static>(
 pub const DELETE_ACCESS_LEVEL: &str = "\
 DELETE t1 FROM [WIN-PAK PRO].[dbo].[CardAccessLevels] t1
   JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[RecordID]=[t1].[CardID]
-WHERE [t1].[AccessLevelID]=@P1 and LTRIM([t2].[CardNumber])=@P2";
+WHERE LTRIM([t2].[CardNumber])=@P1 and [t1].[AccessLevelID]=@P2 and [t1].[Deleted]=0 and [t2].[Deleted]=0";
 
 pub fn delete_access_levels<I: BoxableIo + 'static>(
     is_execute: bool,
