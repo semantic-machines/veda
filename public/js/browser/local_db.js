@@ -18,44 +18,52 @@ veda.Module(function (veda) { "use strict";
     }
   };
 
-  veda.LocalDB = function (db_name, store_name) {
+  veda.LocalDB = function () {
     var self = this;
-    this.db_name = db_name;
-    this.store_name = store_name;
-    this.name = db_name + "." + store_name;
+    var version = veda.config.version;
+    this.db_name = "veda";
+    this.store_name = "store";
 
     // Singleton pattern
-    if (veda.LocalDB.prototype[this.name]) {
-      return Promise.resolve(veda.LocalDB.prototype[this.name]);
+    if (veda.LocalDB.prototype[this.db_name + this.store_name]) {
+      return Promise.resolve(veda.LocalDB.prototype[this.db_name + this.store_name]);
     }
 
-    return veda.LocalDB.prototype[this.name] = initDB();
+    return veda.LocalDB.prototype[this.db_name + this.store_name] = initDB(this.db_name, this.store_name);
 
-    function initDB() {
+    function initDB(db_name, store_name) {
 
       return new Promise(function (resolve, reject) {
 
-        var openReq = window.indexedDB.open(self.db_name, 1);
+        var openReq = window.indexedDB.open(db_name, version);
 
         openReq.onsuccess = function (event) {
           var db = event.target.result;
           self.db = db;
-          console.log(self.name, "DB open success");
+          console.log("DB open success");
           resolve(self);
         };
 
         openReq.onerror = function errorHandler(error) {
-          console.log(self.name, "DB open error", error);
+          console.log("DB open error", error);
           reject(error);
         };
 
         openReq.onupgradeneeded = function (event) {
           var db = event.target.result;
+          var stores = [];
+          for (var i = 0, store; i < db.objectStoreNames.length; i++) {
+            stores.push( db.objectStoreNames[i] );
+          }
+          stores.forEach(function (store) {
+            db.deleteObjectStore(store);
+            console.log("DB store deleted:", store);
+          });
           db.createObjectStore(self.store_name);
-          console.log(self.name, "DB create success");
+          console.log("DB create success");
         };
       }).catch(function (error) {
-        console.log(self.name, "IndexedDB error, using in-memory fallback.\n", error);
+        console.log("IndexedDB error, using in-memory fallback.", error);
         return fallback;
       });
     }

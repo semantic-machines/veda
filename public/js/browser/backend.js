@@ -1,7 +1,7 @@
 // HTTP server functions
 veda.Module(function Backend(veda) { "use strict";
 
-  var localDB = new veda.LocalDB("veda", "store");
+  var localDB = new veda.LocalDB();
 
   veda.Backend = {};
 
