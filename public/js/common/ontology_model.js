@@ -25,8 +25,10 @@ veda.Module(function (veda) { "use strict";
   var proto = veda.OntologyModel.prototype;
 
   proto.init = function () {
-    return this.getOntology()
-      .then(function (self) {
+    var self = this;
+    return veda.Backend.loadFile("/ontology.json")
+      .then(function (ontologyJSON) {
+        self.ontology = JSON.parse(ontologyJSON);
         return self.processOntology();
       })
       .catch(function (error) {
@@ -80,28 +82,6 @@ veda.Module(function (veda) { "use strict";
     var classTemplates = this.templates[_class_uri];
     if (!classTemplates) return null;
     return classTemplates[0];
-  };
-
-  proto.getOntology = function () {
-    var self = this;
-    return new Promise( function (resolve, reject) {
-      var xhr = new XMLHttpRequest();
-      xhr.onload = function () {
-        if (this.status == 200) {
-          var ontology = JSON.parse(this.response, veda.Util.decimalDatetimeReviver);
-          self.ontology = ontology;
-          resolve( self );
-        } else {
-          reject( new Error(this) );
-        }
-      };
-      xhr.onerror = function () {
-        reject( new Error(this) );
-      };
-      xhr.open("GET", "/ontology.json", true);
-      xhr.timeout = 120000;
-      xhr.send();
-    });
   };
 
   proto.processOntology = function () {
@@ -252,13 +232,3 @@ veda.Module(function (veda) { "use strict";
   };
 
 });
-
-//~ // Auto update ontology on change
-//~ var ccus = new veda.UpdateService();
-//~ ccus.then(function (ccus) {
-  //~ ccus.subscribe("cfg:OntoVsn", function () {
-    //~ var ontology = new veda.OntologyModel();
-    //~ ontology.init();
-    //~ console.log("Ontology reloaded!");
-  //~ });
-//~ });
