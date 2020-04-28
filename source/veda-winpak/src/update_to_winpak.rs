@@ -131,14 +131,13 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         .and_then(|trans| create_winpak_change_card_event(is_update_access_levels, card_number.to_string(), trans))
         .and_then(|trans| update_cardholder_family(cardholder_family, card_number.to_string(), trans))
         .and_then(|trans| update_ts_number(ts_number, card_number.to_string(), trans))
+        .and_then(|trans| deactivate_card(is_update_access_levels_without_clean, Some(get_now_00_00_00().timestamp()), card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
-    match current_thread::block_on_all(future) {
-        Ok(_) => {
-            return (ResultCode::Ok, "данные обновлены");
-        }
+    return match current_thread::block_on_all(future) {
+        Ok(_) => (ResultCode::Ok, "данные обновлены"),
         Err(e) => {
             error!("fail execute query, err={:?}", e);
-            return (ResultCode::DatabaseModifiedError, "ошибка обновления");
+            (ResultCode::DatabaseModifiedError, "ошибка обновления")
         }
-    }
+    };
 }

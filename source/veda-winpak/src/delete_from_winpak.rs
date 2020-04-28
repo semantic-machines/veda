@@ -81,14 +81,13 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| conn.transaction())
         .and_then(|trans| delete_access_levels(is_deleted_access_levels, 0, deleted_access_levels, card_number.to_string(), trans))
+        .and_then(|trans| deactivate_card(is_deleted_access_levels, Some(get_now_00_00_00().timestamp()), card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
-    match current_thread::block_on_all(future) {
-        Ok(_) => {
-            return (ResultCode::Ok, "данные обновлены");
-        }
+    return match current_thread::block_on_all(future) {
+        Ok(_) => (ResultCode::Ok, "данные обновлены"),
         Err(e) => {
             error!("fail execute query, err={:?}", e);
-            return (ResultCode::DatabaseModifiedError, "ошибка обновления");
+            (ResultCode::DatabaseModifiedError, "ошибка обновления")
         }
-    }
+    };
 }

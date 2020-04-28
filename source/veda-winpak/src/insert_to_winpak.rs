@@ -147,14 +147,12 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             .and_then(|trans| insert_access_levels(true, now, 0, access_levels, card_number.to_string(), trans))
             //            .and_then(|trans| create_winpak_change_card_event(is_access_level, date_to, card_number.to_string(), trans))
             .and_then(|trans| trans.commit());
-        match current_thread::block_on_all(ftran) {
-            Ok(_) => {
-                return (ResultCode::Ok, "данные обновлены");
-            }
+        return match current_thread::block_on_all(ftran) {
+            Ok(_) => (ResultCode::Ok, "данные обновлены"),
             Err(e) => {
                 error!("fail execute query, err={:?}", e);
-                return (ResultCode::DatabaseModifiedError, "ошибка обновления");
+                (ResultCode::DatabaseModifiedError, "ошибка обновления")
             }
-        }
+        };
     }
 }
