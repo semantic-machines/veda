@@ -120,56 +120,48 @@ veda.Module(function (veda) { "use strict";
 
   // Triggered in veda.start()
   veda.on("started", function () {
-
-    veda.Backend.loadFile("./manifest")
-      .then(JSON.parse)
-      .then(function (manifest) {
-        var layout_uri = manifest.veda_layout;
-        var main_uri = manifest.veda_main;
-        var start_url = manifest.start_url;
-        if (!layout_uri || !main_uri || !start_url) {
-          throw "Incomplete layout params in manifest";
-        } else {
-          var layout = new veda.IndividualModel(layout_uri);
-          layout.present("#app")
-            .then(function () {
-              var main = new veda.IndividualModel(main_uri);
-              return main.load();
-            })
-            .then(installRouter)
-            .then(function () {
-              riot.route(location.hash || start_url);
-            });
-        }
-      })
-      .catch(function (err) {
-        console.log(err);
-        var layout_param_uri = veda.user.hasValue("v-s:origin", "ExternalUser") ? "cfg:LayoutExternal" : "cfg:Layout" ;
-        var layout_param = new veda.IndividualModel( layout_param_uri );
-        var main_param_uri = veda.user.hasValue("v-s:origin", "ExternalUser") ? "cfg:MainExternal" : "cfg:Main" ;
-        var main_param = new veda.IndividualModel( main_param_uri );
-        layout_param.load()
-        .then(function (layout_param) {
-          return layout_param["rdf:value"][0].load();
-        })
-        .then(function (layout) {
-          return layout.present("#app");
-        })
+    var layout_uri = veda.manifest.veda_layout;
+    var main_uri = veda.manifest.veda_main;
+    var start_url = veda.manifest.start_url;
+    if (layout_uri && main_uri && start_url) {
+      var layout = new veda.IndividualModel(layout_uri);
+      layout.present("#app")
         .then(function () {
-          return main_param.load();
-        })
-        .then(function (main_param) {
-          return main_param["rdf:value"][0].load();
+          var main = new veda.IndividualModel(main_uri);
+          return main.load();
         })
         .then(installRouter)
-        .catch( function (error) {
-          var notify = new veda.Notify();
-          notify("danger", error);
-        })
         .then(function () {
-          riot.route(location.hash);
+          riot.route(location.hash || start_url);
         });
+    } else {
+      console.log("Incomplete layout params in manifest");
+      var layout_param_uri = veda.user.hasValue("v-s:origin", "ExternalUser") ? "cfg:LayoutExternal" : "cfg:Layout" ;
+      var layout_param = new veda.IndividualModel( layout_param_uri );
+      var main_param_uri = veda.user.hasValue("v-s:origin", "ExternalUser") ? "cfg:MainExternal" : "cfg:Main" ;
+      var main_param = new veda.IndividualModel( main_param_uri );
+      layout_param.load()
+      .then(function (layout_param) {
+        return layout_param["rdf:value"][0].load();
+      })
+      .then(function (layout) {
+        return layout.present("#app");
+      })
+      .then(function () {
+        return main_param.load();
+      })
+      .then(function (main_param) {
+        return main_param["rdf:value"][0].load();
+      })
+      .then(installRouter)
+      .catch( function (error) {
+        var notify = new veda.Notify();
+        notify("danger", error);
+      })
+      .then(function () {
+        riot.route(location.hash);
       });
+    }
   });
   function parse (value) {
     if ( !isNaN( value.split(" ").join("").split(",").join(".") ) ) {
