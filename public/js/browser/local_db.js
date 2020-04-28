@@ -20,7 +20,7 @@ veda.Module(function (veda) { "use strict";
 
   veda.LocalDB = function () {
     var self = this;
-    var version = veda.manifest.version;
+    var version = veda.manifest.veda_version;
     this.db_name = veda.manifest.short_name;
     this.store_name = "store";
 
