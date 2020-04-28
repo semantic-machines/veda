@@ -1,8 +1,7 @@
 // This is the "Simple offline" service worker
 
-var version = 6;
-var FILES = "files" + version;
-var STATIC = "static" + version;
+var FILES = "files";
+var STATIC = "static";
 var API = [
   "/ping",
   "/get_rights",
@@ -25,13 +24,10 @@ var API = [
 ];
 
 this.addEventListener("activate", function(event) {
-  var cacheWhitelist = [ FILES, STATIC ];
   event.waitUntil(
     caches.keys().then(function(keyList) {
       return Promise.all(keyList.map(function(key) {
-        if (cacheWhitelist.indexOf(key) === -1) {
-          return caches.delete(key);
-        }
+        return caches.delete(key);
       }));
     })
   );

@@ -2,11 +2,11 @@
 
 ;(function (veda) { "use strict";
 
-  veda.AppModel = function (config) {
+  veda.AppModel = function (manifest) {
 
     var self = riot.observable(this);
 
-    self.config = config;
+    self.manifest = manifest;
     self.ticket = self.ticket || "";
     self.ontology = {};
     self.cache = {

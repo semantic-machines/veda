@@ -20,8 +20,8 @@ veda.Module(function (veda) { "use strict";
 
   veda.LocalDB = function () {
     var self = this;
-    var version = veda.config.version;
-    this.db_name = "veda";
+    var version = veda.manifest.version;
+    this.db_name = veda.manifest.short_name;
     this.store_name = "store";
 
     // Singleton pattern

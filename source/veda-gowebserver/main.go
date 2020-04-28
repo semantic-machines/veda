@@ -341,11 +341,18 @@ func main() {
       case "/ontology.json":
         ctx.Response.Header.Set("Cache-Control", "max-age=43200, no-cache, must-revalidate, private")
         ctx.SendFile("public/ontology.json")
+      case "/manifest":
+        ctx.Response.Header.Set("Cache-Control", "no-cache, no-store, must-revalidate")
+        ctx.SendFile("public/manifest")
       default:
         if len(routeParts) >= 2 && routeParts[1] == "apps" {
           var last = routeParts[len(routeParts) - 1];
           if last != "manifest" {
             ctx.SendFile("public/index.html")
+            return;
+          } else {
+            ctx.Response.Header.Set("Cache-Control", "no-cache, no-store, must-revalidate")
+            ctx.SendFile("public/" + string(ctx.Path()[:]))
             return;
           }
         }

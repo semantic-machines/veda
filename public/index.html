@@ -531,8 +531,20 @@
     </script>
 
     <script type="text/javascript">
-      $(function () {
-        veda.Module({version: 6});
+      document.addEventListener("DOMContentLoaded", function (event) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function (e) {
+          if (this.status == 200) {
+            var manifest = JSON.parse(xhr.response);
+            veda.Module(manifest);
+          } else {
+            console.log(e);
+          }
+        };
+        xhr.onerror = console.log;
+        xhr.ontimeout = console.log;
+        xhr.open("GET", "./manifest");
+        xhr.send();
       });
     </script>
   </body>

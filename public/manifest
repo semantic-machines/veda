@@ -1,6 +1,6 @@
 {
-  "name": "Veda",
-  "short_name": "Veda",
+  "name": "veda",
+  "short_name": "veda",
   "start_url": "./",
   "display": "minimal-ui",
   "background_color": "#fff",
@@ -15,5 +15,6 @@
     "src": "img/veda-512.png",
     "sizes": "512x512",
     "type": "image/png"
-  }]
+  }],
+  "version": 6
 }
