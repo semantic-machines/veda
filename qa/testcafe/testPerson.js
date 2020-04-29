@@ -7,7 +7,7 @@ import { Selector, t } from 'testcafe';
   const pageForNavigateFromConfig = `${config.baseUrl}`+'#/v-ui:TestUIRegistry';
   test('testPerson', async t => {
     basic.login('karpovrt', '123');
-    const timeStamp = ''+Math.round(+new Date()/1000);
+    const timeStamp = Math.round(Date.now() / 1000).toString();
     basic.createTestUI('Вася Пупкин', timeStamp);
     await t
       .expect(Selector('#user-info').innerText).contains('Администратор2 .')
