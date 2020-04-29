@@ -116,7 +116,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             |row| {
                 if cardholder_id.get() == 0 {
                     cardholder_id.set(row.get::<_, i32>(0).to_owned());
-                    info!("@2 cardholder_id={:?}", cardholder_id);
+                    info!("cardholder_id={:?}", cardholder_id);
                 }
                 Ok(())
             },
@@ -148,7 +148,10 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             //            .and_then(|trans| create_winpak_change_card_event(is_access_level, date_to, card_number.to_string(), trans))
             .and_then(|trans| trans.commit());
         return match current_thread::block_on_all(ftran) {
-            Ok(_) => (ResultCode::Ok, "данные обновлены"),
+            Ok(_) => {
+                extract_photo(module, &mut indv_b, cardholder_id.get());
+                return (ResultCode::Ok, "данные обновлены");
+            }
             Err(e) => {
                 error!("fail execute query, err={:?}", e);
                 (ResultCode::DatabaseModifiedError, "ошибка обновления")

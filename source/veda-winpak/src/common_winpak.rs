@@ -1,6 +1,9 @@
 use chrono::{Datelike, NaiveDate, NaiveDateTime, Utc};
 use futures::Future;
+use std::ffi::OsStr;
+use std::fs;
 use std::ops::Add;
+use std::path::Path;
 use tiberius::{BoxableIo, Error, Transaction};
 use time::Duration;
 use v_module::module::Module;
@@ -10,6 +13,7 @@ use voca_rs::chop;
 
 pub const WINPAK_TIMEZONE: i64 = 3;
 pub const CARD_NUMBER_FIELD_NAME: &str = "mnd-s:cardNumber";
+pub const WINPAK_PHOTOS_PATH: &str = "data/out/winpak/photos";
 
 pub const CARD_DATA_QUERY: &str = "\
 SELECT [t1].[ActivationDate], [t1].[ExpirationDate], [t1].[RecordID],
@@ -622,5 +626,24 @@ pub fn delete_access_levels<I: BoxableIo + 'static>(
         )
     } else {
         Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
+
+pub fn extract_photo(module: &mut Module, indv: &mut Individual, record_id: i32) {
+    if let Some(mut file) = module.get_individual_h(&indv.get_first_literal("v-s:hasImage").unwrap_or_default()) {
+        info!("extract photo {} from {}", file.get_id(), indv.get_id());
+        if let Some(fname) = file.get_first_literal("v-s:fileName") {
+            let ext = Path::new(&fname).extension().and_then(OsStr::to_str).unwrap_or("jpg");
+
+            let src_full_path =
+                "data/files/".to_owned() + &file.get_first_literal("v-s:filePath").unwrap_or_default() + "/" + &file.get_first_literal("v-s:fileUri").unwrap_or_default();
+            let dest_full_path = format!("{}/{}-1.{}", WINPAK_PHOTOS_PATH.to_owned(), record_id, ext);
+
+            if let Err(e) = fs::copy(src_full_path, &dest_full_path) {
+                error!("fail store file {}, err={}", &dest_full_path, e);
+            } else {
+                info!("success store file {}", &dest_full_path);
+            }
+        }
     }
 }
