@@ -27,7 +27,7 @@ if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] || [ $1 == "mv2" ] || [ $1
     cd $BUILD_PATH
     cp $CARGO_TARGET_DIR/release/libauthorization.so ./source/lib64/libauthorization.so
     cp $CARGO_TARGET_DIR/release/libauthorization.a ./source/lib64/libauthorization.a
-    sudo cp $CARGO_TARGET_DIR/release/libauthorization.so $PWD
+    cp $CARGO_TARGET_DIR/release/libauthorization.so $PWD
     sudo cp $CARGO_TARGET_DIR/release/libauthorization.so /usr/local/lib
     sudo ldconfig
 
