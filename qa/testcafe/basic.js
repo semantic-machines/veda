@@ -80,7 +80,6 @@ export default class basic {
       .pressKey('ctrl+a delete')
       .typeText('veda-control.fulltext.dropdown', 'Класс для тестирования интерфейса')
       .click('.suggestion[resource="v-ui:TestUIClass"]')
-      .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-left')
       .typeText('veda-control.-view.edit.search[property="rdfs:label"]', label)
       .wait(1000)
       .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', comment)
@@ -93,7 +92,6 @@ export default class basic {
       .click('veda-control#date')
       .pressKey('ctrl+a delete')
       .typeText('veda-control[property="v-ui:testDatetime"]#date', date)
-      .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-right')
       .click('button#save')
       .wait(1000)
   }
