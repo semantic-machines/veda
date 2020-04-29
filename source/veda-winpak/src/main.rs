@@ -7,6 +7,7 @@ mod update_to_winpak;
 #[macro_use]
 extern crate log;
 
+use crate::common_winpak::WINPAK_PHOTOS_PATH;
 use crate::delete_from_winpak::delete_from_winpak;
 use crate::from_winpak::sync_data_from_winpak;
 use crate::insert_to_winpak::insert_to_winpak;
@@ -15,7 +16,7 @@ use chrono::prelude::*;
 use env_logger::Builder;
 use log::LevelFilter;
 use std::io::Write;
-use std::{thread, time as std_time};
+use std::{fs, thread, time as std_time};
 use v_api::app::ResultCode;
 use v_api::*;
 use v_module::module::*;
@@ -49,6 +50,7 @@ fn main() -> std::io::Result<()> {
     //    while !ft_client.connect() {
     //        thread::sleep(time::Duration::from_millis(3000));
     //    }
+    fs::create_dir_all(WINPAK_PHOTOS_PATH).unwrap_or_default();
 
     let mut queue_consumer = Consumer::new("./data/queue", "winpak", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let mut total_prepared_count: u64 = 0;
