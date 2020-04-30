@@ -64,7 +64,8 @@ jobs:
         - rustc -V
       before_script:
         - "export DISPLAY=:99.0"
-        - fluxbox >/dev/null 2>&1
+        - fluxbox >/dev/null 2>&1 &
+        - "cp -R ./qa/onto/* ./ontology 2>/dev/null || :"
         - ./control-start.sh
         - sleep 180
       script:
