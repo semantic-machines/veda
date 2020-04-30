@@ -39,6 +39,7 @@ jobs:
         - ./travis-tools/git-push.sh
       after_failure:
         - ./tools/send-to-chunk-io.sh
+
     - stage: test-veda
       before_install:
         - ./travis-tools/git-pull.sh
@@ -63,8 +64,7 @@ jobs:
         - rustc -V
       before_script:
         - "export DISPLAY=:99.0"
-        - fluxbox >/dev/null 2>&1 &
-        - "cp -R ./qa/onto/* ./ontology 2>/dev/null || :"
+        - fluxbox >/dev/null 2>&1
         - ./control-start.sh
         - sleep 180
       script:
