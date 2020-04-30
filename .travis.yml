@@ -42,6 +42,7 @@ jobs:
     - stage: test-veda
       before_install:
         - ./travis-tools/git-pull.sh
+        - ./travis-tools/install-veda.sh
         - sudo apt-get clean
         - sudo apt-get update
         - sudo apt-get install dpkg
