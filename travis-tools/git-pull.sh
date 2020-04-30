@@ -11,5 +11,9 @@ git config --global user.name "Info SM"
 git config --global push.default simple
 
 git clone git@github.com:semantic-machines/veda-bin
+
 mv ./veda-bin/$TRAVIS_BUILD_NUMBER/* ./
+sudo cp libauthorization.so /usr/local/lib
+sudo ldconfig
+
 rm -rf ./veda-bin
