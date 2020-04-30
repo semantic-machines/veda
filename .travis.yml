@@ -33,6 +33,7 @@ jobs:
         - go version
         - dmd --version
         - rustc -V
+      script:
         - ./build.sh
       after_success:
         - ./travis-tools/git-push.sh
