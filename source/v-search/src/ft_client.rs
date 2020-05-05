@@ -45,6 +45,26 @@ impl FTQuery {
         }
     }
 
+    pub fn set_sort(&mut self, v: String) {
+        self.sort = v;
+    }
+
+    pub fn set_databases(&mut self, v: String) {
+        self.databases = v;
+    }
+
+    pub fn set_top(&mut self, v: i32) {
+        self.top = v;
+    }
+
+    pub fn set_limit(&mut self, v: i32) {
+        self.limit = v;
+    }
+
+    pub fn set_from(&mut self, v: i32) {
+        self.from = v;
+    }
+
     pub fn as_string(&self) -> String {
         let mut s = String::new();
 
