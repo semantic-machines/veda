@@ -18,18 +18,11 @@ jobs:
         - sudo apt-get clean
         - sudo apt-get update
         - sudo apt-get install dpkg
-        - sudo apt-get install -y xvfb
-        - stty cols 80
-        - sudo apt-get install nodejs-legacy
-        - npm install -g grunt-cli
-        - npm install grunt-contrib-qunit --save-dev
-        - npm install grunt --save-dev
       install:
         - ./tools/install-tarantool.sh
         - ./tools/install-clickhouse.sh
         - ./control-install.sh
         - source $HOME/.cargo/env
-        - npm install --save-dev testcafe
         - go version
         - dmd --version
         - rustc -V
@@ -59,9 +52,6 @@ jobs:
         - ./control-install.sh
         - source $HOME/.cargo/env
         - npm install --save-dev testcafe
-        - go version
-        - dmd --version
-        - rustc -V
       before_script:
         - "export DISPLAY=:99.0"
         - fluxbox >/dev/null 2>&1 &
@@ -91,7 +81,7 @@ jobs:
         - travis_wait 6 testcafe chrome qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.7
       after_success:
         - ./control-stop.sh
-        - ./travis-tools/git-clear.sh
+        - ./travis-tools/git-clear-prev.sh
       after_failure:
         - ./control-stop.sh
         - ./tools/send-to-chunk-io.sh
