@@ -6,7 +6,7 @@ wget https://repo1.maven.org/maven2/com/madgag/bfg/1.13.0/bfg-1.13.0.jar
 for folder in ./veda-bin.git/*; do
   name=$(basename -- "$folder")
   if [ -d "$folder" ] && [ "$name" != "$TRAVIS_BUILD_NUMBER" ] && [[ "$name" =~ ^[0-9]+$ ]]; then
-    java -jar bfg-1.13.0.jar --delete-folders $folder --no-blob-protection veda-bin.git
+    java -jar bfg-1.13.0.jar --delete-folders $name --no-blob-protection veda-bin.git
   fi
 done
 
