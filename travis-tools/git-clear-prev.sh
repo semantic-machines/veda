@@ -4,7 +4,7 @@ git clone --mirror git@github.com:semantic-machines/veda-bin.git
 wget -nv https://repo1.maven.org/maven2/com/madgag/bfg/1.13.0/bfg-1.13.0.jar
 
 todelete=""
-for folder in ./veda-bin.git/*; do
+for folder in ./veda-bin/*; do
   name=$(basename -- "$folder")
   echo "current file: $folder, basename: $name"
   if [ -d "$folder" ] && [ "$name" != "$TRAVIS_BUILD_NUMBER" ] && [[ "$name" =~ ^[0-9]+$ ]]; then
