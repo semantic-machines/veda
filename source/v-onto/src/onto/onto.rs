@@ -98,7 +98,25 @@ impl Onto {
         false
     }
 
-    pub fn get_subs(&mut self, el: &str, collector: &mut HashSet<String>) {
+    pub fn is_some_entered_it<'a, I>(&mut self, el: &str, subs: I) -> bool
+    where
+        I: Iterator<Item = &'a String>,
+    {
+        for sub in subs {
+            if self.relations.contains_key(sub) {
+                let onto_el = self.relations.entry((*sub).to_string()).or_default();
+                if let Some(rtype) = onto_el.get(el) {
+                    if *rtype == RelType::Sub {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        false
+    }
+
+    pub fn get_subs(&self, el: &str, collector: &mut HashSet<String>) {
         if self.relations.contains_key(el) {
             let mut buf = Vec::new();
             if let Some(qqq) = self.relations.get(el) {
