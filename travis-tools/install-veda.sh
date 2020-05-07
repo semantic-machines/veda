@@ -1,9 +1,8 @@
 #!/bin/sh
 
-mv ./veda-bin/$TRAVIS_BUILD_NUMBER/* ./
+cp ./veda-bin/$TRAVIS_BUILD_NUMBER/* ./
 sudo cp libauthorization.so /usr/local/lib
 sudo ldconfig
-rm -rf ./veda-bin
 
 if [ ! -f ./ontology/config.ttl ]
 then
