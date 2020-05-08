@@ -1,0 +1,26 @@
+[package]
+name = "veda-scripts-v8"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+log = "0.4"
+chrono = "0.4.9"
+lazy_static = "1.4.0"
+# sudo apt install libglib2.0-dev
+
+#rusty_v8 = {git="https://github.com/semantic-machines/rusty_v8.git", rev="f733cef479935ec197104f000606270ebfec323e"}
+rusty_v8_m = "0.4.3"
+
+tokio = "0.1"
+rust-ini = "0.13"
+nng = "0.5.1"
+rust_decimal = "1.0.3"
+
+v_module = { path = "../v-module" }
+v_storage = { path = "../v-storage" }
+v_onto = { path = "../v-onto" }
+v_api = { path = "../v-api" }
+v_search = { path = "../v-search" }
+v_queue = { path = "../v-queue" }
