@@ -871,6 +871,7 @@ v-s:GG_OrganizationStructureGroup
   v-s:authClass v-s:Department ;
   v-s:authClass v-s:Position ;
   v-s:authClass v-s:Appointment ;
+  v-s:authClass v-s:Person ;
   v-s:authGroupFunction """
 var org = veda.Util.getUri(this["v-s:parentOrganization"]);
 return org ? org + "_group" : undefined;
