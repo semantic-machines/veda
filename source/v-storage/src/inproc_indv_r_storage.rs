@@ -58,7 +58,7 @@ lazy_static! {
 }
 
 impl Default for StorageROClient {
-     fn default() -> Self {
+    fn default() -> Self {
         StorageROClient {
             soc: Socket::new(Protocol::Req0).unwrap(),
             addr: "".to_owned(),
@@ -106,7 +106,11 @@ pub fn get_individual(id: &str) -> Option<Individual> {
     }
 
     if let Ok(msg) = wmsg {
-        return Some(Individual::new_raw(RawObj::new(msg.as_slice().to_vec())));
+        let data = msg.as_slice();
+        if data == "[]".as_bytes() {
+            return None;
+        }
+        return Some(Individual::new_raw(RawObj::new(data.to_vec())));
     }
 
     None
