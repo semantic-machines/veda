@@ -97,7 +97,7 @@ v-s:keepMembershipOnDelete
 
 v-s:PermissionGenerator
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:PermissionStatement ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Генератор прав"@ru ;
   rdfs:label "Permissions generator"@en ;
   v-ui:hasTemplate v-s:PermissionGeneratorTemplate ;
@@ -511,6 +511,11 @@ if (!veda.GroupGenerators) {
     var authFunction = veda.Util.getFirstValue(generator["v-s:authFunction"]);
     var authGroupFunction = veda.Util.getFirstValue(generator["v-s:authGroupFunction"]);
     var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
+    var canCreate = veda.Util.getFirstValue(generator["v-s:canCreate"]) || 0;
+    var canRead = veda.Util.getFirstValue(generator["v-s:canRead"]) || 0;
+    var canUpdate = veda.Util.getFirstValue(generator["v-s:canUpdate"]) || 0;
+    var canDelete = veda.Util.getFirstValue(generator["v-s:canDelete"]) || 0;
+    var power = canCreate * 1 + canRead * 2 + canUpdate * 4 + canUpdate * 8;
     var keepMembershipOnDelete = veda.Util.getFirstValue(generator["v-s:keepMembershipOnDelete"]);
     var fn;
     if (authProperty) {
@@ -524,6 +529,7 @@ if (!veda.GroupGenerators) {
     fn.generatorUri = generator_uri;
     fn.authValue = authValue;
     fn.keep = keepMembershipOnDelete;
+    fn.power = power;
     authClasses.forEach(function (authClass) {
       acc[authClass] = (acc[authClass] || []).concat(fn);
     });
@@ -533,6 +539,12 @@ if (!veda.GroupGenerators) {
     "@": "v-s:GroupsGeneratorsAreActual",
     "rdf:value": veda.Util.newBool(true)
   });
+  for (var _class in veda.GroupGenerators) {
+    var _class_gg = veda.GroupGenerators[_class].map(function (fn) {
+      return fn.generatorUri;
+    });
+    console.log(_class, ":", "[", _class_gg.join(", "), "]");
+  }
 }
 
 var isDeleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"});
@@ -582,6 +594,7 @@ while (currGroup = currGroupsUris[i]) {
 function addMembership(group_uri, groups) {
   var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
   var group_label = groups[group_uri].label;
+  var power = groups[group_uri].power;
   var mem = {
     "@": mem_uri,
     "rdf:type": veda.Util.newUri("v-s:Membership"),
@@ -591,8 +604,25 @@ function addMembership(group_uri, groups) {
     "v-s:creator": veda.Util.newUri("v-s:Event_GroupGenerator"),
     "v-s:created": veda.Util.newDate(new Date())
   };
+  if (power & 8) {
+    mem["v-s:canDelete"] = veda.Util.newBool(true);
+  }
+  if (power & 4) {
+    mem["v-s:canUpdate"] = veda.Util.newBool(true);
+  }
+  if (power & 2) {
+    mem["v-s:canRead"] = veda.Util.newBool(true);
+  }
+  if (power & 1) {
+    mem["v-s:canCreate"] = veda.Util.newBool(true);
+  }
   put_individual(veda.ticket, mem);
-  console.log("added to", group_uri, group_label);
+  var power_str = ""
+  power_str += (power & 1) ? "C" : "";
+  power_str += (power & 2) ? "R" : "";
+  power_str += (power & 4) ? "U" : "";
+  power_str += (power & 8) ? "D" : "";
+  console.log("added to", group_uri, group_label, "(", power_str, ")");
 }
 
 function removeMembership(group_uri, groups) {
@@ -611,10 +641,25 @@ function checkAddMembership(group_uri, groups) {
   var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
   var mem = get_individual(veda.ticket, mem_uri);
   var group_label = groups[group_uri].label;
+  var power = groups[group_uri].power;
   if (!mem) {
     addMembership(group_uri, groups);
   } else {
-    console.log("membership exists", group_uri, group_label);
+    var canCreate = veda.Util.getFirstValue(mem["v-s:canCreate"]) || 0;
+    var canRead = veda.Util.getFirstValue(mem["v-s:canRead"]) || 0;
+    var canUpdate = veda.Util.getFirstValue(mem["v-s:canUpdate"]) || 0;
+    var canDelete = veda.Util.getFirstValue(mem["v-s:canDelete"]) || 0;
+    var mem_power = canCreate * 1 + canRead * 2 + canUpdate * 4 + canUpdate * 8;
+    if ( power ^ mem_power ) {
+      addMembership(group_uri, groups);
+    } else {
+      var power_str = "";
+      power_str += (power & 1) ? "C" : "";
+      power_str += (power & 2) ? "R" : "";
+      power_str += (power & 4) ? "U" : "";
+      power_str += (power & 8) ? "D" : "";
+      console.log("membership exists", group_uri, group_label, "(", power_str, ")");
+    }
   }
 }
 
@@ -636,9 +681,9 @@ function checkAddGroup(group_uri, group_label) {
 function generateGroups(document) {
   var groups = {};
   if (!document) { return groups; }
-  var type = veda.Util.getUri(document["rdf:type"]);
+  var types = veda.Util.getUris(document["rdf:type"]);
   var _super = JSON.parse(super_classes);
-  _super.push(type);
+  _super = _super.concat(types);
 
   for (var i = 0, _class, fns; (_class = _super[i]); i++) {
     if (_class in veda.GroupGenerators) {
@@ -663,7 +708,7 @@ function generateGroups(document) {
               hash = Sha256.hash(group_concat_uri).substring(32);
               group_uri = "d:grp-" + hash;
               group_label = "Auth group. Generator: " + fn.generatorUri + ", value: " + fn_value_item;
-              groups[group_uri] = { "label": group_label, "keep": fn.keep };
+              groups[group_uri] = { "label": group_label, "keep": fn.keep, "power": fn.power };
               checkAddGroup(group_uri, group_label);
             });
           }
@@ -676,7 +721,7 @@ function generateGroups(document) {
           group_label = "Auth group. Generator: " + fn.generatorUri + ", calculated group";
           group_uri.forEach(function (group_uri_item) {
             if (typeof group_uri_item === "undefined") { return; }
-            groups[group_uri_item] = { "label": group_label, "keep": fn.keep };
+            groups[group_uri_item] = { "label": group_label, "keep": fn.keep, "power": fn.power };
             checkAddGroup(group_uri_item, group_label);
           });
         }
@@ -782,7 +827,21 @@ v-s:GG_OrganizationStructure
   v-s:authGroupFunction """
 return veda.Util.getPropertyChain(this, "v-s:parentUnit");
   """;
-  rdfs:label "Auth group generator: put organization unit to parent unit group" ;
+  rdfs:label "Auth group generator: put organization unit to parent unit group " ;
+  v-s:canRead true ;
+.
+
+v-s:GG_OrganizationStructureGroup
+  rdf:type v-s:GroupGenerator ;
+  v-s:authClass v-s:Organization ;
+  v-s:authClass v-s:Department ;
+  v-s:authClass v-s:Position ;
+  v-s:authClass v-s:Appointment ;
+  v-s:authGroupFunction """
+var org = veda.Util.getUri(this["v-s:parentOrganization"]);
+return org ? org + "_group" : undefined;
+  """;
+  rdfs:label "Auth group generator: put all organization's units to special group with id = organizationId_group " ;
 .
 
 v-s:GG_AppointmentToOrganization
@@ -793,6 +852,7 @@ v-s:GG_AppointmentToOrganization
 return veda.Util.getPropertyChain(this, "v-s:parentOrganization");
   """;
   v-s:keepMembershipOnDelete true ;
+  v-s:canRead true ;
 .
 
 v-s:GG_PersonToAllUsersGroup
