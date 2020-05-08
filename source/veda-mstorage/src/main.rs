@@ -13,7 +13,7 @@ use v_api::IndvOp;
 use v_authorization::common::{Access, Trace};
 use v_az_lmdb::_authorize;
 use v_module::info::ModuleInfo;
-use v_module::module::{create_sys_ticket, init_log, Module};
+use v_module::module::{create_sys_ticket, init_log, Module, indv_apply_cmd};
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::{Individual, RawObj};
@@ -579,27 +579,6 @@ fn to_storage_and_queue(
     }
 
     true
-}
-
-fn indv_apply_cmd(cmd: &IndvOp, prev_indv: &mut Individual, indv: &mut Individual) {
-    if !prev_indv.is_empty() {
-        let list_predicates = indv.get_predicates();
-
-        for predicate in list_predicates {
-            if predicate != "v-s:updateCounter" {
-                if cmd == &IndvOp::AddIn {
-                    // add value to set or ignore if exists
-                    prev_indv.apply_predicate_as_add_unique(&predicate, indv);
-                } else if cmd == &IndvOp::SetIn {
-                    // set value to predicate
-                    prev_indv.apply_predicate_as_set(&predicate, indv);
-                } else if cmd == &IndvOp::RemoveFrom {
-                    // remove predicate or value in set
-                    prev_indv.apply_predicate_as_remove(&predicate, indv);
-                }
-            }
-        }
-    }
 }
 
 fn get_ticket_from_db(id: &str, dest: &mut Ticket, storage: &mut VStorage) {

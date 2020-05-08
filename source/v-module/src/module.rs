@@ -518,3 +518,24 @@ pub fn wait_module(module_name: &str, wait_op_id: i64) -> i64 {
 
     //-1
 }
+
+pub fn indv_apply_cmd(cmd: &IndvOp, prev_indv: &mut Individual, indv: &mut Individual) {
+    if !prev_indv.is_empty() {
+        let list_predicates = indv.get_predicates();
+
+        for predicate in list_predicates {
+            if predicate != "v-s:updateCounter" {
+                if cmd == &IndvOp::AddIn {
+                    // add value to set or ignore if exists
+                    prev_indv.apply_predicate_as_add_unique(&predicate, indv);
+                } else if cmd == &IndvOp::SetIn {
+                    // set value to predicate
+                    prev_indv.apply_predicate_as_set(&predicate, indv);
+                } else if cmd == &IndvOp::RemoveFrom {
+                    // remove predicate or value in set
+                    prev_indv.apply_predicate_as_remove(&predicate, indv);
+                }
+            }
+        }
+    }
+}
