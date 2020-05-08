@@ -186,7 +186,7 @@ v-s:Account
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Учетная запись"@ru ;
   rdfs:label "Account"@en ;
-  v-ui:hasTemplate v-s:AccountTemplate; 
+  v-ui:hasTemplate v-s:AccountTemplate;
 .
 
 v-s:GitAccount
@@ -390,6 +390,8 @@ v-s:canRead
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:domain v-s:PermissionGenerator ;
   rdfs:label "Можно читать"@ru ;
   rdfs:label "Can read"@en ;
   rdfs:range xsd:boolean ;
