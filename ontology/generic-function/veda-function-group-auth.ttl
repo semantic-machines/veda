@@ -184,7 +184,31 @@ v-s:GroupGeneratorTemplate
 
   <em about="v-s:GroupGeneratorUri" property="rdfs:label"></em>
   <code class="group-uri"></code>
-  <br>
+  <hr>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canCreate" data-type="boolean"></veda-control>
+      <em about="v-s:canCreate" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canRead" data-type="boolean"></veda-control>
+      <em about="v-s:canRead" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canUpdate" data-type="boolean"></veda-control>
+      <em about="v-s:canUpdate" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canDelete" data-type="boolean"></veda-control>
+      <em about="v-s:canDelete" property="rdfs:label"></em>
+    </label>
+  </div>
   <br>
   <div class="actions view edit -search">
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
@@ -329,6 +353,7 @@ v-s:GroupGeneratorRegistryResultTemplate
       <th class="orderby" data-orderby="v-s:authProperty"><span about="v-s:authProperty" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authFunction"><span about="v-s:authFunction" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
+      <th><span about="v-s:Rights" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
     </tr>
@@ -342,9 +367,18 @@ v-s:GroupGeneratorRegistryResultTemplate
       <td about="@" rel="v-s:authProperty" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:authFunction"></td>
       <td about="@" property="v-s:authValue"></td>
+      <td><strong class="rights"></strong></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
     </tr>
+    <script>
+      var rights = "";
+      rights += (this.hasValue("v-s:canCreate", true) ? "C" : "");
+      rights += (this.hasValue("v-s:canRead",   true) ? "R" : "");
+      rights += (this.hasValue("v-s:canUpdate", true) ? "U" : "");
+      rights += (this.hasValue("v-s:canDelete", true) ? "D" : "");
+      $(".rights", template).text(rights);
+    </script>
   </tbody>
 </table>
   """ ;
