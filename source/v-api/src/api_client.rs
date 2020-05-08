@@ -153,7 +153,7 @@ impl APIClient {
         let req = Message::from(query.to_string().as_bytes());
 
         if let Err(e) = self.client.send(req) {
-            error!("fail send to main module, err={:?}", e);
+            error!("api:update - fail send to main module, err={:?}", e);
             return OpResult::res(ResultCode::NotReady);
         }
 
@@ -161,7 +161,7 @@ impl APIClient {
         let wmsg = self.client.recv();
 
         if let Err(e) = wmsg {
-            error!("fail recv from main module, err={:?}", e);
+            error!("api:update - fail recv from main module, err={:?}", e);
             return OpResult::res(ResultCode::NotReady);
         }
 
@@ -170,7 +170,7 @@ impl APIClient {
         let reply = serde_json::from_str(&String::from_utf8_lossy(&msg));
 
         if let Err(e) = reply {
-            error!("fail parse result operation [put], err={:?}", e);
+            error!("api:update - fail parse result operation [put], err={:?}", e);
             return OpResult::res(ResultCode::BadRequest);
         }
 
@@ -178,17 +178,17 @@ impl APIClient {
 
         if let Some(t) = json["type"].as_str() {
             if t != "OpResult" {
-                error!("expecten \"type\" = \"OpResult\", found {}", t);
+                error!("api:update - expecten \"type\" = \"OpResult\", found {}", t);
                 return OpResult::res(ResultCode::BadRequest);
             }
         } else {
-            error!("not found \"type\"");
+            error!("api:update - not found \"type\"");
             return OpResult::res(ResultCode::BadRequest);
         }
 
         if let Some(arr) = json["data"].as_array() {
             if arr.len() != 1 {
-                error!("invalid \"data\" section");
+                error!("api:update - invalid \"data\" section");
                 return OpResult::res(ResultCode::BadRequest);
             }
 
@@ -200,12 +200,19 @@ impl APIClient {
                     };
                 }
             } else {
-                error!("invalid \"data\" section");
+                error!("api:update - invalid \"data\" section");
                 return OpResult::res(ResultCode::BadRequest);
             }
         } else {
-            error!("not found \"data\"");
-            return OpResult::res(ResultCode::BadRequest);
+            if let Some(res) = json["result"].as_i64() {
+                return OpResult {
+                    result: ResultCode::from_i64(res),
+                    op_id: 0,
+                };
+            } else {
+                error!("api:update - not found \"data\"");
+                return OpResult::res(ResultCode::BadRequest);
+            }
         }
 
         OpResult::res(ResultCode::BadRequest)
