@@ -247,6 +247,7 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
                 }
 
                 info!("run {}", script_id);
+
                 compiled_script.run(ctx.wpl.scope, ctx.wpl.context);
             }
         }

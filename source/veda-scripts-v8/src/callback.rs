@@ -16,6 +16,7 @@ lazy_static! {
     static ref FT_CLIENT: Mutex<RefCell<FTClient>> = Mutex::new(RefCell::new(FTClient::new(Module::get_property("ft_query_service_url").unwrap_or_default())));
     pub(crate) static ref G_VARS: Mutex<RefCell<CallbackSharedData>> = Mutex::new(RefCell::new(CallbackSharedData::default()));
     pub(crate) static ref G_EVENT_ID: Mutex<RefCell<String>> = Mutex::new(RefCell::new(String::default()));
+    pub(crate) static ref G_TRANSACTION: Mutex<RefCell<Transaction>> = Mutex::new(RefCell::new(Transaction::default()));
 }
 
 pub fn fn_callback_get_individual(mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
@@ -198,26 +199,18 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
     }
     let mut ticket = ticket.unwrap_or_default();
 
-    // let mut sh_g_vars = G_VARS.lock().unwrap();
-    // let _g_vars = sh_g_vars.get_mut();
-    // add_to_transaction ()
-
     let obj = args.get(1);
     if obj.is_object() {
         let js_obj = obj.to_object(scope).unwrap();
         let indv = v8obj2individual(scope, &context, js_obj);
-        let mut sh_api_client = API_CLIENT.lock().unwrap();
-        let api_client = sh_api_client.get_mut();
+        let indv_id = indv.get_id().to_owned();
 
-        if ticket.is_empty() {
-            let mut sh_g_vars = G_VARS.lock().unwrap();
-            let g_vars = sh_g_vars.get_mut();
-            ticket = g_vars.g_ticket.to_string();
-        }
+        let mut sh_tnx = G_TRANSACTION.lock().unwrap();
+        let tnx = sh_tnx.get_mut();
+        let res = tnx.add_to_transaction(opt.clone(), indv, ticket, "".to_string());
 
-        let res = api_client.update(&ticket, opt.clone(), &indv);
-        info!("{:?} {}, {:?}", &opt, indv.get_id(), res.result);
-        rv.set(v8::Integer::new(scope, res.result as i32).into());
+        info!("ADD TO TRANSACTION {:?} {}, {:?}", &opt, indv_id, res);
+        rv.set(v8::Integer::new(scope, res as i32).into());
     } else {
         error!("callback {:?}, arg is not object", opt);
     }
