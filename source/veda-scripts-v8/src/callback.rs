@@ -12,7 +12,7 @@ use v_search::ft_client::*;
 use v_storage::inproc_indv_r_storage::get_individual;
 
 lazy_static! {
-    static ref API_CLIENT: Mutex<RefCell<APIClient>> = Mutex::new(RefCell::new(APIClient::new(Module::get_property("main_module_url").unwrap_or_default())));
+    //static ref API_CLIENT: Mutex<RefCell<APIClient>> = Mutex::new(RefCell::new(APIClient::new(Module::get_property("main_module_url").unwrap_or_default())));
     static ref FT_CLIENT: Mutex<RefCell<FTClient>> = Mutex::new(RefCell::new(FTClient::new(Module::get_property("ft_query_service_url").unwrap_or_default())));
     pub(crate) static ref G_VARS: Mutex<RefCell<CallbackSharedData>> = Mutex::new(RefCell::new(CallbackSharedData::default()));
     pub(crate) static ref G_EVENT_ID: Mutex<RefCell<String>> = Mutex::new(RefCell::new(String::default()));

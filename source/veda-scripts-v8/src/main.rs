@@ -5,13 +5,13 @@ extern crate log;
 
 use crate::callback::*;
 use crate::scripts_workplace::{is_filter_pass, ScriptsWorkPlace};
-use crate::session_cache::CallbackSharedData;
+use crate::session_cache::{CallbackSharedData, Transaction, commit};
 use rusty_v8_m as v8;
 use rusty_v8_m::scope::Entered;
 use rusty_v8_m::{Context, HandleScope, Local, OwnedIsolate};
 use std::sync::Mutex;
 use std::thread;
-use v_api::IndvOp;
+use v_api::{IndvOp, APIClient};
 use v_module::info::ModuleInfo;
 use v_module::module::{get_cmd, get_inner_binobj_as_individual, init_log, wait_load_ontology, Module, PrepareError};
 use v_module::onto::load_onto;
@@ -66,8 +66,9 @@ fn get_storage_init_param() -> String {
 }
 
 pub struct MyContext<'a> {
+    api_client: APIClient,
     onto: Onto,
-    wpl: ScriptsWorkPlace<'a>,
+    workplace: ScriptsWorkPlace<'a>,
 }
 
 fn main() -> Result<(), i32> {
@@ -101,12 +102,13 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
     }
 
     let mut ctx = MyContext {
-        wpl: ScriptsWorkPlace::new(parent_scope, context),
+        api_client:         APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
+        workplace: ScriptsWorkPlace::new(parent_scope, context),
         onto,
     };
 
-    ctx.wpl.load_ext_scripts();
-    ctx.wpl.load_event_scripts();
+    ctx.workplace.load_ext_scripts();
+    ctx.workplace.load_event_scripts();
 
     let mut queue_consumer = Consumer::new("./data/queue", "scripts1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
@@ -166,13 +168,13 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
     }
 
     if !prepare_if_is_script {
-        if ctx.wpl.scripts.contains_key(&doc_id) {
+        if ctx.workplace.scripts.contains_key(&doc_id) {
             prepare_if_is_script = true;
         }
     }
 
     if prepare_if_is_script {
-        ctx.wpl.prepare_script(&mut new_state);
+        ctx.workplace.prepare_script(&mut new_state);
     }
 
     let mut session_data = CallbackSharedData::default();
@@ -205,14 +207,14 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
     *g_vars = session_data;
     drop(sh_g_vars);
 
-    for script_id in ctx.wpl.scripts_order.iter() {
+    for script_id in ctx.workplace.scripts_order.iter() {
         let run_script_id = doc_id.to_owned() + "+" + script_id;
-        if let Some(script) = ctx.wpl.scripts.get(script_id) {
+        if let Some(script) = ctx.workplace.scripts.get(script_id) {
             if let Some(mut compiled_script) = script.compiled_script {
                 let mut sh_g_event_id = G_EVENT_ID.lock().unwrap();
                 let g_event_id = sh_g_event_id.get_mut();
                 *g_event_id = run_script_id.to_owned() + ";" + &event_id;
-                std::mem::drop(sh_g_event_id);
+                drop(sh_g_event_id);
 
                 if !is_filter_pass(script, &doc_id, &rdf_types, &mut ctx.onto) {
                     //log.trace("skip (filter) script:%s", script_id);
@@ -248,7 +250,17 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
 
                 info!("run {}", script_id);
 
-                compiled_script.run(ctx.wpl.scope, ctx.wpl.context);
+                let mut sh_tnx = G_TRANSACTION.lock().unwrap();
+                let tnx = sh_tnx.get_mut();
+                *tnx = Transaction::default();
+                drop(tnx);
+
+                compiled_script.run(ctx.workplace.scope, ctx.workplace.context);
+
+                sh_tnx = G_TRANSACTION.lock().unwrap();
+                let tnx = sh_tnx.get_mut();
+                commit(tnx, &mut ctx.api_client);
+                drop(tnx);
             }
         }
     }

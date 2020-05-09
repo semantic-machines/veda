@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::string::ToString;
 use v_api::app::ResultCode;
-use v_api::IndvOp;
+use v_api::{IndvOp, APIClient};
 use v_module::module::indv_apply_cmd;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
@@ -168,4 +168,22 @@ impl Transaction {
             ti.rc
         }
     }
+
+}
+
+pub(crate) fn commit (tnx: &Transaction, api_client: &mut APIClient) -> ResultCode{
+
+    for ti in tnx.queue.iter() {
+        if ti.cmd == IndvOp::Remove && ti.indv.is_empty() {
+            continue;
+        }
+
+        if ti.rc != ResultCode::Ok {
+            return ti.rc;
+        }
+
+        let res = api_client.update(&ti.ticket_id, ti.cmd.clone(), &ti.indv);
+    }
+
+    ResultCode::Ok
 }
