@@ -82,17 +82,17 @@ impl CallbackSharedData {
 
 pub(crate) struct TransactionItem {
     uri: String,
-    cmd: IndvOp,
-    indv: Individual,
+    pub cmd: IndvOp,
+    pub indv: Individual,
     ticket_id: String,
-    rc: ResultCode,
+    pub rc: ResultCode,
 }
 
 pub(crate) struct Transaction {
     pub id: i64,
     pub event_id: String,
     buff: HashMap<String, usize>,
-    queue: Vec<TransactionItem>,
+    pub queue: Vec<TransactionItem>,
 }
 
 impl Default for Transaction {

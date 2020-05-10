@@ -208,7 +208,7 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
         let tnx = sh_tnx.get_mut();
         let res = tnx.add_to_transaction(opt.clone(), indv, ticket, "".to_string());
 
-        info!("ADD TO TRANSACTION {:?} {}, {:?}", &opt, indv_id, res);
+        //info!("ADD TO TRANSACTION {:?} {}, {:?}", &opt, indv_id, res);
         rv.set(v8::Integer::new(scope, res as i32).into());
     //drop(sh_tnx);
     } else {

@@ -157,7 +157,7 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
     let mut new_state = Individual::default();
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
-    info!("!!!! prepare document {}", new_state.get_id());
+    //info!("!!!! prepare document {}", new_state.get_id());
 
     let mut prepare_if_is_script = false;
     let rdf_types = new_state.get_literals("rdf:type").unwrap_or_default();
@@ -276,6 +276,10 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
                 sh_tnx = G_TRANSACTION.lock().unwrap();
                 let tnx = sh_tnx.get_mut();
                 commit(tnx, &mut ctx.api_client);
+
+                for item in tnx.queue.iter() {
+                    info!("tnx item: cmd={:?}, uri={}, res={:?}", item.cmd, item.indv.get_id(), item.rc);
+                }
                 drop(sh_tnx);
             }
         }
