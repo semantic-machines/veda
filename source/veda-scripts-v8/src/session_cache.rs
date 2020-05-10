@@ -81,17 +81,15 @@ impl CallbackSharedData {
 }
 
 pub(crate) struct TransactionItem {
-    op_id: u64,
     uri: String,
     cmd: IndvOp,
     indv: Individual,
     ticket_id: String,
-    //    event_id: String,
-    //    user_uri: String,
     rc: ResultCode,
 }
 
 pub(crate) struct Transaction {
+    pub id: i64,
     pub event_id: String,
     buff: HashMap<String, usize>,
     queue: Vec<TransactionItem>,
@@ -100,6 +98,7 @@ pub(crate) struct Transaction {
 impl Default for Transaction {
     fn default() -> Self {
         Self {
+            id: 0,
             event_id: "".to_string(),
             buff: Default::default(),
             queue: vec![],
@@ -125,13 +124,10 @@ impl Transaction {
 
     pub(crate) fn add_to_transaction(&mut self, cmd: IndvOp, new_indv: Individual, ticket_id: String, _user_id: String) -> ResultCode {
         let mut ti = TransactionItem {
-            op_id: 0,
             uri: "".to_string(),
             cmd,
             indv: new_indv,
             ticket_id,
-            //event_id: "".to_string(),
-            //user_uri: user_id,
             rc: ResultCode::Ok,
         };
 

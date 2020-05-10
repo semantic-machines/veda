@@ -69,6 +69,7 @@ pub struct MyContext<'a> {
     api_client: APIClient,
     onto: Onto,
     workplace: ScriptsWorkPlace<'a>,
+    vm_id: String,
 }
 
 fn main() -> Result<(), i32> {
@@ -105,6 +106,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
         workplace: ScriptsWorkPlace::new(parent_scope, context),
         onto,
+        vm_id: "main".to_owned(),
     };
 
     ctx.workplace.load_ext_scripts();
@@ -145,9 +147,12 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
         return Ok(true);
     }
 
-    let _op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
+    let src = queue_element.get_first_literal("src").unwrap_or_default();
+    let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
     let event_id = queue_element.get_first_literal("event_id").unwrap_or_default();
     let user_id = queue_element.get_first_literal("user_uri").unwrap_or_default();
+    let transaction_id = queue_element.get_first_integer("tnx_id").unwrap_or_default();
+    let run_at = queue_element.get_first_literal("v-s:runAt").unwrap_or_default();
 
     let mut new_state = Individual::default();
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
@@ -193,7 +198,8 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
     session_data.set_g_super_classes(&rdf_types, &ctx.onto);
 
     let mut last_part_event_id = "";
-    let full_path_els: Vec<&str> = event_id.split(";").collect();
+    let te = event_id.to_owned();
+    let full_path_els: Vec<&str> = te.split(";").collect();
 
     if let Some(s) = full_path_els.get(0) {
         last_part_event_id = s;
@@ -216,10 +222,13 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
         let run_script_id = doc_id.to_owned() + "+" + script_id;
         if let Some(script) = ctx.workplace.scripts.get(script_id) {
             if let Some(mut compiled_script) = script.compiled_script {
-                //                let mut sh_g_event_id = G_EVENT_ID.lock().unwrap();
-                //                let g_event_id = sh_g_event_id.get_mut();
-                //                *g_event_id = run_script_id.to_owned() + ";" + &event_id;
-                //                drop(sh_g_event_id);
+                if src == "?" {
+                    if run_at.is_empty() && run_at != ctx.vm_id {
+                        continue;
+                    } else if run_at.is_empty() && script.run_at != ctx.vm_id {
+                        continue;
+                    }
+                }
 
                 if !is_filter_pass(script, &doc_id, &rdf_types, &mut ctx.onto) {
                     //log.trace("skip (filter) script:%s", script_id);
@@ -253,11 +262,12 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
                     }
                 }
 
-                info!("run {}", script_id);
+                info!("start: {}, {}, src={}, op_id={}, tnx_id={}, event_id={}", script_id, doc_id, src, op_id, transaction_id, event_id);
 
                 let mut sh_tnx = G_TRANSACTION.lock().unwrap();
                 let tnx = sh_tnx.get_mut();
                 *tnx = Transaction::default();
+                tnx.id = transaction_id;
                 tnx.event_id = run_script_id.to_owned() + ";" + &event_id;
                 drop(sh_tnx);
 
