@@ -238,6 +238,14 @@ if [ -z $1 ] || [ $1 == "cleaner" ] || [ $1 == "veda-cleaner" ] || [ $1 == "mv2"
     cp $CARGO_TARGET_DIR/release/veda-cleaner $PWD
 fi
 
+if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 == "mva" ]; then
+    echo BUILD SCRIPTS-V8
+    cd source/veda-scripts-v8
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-scripts-v8 $PWD
+fi
+
 if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "mv1" ]; then
     rm ./veda-scripts-main
     rm ./veda-scripts-lp
