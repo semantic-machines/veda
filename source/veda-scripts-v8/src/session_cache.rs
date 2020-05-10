@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::string::ToString;
 use v_api::app::ResultCode;
-use v_api::{IndvOp, APIClient};
+use v_api::{APIClient, IndvOp};
 use v_module::module::indv_apply_cmd;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
@@ -86,12 +86,13 @@ pub(crate) struct TransactionItem {
     cmd: IndvOp,
     indv: Individual,
     ticket_id: String,
-    event_id: String,
-    user_uri: String,
+    //    event_id: String,
+    //    user_uri: String,
     rc: ResultCode,
 }
 
 pub(crate) struct Transaction {
+    pub event_id: String,
     buff: HashMap<String, usize>,
     queue: Vec<TransactionItem>,
 }
@@ -99,6 +100,7 @@ pub(crate) struct Transaction {
 impl Default for Transaction {
     fn default() -> Self {
         Self {
+            event_id: "".to_string(),
             buff: Default::default(),
             queue: vec![],
         }
@@ -121,15 +123,15 @@ impl Transaction {
         None
     }
 
-    pub(crate) fn add_to_transaction(&mut self, cmd: IndvOp, new_indv: Individual, ticket_id: String, user_id: String) -> ResultCode {
+    pub(crate) fn add_to_transaction(&mut self, cmd: IndvOp, new_indv: Individual, ticket_id: String, _user_id: String) -> ResultCode {
         let mut ti = TransactionItem {
             op_id: 0,
             uri: "".to_string(),
             cmd,
             indv: new_indv,
             ticket_id,
-            event_id: "".to_string(),
-            user_uri: user_id,
+            //event_id: "".to_string(),
+            //user_uri: user_id,
             rc: ResultCode::Ok,
         };
 
@@ -168,11 +170,9 @@ impl Transaction {
             ti.rc
         }
     }
-
 }
 
-pub(crate) fn commit (tnx: &Transaction, api_client: &mut APIClient) -> ResultCode{
-
+pub(crate) fn commit(tnx: &Transaction, api_client: &mut APIClient) -> ResultCode {
     for ti in tnx.queue.iter() {
         if ti.cmd == IndvOp::Remove && ti.indv.is_empty() {
             continue;
@@ -183,6 +183,9 @@ pub(crate) fn commit (tnx: &Transaction, api_client: &mut APIClient) -> ResultCo
         }
 
         let res = api_client.update(&ti.ticket_id, ti.cmd.clone(), &ti.indv);
+        if res.result != ResultCode::Ok {
+            error!("commit: op_id={}, code={:?}", res.op_id, res.result);
+        }
     }
 
     ResultCode::Ok
