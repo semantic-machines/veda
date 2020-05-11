@@ -11,6 +11,7 @@ use rusty_v8_m::scope::Entered;
 use rusty_v8_m::{Context, HandleScope, Local, OwnedIsolate};
 use std::sync::Mutex;
 use std::{env, thread};
+use v_api::app::ResultCode;
 use v_api::{APIClient, IndvOp};
 use v_module::info::ModuleInfo;
 use v_module::module::{get_cmd, get_info_of_module, get_inner_binobj_as_individual, init_log, wait_load_ontology, wait_module, Module, PrepareError};
@@ -114,7 +115,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
             break;
         }
     }
-    let process_name = "scripts1-".to_owned() + vm_id;
+    let process_name = "scripts-".to_owned() + vm_id;
 
     info!("use VM id={}", &process_name);
 
@@ -159,7 +160,7 @@ fn after_batch(_module: &mut Module, _ctx: &mut MyContext, _prepared_batch_size:
     false
 }
 
-fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual) -> Result<bool, PrepareError> {
+fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
@@ -298,14 +299,25 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
 
                 sh_tnx = G_TRANSACTION.lock().unwrap();
                 let tnx = sh_tnx.get_mut();
-                commit(tnx, &mut ctx.api_client);
+
+                let res = commit(tnx, &mut ctx.api_client);
 
                 for item in tnx.queue.iter() {
                     info!("tnx item: cmd={:?}, uri={}, res={:?}", item.cmd, item.indv.get_id(), item.rc);
                 }
+
                 drop(sh_tnx);
+
+                if res != ResultCode::Ok {
+                    info!("fail exec event script : {}", script_id);
+                    return Err(PrepareError::Fatal);
+                }
             }
         }
+    }
+    if let Err(e) = module_info.put_info(op_id, op_id) {
+        error!("fail write module_info, op_id={}, err={:?}", op_id, e);
+        return Err(PrepareError::Fatal);
     }
 
     Ok(true)
