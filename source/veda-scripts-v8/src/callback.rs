@@ -202,7 +202,7 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
     if obj.is_object() {
         let js_obj = obj.to_object(scope).unwrap();
         let indv = v8obj2individual(scope, &context, js_obj);
-        let indv_id = indv.get_id().to_owned();
+        //let indv_id = indv.get_id().to_owned();
 
         let mut sh_tnx = G_TRANSACTION.lock().unwrap();
         let tnx = sh_tnx.get_mut();

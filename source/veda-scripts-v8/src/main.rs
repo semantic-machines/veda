@@ -10,10 +10,10 @@ use rusty_v8_m as v8;
 use rusty_v8_m::scope::Entered;
 use rusty_v8_m::{Context, HandleScope, Local, OwnedIsolate};
 use std::sync::Mutex;
-use std::thread;
+use std::{env, thread};
 use v_api::{APIClient, IndvOp};
 use v_module::info::ModuleInfo;
-use v_module::module::{get_cmd, get_inner_binobj_as_individual, init_log, wait_load_ontology, Module, PrepareError};
+use v_module::module::{get_cmd, get_info_of_module, get_inner_binobj_as_individual, init_log, wait_load_ontology, wait_module, Module, PrepareError};
 use v_module::onto::load_onto;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
@@ -94,12 +94,9 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
 
     let mut onto = Onto::default();
     load_onto(&mut module.storage, &mut onto);
-    wait_load_ontology();
 
-    let module_info = ModuleInfo::new("./data", "scripts1_prepared", true);
-    if module_info.is_err() {
-        error!("{:?}", module_info.err());
-        return Err(-1);
+    if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
+        wait_module("fulltext_indexer", wait_load_ontology());
     }
 
     let mut ctx = MyContext {
@@ -109,10 +106,36 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         vm_id: "main".to_owned(),
     };
 
+    let mut vm_id = "main";
+    let args: Vec<String> = env::args().collect();
+    for el in args.iter() {
+        if el == "main" || el == "lp" || el == "lp1" {
+            vm_id = el;
+            break;
+        }
+    }
+    let process_name = "scripts1-".to_owned() + vm_id;
+
+    info!("use VM id={}", &process_name);
+
+    if vm_id == "lp" {
+        ctx.vm_id = "V8.LowPriority".to_owned();
+    } else if vm_id == "lp1" {
+        ctx.vm_id = "V8.LowPriority1".to_owned();
+    } else {
+        ctx.vm_id = "main".to_owned();
+    }
+
     ctx.workplace.load_ext_scripts();
     ctx.workplace.load_event_scripts();
 
-    let mut queue_consumer = Consumer::new("./data/queue", "scripts1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let module_info = ModuleInfo::new("./data", &process_name, true);
+    if module_info.is_err() {
+        error!("{:?}", module_info.err());
+        return Err(-1);
+    }
+
+    let mut queue_consumer = Consumer::new("./data/queue", &process_name, "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
     module.listen_queue(
         &mut queue_consumer,
@@ -223,7 +246,7 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut MyConte
         if let Some(script) = ctx.workplace.scripts.get(script_id) {
             if let Some(mut compiled_script) = script.compiled_script {
                 if src == "?" {
-                    if run_at.is_empty() && run_at != ctx.vm_id {
+                    if !run_at.is_empty() && run_at != ctx.vm_id {
                         continue;
                     } else if run_at.is_empty() && script.run_at != ctx.vm_id {
                         continue;
