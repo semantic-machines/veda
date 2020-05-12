@@ -165,7 +165,7 @@ impl Individual {
     }
 
     pub fn add_decimal_from_i64(&mut self, predicate: &str, value: i64) {
-        self.add_decimal_d(&predicate, value, 1);
+        self.add_decimal_d(&predicate, value, 0);
     }
 
     pub fn add_decimal_from_f64(&mut self, predicate: &str, value: f64) {

@@ -66,70 +66,27 @@ pub fn v8obj2individual<'a>(scope: &mut impl v8::ToLocal<'a>, context: &v8::Loca
             res.set_id(&v8_2_str(scope, &val));
         } else {
             if let Some(resources) = val.to_object(scope) {
-                let key_list = resources.get_property_names(scope, *context);
+                if !resources.is_array() {
+                    add_v8_value_obj_to_individual(scope, context, &predicate, resources, &mut res, data_key, type_key, lang_key);
+                } else {
+                    let key_list = resources.get_property_names(scope, *context);
 
-                for resources_idx in 0..key_list.length() {
-                    let j_resources_idx = v8::Integer::new(scope, resources_idx as i32);
-                    let resource = resources.get(scope, *context, j_resources_idx.into()).unwrap().to_object(scope).unwrap();
-                    let vdata = resource.get(scope, *context, data_key.into()).unwrap();
-                    let vtype = resource.get(scope, *context, type_key.into()).unwrap();
-
-                    if !vtype.is_string() {
-                        continue;
-                    }
-                    if let Some(stype) = vtype.to_string(scope) {
-                        let stype = stype.to_rust_string_lossy(scope);
-                        match stype.as_str() {
-                            "Decimal" => {
-                                if vdata.is_number() && !vdata.is_int32() && !vdata.is_big_int() {
-                                    if let Some(v) = vdata.to_number(scope) {
-                                        res.add_decimal_from_f64(&predicate, v.value());
+                    for resources_idx in 0..key_list.length() {
+                        let j_resources_idx = v8::Integer::new(scope, resources_idx as i32);
+                        if let Some(v) = resources.get(scope, *context, j_resources_idx.into()) {
+                            if let Some(resource) = v.to_object(scope) {
+                                if resource.is_array() {
+                                    let idx_0 = v8::Integer::new(scope, 0);
+                                    if let Some(v) = resource.get(scope, *context, idx_0.into()) {
+                                        if let Some(resource) = v.to_object(scope) {
+                                            add_v8_value_obj_to_individual(scope, context, &predicate, resource, &mut res, data_key, type_key, lang_key);
+                                        }
                                     }
-                                } else if vdata.is_int32() || vdata.is_big_int() {
-                                    if let Some(v) = vdata.to_integer(scope) {
-                                        res.add_decimal_from_i64(&predicate, v.value());
-                                    }
-                                } else if vdata.is_string() {
-                                    if let Some(v) = vdata.to_string(scope) {
-                                        res.add_decimal_from_str(&predicate, &v.to_rust_string_lossy(scope));
-                                    }
-                                }
-                            }
-                            "Integer" => {
-                                if vdata.is_number() {
-                                    res.add_integer(&predicate, vdata.integer_value(scope).unwrap());
-                                }
-                            }
-                            "Datetime" => {
-                                if vdata.is_number() {
-                                    if let Some(v) = vdata.to_integer(scope) {
-                                        res.add_datetime(&predicate, v.value());
-                                    }
-                                } else if vdata.is_string() {
-                                    res.add_datetime_from_str(&predicate, &v8_2_str(scope, &vdata));
-                                }
-                            }
-                            "Boolean" => {
-                                if vdata.is_boolean() {
-                                    res.add_bool(&predicate, vdata.to_integer(scope).unwrap().value() != 0);
-                                }
-                            }
-                            "String" => {
-                                let lang = if let Some(vlang) = resource.get(scope, *context, lang_key.into()) {
-                                    Lang::new_from_str(&v8_2_str(scope, &vlang).to_lowercase())
                                 } else {
-                                    Lang::NONE
-                                };
-
-                                let sdata = v8_2_str(scope, &vdata);
-                                res.add_string(&predicate, &sdata, lang);
-                            }
-                            "Uri" => {
-                                let sdata = v8_2_str(scope, &vdata);
-                                res.add_uri(&predicate, &sdata);
-                            }
-                            _ => {
-                                error!("unknown type = {}", stype);
+                                    add_v8_value_obj_to_individual(scope, context, &predicate, resource, &mut res, data_key, type_key, lang_key);
+                                }
+                            } else {
+                                error!("v8obj2individual: invalid value predicate[{}], idx={}", predicate, resources_idx);
                             }
                         }
                     }
@@ -137,10 +94,90 @@ pub fn v8obj2individual<'a>(scope: &mut impl v8::ToLocal<'a>, context: &v8::Loca
             }
         }
 
-        //info!("res={}", res.to_string());
+        debug!("res={}", res.to_string());
     }
 
     res
+}
+
+fn add_v8_value_obj_to_individual<'a>(
+    scope: &mut impl v8::ToLocal<'a>,
+    context: &v8::Local<v8::Context>,
+    predicate: &str,
+    resource: v8::Local<v8::Object>,
+    res: &mut Individual,
+    data_key: v8::Local<v8::String>,
+    type_key: v8::Local<v8::String>,
+    lang_key: v8::Local<v8::String>,
+) {
+    let vdata = resource.get(scope, *context, data_key.into()).unwrap();
+    let vtype = resource.get(scope, *context, type_key.into()).unwrap();
+    if !vtype.is_string() {
+        return;
+    }
+
+    if let Some(stype) = vtype.to_string(scope) {
+        let stype = stype.to_rust_string_lossy(scope);
+        match stype.as_str() {
+            "Decimal" => {
+                if vdata.is_number() && !vdata.is_int32() && !vdata.is_big_int() {
+                    if let Some(v) = vdata.to_number(scope) {
+                        res.add_decimal_from_f64(&predicate, v.value());
+                    }
+                } else if vdata.is_int32() || vdata.is_big_int() {
+                    if let Some(v) = vdata.to_integer(scope) {
+                        res.add_decimal_from_i64(&predicate, v.value());
+                    }
+                } else if vdata.is_string() {
+                    if let Some(v) = vdata.to_string(scope) {
+                        res.add_decimal_from_str(&predicate, &v.to_rust_string_lossy(scope));
+                    }
+                }
+            }
+            "Integer" => {
+                if vdata.is_number() {
+                    res.add_integer(&predicate, vdata.integer_value(scope).unwrap());
+                }
+            }
+            "Datetime" => {
+                if vdata.is_number() {
+                    if let Some(v) = vdata.to_integer(scope) {
+                        res.add_datetime(&predicate, v.value());
+                    }
+                } else if vdata.is_string() {
+                    res.add_datetime_from_str(&predicate, &v8_2_str(scope, &vdata));
+                } else if vdata.is_date() {
+                    if let Some(v) = vdata.to_integer(scope) {
+                        res.add_datetime(&predicate, v.value() / 1000);
+                    }
+                }
+            }
+            "Boolean" => {
+                if vdata.is_boolean() {
+                    res.add_bool(&predicate, vdata.to_integer(scope).unwrap().value() != 0);
+                }
+            }
+            "String" => {
+                let lang = if let Some(vlang) = resource.get(scope, *context, lang_key.into()) {
+                    Lang::new_from_str(&v8_2_str(scope, &vlang).to_lowercase())
+                } else {
+                    Lang::NONE
+                };
+
+                let sdata = v8_2_str(scope, &vdata);
+                res.add_string(&predicate, &sdata, lang);
+            }
+            "Uri" => {
+                let sdata = v8_2_str(scope, &vdata);
+                res.add_uri(&predicate, &sdata);
+            }
+            _ => {
+                error!("v8obj2individual: unknown type = {}, predicate[{}]", stype, predicate);
+            }
+        }
+    } else {
+        error!("v8obj2individual: type is not string");
+    }
 }
 
 pub fn query_result2v8obj<'a>(scope: &mut impl v8::ToLocal<'a>, src: &QueryResult) -> v8::Local<'a, v8::Object> {
@@ -207,7 +244,8 @@ pub fn individual2v8obj<'a>(scope: &mut impl v8::ToLocal<'a>, src: &mut Individu
                     if *i < i32::max as i64 {
                         v8_value.set(context, str_2_v8(scope, "data").into(), v8::Integer::new(scope, *i as i32).into());
                     } else {
-                        error!("{} > i32.max", i);
+                        v8_value.set(context, str_2_v8(scope, "data").into(), v8::Number::new(scope, *i as f64).into());
+                        //                        error!("individual2v8obj: predicate{}, {} > i32.max", predicate, i);
                     }
                     v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "Integer").into());
                 }

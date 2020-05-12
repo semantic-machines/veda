@@ -14,7 +14,6 @@ use v_storage::inproc_indv_r_storage::get_individual;
 lazy_static! {
     static ref FT_CLIENT: Mutex<RefCell<FTClient>> = Mutex::new(RefCell::new(FTClient::new(Module::get_property("ft_query_service_url").unwrap_or_default())));
     pub(crate) static ref G_VARS: Mutex<RefCell<CallbackSharedData>> = Mutex::new(RefCell::new(CallbackSharedData::default()));
-//    pub(crate) static ref G_EVENT_ID: Mutex<RefCell<String>> = Mutex::new(RefCell::new(String::default()));
     pub(crate) static ref G_TRANSACTION: Mutex<RefCell<Transaction>> = Mutex::new(RefCell::new(Transaction::default()));
 }
 
@@ -102,6 +101,8 @@ pub fn fn_callback_get_env_str_var(mut scope: v8::FunctionCallbackScope, args: v
         let mut sh_g_vars = G_VARS.lock().unwrap();
         let g_vars = sh_g_vars.get_mut();
 
+        debug!("fn_callback_get_env_str_var, var_name={:?}", var_name);
+
         if var_name == "$parent_script_id" {
             let j_res = str_2_v8(scope, &g_vars.g_parent_script_id);
             rv.set(j_res.into());
@@ -121,15 +122,14 @@ pub fn fn_callback_get_env_str_var(mut scope: v8::FunctionCallbackScope, args: v
             let j_res = str_2_v8(scope, &g_vars.g_super_classes);
             rv.set(j_res.into());
         }
-
-        //info!("fn_callback_get_env_str_var, var_name={:?}", var_name);
     }
 }
 pub fn fn_callback_get_env_num_var(mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
-    //info!("fn_callback_get_env_num_var");
     if let Some(var_name) = get_string_arg(&mut scope, &args, 0, "fn_callback_get_env_str_var: arg not found or invalid") {
         let mut sh_g_vars = G_VARS.lock().unwrap();
         let _g_vars = sh_g_vars.get_mut();
+
+        debug!("fn_callback_get_env_num_var, var_name={:?}", var_name);
 
         if var_name == "$queue_elements_count" {
             return;

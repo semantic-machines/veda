@@ -115,7 +115,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
             break;
         }
     }
-    let process_name = "scripts-".to_owned() + vm_id;
+    let process_name = "scripts_".to_owned() + vm_id;
 
     info!("use VM id={}", &process_name);
 
@@ -136,7 +136,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         return Err(-1);
     }
 
-    let mut queue_consumer = Consumer::new("./data/queue", &process_name, "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let mut queue_consumer = Consumer::new("./data/queue", &(process_name + "0"), "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
     module.listen_queue(
         &mut queue_consumer,
@@ -161,18 +161,33 @@ fn after_batch(_module: &mut Module, _ctx: &mut MyContext, _prepared_batch_size:
 }
 
 fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual) -> Result<bool, PrepareError> {
+    match prepare_for_js(module, ctx, queue_element) {
+        Ok(op_id) => {
+            if let Err(e) = module_info.put_info(op_id, op_id) {
+                error!("fail write module_info, op_id={}, err={:?}", op_id, e);
+                return Err(PrepareError::Fatal);
+            }
+        }
+        Err(e) => {
+            return Err(e);
+        }
+    }
+    Ok(true)
+}
+
+fn prepare_for_js(module: &mut Module, ctx: &mut MyContext, queue_element: &mut Individual) -> Result<i64, PrepareError> {
+    let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
-        return Ok(true);
+        return Ok(op_id);
     }
 
     if cmd.unwrap() == IndvOp::Remove {
-        return Ok(true);
+        return Ok(op_id);
     }
 
     let src = queue_element.get_first_literal("src").unwrap_or_default();
-    let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
     let event_id = queue_element.get_first_literal("event_id").unwrap_or_default();
     let user_id = queue_element.get_first_literal("user_uri").unwrap_or_default();
     let transaction_id = queue_element.get_first_integer("tnx_id").unwrap_or_default();
@@ -189,7 +204,7 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContex
 
     for t in rdf_types.iter() {
         if t == "v-s:PermissionStatement" || t == "v-s:Membership" {
-            return Ok(true);
+            return Ok(op_id);
         }
         if t == "v-s:Event" {
             prepare_if_is_script = true;
@@ -315,10 +330,6 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContex
             }
         }
     }
-    if let Err(e) = module_info.put_info(op_id, op_id) {
-        error!("fail write module_info, op_id={}, err={:?}", op_id, e);
-        return Err(PrepareError::Fatal);
-    }
 
-    Ok(true)
+    Ok(op_id)
 }
