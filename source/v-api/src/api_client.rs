@@ -133,6 +133,10 @@ impl APIClient {
     }
 
     pub fn update(&mut self, ticket: &str, cmd: IndvOp, indv: &Individual) -> OpResult {
+        self.update_with_event(ticket, "", cmd, indv)
+    }
+
+    pub fn update_with_event(&mut self, ticket: &str, event_id: &str, cmd: IndvOp, indv: &Individual) -> OpResult {
         if !self.is_ready {
             self.connect();
         }
@@ -146,7 +150,7 @@ impl APIClient {
             "ticket": ticket,
             "individuals": [ indv.get_obj().as_json() ],
             "assigned_subsystems": 0,
-            "event_id" : ""
+            "event_id" : event_id
         });
 
         debug!("SEND {}", query.to_string());
