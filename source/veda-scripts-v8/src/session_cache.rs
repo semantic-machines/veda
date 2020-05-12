@@ -89,6 +89,7 @@ pub(crate) struct TransactionItem {
 }
 
 pub(crate) struct Transaction {
+    pub sys_ticket: String,
     pub id: i64,
     pub event_id: String,
     buff: HashMap<String, usize>,
@@ -98,6 +99,7 @@ pub(crate) struct Transaction {
 impl Default for Transaction {
     fn default() -> Self {
         Self {
+            sys_ticket: "".to_string(),
             id: 0,
             event_id: "".to_string(),
             buff: Default::default(),
@@ -137,16 +139,16 @@ impl Transaction {
 
             if ti.cmd == IndvOp::AddIn || ti.cmd == IndvOp::SetIn || ti.cmd == IndvOp::RemoveFrom {
                 if let Some(mut prev_indv) = self.get_indv(ti.indv.get_id()) {
-                    info!("BEFORE: prev_indv={}", &prev_indv);
+                    debug!("BEFORE: prev_indv={}", &prev_indv);
                     indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
-                    info!("AFTER: prev_indv={}", &prev_indv);
+                    debug!("AFTER: prev_indv={}", &prev_indv);
                 } else {
                     if let Some(mut prev_indv) = get_individual(ti.indv.get_id()) {
                         if parse_raw(&mut prev_indv).is_ok() {
                             prev_indv.parse_all();
-                            info!("BEFORE: prev_indv={}", &prev_indv);
+                            debug!("BEFORE: prev_indv={}", &prev_indv);
                             indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
-                            info!("AFTER: prev_indv={}", &prev_indv);
+                            debug!("AFTER: prev_indv={}", &prev_indv);
                             ti.indv = prev_indv;
                         } else {
                             ti.rc = ResultCode::UnprocessableEntity;
