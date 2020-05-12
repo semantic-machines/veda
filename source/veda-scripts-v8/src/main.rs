@@ -71,6 +71,7 @@ pub struct MyContext<'a> {
     onto: Onto,
     workplace: ScriptsWorkPlace<'a>,
     vm_id: String,
+    sys_ticket: String,
 }
 
 fn main() -> Result<(), i32> {
@@ -100,11 +101,18 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         wait_module("fulltext_indexer", wait_load_ontology());
     }
 
+    let w_sys_ticket = module.get_sys_ticket_id();
+    if w_sys_ticket.is_err() {
+        error!("system ticket not found");
+        return Ok(());
+    }
+
     let mut ctx = MyContext {
         api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
         workplace: ScriptsWorkPlace::new(parent_scope, context),
         onto,
         vm_id: "main".to_owned(),
+        sys_ticket: w_sys_ticket.unwrap(),
     };
 
     let mut vm_id = "main";
@@ -160,8 +168,8 @@ fn after_batch(_module: &mut Module, _ctx: &mut MyContext, _prepared_batch_size:
     false
 }
 
-fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual) -> Result<bool, PrepareError> {
-    match prepare_for_js(module, ctx, queue_element) {
+fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual) -> Result<bool, PrepareError> {
+    match prepare_for_js(ctx, queue_element) {
         Ok(op_id) => {
             if let Err(e) = module_info.put_info(op_id, op_id) {
                 error!("fail write module_info, op_id={}, err={:?}", op_id, e);
@@ -175,7 +183,7 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContex
     Ok(true)
 }
 
-fn prepare_for_js(module: &mut Module, ctx: &mut MyContext, queue_element: &mut Individual) -> Result<i64, PrepareError> {
+fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result<i64, PrepareError> {
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
@@ -196,7 +204,7 @@ fn prepare_for_js(module: &mut Module, ctx: &mut MyContext, queue_element: &mut 
     let mut new_state = Individual::default();
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
-    //info!("!!!! prepare document {}", new_state.get_id());
+    debug!("!!!! prepare document {}", new_state.get_id());
 
     let mut prepare_if_is_script = false;
     let rdf_types = new_state.get_literals("rdf:type").unwrap_or_default();
@@ -230,9 +238,7 @@ fn prepare_for_js(module: &mut Module, ctx: &mut MyContext, queue_element: &mut 
         session_data.g_prev_state = Some(prev_state);
     }
 
-    if let Ok(t) = module.get_sys_ticket_id() {
-        session_data.g_ticket = t;
-    }
+    session_data.g_ticket = ctx.sys_ticket.to_owned();
 
     session_data.set_g_super_classes(&rdf_types, &ctx.onto);
 
@@ -308,6 +314,7 @@ fn prepare_for_js(module: &mut Module, ctx: &mut MyContext, queue_element: &mut 
                 *tnx = Transaction::default();
                 tnx.id = transaction_id;
                 tnx.event_id = run_script_id.to_owned() + ";" + &event_id;
+                tnx.sys_ticket = ctx.sys_ticket.to_owned();
                 drop(sh_tnx);
 
                 compiled_script.run(ctx.workplace.scope, ctx.workplace.context);
@@ -322,6 +329,8 @@ fn prepare_for_js(module: &mut Module, ctx: &mut MyContext, queue_element: &mut 
                 }
 
                 drop(sh_tnx);
+
+                info!("end: {}", script_id);
 
                 if res != ResultCode::Ok {
                     info!("fail exec event script : {}", script_id);

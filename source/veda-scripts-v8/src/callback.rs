@@ -192,11 +192,11 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
 fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
     let context = scope.get_current_context().unwrap();
 
-    let ticket = get_string_arg(&mut scope, &args, 0, "fn_callback_update: arg0 [ticket] not found or invalid");
-    if ticket.is_none() {
+    let wticket = get_string_arg(&mut scope, &args, 0, "fn_callback_update: arg0 [ticket] not found or invalid");
+    if wticket.is_none() {
         return;
     }
-    let ticket = ticket.unwrap_or_default();
+    let mut ticket = wticket.unwrap_or_default();
 
     let obj = args.get(1);
     if obj.is_object() {
@@ -206,6 +206,11 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
 
         let mut sh_tnx = G_TRANSACTION.lock().unwrap();
         let tnx = sh_tnx.get_mut();
+
+        if ticket.is_empty() {
+            ticket = tnx.sys_ticket.to_owned();
+        }
+
         let res = tnx.add_to_transaction(opt.clone(), indv, ticket, "".to_string());
 
         //info!("ADD TO TRANSACTION {:?} {}, {:?}", &opt, indv_id, res);
