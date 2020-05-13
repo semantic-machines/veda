@@ -841,7 +841,7 @@
       placeholder = this.data("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle") ),
       queryPrefix = this.data("query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : "'rdf:type'==='v-s:Appointment'"),
       sort = this.data("sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
-      actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
+      actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position v-s:Department",
       complex = this.data("complex") || false,
       isSingle = this.data("single") || ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ),
       withDeleted = false || this.attr("data-deleted"),
@@ -881,6 +881,11 @@
     }).change(function () {
       if ( $(this).is(":checked") ) {
         chosenActorType = this.value;
+        if ( chosenActorType === "v-s:Appointment" || chosenActorType === "v-s:Person" || chosenActorType === "v-s:Position" ) {
+          $("[name='full-name']", control).parent().parent().show();
+        } else {
+          $("[name='full-name']", control).parent().parent().hide();
+        }
         var ftValue = $(".fulltext", control).val();
         if (ftValue) {
           performSearch(ftValue);
@@ -1025,17 +1030,19 @@
     fulltext.on("keydown", inputHandler);
 
     function performSearch(value) {
-      if ( fullName ) {
-        value = value.trim().split("\n").map(function (line) {
-          var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
-          var fullNameInput = line.trim().replace(/\s+/g, " ").split(" ");
-          var fullNameQuery = fullNameInput.map(function (token, i) {
-            if (i < 3 && token) {
-              return "'" + fullNameProps[i] + "'=='" + token + "*'";
-            }
-          }).filter(Boolean).join(" && ");
-          return fullNameQuery;
-        }).join("\n");
+      if ( chosenActorType === "v-s:Appointment" || chosenActorType === "v-s:Person" || chosenActorType === "v-s:Position" ) {
+        if ( fullName ) {
+          value = value.trim().split("\n").map(function (line) {
+            var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
+            var fullNameInput = line.trim().replace(/\s+/g, " ").split(" ");
+            var fullNameQuery = fullNameInput.map(function (token, i) {
+              if (i < 3 && token) {
+                return "'" + fullNameProps[i] + "'=='" + token + "*'";
+              }
+            }).filter(Boolean).join(" && ");
+            return fullNameQuery;
+          }).join("\n");
+        }
       }
       var ftQueryPromise;
       if (onlyDeleted) {
@@ -1053,19 +1060,33 @@
     var selected = [];
 
     function renderResults(results) {
-      selected = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"));
+      selected = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"), individual.get(rel_uri + ".v-s:parentUnit"));
       if (results.length) {
         var renderedPromises = results.map(function (result) {
           var cont = $("<a href='#' class='suggestion'></a>").attr("resource", result.id);
-          if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
+          if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result) || individual.hasValue(rel_uri + ".v-s:parentUnit", result)) {
             cont.addClass("selected");
           }
-          return result.present(cont, "<span about='@' property='rdfs:label'></span>")
+          var tmpl;
+          if (chosenActorType === "v-s:Department") {
+            tmpl = "<span about='@' rel='v-s:parentUnit' data-template='v-ui:LabelTemplate'></span>"
+          } else {
+            tmpl = "<span about='@' property='rdfs:label'></span>"
+          }
+          return result.present(cont, tmpl)
             .then(function () {
               return cont;
             });
         });
         Promise.all(renderedPromises).then(function (rendered) {
+          rendered = rendered.sort(function (a, b) {
+            return a.text() < b.text() ? -1 : 1;
+          }).reduce(function (acc, curr) {
+            if ( !acc.length || acc[acc.length - 1].text() !== curr.text() ) {
+              acc.push(curr);
+            }
+            return acc;
+          }, []);
           suggestions.empty().append(rendered);
           $(document).off("click", clickOutsideMenuHandler);
           $(document).off("keydown", arrowHandler);
@@ -1209,11 +1230,17 @@
           })).then(function (persons) {
             individual.set(rel_uri + ".v-s:employee", persons);
           });
-        } else {
+        } else if (chosenActorType === "v-s:Position") {
           Promise.all(values.map(function (value) {
             return value["v-s:occupation"][0].load();
           })).then(function (positions) {
             individual.set(rel_uri + ".v-s:occupation", positions);
+          });
+        } else {
+          Promise.all(values.map(function (value) {
+            return value["v-s:parentUnit"][0].load();
+          })).then(function (departments) {
+            individual.set(rel_uri + ".v-s:parentUnit", departments);
           });
         }
       } else {
@@ -1225,19 +1252,25 @@
           })).then(function (persons) {
             individual.set(rel_uri, persons);
           });
-        } else {
+        } else if (chosenActorType === "v-s:Position") {
           Promise.all(values.map(function (value) {
             return value["v-s:occupation"][0].load();
           })).then(function (positions) {
             individual.set(rel_uri, positions);
+          });
+        } else {
+          Promise.all(values.map(function (value) {
+            return value["v-s:parentUnit"][0].load();
+          })).then(function (departments) {
+            individual.set(rel_uri, departments);
           });
         }
       }
     }
 
     function propertyModifiedHandler(values) {
-      if ( isSingle && (individual.hasValue(rel_uri) || individual.hasValue(rel_uri + ".v-s:employee") || individual.hasValue(rel_uri + ".v-s:occupation")) ) {
-        var value = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation")).filter(Boolean)[0];
+      if ( isSingle && (individual.hasValue(rel_uri) || individual.hasValue(rel_uri + ".v-s:employee") || individual.hasValue(rel_uri + ".v-s:occupation") || individual.hasValue(rel_uri + ".v-s:parentUnit")) ) {
+        var value = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"), individual.get(rel_uri + ".v-s:parentUnit")).filter(Boolean)[0];
         value.load().then(function(value) {
           var newValueStr = value.toString();
           var oldValueStr = fulltext.val();
@@ -1249,9 +1282,9 @@
         fulltext.val("");
       }
     }
-    individual.on( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation"].join(" ") , propertyModifiedHandler);
+    individual.on( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation", rel_uri + ".v-s:parentUnit"].join(" ") , propertyModifiedHandler);
     control.one("remove", function () {
-      individual.off( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation"].join(" ") , propertyModifiedHandler);
+      individual.off( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation", rel_uri + ".v-s:parentUnit"].join(" ") , propertyModifiedHandler);
     });
     propertyModifiedHandler();
 
