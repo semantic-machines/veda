@@ -62,16 +62,17 @@ veda.Module(function (veda) { "use strict";
     return hash;
   };
 
-  veda.Util.processQuery = function (q, sort, limit, delta, pause, fn) {
-    if (typeof q === "object") {
-      sort  = q.sort;
-      limit = q.limit;
-      delta = q.delta;
-      pause = q.pause;
-      fn    = q.fn;
-      q     = q.query;
+  veda.Util.processQuery = function (vql, sql, sort, limit, delta, pause, fn) {
+    if (typeof vql === "object") {
+      sort  = vql.sort;
+      limit = vql.limit;
+      delta = vql.delta;
+      pause = vql.pause;
+      fn    = vql.fn;
+      sql   = vql.sql;
+      vql   = vql.vql;
     }
-    console.log((new Date()).toISOString(), "Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
+    console.log((new Date()).toISOString(), "Process query results |||", "query:", vql || sql, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
     var result = [], append = [].push, fetchingProgress = 0;
     console.time("Fetching total");
     fetchResult();
@@ -81,7 +82,8 @@ veda.Module(function (veda) { "use strict";
       var from = cursor || 0;
       veda.Backend.query({
         ticket: veda.ticket,
-        query: q,
+        query: vql,
+        sql: sql,
         sort: sort || "'v-s:created' desc",
         from: from,
         top: delta,
