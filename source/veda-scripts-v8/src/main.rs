@@ -92,14 +92,14 @@ fn main() -> Result<(), i32> {
 }
 
 fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, context: Local<'a, Context>) -> Result<(), i32> {
+    if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
+        wait_module("fulltext_indexer", wait_load_ontology());
+    }
+
     let mut module = Module::default();
 
     let mut onto = Onto::default();
     load_onto(&mut module.storage, &mut onto);
-
-    if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
-        wait_module("fulltext_indexer", wait_load_ontology());
-    }
 
     let w_sys_ticket = module.get_sys_ticket_id();
     if w_sys_ticket.is_err() {
@@ -213,10 +213,13 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
     for t in rdf_types.iter() {
         if t == "v-s:PermissionStatement" || t == "v-s:Membership" {
             return Ok(op_id);
-        }
-        if t == "v-s:Event" {
+        } else if t == "v-s:Event" {
             prepare_if_is_script = true;
         }
+        //else if t == "owl:Class" || t == "rdfs:Class" || t == "rdf:Property" || t == "rdfs:Datatype" || t == "owl:ObjectProperty" || t == "owl:DatatypeProperty" {
+        //    info! ("update onto: id={}", new_state.get_id());
+        //   ctx.onto.update(&mut new_state);
+        //}
     }
 
     if !prepare_if_is_script {
