@@ -261,10 +261,9 @@ pub fn individual2v8obj<'a>(scope: &mut impl v8::ToLocal<'a>, src: &mut Individu
                 Value::Str(s, l) => {
                     if *l != Lang::NONE {
                         v8_value.set(context, str_2_v8(scope, "lang").into(), str_2_v8(scope, &l.to_string().to_uppercase()).into());
-
-                        v8_value.set(context, str_2_v8(scope, "data").into(), str_2_v8(scope, s).into());
-                        v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "String").into());
                     }
+                    v8_value.set(context, str_2_v8(scope, "data").into(), str_2_v8(scope, s).into());
+                    v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "String").into());
                 }
                 Value::Uri(s) => {
                     v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "Uri").into());

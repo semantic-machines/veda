@@ -71,12 +71,14 @@ impl CallbackSharedData {
 
         self.g_super_classes = String::new();
 
+        self.g_super_classes.push('[');
         for s in super_classes.iter() {
-            if !self.g_super_classes.is_empty() {
+            if !self.g_super_classes.len() > 2 {
                 self.g_super_classes.push(',');
             }
             self.g_super_classes.push_str(s);
         }
+        self.g_super_classes.push(']');
     }
 }
 

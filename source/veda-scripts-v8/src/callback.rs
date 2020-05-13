@@ -88,7 +88,7 @@ pub fn fn_callback_get_individuals(scope: v8::FunctionCallbackScope, args: v8::F
 
 pub fn fn_callback_print(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
     let arg1 = args.get(0);
-    println!("{}", arg1.to_string(scope).unwrap().to_rust_string_lossy(scope));
+    info!("{}", arg1.to_string(scope).unwrap().to_rust_string_lossy(scope));
 }
 
 pub fn fn_callback_log_trace(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
@@ -144,6 +144,7 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
     if ticket.is_none() {
         return;
     }
+    let mut ticket = ticket.unwrap();
 
     let query = get_string_arg(&mut scope, &args, 1, "callback_query: arg1 [query] not found or invalid");
     if query.is_none() {
@@ -156,7 +157,13 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
     let limit;
     let from;
 
-    let mut query = FTQuery::new_with_ticket(&ticket.unwrap(), &query.unwrap());
+    if ticket.is_empty() {
+        let mut sh_tnx = G_TRANSACTION.lock().unwrap();
+        let tnx = sh_tnx.get_mut();
+        ticket = tnx.sys_ticket.to_owned();
+    }
+
+    let mut query = FTQuery::new_with_ticket(&ticket, &query.unwrap());
     if args.length() > 2 {
         sort = get_string_arg(&mut scope, &args, 2, "callback_get_individual: arg2 [sort] not found or invalid");
         query.set_sort(sort.unwrap_or_default());
