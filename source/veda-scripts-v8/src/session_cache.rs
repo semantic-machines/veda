@@ -66,7 +66,7 @@ impl CallbackSharedData {
         let mut super_classes = HashSet::new();
 
         for indv_type in indv_types.iter() {
-            onto.get_subs(indv_type, &mut super_classes);
+            onto.get_supers(indv_type, &mut super_classes);
         }
 
         self.g_super_classes = String::new();
