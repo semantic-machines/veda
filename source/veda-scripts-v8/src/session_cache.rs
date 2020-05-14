@@ -76,7 +76,9 @@ impl CallbackSharedData {
             if self.g_super_classes.len() > 2 {
                 self.g_super_classes.push(',');
             }
+            self.g_super_classes.push('"');
             self.g_super_classes.push_str(s);
+            self.g_super_classes.push('"');
         }
         self.g_super_classes.push(']');
     }
