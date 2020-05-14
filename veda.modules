@@ -31,15 +31,15 @@ search-query
     args = ltr
 
 scripts-lp
-    module = scripts-v8
+    module = scripts
     args = lp
 
 scripts-lp1
-    module = scripts-v8
+    module = scripts
     args = lp1
 
 scripts-main
-    module = scripts-v8
+    module = scripts
     args = main
 
 ontologist
