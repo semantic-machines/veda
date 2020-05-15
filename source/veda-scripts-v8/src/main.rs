@@ -119,7 +119,10 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
             break;
         }
     }
+
     let process_name = "scripts_".to_owned() + vm_id;
+    let consumer_name = &(process_name.to_owned() + "0");
+    let main_queue_name = "individuals-flow";
 
     let mut ctx = MyContext {
         api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
@@ -128,7 +131,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         vm_id: "main".to_owned(),
         sys_ticket: w_sys_ticket.unwrap(),
         main_queue_cs: None,
-        queue_name: process_name.to_owned(),
+        queue_name: consumer_name.to_owned(),
     };
 
     info!("use VM id={}", process_name);
@@ -140,9 +143,6 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
     } else {
         ctx.vm_id = "main".to_owned();
     }
-
-    let consumer_name = &(process_name.to_owned() + "0");
-    let main_queue_name = "individuals-flow";
 
     ctx.workplace.load_ext_scripts();
     ctx.workplace.load_event_scripts();
@@ -357,6 +357,12 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
 
                 sh_tnx = G_TRANSACTION.lock().unwrap();
                 let tnx = sh_tnx.get_mut();
+
+                if script.disallow_changing_source {
+                    tnx.src = src.to_owned();
+                } else {
+                    tnx.src = ctx.queue_name.to_owned();
+                }
 
                 let res = commit(tnx, &mut ctx.api_client);
 
