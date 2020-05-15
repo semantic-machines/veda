@@ -246,13 +246,6 @@ if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-scripts-v8 $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "mv1" ]; then
-    rm ./veda-scripts-main
-    rm ./veda-scripts-lp
-    rm ./veda-ltr-scripts
-    ./tools/build-component.sh veda-scripts scripts
-fi
-
 if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-ft-indexer ft-indexer
 fi
