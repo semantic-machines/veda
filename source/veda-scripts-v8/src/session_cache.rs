@@ -98,6 +98,7 @@ pub(crate) struct Transaction {
     pub event_id: String,
     buff: HashMap<String, usize>,
     pub queue: Vec<TransactionItem>,
+    pub src: String,
 }
 
 impl Default for Transaction {
@@ -108,6 +109,7 @@ impl Default for Transaction {
             event_id: "".to_string(),
             buff: Default::default(),
             queue: vec![],
+            src: "".to_string(),
         }
     }
 }
@@ -184,7 +186,7 @@ pub(crate) fn commit(tnx: &Transaction, api_client: &mut APIClient) -> ResultCod
             return ti.rc;
         }
 
-        let res = api_client.update_with_event(&ti.ticket_id, &tnx.event_id, ti.cmd.clone(), &ti.indv);
+        let res = api_client.update_with_event(&ti.ticket_id, &tnx.event_id, &tnx.src, ti.cmd.clone(), &ti.indv);
         if res.result != ResultCode::Ok {
             error!("commit: op_id={}, code={:?}", res.op_id, res.result);
         }
