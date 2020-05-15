@@ -148,6 +148,7 @@ impl Transaction {
                     debug!("BEFORE: prev_indv={}", &prev_indv);
                     indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
                     debug!("AFTER: prev_indv={}", &prev_indv);
+                    ti.indv = Individual::new_from_obj(prev_indv.get_obj());
                 } else {
                     if let Some(mut prev_indv) = get_individual(ti.indv.get_id()) {
                         if parse_raw(&mut prev_indv).is_ok() {

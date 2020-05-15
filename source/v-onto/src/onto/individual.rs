@@ -74,6 +74,31 @@ impl Individual {
         }
     }
 
+    pub fn new_from_obj(obj: &IndividualObj) -> Self {
+        let mut new_obj = IndividualObj::default();
+        new_obj.uri = obj.uri.to_owned();
+        new_obj.resources = HashMap::new();
+
+        for (predicate, resources) in obj.resources.iter() {
+            let mut new_resources = vec![];
+            for r in resources {
+                new_resources.push(r.get_copy());
+            }
+            new_obj.resources.insert(predicate.to_owned(), new_resources);
+        }
+
+        Individual {
+            obj: new_obj,
+            raw: RawObj {
+                data: vec![],
+                cur: 0,
+                len_predicates: 0,
+                cur_predicates: 0,
+                raw_type: RawType::CBOR,
+            },
+        }
+    }
+
     pub fn is_empty(&self) -> bool {
         self.obj.resources.is_empty()
     }
