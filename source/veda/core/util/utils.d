@@ -90,29 +90,6 @@ public void subject2Ticket(ref Individual ticket, Ticket *tt){
     }
 }
 
-// ////// ////// ///////////////////////////////////////////
-public Individual *indv_apply_cmd(INDV_OP cmd, Individual *prev_indv, Individual *indv){
-    if (prev_indv !is null) {
-        if (prev_indv.resources.get("rdf:type", Resources.init).length == 0) {
-            log.trace("WARN! stores individual does not contain any type: arg:[%s] prev_indv:[%s]", text(*indv), text(*prev_indv));
-        }
-
-        foreach (predicate; indv.resources.keys) {
-            if (cmd == INDV_OP.ADD_IN) {
-                // add value to set or ignore if exists
-                prev_indv.addUniqueResources(predicate, indv.getResources(predicate));
-            }else if (cmd == INDV_OP.SET_IN) {
-                // set value to predicate
-                prev_indv.setResources(predicate, indv.getResources(predicate));
-            }else if (cmd == INDV_OP.REMOVE_FROM) {
-                // remove predicate or value in set
-                prev_indv.removeResources(predicate, indv.getResources(predicate));
-            }
-        }
-    }
-    return prev_indv;
-}
-
 private Tid[ P_MODULE ] name_2_tids;
 
 public Tid getTid(P_MODULE tid_id){
@@ -141,26 +118,6 @@ public Tid getTid(P_MODULE tid_id){
     return res;
 }
 
-
-
-bool wait_starting_module(P_MODULE tid_idx, Tid tid){
-    bool res;
-
-    if (tid == Tid.init)
-        throw new Exception("wait_starting_thread: Tid=" ~ text(tid_idx) ~ " not found", __FILE__, __LINE__);
-
-    log.trace("START THREAD... : %s", text(tid_idx));
-    send(tid, thisTid);
-    receive((bool isReady)
-            {
-                res = isReady;
-                if (res == false)
-                    log.trace("FAIL START THREAD: %s", text(tid_idx));
-                else
-                    log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
-            });
-    return res;
-}
 
 CRC32 hash;
 
