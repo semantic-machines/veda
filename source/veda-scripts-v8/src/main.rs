@@ -75,6 +75,7 @@ pub struct MyContext<'a> {
     vm_id: String,
     sys_ticket: String,
     main_queue_cs: Option<Consumer>,
+    queue_name: String,
 }
 
 fn main() -> Result<(), i32> {
@@ -110,15 +111,6 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         return Ok(());
     }
 
-    let mut ctx = MyContext {
-        api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
-        workplace: ScriptsWorkPlace::new(parent_scope, context),
-        onto,
-        vm_id: "main".to_owned(),
-        sys_ticket: w_sys_ticket.unwrap(),
-        main_queue_cs: None,
-    };
-
     let mut vm_id = "main";
     let args: Vec<String> = env::args().collect();
     for el in args.iter() {
@@ -129,7 +121,17 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
     }
     let process_name = "scripts_".to_owned() + vm_id;
 
-    info!("use VM id={}", &process_name);
+    let mut ctx = MyContext {
+        api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
+        workplace: ScriptsWorkPlace::new(parent_scope, context),
+        onto,
+        vm_id: "main".to_owned(),
+        sys_ticket: w_sys_ticket.unwrap(),
+        main_queue_cs: None,
+        queue_name: process_name.to_owned(),
+    };
+
+    info!("use VM id={}", process_name);
 
     if vm_id == "lp" {
         ctx.vm_id = "V8.LowPriority".to_owned();
@@ -140,7 +142,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
     }
 
     let consumer_name = &(process_name.to_owned() + "0");
-    let queue_name = "individuals-flow";
+    let main_queue_name = "individuals-flow";
 
     ctx.workplace.load_ext_scripts();
     ctx.workplace.load_event_scripts();
@@ -151,11 +153,11 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         return Err(-1);
     }
 
-    let mut queue_consumer = Consumer::new("./data/queue", consumer_name, queue_name).expect("!!!!!!!!! FAIL OPEN RW CONSUMER");
+    let mut queue_consumer = Consumer::new("./data/queue", consumer_name, main_queue_name).expect("!!!!!!!!! FAIL OPEN RW CONSUMER");
 
     if vm_id == "lp" || vm_id == "lp1" {
         loop {
-            if let Ok(cs) = Consumer::new_with_mode("./data/queue", MAIN_QUEUE_CS, queue_name, Mode::Read) {
+            if let Ok(cs) = Consumer::new_with_mode("./data/queue", MAIN_QUEUE_CS, main_queue_name, Mode::Read) {
                 ctx.main_queue_cs = Some(cs);
                 break;
             }
@@ -211,6 +213,12 @@ fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyConte
 
 fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result<i64, PrepareError> {
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
+
+    let src = queue_element.get_first_literal("src").unwrap_or_default();
+    if src != "?" && ctx.queue_name != src {
+        return Ok(op_id);
+    }
+
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
@@ -221,7 +229,6 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
         return Ok(op_id);
     }
 
-    let src = queue_element.get_first_literal("src").unwrap_or_default();
     let event_id = queue_element.get_first_literal("event_id").unwrap_or_default();
     let user_id = queue_element.get_first_literal("user_uri").unwrap_or_default();
     let transaction_id = queue_element.get_first_integer("tnx_id").unwrap_or_default();
