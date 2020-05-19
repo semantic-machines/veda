@@ -1261,6 +1261,7 @@
           });
         }
       } else {
+        individual.clearValue(rel_uri);
         if (chosenActorType === "v-s:Appointment") {
           individual.set(rel_uri, values);
         } else if (chosenActorType === "v-s:Person") {
