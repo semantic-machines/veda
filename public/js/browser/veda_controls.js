@@ -839,7 +839,8 @@
       rel_uri = opts.property_uri,
       spec = opts.spec,
       placeholder = this.data("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle") ),
-      queryPrefix = this.data("query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : "'rdf:type'==='v-s:Appointment'"),
+      specQueryPrefix = this.data("query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : undefined),
+      queryPrefix,
       sort = this.data("sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position v-s:Department",
       complex = this.data("complex") || false,
@@ -883,9 +884,12 @@
         chosenActorType = this.value;
         if ( chosenActorType === "v-s:Appointment" || chosenActorType === "v-s:Person" || chosenActorType === "v-s:Position" ) {
           $("[name='full-name']", control).parent().parent().show();
-        } else {
+          queryPrefix = "'rdf:type' === 'v-s:Appointment'";
+        } else if (chosenActorType === "v-s:Department") {
           $("[name='full-name']", control).parent().parent().hide();
+          queryPrefix = "'rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Department'";
         }
+        queryPrefix = specQueryPrefix || queryPrefix ;
         var ftValue = $(".fulltext", control).val();
         if (ftValue) {
           performSearch(ftValue);
@@ -1068,7 +1072,7 @@
             cont.addClass("selected");
           }
           var tmpl;
-          if (chosenActorType === "v-s:Department") {
+          if ( chosenActorType === "v-s:Department" && result.hasValue("rdf:type", "v-s:Appointment") ) {
             tmpl = "<span about='@' rel='v-s:parentUnit' data-template='v-ui:LabelTemplate'></span>"
           } else {
             tmpl = "<span about='@' property='rdfs:label'></span>"
@@ -1222,23 +1226,36 @@
         individual.clearValue(rel_uri);
         individual.clearValue(rel_uri + ".v-s:employee");
         individual.clearValue(rel_uri + ".v-s:occupation");
+        individual.clearValue(rel_uri + ".v-s:parentUnit");
         if (chosenActorType === "v-s:Appointment") {
           individual.set(rel_uri, values);
         } else if (chosenActorType === "v-s:Person") {
           Promise.all(values.map(function (value) {
-            return value["v-s:employee"][0].load();
+            if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+              return value["v-s:employee"][0].load();
+            } else if ( value.hasValue("rdf:type", "v-s:Person") ) {
+              return value;
+            }
           })).then(function (persons) {
             individual.set(rel_uri + ".v-s:employee", persons);
           });
         } else if (chosenActorType === "v-s:Position") {
           Promise.all(values.map(function (value) {
-            return value["v-s:occupation"][0].load();
+            if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+              return value["v-s:occupation"][0].load();
+            } else if ( value.hasValue("rdf:type", "v-s:Position") ) {
+              return value;
+            }
           })).then(function (positions) {
             individual.set(rel_uri + ".v-s:occupation", positions);
           });
-        } else {
+        } else if (chosenActorType === "v-s:Department") {
           Promise.all(values.map(function (value) {
-            return value["v-s:parentUnit"][0].load();
+            if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+              return value["v-s:parentUnit"][0].load();
+            } else if ( value.hasValue("rdf:type", "v-s:Department") ) {
+              return value;
+            }
           })).then(function (departments) {
             individual.set(rel_uri + ".v-s:parentUnit", departments);
           });
@@ -1248,19 +1265,31 @@
           individual.set(rel_uri, values);
         } else if (chosenActorType === "v-s:Person") {
           Promise.all(values.map(function (value) {
-            return value["v-s:employee"][0].load();
+            if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+              return value["v-s:employee"][0].load();
+            } else if ( value.hasValue("rdf:type", "v-s:Person") ) {
+              return value;
+            }
           })).then(function (persons) {
             individual.set(rel_uri, persons);
           });
         } else if (chosenActorType === "v-s:Position") {
           Promise.all(values.map(function (value) {
-            return value["v-s:occupation"][0].load();
+            if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+              return value["v-s:occupation"][0].load();
+            } else if ( value.hasValue("rdf:type", "v-s:Position") ) {
+              return value;
+            }
           })).then(function (positions) {
             individual.set(rel_uri, positions);
           });
-        } else {
+        } else if (chosenActorType === "v-s:Department") {
           Promise.all(values.map(function (value) {
-            return value["v-s:parentUnit"][0].load();
+            if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+              return value["v-s:parentUnit"][0].load();
+            } else if ( value.hasValue("rdf:type", "v-s:Department") ) {
+              return value;
+            }
           })).then(function (departments) {
             individual.set(rel_uri, departments);
           });
