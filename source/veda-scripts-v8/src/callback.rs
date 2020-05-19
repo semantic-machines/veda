@@ -92,6 +92,7 @@ pub fn fn_callback_print(scope: v8::FunctionCallbackScope, args: v8::FunctionCal
     for idx in 0..args.length() {
         let arg = args.get(idx);
         str_out.push_str(&arg.to_string(scope).unwrap().to_rust_string_lossy(scope));
+        str_out.push_str(" ");
     }
     info!("{}", str_out);
 }
