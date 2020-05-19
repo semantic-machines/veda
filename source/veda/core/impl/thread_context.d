@@ -13,7 +13,7 @@ private
     import veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json;
     import veda.common.type, veda.core.common.type, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.common, veda.storage.storage;
-    import veda.search.common.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
+    import veda.search.common.isearch, veda.util.module_info, veda.common.logger;
     import veda.authorization.authorization;
 }
 
@@ -532,76 +532,4 @@ class PThreadContext : Context
         }
     }
 
-    //////////////////////////////////////////////// MODULES INTERACTION
-
-    public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES){
-        ResultCode rc;
-        long       op_id;
-
-        if (in_tnx.get_queue().length == 0) {
-            return ResultCode.Ok;
-        }
-
-            bool[ string ] uri2exists;
-
-            foreach (item; in_tnx.get_queue()) {
-                if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
-                    continue;
-
-                if (item.rc != ResultCode.Ok)
-                    return item.rc;
-
-                Ticket *ticket = get_ticket(item.ticket_id, false);
-
-                //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-                if (uri2exists.get(item.uri, false) == true && item.new_indv.getResources("v-s:updateCounter").length == 0) {
-                    item.new_indv.setResources("v-s:updateCounter", [ Resource(-1) ]);
-                }
-
-                long update_counter = item.new_indv.getFirstInteger("v-s:updateCounter", -1);
-
-                rc =
-                    this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems,
-                                opt_authorize).result;
-
-                if (rc == ResultCode.InternalServerError) {
-                    this.get_logger().trace("FAIL STORE ITEM: %s %s", item.uri, text(rc));
-
-                    int pause = 10;
-                    for (int attempt = 0; attempt < 10; attempt++) {
-                        Thread.sleep(dur!("msecs")(pause));
-                        pause += 10;
-
-                        Individual prev = this.get_individual(item.uri);
-                        if (prev.getFirstInteger("v-s:updateCounter", -1) == update_counter) {
-                            rc = ResultCode.Ok;
-                            break;
-                        }
-                        this.get_logger().trace("REPEAT STORE ITEM: %s", item.uri);
-
-                        rc =
-                            this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems,
-                                        opt_authorize).result;
-
-                        if (rc != ResultCode.InternalServerError)
-                            break;
-                    }
-                }
-
-                uri2exists[ item.uri ] = true;
-
-                if (rc == ResultCode.NoContent) {
-                    this.get_logger().trace("WARN!: Rejected attempt to store an empty object: %s", item.new_indv);
-                }
-
-                if (rc != ResultCode.Ok && rc != ResultCode.NoContent) {
-                    this.get_logger().trace("FAIL COMMIT %s", in_tnx.id);
-                    return rc;
-                }
-                //else
-                //log.trace ("SUCCESS COMMIT");
-            }
-        return ResultCode.Ok;
-    }
 }

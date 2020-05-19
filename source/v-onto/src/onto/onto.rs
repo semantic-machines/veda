@@ -58,12 +58,12 @@ impl Onto {
                 };
 
                 // if subs.len() > 0 {
-                let _onto_el = self.relations.entry(indv.obj.uri.clone()).or_default();
+                let onto_el = self.relations.entry(indv.obj.uri.clone()).or_default();
 
-                //                    for sub in subs.clone() {
-                //                        let rel_type = onto_el.entry(sub).or_insert(RelType::Super);
-                //                        *rel_type = RelType::Super;
-                //                    }
+                for sub in subs.clone() {
+                    let rel_type = onto_el.entry(sub).or_insert(RelType::Super);
+                    *rel_type = RelType::Super;
+                }
 
                 for sub in subs {
                     let onto_el = self.relations.entry(sub).or_default();
@@ -120,16 +120,38 @@ impl Onto {
         if self.relations.contains_key(el) {
             let mut buf = Vec::new();
             if let Some(qqq) = self.relations.get(el) {
-                for x in qqq.keys() {
-                    if !collector.contains(x) {
-                        collector.insert(x.to_string());
-                        buf.push(x.to_string());
+                for (x, t) in qqq {
+                    if *t == RelType::Sub {
+                        if !collector.contains(x) {
+                            collector.insert(x.to_string());
+                            buf.push(x.to_string());
+                        }
                     }
                 }
             }
 
             for x in buf {
                 self.get_subs(&x, collector);
+            }
+        }
+    }
+
+    pub fn get_supers(&self, el: &str, collector: &mut HashSet<String>) {
+        if self.relations.contains_key(el) {
+            let mut buf = Vec::new();
+            if let Some(qqq) = self.relations.get(el) {
+                for (x, t) in qqq {
+                    if *t == RelType::Super {
+                        if !collector.contains(x) {
+                            collector.insert(x.to_string());
+                            buf.push(x.to_string());
+                        }
+                    }
+                }
+            }
+
+            for x in buf {
+                self.get_supers(&x, collector);
             }
         }
     }

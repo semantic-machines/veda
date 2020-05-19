@@ -66,17 +66,19 @@ impl CallbackSharedData {
         let mut super_classes = HashSet::new();
 
         for indv_type in indv_types.iter() {
-            onto.get_subs(indv_type, &mut super_classes);
+            onto.get_supers(indv_type, &mut super_classes);
         }
 
         self.g_super_classes = String::new();
 
         self.g_super_classes.push('[');
         for s in super_classes.iter() {
-            if !self.g_super_classes.len() > 2 {
+            if self.g_super_classes.len() > 2 {
                 self.g_super_classes.push(',');
             }
+            self.g_super_classes.push('"');
             self.g_super_classes.push_str(s);
+            self.g_super_classes.push('"');
         }
         self.g_super_classes.push(']');
     }
@@ -96,6 +98,7 @@ pub(crate) struct Transaction {
     pub event_id: String,
     buff: HashMap<String, usize>,
     pub queue: Vec<TransactionItem>,
+    pub src: String,
 }
 
 impl Default for Transaction {
@@ -106,6 +109,7 @@ impl Default for Transaction {
             event_id: "".to_string(),
             buff: Default::default(),
             queue: vec![],
+            src: "".to_string(),
         }
     }
 }
@@ -144,6 +148,7 @@ impl Transaction {
                     debug!("BEFORE: prev_indv={}", &prev_indv);
                     indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
                     debug!("AFTER: prev_indv={}", &prev_indv);
+                    ti.indv = Individual::new_from_obj(prev_indv.get_obj());
                 } else {
                     if let Some(mut prev_indv) = get_individual(ti.indv.get_id()) {
                         if parse_raw(&mut prev_indv).is_ok() {
@@ -182,7 +187,7 @@ pub(crate) fn commit(tnx: &Transaction, api_client: &mut APIClient) -> ResultCod
             return ti.rc;
         }
 
-        let res = api_client.update_with_event(&ti.ticket_id, &tnx.event_id, ti.cmd.clone(), &ti.indv);
+        let res = api_client.update_with_event(&ti.ticket_id, &tnx.event_id, &tnx.src, ti.cmd.clone(), &ti.indv);
         if res.result != ResultCode::Ok {
             error!("commit: op_id={}, code={:?}", res.op_id, res.result);
         }

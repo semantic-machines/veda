@@ -87,8 +87,14 @@ pub fn fn_callback_get_individuals(scope: v8::FunctionCallbackScope, args: v8::F
 }
 
 pub fn fn_callback_print(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
-    let arg1 = args.get(0);
-    info!("{}", arg1.to_string(scope).unwrap().to_rust_string_lossy(scope));
+    let mut str_out = String::new();
+
+    for idx in 0..args.length() {
+        let arg = args.get(idx);
+        str_out.push_str(&arg.to_string(scope).unwrap().to_rust_string_lossy(scope));
+        str_out.push_str(" ");
+    }
+    info!("{}", str_out);
 }
 
 pub fn fn_callback_log_trace(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
