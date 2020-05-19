@@ -10,7 +10,7 @@ use rusty_v8_m as v8;
 use rusty_v8_m::scope::Entered;
 use rusty_v8_m::{Context, HandleScope, Local, OwnedIsolate};
 use std::sync::Mutex;
-use std::{env, thread};
+use std::{env, thread, time};
 use v_api::app::ResultCode;
 use v_api::{APIClient, IndvOp};
 use v_module::info::ModuleInfo;
@@ -19,6 +19,7 @@ use v_module::onto::load_onto;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_queue::consumer::Consumer;
+use v_queue::record::Mode;
 use v_storage::inproc_indv_r_storage::storage_manager;
 
 mod callback;
@@ -28,6 +29,7 @@ mod scripts_workplace;
 mod session_cache;
 
 const MAX_COUNT_LOOPS: i32 = 100;
+const MAIN_QUEUE_CS: &str = "scripts_main0";
 
 lazy_static! {
     static ref INIT_LOCK: Mutex<u32> = Mutex::new(0);
@@ -72,6 +74,8 @@ pub struct MyContext<'a> {
     workplace: ScriptsWorkPlace<'a>,
     vm_id: String,
     sys_ticket: String,
+    main_queue_cs: Option<Consumer>,
+    queue_name: String,
 }
 
 fn main() -> Result<(), i32> {
@@ -107,14 +111,6 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         return Ok(());
     }
 
-    let mut ctx = MyContext {
-        api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
-        workplace: ScriptsWorkPlace::new(parent_scope, context),
-        onto,
-        vm_id: "main".to_owned(),
-        sys_ticket: w_sys_ticket.unwrap(),
-    };
-
     let mut vm_id = "main";
     let args: Vec<String> = env::args().collect();
     for el in args.iter() {
@@ -123,9 +119,22 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
             break;
         }
     }
-    let process_name = "scripts_".to_owned() + vm_id;
 
-    info!("use VM id={}", &process_name);
+    let process_name = "scripts_".to_owned() + vm_id;
+    let consumer_name = &(process_name.to_owned() + "0");
+    let main_queue_name = "individuals-flow";
+
+    let mut ctx = MyContext {
+        api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
+        workplace: ScriptsWorkPlace::new(parent_scope, context),
+        onto,
+        vm_id: "main".to_owned(),
+        sys_ticket: w_sys_ticket.unwrap(),
+        main_queue_cs: None,
+        queue_name: consumer_name.to_owned(),
+    };
+
+    info!("use VM id={}", process_name);
 
     if vm_id == "lp" {
         ctx.vm_id = "V8.LowPriority".to_owned();
@@ -144,14 +153,25 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         return Err(-1);
     }
 
-    let mut queue_consumer = Consumer::new("./data/queue", &(process_name + "0"), "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let mut queue_consumer = Consumer::new("./data/queue", consumer_name, main_queue_name).expect("!!!!!!!!! FAIL OPEN RW CONSUMER");
+
+    if vm_id == "lp" || vm_id == "lp1" {
+        loop {
+            if let Ok(cs) = Consumer::new_with_mode("./data/queue", MAIN_QUEUE_CS, main_queue_name, Mode::Read) {
+                ctx.main_queue_cs = Some(cs);
+                break;
+            }
+            warn!("main queue consumer not open, sleep and repeate");
+            thread::sleep(time::Duration::from_millis(1000));
+        }
+    }
 
     module.listen_queue(
         &mut queue_consumer,
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before_batch as fn(&mut Module, &mut MyContext<'a>, batch_size: u32) -> Option<u32>),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, &mut Individual) -> Result<bool, PrepareError>),
+        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, &mut Individual, count_popped: u32) -> Result<bool, PrepareError>),
         &mut (after_batch as fn(&mut Module, &mut MyContext<'a>, prepared_batch_size: u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut MyContext<'a>)),
     );
@@ -168,7 +188,15 @@ fn after_batch(_module: &mut Module, _ctx: &mut MyContext, _prepared_batch_size:
     false
 }
 
-fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual) -> Result<bool, PrepareError> {
+fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual, count_popped: u32) -> Result<bool, PrepareError> {
+    if let Some(main_cs_r) = &mut ctx.main_queue_cs {
+        while main_cs_r.count_popped < count_popped {
+            main_cs_r.get_info();
+            info!("sleep, scripts_main={}, my={}", main_cs_r.count_popped, count_popped);
+            thread::sleep(time::Duration::from_millis(1000));
+        }
+    }
+
     match prepare_for_js(ctx, queue_element) {
         Ok(op_id) => {
             if let Err(e) = module_info.put_info(op_id, op_id) {
@@ -185,6 +213,12 @@ fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyConte
 
 fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result<i64, PrepareError> {
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
+
+    let src = queue_element.get_first_literal("src").unwrap_or_default();
+    if src != "?" && ctx.queue_name != src {
+        return Ok(op_id);
+    }
+
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
@@ -195,7 +229,6 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
         return Ok(op_id);
     }
 
-    let src = queue_element.get_first_literal("src").unwrap_or_default();
     let event_id = queue_element.get_first_literal("event_id").unwrap_or_default();
     let user_id = queue_element.get_first_literal("user_uri").unwrap_or_default();
     let transaction_id = queue_element.get_first_integer("tnx_id").unwrap_or_default();
@@ -324,6 +357,12 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
 
                 sh_tnx = G_TRANSACTION.lock().unwrap();
                 let tnx = sh_tnx.get_mut();
+
+                if script.disallow_changing_source {
+                    tnx.src = src.to_owned();
+                } else {
+                    tnx.src = ctx.queue_name.to_owned();
+                }
 
                 let res = commit(tnx, &mut ctx.api_client);
 

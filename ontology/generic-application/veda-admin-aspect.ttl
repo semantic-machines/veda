@@ -625,7 +625,13 @@ v-ui:TrustedTicketTemplate
   <button id="submit-login" class="btn btn-lg btn-primary btn-block">Войти</button>
 </div>
 <script>
-  $("#submit-login", template).click(function(e){
+  $("#submit-login", template).click(submitLogin);
+  $("#login", template).keydown(function (e) {
+    if (e.which === 13) {
+      submitLogin(e);
+    }
+  });
+  function submitLogin (e) {
     e.preventDefault();
     var useLogin = $("#login", template).val();
     veda.Backend.get_ticket_trusted(veda.ticket, useLogin).then(function(result) {
@@ -634,7 +640,7 @@ v-ui:TrustedTicketTemplate
       veda.user_uri = localStorage["user_uri"] = result["user_uri"];
       location.assign(location.origin);
     });
-  })
+  }
   //# sourceURL=v-ui:TrustedTicketTemplate_post
 </script>
 """ ;

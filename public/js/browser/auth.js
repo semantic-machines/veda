@@ -14,7 +14,14 @@ veda.Module(function (veda) { "use strict";
   // Login invitation
   var loginForm = $(".login-form");
 
-  $("#submit-login-password", loginForm).click( function (e) {
+  $("#submit-login-password", loginForm).click(submitLoginPassword);
+  $("#login, #password", loginForm).keyup(function (e) {
+    if (e.which === 13) {
+      submitLoginPassword(e);
+    }
+  });
+
+  function submitLoginPassword(e) {
     e.preventDefault();
     var login = $("#login", loginForm).val(),
       password = $("#password", loginForm).val(),
@@ -44,7 +51,7 @@ veda.Module(function (veda) { "use strict";
     })
     .then(handleLoginSuccess)
     .catch(handleLoginError)
-  });
+  }
 
   $("#new-password, #confirm-new-password, #secret", loginForm).on("input", validateNewPassword);
   var re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");

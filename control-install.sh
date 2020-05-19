@@ -223,25 +223,6 @@ fi
     cp ./tmp/lmdb-$LMDB_VER/libraries/liblmdb/liblmdb.a ./source/lib64
 
 
-### libv8d ###
-    cd ./source/lib64/ext-lib-bind-src/v8_d
-    make    
-
-#if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
-#
-#    echo "--- INSTALL XAPIAN ---"
-#
-#    cd source/lib64/libxapianm
-#    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
-#    sudo ldconfig
-#    cd $PWD
-#
-#else
-#
-#    echo "--- XAPIAN INSTALLED ---"
-#
-#fi
-
 ### libxapiand ###
 
     cd $INSTALL_PATH

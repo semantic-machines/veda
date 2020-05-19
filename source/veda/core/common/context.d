@@ -10,7 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime, std.outbuffer;
 private import veda.common.type, veda.core.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define;
-private import veda.common.logger, veda.core.common.transaction;
+private import veda.common.logger;
 private import veda.search.common.isearch, veda.util.module_info, veda.storage.common, veda.storage.storage, veda.authorization.authorization;
 
 alias MODULES_MASK = long;
@@ -36,8 +36,6 @@ interface Context
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
 
     public Logger get_logger();
-
-    public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     public Search get_vql();
     public void set_vql(Search in_vql);
