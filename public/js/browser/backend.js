@@ -362,7 +362,7 @@ veda.Module(function Backend(veda) { "use strict";
         throw backendError;
       }
     }).then(function (result) {
-      if (result && result.result.length) {
+      if (result) {
         params.ticket = undefined;
         localDB.then(function (db) {
           db.put(JSON.stringify(params), result);
