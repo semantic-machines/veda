@@ -21,6 +21,7 @@ LIB_NAME[9]="build-essential"
 LIB_NAME[10]="autoconf"
 LIB_NAME[11]="automake"
 LIB_NAME[12]="curl"
+LIB_NAME[13]="python"
 
 LIB_OK="Status: install ok installed"
 F_UL=0
@@ -40,7 +41,7 @@ for i in "${LIB_NAME[@]}"; do
           F_UL=1
       fi
 
-		echo INSTALL $i
+    echo INSTALL $i
         sudo apt-get install -y $i
     fi
 
