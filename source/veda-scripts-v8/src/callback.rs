@@ -46,12 +46,20 @@ pub fn fn_callback_get_individual(mut scope: v8::FunctionCallbackScope, args: v8
     } else if id == "$execute_script" {
         return;
     } else {
-        if let Some(mut indv) = get_individual(&id) {
-            if parse_raw(&mut indv).is_ok() {
-                let j_indv = individual2v8obj(scope, &mut indv.parse_all());
-                rv.set(j_indv.into());
-            } else {
-                error!("callback_get_individual: fail parse binobj, id={}", id);
+        let mut sh_tnx = G_TRANSACTION.lock().unwrap();
+        let tnx = sh_tnx.get_mut();
+
+        if let Some(indv) = tnx.get_indv(&id) {
+            let j_indv = individual2v8obj(scope, &mut indv.parse_all());
+            rv.set(j_indv.into());
+        } else {
+            if let Some(mut indv) = get_individual(&id) {
+                if parse_raw(&mut indv).is_ok() {
+                    let j_indv = individual2v8obj(scope, &mut indv.parse_all());
+                    rv.set(j_indv.into());
+                } else {
+                    error!("callback_get_individual: fail parse binobj, id={}", id);
+                }
             }
         }
     }
