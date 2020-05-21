@@ -213,13 +213,14 @@ veda.Module(function (veda) { "use strict";
 
     // Define handlers
     template.callModelMethod = function (method, parent) {
-      if (parent === individual.id) {
-        return Promise.resolve();
-      }
       return Promise.all(embedded.map(function (item) {
         return item.callModelMethod(method, individual.id);
       })).then(function () {
-        return individual[method]();
+        if (parent === individual.id) {
+          return Promise.resolve();
+        } else {
+          return individual[method]();
+        }
       }).then(function () {
         template.trigger("view");
         if (method === "reset") { return; }
