@@ -120,7 +120,7 @@ impl Transaction {
         self.queue.push(item);
     }
 
-    fn get_indv(&mut self, id: &str) -> Option<&mut Individual> {
+    pub(crate) fn get_indv(&mut self, id: &str) -> Option<&mut Individual> {
         if let Some(idx) = self.buff.get(id) {
             if let Some(ti) = self.queue.get_mut(*idx) {
                 return Some(&mut ti.indv);
