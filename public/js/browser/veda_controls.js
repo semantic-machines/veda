@@ -2100,7 +2100,7 @@
         var temp = $("<div></div>").append(image);
         var cropper = new Cropper(image, {
           autoCrop: false,
-          ready(event) {
+          ready: function (event) {
             console.log("Crop ready");
             var ratio = image.height / image.width;
             var resized = new Image();
@@ -2130,7 +2130,7 @@
       movable: false,
       rotable: false,
       scalable: false,
-      ready(event) {
+      ready: function (event) {
         console.log("Crop ready");
       }
     });
