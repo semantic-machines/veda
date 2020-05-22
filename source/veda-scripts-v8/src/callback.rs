@@ -50,7 +50,7 @@ pub fn fn_callback_get_individual(mut scope: v8::FunctionCallbackScope, args: v8
         let tnx = sh_tnx.get_mut();
 
         if let Some(indv) = tnx.get_indv(&id) {
-            let j_indv = individual2v8obj(scope, &mut indv.parse_all());
+            let j_indv = individual2v8obj(scope, indv);
             rv.set(j_indv.into());
         } else {
             if let Some(mut indv) = get_individual(&id) {
@@ -73,17 +73,25 @@ pub fn fn_callback_get_individuals(scope: v8::FunctionCallbackScope, args: v8::F
         if let Some(r) = arg1.to_object(scope) {
             let arr_keys = r.get_property_names(scope, context);
 
+            let mut sh_tnx = G_TRANSACTION.lock().unwrap();
+            let tnx = sh_tnx.get_mut();
+
             for idx in 0..arr_keys.length() {
                 let j_idx = v8::Integer::new(scope, idx as i32);
                 let j_id = r.get(scope, context, j_idx.into()).unwrap().to_object(scope).unwrap();
                 let id = j_id.to_string(scope).unwrap().to_rust_string_lossy(scope);
 
-                if let Some(mut indv) = get_individual(&id) {
-                    if parse_raw(&mut indv).is_ok() {
-                        let j_indv = individual2v8obj(scope, &mut indv.parse_all());
-                        j_res.set(context, j_idx.into(), j_indv.into());
-                    } else {
-                        error!("callback_get_individuals: fail parse binobj, id={}", id);
+                if let Some(indv) = tnx.get_indv(&id) {
+                    let j_indv = individual2v8obj(scope, indv);
+                    j_res.set(context, j_idx.into(), j_indv.into());
+                } else {
+                    if let Some(mut indv) = get_individual(&id) {
+                        if parse_raw(&mut indv).is_ok() {
+                            let j_indv = individual2v8obj(scope, &mut indv.parse_all());
+                            j_res.set(context, j_idx.into(), j_indv.into());
+                        } else {
+                            error!("callback_get_individual: fail parse binobj, id={}", id);
+                        }
                     }
                 }
             }
