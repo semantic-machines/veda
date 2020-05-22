@@ -647,10 +647,8 @@ impl Individual {
     }
 
     pub fn apply_predicate_as_remove(&mut self, predicate: &str, new_data: &mut Individual) {
-        let exclude = new_data.get_resources(predicate).unwrap_or_default();
-
-        if let Some(v) = new_data.obj.resources.get(predicate) {
-            self.obj.exclude_and_set_resources(predicate, v, &exclude);
+        if let Some(exclude) = new_data.obj.resources.get(predicate) {
+            self.obj.exclude_and_set_resources(predicate, exclude);
         }
     }
 
@@ -801,12 +799,12 @@ impl IndividualObj {
         }
     }
 
-    pub fn exclude_and_set_resources(&mut self, predicate: &str, b: &[Resource], exclude: &[Resource]) {
+    pub fn exclude_and_set_resources(&mut self, predicate: &str, exclude: &[Resource]) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
-        values.clear();
-        for el in b.iter() {
+        let mut new_values = vec![];
+        for el in values.iter() {
             if !exclude.contains(el) {
-                values.push(Resource {
+                new_values.push(Resource {
                     rtype: el.rtype.clone(),
                     order: el.order,
                     value: el.value.clone(),
@@ -814,8 +812,10 @@ impl IndividualObj {
             }
         }
 
-        if values.is_empty() {
+        if new_values.is_empty() {
             self.resources.remove(predicate);
+        } else {
+            self.resources.insert(predicate.to_owned(), new_values);
         }
     }
 
