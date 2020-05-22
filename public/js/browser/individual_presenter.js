@@ -230,7 +230,7 @@ veda.Module(function (veda) { "use strict";
             var notify = veda.Notify ? new veda.Notify() : function () {};
             notify("success", {name: successMsg.toString()});
           });
-        } else {
+        } else if (parent !== individual.id) {
           var parentIndividual = new veda.IndividualModel(parent);
           parentIndividual.isSync(false);
         }
