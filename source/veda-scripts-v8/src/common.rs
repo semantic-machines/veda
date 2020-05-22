@@ -137,6 +137,17 @@ fn add_v8_value_obj_to_individual<'a>(
             "Integer" => {
                 if vdata.is_number() {
                     res.add_integer(&predicate, vdata.integer_value(scope).unwrap());
+                } else if vdata.is_string() {
+                    if let Some(v) = vdata.to_string(scope) {
+                        let sv = v.to_rust_string_lossy(scope);
+                        if let Ok(i) = sv.parse::<i64>() {
+                            res.add_integer(&predicate, i);
+                        } else {
+                            error!("v8obj2individual: fail convert {} to int", sv);
+                        }
+                    }
+                } else {
+                    error!("v8obj2individual: invalid string in Integer");
                 }
             }
             "Datetime" => {
