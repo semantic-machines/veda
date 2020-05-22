@@ -145,17 +145,19 @@ impl Transaction {
 
             if ti.cmd == IndvOp::AddIn || ti.cmd == IndvOp::SetIn || ti.cmd == IndvOp::RemoveFrom {
                 if let Some(mut prev_indv) = self.get_indv(ti.indv.get_id()) {
-                    debug!("{:?} BEFORE: prev_indv={}", ti.cmd, &prev_indv);
+                    debug!("{:?} BEFORE: {}", ti.cmd, &prev_indv);
+                    debug!("{:?} APPLY: {}", ti.cmd, &ti.indv);
                     indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
-                    debug!("{:?} AFTER: prev_indv={}", ti.cmd, &prev_indv);
+                    debug!("{:?} AFTER: {}", ti.cmd, &prev_indv);
                     ti.indv = Individual::new_from_obj(prev_indv.get_obj());
                 } else {
                     if let Some(mut prev_indv) = get_individual(ti.indv.get_id()) {
                         if parse_raw(&mut prev_indv).is_ok() {
                             prev_indv.parse_all();
-                            debug!("{:?} BEFORE: prev_indv={}", ti.cmd, &prev_indv);
+                            debug!("{:?} BEFORE: {}", ti.cmd, &prev_indv);
+                            debug!("{:?} APPLY: {}", ti.cmd, &ti.indv);
                             indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
-                            debug!("{:?} AFTER: prev_indv={}", ti.cmd, &prev_indv);
+                            debug!("{:?} AFTER: {}", ti.cmd, &prev_indv);
                             ti.indv = prev_indv;
                         } else {
                             ti.rc = ResultCode::UnprocessableEntity;
