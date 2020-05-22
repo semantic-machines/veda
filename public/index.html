@@ -505,19 +505,6 @@
     <script type="text/javascript" src="/js/browser/auth.js?v=6"></script>
 
     <script type="text/javascript">
-      // Bootstrap multiple modals fix
-      // origin: http://stackoverflow.com/questions/19305821/multiple-modals-overlay
-      $(document).on("click", ".modal #follow", function () {
-        var modal = $(this).closest(".modal");
-        var resourceTemplate = modal.find("[resource]").first();
-        var uri = resourceTemplate.attr("resource");
-        var mode = resourceTemplate.data("mode");
-        modal.modal("hide");
-        riot.route( ["#", uri, "#main", undefined, mode].join("/") );
-      });
-    </script>
-
-    <script type="text/javascript">
       document.addEventListener("DOMContentLoaded", function (event) {
         var xhr = new XMLHttpRequest();
         xhr.onload = function (e) {
