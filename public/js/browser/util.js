@@ -280,6 +280,13 @@ veda.Module(function (veda) { "use strict";
     $("body").append(modal);
     var container = $(".modal-body", modal);
     individual.present(container, template, mode);
+    modal.find("#follow").click( function () {
+      var resourceTemplate = modal.find("[resource]").first();
+      var uri = resourceTemplate.attr("resource");
+      var mode = resourceTemplate.data("mode");
+      modal.modal("hide");
+      riot.route( ["#", uri, "#main", undefined, mode].join("/") );
+    });
     $(".action#cancel", modal).click(function () {
       modal.modal("hide");
     });
