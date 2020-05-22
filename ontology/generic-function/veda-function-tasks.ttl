@@ -24,6 +24,12 @@ v-s:TaskBundle
   rdfs:label "Задачи"@ru ;
   rdfs:label "Tasks"@en ;
 .
+
+v-ft:ToJournalBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Перейти к журналу"@ru ;
+  rdfs:label "To journal"@en ;
+.
 ########## TASKS INDEX ###########
 
 v-ft:UserTaskFormIndex_1
@@ -350,7 +356,7 @@ v-ft:PSfrom_to_DecisionForm
   v-ui:forProperty v-wf:to ;
   v-ui:forProperty v-wf:from ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' && 'v-s:employee.v-s:hasAccount.isExists'=='true' && 'v-s:official'=='true')" ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' && 'v-s:official'=='true' && 'v-s:employee.v-s:hasAccount.isExists'=='true')" ;
 .
 
 v-ft:Inbox
@@ -660,25 +666,35 @@ v-ft:ActorFilterTemplate
   })
   .then(function (appointments) {
 
-    var actors_uris = [ "v-ft:MyBundle" ];
+    var actors_uris = [ {uri:"v-ft:MyBundle", official: true} ];
 
     appointments.forEach(function (appointment) {
       if ( veda.appointment && veda.appointment.id && appointment["@"] === veda.appointment.id ) {
         return;
       } else if ( appointment["v-s:occupation"] && appointment["v-s:occupation"].length ) {
-        actors_uris.push( appointment["v-s:occupation"][0].data );
+        var isOfficial = (appointment["v-s:official"] && appointment["v-s:official"].length) ? appointment["v-s:official"][0].data : true;
+        actors_uris.push( {uri: appointment["v-s:occupation"][0].data, official: isOfficial} );
       }
     });
 
-    actors_uris.map(function (actor_uri) {
+    actors_uris.map(function (actor_data) {
       //var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
+      var notOfficialInject = actor_data.official === false ? " class='not-official'" : "";
       var actor_template =
         "<li>" +
-          "<a href='#'>" +
-            "<span class='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
+          "<a href='#'" + notOfficialInject + ">" +
+            "<span class='actor' about='" + actor_data.uri + "' property='rdfs:label'></span> " +
             //"<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
           "</a>" +
         "</li>";
+      actor_template = $(actor_template);
+      if (actor_data.official === false) {
+        actor_template.popover({
+          placement: "top",
+          trigger: "hover",
+          content: "Не официальное назначение. Только просмотр"
+        });
+      }
       template.append(actor_template);
     });
 
@@ -733,7 +749,18 @@ v-ft:ActorFilterTemplate
 
   //# sourceURL=v-ft:ActorFilterTemplate_pre
 </script>
-<ul class="nav nav-pills" role="tablist"></ul>
+<ul class="nav nav-pills" role="tablist">
+  <style scoped>
+    a.not-official {
+      color: #aaaaaa;
+    }
+    li.active > a.not-official {
+      color: #aaaaaa !important;
+      background-color: #ffffff !important;
+      border: 1px solid;
+    }
+  </style>
+</ul>
   """ ;
 .
 
@@ -761,6 +788,7 @@ v-ft:CompletedResultTemplate
         <th data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
         <th data-orderby="v-wf:onDocument.rdfs:label"><span about="v-ft:DocumentBundle" property="rdfs:label"></span></th>
         <th><span about="v-wf:takenDecision" property="rdfs:label"></span></th>
+        <th width="20px"></th>
         <th width="10%" class="orderby" data-orderby="v-s:created" about="v-s:created" property="rdfs:label"></th>
         <th width="10%" data-orderby="v-wf:takenDecision.v-s:created">
           <span about="v-ft:DecisionDateBundle" property="rdfs:label"></span>
@@ -800,6 +828,9 @@ v-ft:CompletedResultTemplate
           <div property="rdfs:label"></div>
           <i property="rdfs:comment"></i>
         </td>
+        <td>
+          <span class="to-journal pointer text-primary glyphicon glyphicon-list"></span>
+        </td>
         <td property="v-s:created"></td>
         <td rel="v-wf:takenDecision">
           <div property="v-s:created"></div>
@@ -809,6 +840,15 @@ v-ft:CompletedResultTemplate
         </td>
       </tr>
       <script>
+        $(".to-journal", template).click(function(e){
+          e.stopPropagation();
+          var journalUri = individual["v-wf:onDocument"][0].id + "j";
+          riot.route("#/" + journalUri);
+        });
+        new veda.IndividualModel("v-ft:ToJournalBundle").load().then(function(bundle) {
+          $(".to-journal", template).prop("title", bundle.toString());  
+        });
+        
         // Child task indicator
         if ( individual.hasValue("v-wf:hasChildTask") ) {
           template.find(".child-task")
@@ -839,6 +879,7 @@ v-ft:TaskResultTemplate
         <th width="30px" class="orderby" data-orderby="v-wf:read"></th>
         <th data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
         <th data-orderby="v-wf:onDocument.rdfs:label"><span about="v-ft:DocumentBundle" property="rdfs:label"></span></th>
+        <th width="20px"></th>
         <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
         <th width="10%" class="orderby" data-orderby="v-wf:dateGiven"><span about="v-wf:dateGiven" property="rdfs:label"></span></th>
       </tr>
@@ -872,6 +913,9 @@ v-ft:TaskResultTemplate
           <i about="@" property="v-s:description"></i>
         </td>
         <td about="@" rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
+        <td>
+          <span class="to-journal pointer text-primary glyphicon glyphicon-list"></span>
+        </td>
         <td about="@" property="v-s:created"></td>
         <td about="@" property="v-wf:dateGiven" class="date-given"></td>
       </tr>
@@ -888,6 +932,15 @@ v-ft:TaskResultTemplate
         individual.on("v-wf:isCompleted", removeCompleted);
         template.one("remove", function () {
           individual.off("v-wf:isCompleted", removeCompleted);
+        });
+
+        $(".to-journal", template).click(function(e){
+          e.stopPropagation();
+          var journalUri = individual["v-wf:onDocument"][0].id + "j";
+          riot.route("#/" + journalUri);
+        });
+        new veda.IndividualModel("v-ft:ToJournalBundle").load().then(function(bundle) {
+          $(".to-journal", template).prop("title", bundle.toString());  
         });
 
         // Toggle read/unread
@@ -989,6 +1042,7 @@ v-ft:InboxResultTemplate
         <th width="30px" class="orderby" data-orderby="v-wf:read"></th>
         <th data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
         <th data-orderby="v-wf:onDocument.rdfs:label"><span about="v-ft:DocumentBundle" property="rdfs:label"></span></th>
+        <th width="20px"></th>
         <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
         <th width="10%" class="orderby" data-orderby="v-wf:dateGiven"><span about="v-wf:dateGiven" property="rdfs:label"></span></th>
       </tr>
@@ -1023,6 +1077,9 @@ v-ft:InboxResultTemplate
           <i about="@" property="v-s:description"></i>
         </td>
         <td about="@" rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
+        <td>
+          <span class="to-journal pointer text-primary glyphicon glyphicon-list"></span>
+        </td>
         <td about="@" property="v-s:created"></td>
         <td about="@" property="v-wf:dateGiven" class="date-given"></td>
       </tr>
@@ -1039,6 +1096,15 @@ v-ft:InboxResultTemplate
         individual.on("v-wf:isCompleted", removeCompleted);
         template.one("remove", function () {
           individual.off("v-wf:isCompleted", removeCompleted);
+        });
+
+        $(".to-journal", template).click(function(e){
+          e.stopPropagation();
+          var journalUri = individual["v-wf:onDocument"][0].id + "j";
+          riot.route("#/" + journalUri);
+        });
+        new veda.IndividualModel("v-ft:ToJournalBundle").load().then(function(bundle) {
+          $(".to-journal", template).prop("title", bundle.toString());  
         });
 
         // Toggle read/unread
