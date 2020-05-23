@@ -1238,38 +1238,51 @@ for (i = 0; i < 1; i++) {
 
             //#5
             assert.ok(compare(new_test_doc1_set1, read_individual));
-				
 
-            /////////////////////// REMOVE FROM
-
-            var new_test_remove_from1 = {
+			/////////////////////// ADD TO (3)
+            var new_test_set1 = {
                 '@': new_test_doc1_uri,
-                'v-s:author': newUri('td:test-e1')
+                'v-s:author': newUri('td:test-e3')
             };
 
-            Backend.remove_from_individual(ticket_user1.id, new_test_remove_from1);
+            Backend.add_to_individual(ticket_user1.id, new_test_set1);
             Backend.wait_module(m_scripts, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
 
-            var new_test_doc1_remove_from1 = {
+            var new_test_doc1_set1 = {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': [newUri('td:test-e1')[0], newUri('td:test-e2')[0], newUri('td:test-e3')[0]],
                 'v-s:created': now,
-                'v-s:author': newUri('td:test-e2'),
                 'v-s:test_field': newStr('test data', 'EN')
             };
 
             read_individual = Backend.get_individual(ticket_user1.id, new_test_doc1_uri);
 
             //#6
-            assert.ok(compare(new_test_doc1_remove_from1, read_individual));
+            assert.ok(compare(new_test_doc1_set1, read_individual));
 
-            Backend.remove_from_individual(ticket_user1.id, new_test_remove_from1);
+
+            /////////////////////// REMOVE FROM
+
+            var new_test_remove_from2 = {
+                '@': new_test_doc1_uri,
+                'v-s:author': newUri('td:test-e2')
+            };
+
+            Backend.remove_from_individual(ticket_user1.id, new_test_remove_from2);
             Backend.wait_module(m_scripts, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
 
             read_individual = Backend.get_individual(ticket_user1.id, new_test_doc1_uri);
 
+            var new_test_doc1_remove_from1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:created': now,
+                'v-s:author': [newUri('td:test-e1')[0], newUri('td:test-e3')[0]],
+                'v-s:test_field': newStr('test data', 'EN')
+            };
             //#7
             assert.ok(compare(new_test_doc1_remove_from1, read_individual));
 
