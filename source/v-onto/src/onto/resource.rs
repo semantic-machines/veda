@@ -1,4 +1,5 @@
 use crate::datatype::{DataType, Lang};
+use derivative::Derivative;
 
 #[derive(Debug, PartialEq, Clone)]
 // TODO: Add Uri value to enum
@@ -12,11 +13,13 @@ pub enum Value {
     Datetime(i64),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Derivative)]
+#[derivative(Debug, PartialEq)]
 pub struct Resource {
     pub rtype: DataType,
-    pub order: u16,
     pub value: Value,
+    #[derivative(PartialEq = "ignore")]
+    pub order: u16,
 }
 
 impl Resource {
