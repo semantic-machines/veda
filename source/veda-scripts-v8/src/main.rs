@@ -76,6 +76,7 @@ pub struct MyContext<'a> {
     sys_ticket: String,
     main_queue_cs: Option<Consumer>,
     queue_name: String,
+    count_exec: i64,
 }
 
 fn main() -> Result<(), i32> {
@@ -132,6 +133,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         sys_ticket: w_sys_ticket.unwrap(),
         main_queue_cs: None,
         queue_name: consumer_name.to_owned(),
+        count_exec: 0,
     };
 
     info!("use VM id={}", process_name);
@@ -192,8 +194,11 @@ fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyConte
     if let Some(main_cs_r) = &mut ctx.main_queue_cs {
         while main_cs_r.count_popped < count_popped {
             main_cs_r.get_info();
-            info!("sleep, scripts_main={}, my={}", main_cs_r.count_popped, count_popped);
-            thread::sleep(time::Duration::from_millis(1000));
+
+            if main_cs_r.count_popped < count_popped {
+                info!("sleep, scripts_main={}, my={}", main_cs_r.count_popped, count_popped);
+                thread::sleep(time::Duration::from_millis(1000));
+            }
         }
     }
 
@@ -354,6 +359,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
                 drop(sh_tnx);
 
                 compiled_script.run(ctx.workplace.scope, ctx.workplace.context);
+                ctx.count_exec += 1;
 
                 sh_tnx = G_TRANSACTION.lock().unwrap();
                 let tnx = sh_tnx.get_mut();
@@ -372,7 +378,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
 
                 drop(sh_tnx);
 
-                info!("end: {}", script_id);
+                info!("{} end: {}", ctx.count_exec, script_id);
 
                 if res != ResultCode::Ok {
                     info!("fail exec event script : {}", script_id);

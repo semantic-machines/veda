@@ -31,6 +31,7 @@ pub fn fn_callback_get_individual(mut scope: v8::FunctionCallbackScope, args: v8
             let j_indv = individual2v8obj(scope, indv.parse_all());
             rv.set(j_indv.into());
         }
+        drop(sh_g_vars);
 
         return;
     } else if id == "$prev_state" {
@@ -41,6 +42,7 @@ pub fn fn_callback_get_individual(mut scope: v8::FunctionCallbackScope, args: v8
             let j_indv = individual2v8obj(scope, indv.parse_all());
             rv.set(j_indv.into());
         }
+        drop(sh_g_vars);
 
         return;
     } else if id == "$execute_script" {
@@ -62,6 +64,8 @@ pub fn fn_callback_get_individual(mut scope: v8::FunctionCallbackScope, args: v8
                 }
             }
         }
+
+        drop(sh_tnx);
     }
 }
 
@@ -95,6 +99,7 @@ pub fn fn_callback_get_individuals(scope: v8::FunctionCallbackScope, args: v8::F
                     }
                 }
             }
+            drop(sh_tnx);
         }
     } else {
         error!("callback_get_individuals: arg is not array");
@@ -144,12 +149,14 @@ pub fn fn_callback_get_env_str_var(mut scope: v8::FunctionCallbackScope, args: v
             let j_res = str_2_v8(scope, &g_vars.g_super_classes);
             rv.set(j_res.into());
         }
+
+        drop(sh_g_vars);
     }
 }
 pub fn fn_callback_get_env_num_var(mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
     if let Some(var_name) = get_string_arg(&mut scope, &args, 0, "fn_callback_get_env_str_var: arg not found or invalid") {
-        let mut sh_g_vars = G_VARS.lock().unwrap();
-        let _g_vars = sh_g_vars.get_mut();
+        //let mut sh_g_vars = G_VARS.lock().unwrap();
+        //let _g_vars = sh_g_vars.get_mut();
 
         debug!("fn_callback_get_env_num_var, var_name={:?}", var_name);
 
@@ -183,6 +190,7 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
         let mut sh_tnx = G_TRANSACTION.lock().unwrap();
         let tnx = sh_tnx.get_mut();
         ticket = tnx.sys_ticket.to_owned();
+        drop(sh_tnx);
     }
 
     let mut query = FTQuery::new_with_ticket(&ticket, &query.unwrap());
@@ -213,6 +221,8 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
     let ft_client = sh_ft_client.get_mut();
 
     let res = ft_client.query(query);
+
+    drop(sh_ft_client);
 
     let j_res = query_result2v8obj(scope, &res);
     rv.set(j_res.into());
