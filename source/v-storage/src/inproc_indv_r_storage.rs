@@ -105,6 +105,8 @@ pub fn get_individual(id: &str) -> Option<Individual> {
         return None;
     }
 
+    drop (sh_client);
+
     if let Ok(msg) = wmsg {
         let data = msg.as_slice();
         if data == "[]".as_bytes() {
