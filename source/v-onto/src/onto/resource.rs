@@ -23,6 +23,14 @@ pub struct Resource {
 }
 
 impl Resource {
+    pub fn new_bool(data: bool) -> Self {
+        Resource {
+            rtype: DataType::Boolean,
+            order: 0,
+            value: Value::Bool(data),
+        }
+    }
+
     pub fn get_copy(&self) -> Self {
         Resource {
             rtype: self.rtype.clone(),
