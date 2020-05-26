@@ -412,6 +412,7 @@ fn connect_to_smtp(ctx: &mut Context, module: &mut Module) -> bool {
 
                             let login = connection.get_first_literal("v-s:login");
                             let pass = connection.get_first_literal("v-s:password");
+                            let use_smtp_utf8 = connection.get_first_bool("cfg:use_smtp_utf8").unwrap_or(true);
 
                             ctx.default_mail_sender = connection.get_first_literal("v-s:mailSender").unwrap_or_default();
                             ctx.always_use_mail_sender = connection.get_first_bool("v-s:alwaysUseMailSender").unwrap_or_default();
@@ -442,7 +443,7 @@ fn connect_to_smtp(ctx: &mut Context, module: &mut Module) -> bool {
                                     client
                                         .unwrap()
                                         .credentials(Credentials::new(login.unwrap(), pass.unwrap()))
-                                        .smtp_utf8(true)
+                                        .smtp_utf8(use_smtp_utf8)
                                         .authentication_mechanism(auth_type)
                                         .connection_reuse(ConnectionReuseParameters::ReuseUnlimited)
                                         .transport(),
@@ -450,7 +451,7 @@ fn connect_to_smtp(ctx: &mut Context, module: &mut Module) -> bool {
                                 return true;
                             } else {
                                 // no security connect
-                                ctx.smtp_client = Some(client.unwrap().smtp_utf8(true).transport());
+                                ctx.smtp_client = Some(client.unwrap().smtp_utf8(use_smtp_utf8).transport());
                                 return true;
                             }
                         }
