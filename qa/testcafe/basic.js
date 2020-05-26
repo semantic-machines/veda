@@ -40,9 +40,9 @@ export default class basic {
   async fullTextSearch(query, eql) {
     await t
       .click('ul.nav.navbar-nav.navbar-right li[about="v-fs:MultiFunctionalSearch"]')
-      .click('div.input-group input[name="v_s_userthing_*"]')
+      .click('veda-control[property="*"] input[type="text"]')
       .pressKey('ctrl+a delete')
-      .typeText('div.input-group input[name="v_s_userthing_*"]', query)
+      .typeText('veda-control[property="*"] input[type="text"]', query)
       .click('span.input-group-btn button[about="v-fs:Find"]')
       .expect(Selector('small.stats-top.pull-right span.badge[property="v-fs:authorized"]').innerText).eql(eql)
   }
