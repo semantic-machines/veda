@@ -1216,7 +1216,7 @@
         } else {
           suggestions.children().last().addClass("active").focus();
         }
-      } else if ( e.which === 32 && !fulltext.is(":focus") && fulltextMenu.is(":visible") ) { // Space
+      } else if ( e.which === 32 && fulltextMenu.find(":focus").length ) { // Space
         e.preventDefault(); // Prevent scrolling on space
       }
     }
@@ -2735,7 +2735,7 @@
           } else {
             suggestions.children().last().addClass("active").focus();
           }
-        } else if ( e.which === 32 && !fulltext.is(":focus") && fulltextMenu.is(":visible") ) { // Space
+        } else if ( e.which === 32 && fulltextMenu.find(":focus").length ) { // Space
           e.preventDefault(); // Prevent scrolling on space
         }
       };
