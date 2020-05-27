@@ -61,7 +61,7 @@ fn main() {
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before_bath as fn(&mut Module, &mut Context, size_batch: u32) -> Option<u32>),
-        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, count_popped: u32) -> Result<bool, PrepareError>),
+        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
         &mut (void as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut Context)),
     );
@@ -75,7 +75,7 @@ fn void(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u32) -> 
     false
 }
 
-fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _count_popped: u32) -> Result<bool, PrepareError> {
+fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("Queue element cmd is none. Skip element.");

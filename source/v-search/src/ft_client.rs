@@ -126,6 +126,7 @@ impl FTClient {
 
         if !self.is_ready {
             while !self.connect() {
+                error!("not ready, sleep...");
                 thread::sleep(time::Duration::from_millis(3000));
             }
         }

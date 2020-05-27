@@ -85,9 +85,7 @@ fn main() -> Result<(), i32> {
 
     let _setup_guard = setup();
 
-    let params = v8::Isolate::create_params();
-    //params.array_buffer_allocator(v8::new_default_allocator());
-    let mut isolate = v8::Isolate::new(params);
+    let mut isolate = v8::Isolate::new(Default::default());
 
     let mut hs = v8::HandleScope::new(&mut isolate);
     let hs_scope = hs.enter();
@@ -163,7 +161,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
                 ctx.main_queue_cs = Some(cs);
                 break;
             }
-            warn!("main queue consumer not open, sleep and repeate");
+            warn!("main queue consumer not open, sleep and repeat");
             thread::sleep(time::Duration::from_millis(1000));
         }
     }
@@ -173,7 +171,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before_batch as fn(&mut Module, &mut MyContext<'a>, batch_size: u32) -> Option<u32>),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, &mut Individual, count_popped: u32) -> Result<bool, PrepareError>),
+        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
         &mut (after_batch as fn(&mut Module, &mut MyContext<'a>, prepared_batch_size: u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut MyContext<'a>)),
     );
@@ -190,13 +188,13 @@ fn after_batch(_module: &mut Module, _ctx: &mut MyContext, _prepared_batch_size:
     false
 }
 
-fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual, count_popped: u32) -> Result<bool, PrepareError> {
+fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError> {
     if let Some(main_cs_r) = &mut ctx.main_queue_cs {
-        while main_cs_r.count_popped < count_popped {
+        while my_consumer.count_popped > main_cs_r.count_popped && main_cs_r.id == my_consumer.id || my_consumer.id > main_cs_r.id {
             main_cs_r.get_info();
 
-            if main_cs_r.count_popped < count_popped {
-                info!("sleep, scripts_main={}, my={}", main_cs_r.count_popped, count_popped);
+            if  my_consumer.count_popped > main_cs_r.count_popped && main_cs_r.id == my_consumer.id || my_consumer.id > main_cs_r.id {
+                info!("sleep, scripts_main={}:{}, my={}:{}", main_cs_r.id, main_cs_r.count_popped, my_consumer.id, my_consumer.count_popped);
                 thread::sleep(time::Duration::from_millis(1000));
             }
         }

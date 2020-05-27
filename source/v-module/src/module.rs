@@ -246,7 +246,7 @@ impl Module {
         module_info: &mut ModuleInfo,
         module_context: &mut T,
         before_batch: &mut fn(&mut Module, &mut T, batch_size: u32) -> Option<u32>,
-        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual, u32) -> Result<bool, PrepareError>,
+        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual, &Consumer) -> Result<bool, PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32) -> bool,
         heartbeat: &mut fn(&mut Module, &mut T),
     ) {
@@ -301,7 +301,7 @@ impl Module {
 
                 let mut queue_element = Individual::new_raw(raw);
                 if parse_raw(&mut queue_element).is_ok() {
-                    match prepare(self, module_info, module_context, &mut queue_element, queue_consumer.count_popped) {
+                    match prepare(self, module_info, module_context, &mut queue_element, queue_consumer) {
                         Err(e) => {
                             if let PrepareError::Fatal = e {
                                 warn!("found fatal error, stop listen queue");
