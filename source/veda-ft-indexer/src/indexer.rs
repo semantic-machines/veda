@@ -1,36 +1,39 @@
 use crate::error::Result;
 use crate::index_schema::IndexerProperty;
 use crate::index_workplace::IndexDocWorkplace;
+use crate::ky2slot::Key2Slot;
 use crate::XAPIAN_DB_TYPE;
 use std::collections::HashMap;
 use std::fs;
+use std::process::exit;
 use v_api::IndvOp;
 use v_module::module::Module;
 use v_onto::datatype::DataType;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_onto::resource::Resource;
-use xapian_rusty::{Document, Stem, TermGenerator, WritableDatabase, DB_CREATE_OR_OPEN};
+use xapian_rusty::{get_xapian_err_type, Document, Stem, TermGenerator, WritableDatabase, DB_CREATE_OR_OPEN};
 
-pub struct Context {
+pub struct Indexer {
     pub(crate) onto: Onto,
     pub(crate) index_dbs: HashMap<String, WritableDatabase>,
-    pub(crate) indexer: TermGenerator,
+    pub(crate) tg: TermGenerator,
     pub(crate) lang: String,
-    pub(crate) key2slot: HashMap<String, u32>,
+    pub(crate) key2slot: Key2Slot,
     pub(crate) db2path: HashMap<String, String>,
-    pub(crate) iproperty: IndexerProperty,
+    pub(crate) idx_prop: IndexerProperty,
     pub(crate) use_db: String,
     pub(crate) counter: i64,
+    pub(crate) prev_committed_counter: i64,
 }
 
-impl Context {
+impl Indexer {
     pub(crate) fn init(&mut self, use_db: &str) -> Result<()> {
         if !use_db.is_empty() {
             warn!("indexer use only {} db", use_db);
         }
 
-        self.key2slot = get_from_key2slot();
+        self.key2slot = Key2Slot::load();
         self.use_db = use_db.to_string();
 
         for (db_name, path) in self.db2path.iter() {
@@ -41,13 +44,13 @@ impl Context {
         }
 
         let mut stem = Stem::new(&self.lang)?;
-        self.indexer.set_stemmer(&mut stem)?;
+        self.tg.set_stemmer(&mut stem)?;
 
         Ok(())
     }
 
     fn reload_index_schema(&mut self, module: &mut Module) {
-        self.iproperty.load(true, &self.onto, module);
+        self.idx_prop.load(true, &self.onto, module);
     }
 
     pub(crate) fn index_msg(&mut self, new_indv: &mut Individual, prev_indv: &mut Individual, cmd: IndvOp, op_id: i64, module: &mut Module) -> Result<()> {
@@ -74,7 +77,7 @@ impl Context {
             false
         };
 
-        self.iproperty.load(false, &self.onto, module);
+        self.idx_prop.load(false, &self.onto, module);
 
         if !new_indv.is_empty() {
             let is_draft_of = new_indv.get_first_literal("v-s:is_draft_of");
@@ -99,7 +102,7 @@ impl Context {
 
             let mut prev_dbname = "base".to_owned();
             for _type in prev_types {
-                prev_dbname = self.iproperty.get_dbname_of_class(&_type).to_string();
+                prev_dbname = self.idx_prop.get_dbname_of_class(&_type).to_string();
                 if prev_dbname != "base" {
                     break;
                 }
@@ -111,10 +114,10 @@ impl Context {
             let mut dbname = "base".to_owned();
             for _type in types.iter() {
                 if _type == "vdi:ClassIndex" {
-                    self.iproperty.add_schema_data(&mut self.onto, new_indv);
+                    self.idx_prop.add_schema_data(&mut self.onto, new_indv);
                 }
 
-                dbname = self.iproperty.get_dbname_of_class(_type).to_owned();
+                dbname = self.idx_prop.get_dbname_of_class(_type).to_owned();
                 if dbname != "base" {
                     break;
                 }
@@ -125,8 +128,8 @@ impl Context {
                 info!("[{}] remove from [{}]", new_indv.get_id(), prev_dbname);
 
                 if self.index_dbs.contains_key(&prev_dbname) {
-                    if let Some(db) = self.index_dbs.get(&prev_dbname) {
-                        //db.delete_document(uuid);
+                    if let Some(db) = self.index_dbs.get_mut(&prev_dbname) {
+                        db.delete_document(&uuid)?;
                     }
                 }
             }
@@ -162,10 +165,10 @@ impl Context {
 
                 for oo in resources {
                     for _type in types.iter() {
-                        if let Some(id) = self.iproperty.get_index_id_of_uri_and_property(_type, predicate) {
+                        if let Some(id) = self.idx_prop.get_index_id_of_uri_and_property(_type, predicate) {
                             self.prepare_index(&id, oo, predicate, 0);
                         } else {
-                            if let Some(id) = self.iproperty.get_index_id_of_property(predicate) {
+                            if let Some(id) = self.idx_prop.get_index_id_of_property(predicate) {
                                 self.prepare_index(&id, oo, predicate, 0);
                             }
                         }
@@ -196,20 +199,20 @@ impl Context {
 
                 if !resources.is_empty() {
                     if !p_text_ru.is_empty() {
-                        let slot_l1 = self.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_ru"));
-                        self.indexer.index_text_with_prefix(p_text_ru, &format!("X{}X", slot_l1))?;
+                        let slot_l1 = self.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_ru"));
+                        self.tg.index_text_with_prefix(p_text_ru, &format!("X{}X", slot_l1))?;
                         iwp.doc_add_text_value(slot_l1, p_text_ru)?;
                     }
 
                     if !p_text_en.is_empty() {
-                        let slot_l1 = self.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_en"));
-                        self.indexer.index_text_with_prefix(p_text_ru, &format!("X{}X", slot_l1))?;
+                        let slot_l1 = self.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_en"));
+                        self.tg.index_text_with_prefix(p_text_ru, &format!("X{}X", slot_l1))?;
                         iwp.doc_add_text_value(slot_l1, p_text_en)?;
                     }
                 }
             }
 
-            self.indexer.index_text(&iwp.all_text)?;
+            self.tg.index_text(&iwp.all_text)?;
 
             iwp.doc.add_boolean_term(&uuid)?;
             iwp.doc.set_data(new_indv.get_id())?;
@@ -225,7 +228,7 @@ impl Context {
                     if let Some(db) = self.index_dbs.get_mut("deleted") {
                         db.replace_document(&uuid, &mut iwp.doc)?;
                     }
-                    self.indexer.set_document(&mut Document::new()?)?;
+                    self.tg.set_document(&mut Document::new()?)?;
                 }
             }
 
@@ -238,10 +241,10 @@ impl Context {
 
             if self.counter % 5000 == 0 {
                 if !self.key2slot.is_empty() {
-                    //store__key2slot();
+                    self.key2slot.store();
                 }
 
-                //commit_all_db();
+                self.commit_all_db();
             }
         }
 
@@ -250,44 +253,25 @@ impl Context {
         return Ok(());
     }
 
-    pub(crate) fn get_slot_and_set_if_not_found(&mut self, field: &str) -> u32 {
-        if let Some(slot) = get_slot(&self.key2slot, field) {
-            return slot;
+    fn commit_all_db(&mut self) {
+        let delta = self.counter - self.prev_committed_counter;
+
+        self.prev_committed_counter = self.counter;
+        let mut is_fail_commit = false;
+        for (name, db) in self.index_dbs.iter_mut() {
+            if let Err(e) = db.commit() {
+                is_fail_commit = true;
+                error!("FT:commit:{} fail={}, err={:?}", name, self.counter, get_xapian_err_type(e));
+            }
         }
 
-        // create new slot
-        let slot = (self.key2slot.len() + 1) as u32;
-        self.key2slot.insert(field.to_owned(), slot);
-        //store__key2slot();
-        info!("create new slot {}={}", field, slot);
-        slot
+        if is_fail_commit == true {
+            warn!("EXIT");
+            exit(-1);
+        }
     }
 
     fn prepare_index(&mut self, idx_id: &str, rs: &Resource, ln: &str, level: i32) {}
-}
-
-fn get_slot(key2slot: &HashMap<String, u32>, key: &str) -> Option<u32> {
-    if key.is_empty() {
-        return None;
-    }
-
-    if let Some(c) = key.chars().nth(0) {
-        if c == '#' {
-            if let Ok(v) = key[1..].parse::<u32>() {
-                return Some(v);
-            } else {
-                error!("invalid slot: {}", key);
-                return None;
-            }
-        }
-    }
-
-    if let Some(slot) = key2slot.get(key) {
-        Some(slot.to_owned())
-    } else {
-        error!("key2slot, slot not found, key={}", key);
-        None
-    }
 }
 
 pub(crate) fn to_lower_and_replace_delimeters(src: &str) -> String {
@@ -298,9 +282,4 @@ pub(crate) fn to_lower_and_replace_delimeters(src: &str) -> String {
             _ => x.to_ascii_lowercase(),
         })
         .collect()
-}
-
-fn get_from_key2slot() -> HashMap<String, u32> {
-    //XAPIAN_INFO_PATH
-    Default::default()
 }

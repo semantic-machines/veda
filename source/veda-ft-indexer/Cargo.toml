@@ -11,6 +11,7 @@ log = "0.4"
 rust-ini = "0.13"
 #xapian-rusty = "0.0.26"
 maplit = "1.0.2"
+crc32fast = "1.2"
 
 v_queue = { path = "../v-queue" }
 v_onto = { path = "../v-onto" }
