@@ -1,7 +1,8 @@
-mod context;
 mod error;
 mod index_schema;
 mod index_workplace;
+mod indexer;
+mod ky2slot;
 
 #[macro_use]
 extern crate log;
@@ -19,7 +20,7 @@ use v_module::onto::load_onto;
 use v_onto::individual::*;
 use v_onto::onto::Onto;
 
-use crate::context::Context;
+use crate::indexer::Indexer;
 use v_queue::consumer::*;
 use xapian_rusty::*;
 
@@ -45,16 +46,17 @@ fn main() -> Result<(), i32> {
 
     load_onto(&mut module.storage, &mut onto);
 
-    let mut ctx = Context {
+    let mut ctx = Indexer {
         onto,
         index_dbs: Default::default(),
-        indexer: TermGenerator::new()?,
+        tg: TermGenerator::new()?,
         lang: "russian".to_string(),
         key2slot: Default::default(),
         db2path: hashmap! { "base".to_owned() => "data/xapian-search-base".to_owned(), "system".to_owned()=>"data/xapian-search-system".to_owned(), "deleted".to_owned()=>"data/xapian-search-deleted".to_owned(), "az".to_owned()=>"data/xapian-search-az".to_owned() },
-        iproperty: Default::default(),
+        idx_prop: Default::default(),
         use_db: "".to_string(),
         counter: 0,
+        prev_committed_counter: 0,
     };
 
     info!("Rusty search-index: start listening to queue");
@@ -65,26 +67,26 @@ fn main() -> Result<(), i32> {
         &mut queue_consumer,
         &mut module_info.unwrap(),
         &mut ctx,
-        &mut (before as fn(&mut Module, &mut Context, u32) -> Option<u32>),
-        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, count_popped: u32) -> Result<bool, PrepareError>),
-        &mut (after as fn(&mut Module, &mut Context, u32) -> bool),
-        &mut (heartbeat as fn(&mut Module, &mut Context)),
+        &mut (before as fn(&mut Module, &mut Indexer, u32) -> Option<u32>),
+        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Indexer, &mut Individual, count_popped: u32) -> Result<bool, PrepareError>),
+        &mut (after as fn(&mut Module, &mut Indexer, u32) -> bool),
+        &mut (heartbeat as fn(&mut Module, &mut Indexer)),
     );
 
     Ok(())
 }
 
-fn heartbeat(_module: &mut Module, _ctx: &mut Context) {}
+fn heartbeat(_module: &mut Module, _ctx: &mut Indexer) {}
 
-fn before(_module: &mut Module, _ctx: &mut Context, _batch_size: u32) -> Option<u32> {
+fn before(_module: &mut Module, _ctx: &mut Indexer, _batch_size: u32) -> Option<u32> {
     None
 }
 
-fn after(_module: &mut Module, _ctx: &mut Context, _processed_batch_size: u32) -> bool {
+fn after(_module: &mut Module, _ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
     true
 }
 
-fn process(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _count_popped: u32) -> Result<bool, PrepareError> {
+fn process(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Indexer, queue_element: &mut Individual, _count_popped: u32) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
