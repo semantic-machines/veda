@@ -1613,7 +1613,7 @@ v-ui:SectionHeaderTemplate
 
 v-ui:TestUIClass
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Класс для тестирования интерфейса"@ru ;
   rdfs:label "Test UI class"@en ;
