@@ -68,7 +68,7 @@ fn main() -> Result<(), i32> {
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before as fn(&mut Module, &mut Indexer, u32) -> Option<u32>),
-        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Indexer, &mut Individual, count_popped: u32) -> Result<bool, PrepareError>),
+        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Indexer, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
         &mut (after as fn(&mut Module, &mut Indexer, u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut Indexer)),
     );
@@ -86,7 +86,7 @@ fn after(_module: &mut Module, _ctx: &mut Indexer, _processed_batch_size: u32) -
     true
 }
 
-fn process(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Indexer, queue_element: &mut Individual, _count_popped: u32) -> Result<bool, PrepareError> {
+fn process(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Indexer, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");

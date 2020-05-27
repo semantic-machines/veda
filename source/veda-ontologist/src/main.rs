@@ -100,7 +100,7 @@ fn main() -> std::io::Result<()> {
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before_batch as fn(&mut Module, &mut Context, batch_size: u32) -> Option<u32>),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, count_popped: u32) -> Result<bool, PrepareError>),
+        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
         &mut (after_batch as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut Context)),
     );
@@ -144,7 +144,7 @@ fn after_batch(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u
     true
 }
 
-fn prepare(_module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _count_popped: u32) -> Result<bool, PrepareError> {
+fn prepare(_module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
     if let Some((id, counter, is_deleted)) = test_on_onto(queue_element, &ctx.onto_types) {
         ctx.last_found_changes = Instant::now();
         ctx.is_need_generate = true;

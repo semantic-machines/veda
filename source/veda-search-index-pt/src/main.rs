@@ -600,7 +600,7 @@ async fn main() ->  Result<(), Error> {
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before as fn(&mut Module, &mut Context, u32) -> Option<u32>),
-        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, count_popped: u32) -> Result<bool, PrepareError>),
+        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
         &mut (after as fn(&mut Module, &mut Context, u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut Context))
     );
@@ -621,7 +621,7 @@ fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) ->
     true
 }
 
-fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _count_popped: u32) -> Result<bool, PrepareError> {
+fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
     if let Err(e) = module_info.put_info(op_id, op_id) {
         error!("Failed to write module_info, op_id={}, err={:?}", op_id, e);
