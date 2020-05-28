@@ -101,6 +101,11 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
 
     let mut module = Module::default();
 
+    while !module.api.connect() {
+        error!("main module not ready, sleep and repeat");
+        thread::sleep(time::Duration::from_millis(1000));
+    }
+
     let mut onto = Onto::default();
     load_onto(&mut module.storage, &mut onto);
 
