@@ -10,7 +10,6 @@ chrono = "0.4.9"
 lazy_static = "1.4.0"
 # sudo apt install libglib2.0-dev
 
-#rusty_v8 = {git="https://github.com/semantic-machines/rusty_v8.git", rev="f733cef479935ec197104f000606270ebfec323e"}
 rusty_v8_m = "0.4.3"
 
 tokio = "0.1"

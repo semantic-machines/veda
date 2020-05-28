@@ -188,12 +188,18 @@ fn after_batch(_module: &mut Module, _ctx: &mut MyContext, _prepared_batch_size:
     false
 }
 
-fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut MyContext, queue_element: &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError> {
+fn prepare(
+    _module: &mut Module,
+    module_info: &mut ModuleInfo,
+    ctx: &mut MyContext,
+    queue_element: &mut Individual,
+    my_consumer: &Consumer,
+) -> Result<bool, PrepareError> {
     if let Some(main_cs_r) = &mut ctx.main_queue_cs {
         while my_consumer.count_popped > main_cs_r.count_popped && main_cs_r.id == my_consumer.id || my_consumer.id > main_cs_r.id {
             main_cs_r.get_info();
 
-            if  my_consumer.count_popped > main_cs_r.count_popped && main_cs_r.id == my_consumer.id || my_consumer.id > main_cs_r.id {
+            if my_consumer.count_popped > main_cs_r.count_popped && main_cs_r.id == my_consumer.id || my_consumer.id > main_cs_r.id {
                 info!("sleep, scripts_main={}:{}, my={}:{}", main_cs_r.id, main_cs_r.count_popped, my_consumer.id, my_consumer.count_popped);
                 thread::sleep(time::Duration::from_millis(1000));
             }
@@ -302,6 +308,9 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
     *g_vars = session_data;
     drop(sh_g_vars);
 
+    let mut hs = v8::HandleScope::new(ctx.workplace.scope);
+    let local_scope = hs.enter();
+
     for script_id in ctx.workplace.scripts_order.iter() {
         let run_script_id = doc_id.to_owned() + "+" + script_id;
         if let Some(script) = ctx.workplace.scripts.get(script_id) {
@@ -315,7 +324,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
                 }
 
                 if !is_filter_pass(script, &doc_id, &rdf_types, &mut ctx.onto) {
-                    //log.trace("skip (filter) script:%s", script_id);
+                    debug!("skip (filter) script:{}", script_id);
                     continue;
                 }
 
@@ -356,7 +365,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
                 tnx.sys_ticket = ctx.sys_ticket.to_owned();
                 drop(sh_tnx);
 
-                compiled_script.run(ctx.workplace.scope, ctx.workplace.context);
+                compiled_script.run(local_scope, ctx.workplace.context);
                 ctx.count_exec += 1;
 
                 sh_tnx = G_TRANSACTION.lock().unwrap();

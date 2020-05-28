@@ -17,7 +17,7 @@ fi
 
 ./tools/update-version-ttl.sh
 
-export CARGO_TARGET_DIR=$HOME/tmp
+export CARGO_TARGET_DIR=$HOME/target
 
 if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
     echo BUILD AZ
