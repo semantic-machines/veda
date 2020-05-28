@@ -192,6 +192,9 @@ pub(crate) fn commit(tnx: &Transaction, api_client: &mut APIClient) -> ResultCod
         let res = api_client.update_with_event(&ti.ticket_id, &tnx.event_id, &tnx.src, ti.cmd.clone(), &ti.indv);
         if res.result != ResultCode::Ok {
             error!("commit: op_id={}, code={:?}", res.op_id, res.result);
+            if res.result != ResultCode::NotReady {
+                return res.result;
+            }
         }
     }
 
