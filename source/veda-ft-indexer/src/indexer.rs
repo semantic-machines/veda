@@ -33,7 +33,7 @@ impl Indexer {
             warn!("indexer use only {} db", use_db);
         }
 
-        self.key2slot = Key2Slot::load();
+        self.key2slot = Key2Slot::load()?;
         self.use_db = use_db.to_string();
 
         for (db_name, path) in self.db2path.iter() {
@@ -154,7 +154,7 @@ impl Indexer {
             for (predicate, resources) in new_indv.get_obj().get_resources() {
                 //let prefix;
 
-                let ttype = "xsd__string";
+                //let ttype = "xsd__string";
 
                 let p_text_ru = "";
                 let p_text_en = "";
@@ -241,7 +241,9 @@ impl Indexer {
 
             if self.counter % 5000 == 0 {
                 if !self.key2slot.is_empty() {
-                    self.key2slot.store();
+                    if let Err(e) = self.key2slot.store() {
+                        error!("fail store key2slot, err={:?}", e);
+                    }
                 }
 
                 self.commit_all_db();
