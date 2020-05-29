@@ -1,14 +1,18 @@
-mod error;
-mod index_schema;
-mod index_workplace;
-mod indexer;
-mod ky2slot;
+#[macro_use]
+extern crate scan_fmt;
 
 #[macro_use]
 extern crate log;
 
 #[macro_use]
 extern crate maplit;
+
+mod error;
+mod index_schema;
+mod index_workplace;
+mod indexer;
+mod ky2slot;
+
 use crate::error::Result;
 
 use std::process;
@@ -24,9 +28,8 @@ use crate::indexer::Indexer;
 use v_queue::consumer::*;
 use xapian_rusty::*;
 
-const XAPIAN_INFO_PATH: &str = "./data/xapian-info";
 const XAPIAN_DB_TYPE: i8 = BRASS;
-const BASE_PATH: &str = "data";
+//const BASE_PATH: &str = "data";
 
 fn main() -> Result<(), i32> {
     init_log();

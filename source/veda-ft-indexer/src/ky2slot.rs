@@ -1,5 +1,10 @@
+use crate::error::Result;
 use crc32fast::Hasher;
 use std::collections::HashMap;
+use std::fs::OpenOptions;
+use std::io::{BufRead, BufReader, Seek, SeekFrom, Write};
+
+const XAPIAN_INFO_PATH: &str = "./data/xapian-info";
 
 pub struct Key2Slot {
     data: HashMap<String, u32>,
@@ -52,44 +57,47 @@ impl Key2Slot {
         // create new slot
         let slot = (self.data.len() + 1) as u32;
         self.data.insert(field.to_owned(), slot);
-        self.store();
-        info!("create new slot {}={}", field, slot);
+        if let Err(e) = self.store() {
+            error!("fail store key2slot, err={:?}", e);
+        } else {
+            info!("create new slot {}={}", field, slot);
+        }
         slot
     }
 
-    pub fn load() -> Key2Slot {
-        //XAPIAN_INFO_PATH
+    pub(crate) fn load() -> Result<Key2Slot> {
+        let mut ff = OpenOptions::new().read(true).open(XAPIAN_INFO_PATH.to_owned() + "/key2slot")?;
+        ff.seek(SeekFrom::Start(0))?;
+
         let mut key2slot = Key2Slot::default();
-        let src = "";
-        key2slot.deserialize(src);
-        key2slot
+
+        if let Some(line) = BufReader::new(ff).lines().next() {
+            if let Ok(ll) = line {
+                let (field, slot) = scan_fmt!(&ll, "\"{}\",{}", String, u32);
+
+                if field.is_some() && slot.is_some() {
+                    key2slot.data.insert(field.unwrap(), slot.unwrap());
+                } else {
+                    error!("fail parse key2slot, line={}", ll);
+                }
+            }
+        }
+
+        Ok(key2slot)
     }
 
-    pub fn store(&mut self) {
+    pub(crate) fn store(&mut self) -> Result<()> {
         let (data, hash) = self.serialize();
 
         if data.len() == self.last_size_key2slot {
-            return;
+            return Ok(());
         }
 
-        /*
-           try {
-           ff_key2slot_w.seek(0);
-           ff_key2slot_w.write('"');
-           ff_key2slot_w.write(hash);
-           ff_key2slot_w.write("\",");
-           ff_key2slot_w.write(data.length);
-           ff_key2slot_w.write('\n');
-           ff_key2slot_w.write(data);
-           ff_key2slot_w.flush();
+        let mut ff = OpenOptions::new().read(true).write(true).create(true).open(XAPIAN_INFO_PATH.to_owned() + "/key2slot")?;
+        ff.seek(SeekFrom::Start(0))?;
+        ff.write(format!("\"{}\",{}\n{}", hash, data.len(), data).as_bytes())?;
 
-           last_size_key2slot = data.length;
-           } catch (Throwable tr)   {
-           log.trace("fail store__key2slot [%s] [%s]", data, tr.msg);
-           return;
-           }
-
-        */
+        Ok(())
     }
 
     fn serialize(&self) -> (String, String) {
@@ -111,6 +119,4 @@ impl Key2Slot {
 
         return (outbuff, hash_hex);
     }
-
-    fn deserialize(&mut self, src: &str) {}
 }
