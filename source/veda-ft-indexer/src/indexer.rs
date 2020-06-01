@@ -1,7 +1,7 @@
 use crate::error::Result;
 use crate::index_schema::IndexerSchema;
 use crate::index_workplace::IndexDocWorkplace;
-use crate::ky2slot::Key2Slot;
+use crate::key2slot::{Key2Slot, XAPIAN_INFO_PATH};
 use crate::XAPIAN_DB_TYPE;
 use std::collections::HashMap;
 use std::fs;
@@ -33,11 +33,19 @@ impl Indexer {
             warn!("indexer use only {} db", use_db);
         }
 
-        self.key2slot = Key2Slot::load()?;
+        if let Ok(k) = Key2Slot::load() {
+            self.key2slot = k;
+        } else {
+            fs::create_dir_all(&(XAPIAN_INFO_PATH))?;
+            self.key2slot = Default::default();
+            info!("key2slot no load, create empty");
+        }
+
         self.use_db = use_db.to_string();
 
         for (db_name, path) in self.db2path.iter() {
-            fs::create_dir_all(path)?;
+            debug!("path={}", path);
+            fs::create_dir_all(&("./".to_owned() + path))?;
             if let Ok(db) = WritableDatabase::new(path, DB_CREATE_OR_OPEN, XAPIAN_DB_TYPE) {
                 self.index_dbs.insert(db_name.to_owned(), db);
             }
