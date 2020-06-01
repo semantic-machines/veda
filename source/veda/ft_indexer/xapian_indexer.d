@@ -138,11 +138,11 @@ public class IndexerContext {
 		return true;
 	}
 
-	void reload_index_schema()
-	{
-		if (iproperty !is null)
-			iproperty.load(true);
-	}
+	//void reload_index_schema()
+	//{
+	//	if (iproperty !is null)
+	//		iproperty.load(true);
+	//}
 
 	void index_msg(ref Individual indv, ref Individual prev_indv, INDV_OP cmd, long op_id, Context context, bool is_trace = false)
 	{

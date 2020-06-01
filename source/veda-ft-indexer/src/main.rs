@@ -29,7 +29,7 @@ use v_queue::consumer::*;
 use xapian_rusty::*;
 
 const XAPIAN_DB_TYPE: i8 = BRASS;
-//const BASE_PATH: &str = "data";
+const BASE_PATH: &str = "./data";
 
 fn main() -> Result<(), i32> {
     init_log();
@@ -38,8 +38,8 @@ fn main() -> Result<(), i32> {
         wait_module("fulltext_indexer", wait_load_ontology());
     }
 
-    let mut queue_consumer = Consumer::new("./data/queue", "index_ft", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
-    let module_info = ModuleInfo::new("./data", "index_ft", true);
+    let mut queue_consumer = Consumer::new(&format!("./{}/queue", BASE_PATH), "index_ft", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let module_info = ModuleInfo::new(BASE_PATH, "index_ft", true);
     if module_info.is_err() {
         error!("{:?}", module_info.err());
         process::exit(101);
@@ -56,7 +56,7 @@ fn main() -> Result<(), i32> {
         lang: "russian".to_string(),
         key2slot: Default::default(),
         db2path: hashmap! { "base".to_owned() => "data/xapian-search-base".to_owned(), "system".to_owned()=>"data/xapian-search-system".to_owned(), "deleted".to_owned()=>"data/xapian-search-deleted".to_owned(), "az".to_owned()=>"data/xapian-search-az".to_owned() },
-        idx_prop: Default::default(),
+        idx_schema: Default::default(),
         use_db: "".to_string(),
         counter: 0,
         prev_committed_counter: 0,

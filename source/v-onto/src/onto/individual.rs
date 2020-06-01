@@ -417,6 +417,30 @@ impl Individual {
         None
     }
 
+    pub fn get_literals_nm(&self, predicate: &str) -> Option<Vec<String>> {
+
+            match self.obj.resources.get(predicate) {
+                Some(v) => {
+                    return Some(
+                        v.iter()
+                            .map(|el| {
+                                if let Value::Str(s, _l) = &el.value {
+                                    s.to_string()
+                                } else if let Value::Uri(s) = &el.value {
+                                    s.to_string()
+                                } else {
+                                    "".to_string()
+                                }
+                            })
+                            .collect::<Vec<String>>(),
+                    );
+                }
+                None => None
+            }
+
+    }
+
+
     pub fn get_first_literal(&mut self, predicate: &str) -> Option<String> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
@@ -654,6 +678,15 @@ impl Individual {
 
     pub fn get_predicates(&mut self) -> Vec<String> {
         self.parse_all();
+        let mut res: Vec<String> = Vec::new();
+
+        for (key, _vals) in self.obj.resources.iter() {
+            res.push(key.to_string());
+        }
+        res
+    }
+
+    pub fn get_predicates_nm(&self) -> Vec<String> {
         let mut res: Vec<String> = Vec::new();
 
         for (key, _vals) in self.obj.resources.iter() {

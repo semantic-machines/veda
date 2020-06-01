@@ -5,14 +5,14 @@ use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_search::ft_client::FTQuery;
 
-pub struct IndexerProperty {
+pub struct IndexerSchema {
     class_property_2_id: HashMap<String, String>,
     class_2_database: HashMap<String, String>,
     id_2_individual: HashMap<String, Individual>,
     database_2_true: HashMap<String, bool>,
 }
 
-impl IndexerProperty {
+impl IndexerSchema {
     pub fn load(&mut self, force: bool, onto: &Onto, module: &mut Module) {
         if self.class_property_2_id.is_empty() || force {
             if force {
@@ -39,9 +39,17 @@ impl IndexerProperty {
         "base"
     }
 
-    //    pub fn get_index(&self, id: &str) -> Option<&Individual> {
-    //        return self.id_2_individual.get(id);
-    //    }
+    pub fn get_copy_of_index(&self, id: &str) -> Option<Individual> {
+        if let Some(indv) = self.id_2_individual.get(id) {
+            return Some(Individual::new_from_obj(indv.get_obj()));
+        } else {
+            None
+        }
+    }
+
+    pub fn get_index(&self, id: &str) -> Option<&Individual> {
+        self.id_2_individual.get(id)
+    }
 
     pub fn get_index_id_of_uri_and_property(&mut self, id: &str, predicate: &str) -> Option<String> {
         if let Some(id) = self.class_property_2_id.get(&(id.to_owned() + predicate)) {
@@ -96,7 +104,7 @@ impl IndexerProperty {
     }
 }
 
-impl Default for IndexerProperty {
+impl Default for IndexerSchema {
     fn default() -> Self {
         Self {
             class_property_2_id: Default::default(),
