@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io::{BufRead, BufReader, Seek, SeekFrom, Write};
 
-const XAPIAN_INFO_PATH: &str = "./data/xapian-info";
+pub const XAPIAN_INFO_PATH: &str = "./data1/xapian-info";
 
 pub struct Key2Slot {
     data: HashMap<String, u32>,

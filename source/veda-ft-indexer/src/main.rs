@@ -11,7 +11,7 @@ mod error;
 mod index_schema;
 mod index_workplace;
 mod indexer;
-mod ky2slot;
+mod key2slot;
 
 use crate::error::Result;
 
@@ -35,11 +35,11 @@ fn main() -> Result<(), i32> {
     init_log();
 
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
-        wait_module("fulltext_indexer", wait_load_ontology());
+        wait_module("input-onto", wait_load_ontology());
     }
 
     let mut queue_consumer = Consumer::new(&format!("./{}/queue", BASE_PATH), "index_ft", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
-    let module_info = ModuleInfo::new(BASE_PATH, "index_ft", true);
+    let module_info = ModuleInfo::new(BASE_PATH, "index_ft1", true);
     if module_info.is_err() {
         error!("{:?}", module_info.err());
         process::exit(101);
@@ -55,7 +55,7 @@ fn main() -> Result<(), i32> {
         tg: TermGenerator::new()?,
         lang: "russian".to_string(),
         key2slot: Default::default(),
-        db2path: hashmap! { "base".to_owned() => "data/xapian-search-base".to_owned(), "system".to_owned()=>"data/xapian-search-system".to_owned(), "deleted".to_owned()=>"data/xapian-search-deleted".to_owned(), "az".to_owned()=>"data/xapian-search-az".to_owned() },
+        db2path: hashmap! { "base".to_owned() => "data1/xapian-search-base".to_owned(), "system".to_owned()=>"data1/xapian-search-system".to_owned(), "deleted".to_owned()=>"data1/xapian-search-deleted".to_owned(), "az".to_owned()=>"data1/xapian-search-az".to_owned() },
         idx_schema: Default::default(),
         use_db: "".to_string(),
         counter: 0,
