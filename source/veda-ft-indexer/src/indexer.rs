@@ -1,5 +1,5 @@
 use crate::error::Result;
-use crate::index_schema::IndexerProperty;
+use crate::index_schema::IndexerSchema;
 use crate::index_workplace::IndexDocWorkplace;
 use crate::ky2slot::Key2Slot;
 use crate::XAPIAN_DB_TYPE;
@@ -21,7 +21,7 @@ pub struct Indexer {
     pub(crate) lang: String,
     pub(crate) key2slot: Key2Slot,
     pub(crate) db2path: HashMap<String, String>,
-    pub(crate) idx_prop: IndexerProperty,
+    pub(crate) idx_schema: IndexerSchema,
     pub(crate) use_db: String,
     pub(crate) counter: i64,
     pub(crate) prev_committed_counter: i64,
@@ -49,9 +49,9 @@ impl Indexer {
         Ok(())
     }
 
-    fn reload_index_schema(&mut self, module: &mut Module) {
-        self.idx_prop.load(true, &self.onto, module);
-    }
+    //    fn reload_index_schema(&mut self, module: &mut Module) {
+    //        self.idx_prop.load(true, &self.onto, module);
+    //    }
 
     pub(crate) fn index_msg(&mut self, new_indv: &mut Individual, prev_indv: &mut Individual, cmd: IndvOp, op_id: i64, module: &mut Module) -> Result<()> {
         if cmd == IndvOp::Remove {
@@ -77,7 +77,7 @@ impl Indexer {
             false
         };
 
-        self.idx_prop.load(false, &self.onto, module);
+        self.idx_schema.load(false, &self.onto, module);
 
         if !new_indv.is_empty() {
             let is_draft_of = new_indv.get_first_literal("v-s:is_draft_of");
@@ -102,7 +102,7 @@ impl Indexer {
 
             let mut prev_dbname = "base".to_owned();
             for _type in prev_types {
-                prev_dbname = self.idx_prop.get_dbname_of_class(&_type).to_string();
+                prev_dbname = self.idx_schema.get_dbname_of_class(&_type).to_string();
                 if prev_dbname != "base" {
                     break;
                 }
@@ -114,10 +114,10 @@ impl Indexer {
             let mut dbname = "base".to_owned();
             for _type in types.iter() {
                 if _type == "vdi:ClassIndex" {
-                    self.idx_prop.add_schema_data(&mut self.onto, new_indv);
+                    self.idx_schema.add_schema_data(&mut self.onto, new_indv);
                 }
 
-                dbname = self.idx_prop.get_dbname_of_class(_type).to_owned();
+                dbname = self.idx_schema.get_dbname_of_class(_type).to_owned();
                 if dbname != "base" {
                     break;
                 }
@@ -152,10 +152,6 @@ impl Indexer {
 
             new_indv.parse_all();
             for (predicate, resources) in new_indv.get_obj().get_resources() {
-                //let prefix;
-
-                //let ttype = "xsd__string";
-
                 let p_text_ru = "";
                 let p_text_en = "";
 
@@ -165,11 +161,11 @@ impl Indexer {
 
                 for oo in resources {
                     for _type in types.iter() {
-                        if let Some(id) = self.idx_prop.get_index_id_of_uri_and_property(_type, predicate) {
-                            self.prepare_index(&id, oo, predicate, 0);
+                        if let Some(id) = self.idx_schema.get_index_id_of_uri_and_property(_type, predicate) {
+                            self.prepare_index(module, &mut iwp, &id, predicate, oo, predicate, 0)?;
                         } else {
-                            if let Some(id) = self.idx_prop.get_index_id_of_property(predicate) {
-                                self.prepare_index(&id, oo, predicate, 0);
+                            if let Some(id) = self.idx_schema.get_index_id_of_property(predicate) {
+                                self.prepare_index(module, &mut iwp, &id, predicate, oo, predicate, 0)?;
                             }
                         }
                     }
@@ -256,7 +252,7 @@ impl Indexer {
     }
 
     fn commit_all_db(&mut self) {
-        let delta = self.counter - self.prev_committed_counter;
+        //let delta = self.counter - self.prev_committed_counter;
 
         self.prev_committed_counter = self.counter;
         let mut is_fail_commit = false;
@@ -273,7 +269,89 @@ impl Indexer {
         }
     }
 
-    fn prepare_index(&mut self, idx_id: &str, rs: &Resource, ln: &str, level: i32) {}
+    fn prepare_index(&mut self, module: &mut Module, iwp: &mut IndexDocWorkplace, idx_id: &str, predicate: &str, rs: &Resource, ln: &str, level: i32) -> Result<()> {
+        if let Some(idx) = self.idx_schema.get_copy_of_index(idx_id) {
+            if rs.rtype == DataType::String {
+                let indexed_field_as_fwildcard_z = idx.get_literals_nm("vdi:indexed_field_as_fwildcard");
+
+                for _indexed_field_as_fwildcard in indexed_field_as_fwildcard_z {
+                    iwp.index_string_for_first_wildcard(self, predicate, rs)?;
+                }
+            } else if rs.rtype == DataType::Uri {
+                // 1. считать индивид по ссылке
+                if let Some(inner_indv) = module.get_individual(rs.get_uri(), &mut Individual::default()) {
+                    for predicate in idx.get_predicates_nm() {
+                        if predicate == "vdi:inherited_index" {
+                            if let Some(values) = idx.get_literals_nm(&predicate) {
+                                for value in values.iter() {
+                                    // ссылка на наследуемый индекс, переходим вниз
+                                    if let Some(inhr_idx) = self.idx_schema.get_index(value) {
+                                        debug!("[{}]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [{}]", value, &inhr_idx.get_id());
+
+                                        if let Some(for_properties) = inhr_idx.get_literals_nm("vdi:forProperty") {
+                                            for for_property in for_properties.iter() {
+                                                if let Some(links) = inner_indv.get_obj().get_resources().get(for_property) {
+                                                    debug!("forProperty=[{}], links=[{:?}]", for_property, links);
+                                                    for link in links {
+                                                        self.prepare_index(module, iwp, value, &predicate, link, &(ln.to_owned() + "." + &for_property), level + 1)?;
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            // в этом индексе не указанно на какое свойство будет индексация,
+                                            // значит берем поля указанные vdi:indexed_field в текущем индивиде
+
+                                            if let Some(indexed_fields) = inhr_idx.get_literals_nm("vdi:indexed_field") {
+                                                for indexed_field in indexed_fields.iter() {
+                                                    if let Some(rrc) = inner_indv.get_obj().get_resources().get(indexed_field) {
+                                                        for rc in rrc {
+                                                            debug!("index {}.{} = {:?} ", ln, indexed_field, rc);
+
+                                                            match rc.rtype {
+                                                                DataType::Uri => {
+                                                                    iwp.index_uri(self, &format!("{}.{}", ln, indexed_field), rc)?;
+                                                                }
+                                                                DataType::String => {
+                                                                    iwp.index_string(self, &format!("{}.{}", ln, indexed_field), rc)?;
+                                                                }
+
+                                                                DataType::Integer => {
+                                                                    iwp.index_integer(self, &format!("{}.{}", ln, indexed_field), rc)?;
+                                                                }
+
+                                                                DataType::Datetime => {
+                                                                    iwp.index_date(self, &format!("{}.{}", ln, indexed_field), rc)?;
+                                                                }
+
+                                                                DataType::Decimal => {
+                                                                    iwp.index_double(self, &format!("{}.{}", ln, indexed_field), rc)?;
+                                                                }
+
+                                                                DataType::Boolean => {
+                                                                    iwp.index_boolean(self, &format!("{}.{}", ln, indexed_field), rc)?;
+                                                                }
+
+                                                                DataType::Binary => {}
+                                                            }
+                                                        }
+
+                                                        if !rrc.is_empty() {
+                                                            iwp.index_boolean(self, &format!("{}.{}.isExists", ln, indexed_field), &Resource::new_bool(true))?;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 pub(crate) fn to_lower_and_replace_delimeters(src: &str) -> String {

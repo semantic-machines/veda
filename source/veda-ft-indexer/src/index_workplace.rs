@@ -112,7 +112,7 @@ impl IndexDocWorkplace {
         Ok(())
     }
 
-    fn index_string_for_first_wildcard(&mut self, indexer: &mut Indexer, predicate: &str, oo: &Resource) -> Result<()> {
+    pub(crate) fn index_string_for_first_wildcard(&mut self, indexer: &mut Indexer, predicate: &str, oo: &Resource) -> Result<()> {
         let slot_l1 = indexer.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "#F"));
 
         let data: String = oo.get_str().chars().rev().collect();
