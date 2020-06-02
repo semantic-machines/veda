@@ -17,7 +17,6 @@
 .
 
 # ------------------------------------------------------------ КЛАССЫ --
-
 v-s:RequestDelegation
   rdf:type owl:Class ;
   rdfs:label "Заявка на делегирование"@ru ;
@@ -27,59 +26,13 @@ v-s:RequestDelegation
   rdfs:subClassOf v-s:Temporal ;
   v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
+#-------------
 v-s:delegator
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:RequestDelegation ;
   rdfs:label "Доверитель"@ru ;
   rdfs:label "Delegator"@en ;
   rdfs:range v-s:Appointment ;
-.
-v-s:delegate
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:RequestDelegation ;
-  rdfs:label "Заместитель"@ru ;
-  rdfs:label "Delegate"@en ;
-  rdfs:range v-s:Appointment ;
-.
-v-s:delegatedPosition
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:RequestDelegation ;
-  rdfs:label "Делегируемая должность"@ru ;
-  rdfs:label "Delegated position"@en ;
-  rdfs:range v-s:Position ;
-.
-v-s:createdAppointment
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:RequestDelegation ;
-  rdfs:label "Созданное назначение"@ru ;
-  rdfs:label "Created appointment"@en ;
-  rdfs:range v-s:Appointment ;
-.
-v-s:RequestDelegationUser
-  rdf:type owl:Class ;
-  rdfs:label "Заявка на делегирование для пользователя"@ru ;
-  rdfs:label "Request delegation for user"@en ;
-  rdfs:subClassOf v-s:RequestDelegation ;
-  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
-.
-v-s:RequestDelegationAdmin
-  rdf:type owl:Class ;
-  rdfs:label "Заявка на делегирование для администратора"@ru ;
-  rdfs:label "Request delegation for admin"@en ;
-  rdfs:subClassOf v-s:RequestDelegation ;
-  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
-.
-
-# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
-
-v-s:PsDelegateForRequestDelegation
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:RequestDelegation ;
-  v-ui:forProperty v-s:delegate ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'rdf:type'=='v-s:Appointment' && 'v-s:official'=='true' && 'v-s:employee.v-s:hasAccount.isExists'=='true'" ;
-  #v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person') && 'v-s:hasAccount.isExists'=='true'" ;
 .
 v-s:PsDelegatorForRequestDelegation
   rdf:type v-ui:PropertySpecification ;
@@ -90,6 +43,31 @@ v-s:PsDelegatorForRequestDelegation
   v-ui:queryPrefix "'rdf:type'=='v-s:Appointment' && 'v-s:official'=='true' && 'v-s:employee.v-s:hasAccount.isExists'=='true'" ;
   #v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person') && 'v-s:hasAccount.isExists'=='true'" ;
 .
+#-------------
+v-s:delegate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:RequestDelegation ;
+  rdfs:label "Заместитель"@ru ;
+  rdfs:label "Delegate"@en ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:PsDelegateForRequestDelegation
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:RequestDelegation ;
+  v-ui:forProperty v-s:delegate ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'rdf:type'=='v-s:Appointment' && 'v-s:official'=='true' && 'v-s:employee.v-s:hasAccount.isExists'=='true'" ;
+  #v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person') && 'v-s:hasAccount.isExists'=='true'" ;
+.
+#---------------
+v-s:delegatedPosition
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:RequestDelegation ;
+  rdfs:label "Делегируемая должность"@ru ;
+  rdfs:label "Delegated position"@en ;
+  rdfs:range v-s:Position ;
+.
 v-s:PsDelegatedPositionForRequestDelegation
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-s:RequestDelegation ;
@@ -98,6 +76,24 @@ v-s:PsDelegatedPositionForRequestDelegation
   v-ui:maxCardinality 10 ;
   v-ui:queryPrefix "'rdf:type' === 'v-s:Position'" ;
 .
+#----------------
+v-s:createdAppointment
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:RequestDelegation ;
+  rdfs:label "Созданное назначение"@ru ;
+  rdfs:label "Created appointment"@en ;
+  rdfs:range v-s:Appointment ;
+.
+#----------------
+v-s:hasDelegationPurpose
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:RequestDelegation ;
+  rdfs:label "Цель делегирования"@ru ;
+  rdfs:label "Delegation purpose"@en ;
+  rdfs:range v-s:DelegationPurpose ;
+.
+#----------------
+#v-s:dateFrom v-s:dateTo
 v-s:PsDatesRequestDelegation
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-s:RequestDelegation ;
@@ -105,6 +101,43 @@ v-s:PsDatesRequestDelegation
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
 .
+
+#----------------заявка для пользователя---------
+v-s:RequestDelegationUser
+  rdf:type owl:Class ;
+  rdfs:label "Заявка на делегирование для пользователя"@ru ;
+  rdfs:label "Request delegation for user"@en ;
+  rdfs:subClassOf v-s:RequestDelegation ;
+  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
+.
+#v-s:hasDelegationPurpose
+v-s:PsDelegationPurposeForRequestDelegationUser
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:RequestDelegationUser ;
+  v-ui:forProperty v-s:hasDelegationPurpose ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'rdf:type'=='v-s:DelegationPurpose' && ('@'=='d:delegate_Control' || '@'=='d:delegate_Collaboration')" ;
+.
+
+#----------------заявка для администратора---------
+v-s:RequestDelegationAdmin
+  rdf:type owl:Class ;
+  rdfs:label "Заявка на делегирование для администратора"@ru ;
+  rdfs:label "Request delegation for admin"@en ;
+  rdfs:subClassOf v-s:RequestDelegation ;
+  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
+.
+#v-s:hasDelegationPurpose
+v-s:PsDelegationPurposeForRequestDelegationAdmin
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:RequestDelegationAdmin ;
+  v-ui:forProperty v-s:hasDelegationPurpose ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'rdf:type'=='v-s:DelegationPurpose'" ;
+.
+
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
@@ -130,6 +163,13 @@ v-s:RequestDelegationTemplate
 <div class="container sheet">
   <h2 about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h2>
   <hr>
+  <div class="row">
+    <div class="col-md-6 col-xs-12">
+      <em about="v-s:hasDelegationPurpose" property="rdfs:label"></em>
+      <div rel="v-s:hasDelegationPurpose" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+      <veda-control data-type="link" rel="v-s:hasDelegationPurpose" class="-view edit search fulltext dropdown" data-deleted="true"></veda-control>
+    </div>
+  </div>  
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegator" property="rdfs:label"></em>
