@@ -1,7 +1,7 @@
 use crate::common::*;
-use rusty_v8_m as v8;
-use rusty_v8_m::scope::Entered;
-use rusty_v8_m::{Context, HandleScope, Local, OwnedIsolate};
+use rusty_v8 as v8;
+use rusty_v8::scope::Entered;
+use rusty_v8::{Context, HandleScope, Local, OwnedIsolate};
 
 pub(crate) struct ScriptInfo<'a> {
     pub id: String,
