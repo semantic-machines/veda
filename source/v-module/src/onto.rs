@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 use v_onto::individual::*;
 use v_onto::onto::*;
-use v_storage::storage::VStorage;
 use v_onto::onto_index::OntoIndex;
+use v_storage::storage::VStorage;
 
 pub const DATA_BASE_PATH: &str = "./data";
 
