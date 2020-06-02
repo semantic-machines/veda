@@ -25,6 +25,7 @@ use v_onto::individual::*;
 use v_onto::onto::Onto;
 
 use crate::indexer::Indexer;
+use std::time::Instant;
 use v_queue::consumer::*;
 use xapian_rusty::*;
 
@@ -60,6 +61,7 @@ fn main() -> Result<(), i32> {
         use_db: "".to_string(),
         counter: 0,
         prev_committed_counter: 0,
+        prev_committed_time: Instant::now(),
     };
 
     info!("Rusty search-index: start listening to queue");
@@ -85,7 +87,8 @@ fn before(_module: &mut Module, _ctx: &mut Indexer, _batch_size: u32) -> Option<
     None
 }
 
-fn after(_module: &mut Module, _ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
+fn after(_module: &mut Module, ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
+    ctx.commit_all_db();
     true
 }
 

@@ -44,7 +44,7 @@ impl Key2Slot {
         if let Some(slot) = self.data.get(key) {
             Some(slot.to_owned())
         } else {
-            error!("key2slot, slot not found, key={}", key);
+            debug!("key2slot, slot not found, key={}", key);
             None
         }
     }
