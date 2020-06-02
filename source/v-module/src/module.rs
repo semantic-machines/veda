@@ -248,7 +248,7 @@ impl Module {
         before_batch: &mut fn(&mut Module, &mut T, batch_size: u32) -> Option<u32>,
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual, &Consumer) -> Result<bool, PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32) -> bool,
-        heartbeat: &mut fn(&mut Module, &mut T),
+        heartbeat: &mut fn(&mut Module, module_info: &mut ModuleInfo, &mut T),
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut count_timeout_error = 0;
@@ -256,7 +256,7 @@ impl Module {
         let mut prev_batch_time = Instant::now();
 
         loop {
-            heartbeat(self, module_context);
+            heartbeat(self, module_info, module_context);
 
             if let Some(s) = self.connect_to_notify_channel() {
                 soc = s;
@@ -503,7 +503,7 @@ pub fn wait_module(module_name: &str, wait_op_id: i64) -> i64 {
         loop {
             if let Some((_, committed)) = info.read_info() {
                 if committed >= wait_op_id {
-            	    info!("wait module [{}] to complete op_id={}, found commited_op_id={}", module_name, wait_op_id, committed);
+                    info!("wait module [{}] to complete op_id={}, found commited_op_id={}", module_name, wait_op_id, committed);
                     return committed;
                 }
             } else {

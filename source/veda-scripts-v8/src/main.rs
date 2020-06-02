@@ -178,12 +178,12 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
         &mut (before_batch as fn(&mut Module, &mut MyContext<'a>, batch_size: u32) -> Option<u32>),
         &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
         &mut (after_batch as fn(&mut Module, &mut MyContext<'a>, prepared_batch_size: u32) -> bool),
-        &mut (heartbeat as fn(&mut Module, &mut MyContext<'a>)),
+        &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>)),
     );
     Ok(())
 }
 
-fn heartbeat(_module: &mut Module, _ctx: &mut MyContext) {}
+fn heartbeat(_module: &mut Module, _module_info: &mut ModuleInfo, _ctx: &mut MyContext) {}
 
 fn before_batch(_module: &mut Module, _ctx: &mut MyContext, _size_batch: u32) -> Option<u32> {
     None

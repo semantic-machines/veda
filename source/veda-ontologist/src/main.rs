@@ -102,7 +102,7 @@ fn main() -> std::io::Result<()> {
         &mut (before_batch as fn(&mut Module, &mut Context, batch_size: u32) -> Option<u32>),
         &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
         &mut (after_batch as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
-        &mut (heartbeat as fn(&mut Module, &mut Context)),
+        &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Context)),
     );
     Ok(())
 }
@@ -116,7 +116,7 @@ pub struct Context {
     is_need_generate: bool,
 }
 
-fn heartbeat(module: &mut Module, ctx: &mut Context) {
+fn heartbeat(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context) {
     if !ctx.onto_index.exists() {
         recover_index_from_ft(ctx, module);
         if let Err(e) = ctx.onto_index.dump() {
