@@ -6,9 +6,10 @@ use crate::XAPIAN_DB_TYPE;
 use std::collections::HashMap;
 use std::fs;
 use std::process::exit;
+use std::time::Instant;
 use v_api::IndvOp;
 use v_module::module::Module;
-use v_onto::datatype::DataType;
+use v_onto::datatype::{DataType, Lang};
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_onto::resource::Resource;
@@ -23,8 +24,10 @@ pub struct Indexer {
     pub(crate) db2path: HashMap<String, String>,
     pub(crate) idx_schema: IndexerSchema,
     pub(crate) use_db: String,
+
     pub(crate) counter: i64,
     pub(crate) prev_committed_counter: i64,
+    pub(crate) prev_committed_time: Instant,
 }
 
 impl Indexer {
@@ -160,8 +163,8 @@ impl Indexer {
 
             new_indv.parse_all();
             for (predicate, resources) in new_indv.get_obj().get_resources() {
-                let p_text_ru = "";
-                let p_text_en = "";
+                let mut p_text_ru = String::new();
+                let mut p_text_en = String::new();
 
                 if !resources.is_empty() {
                     iwp.index_boolean(self, &(predicate.to_owned() + ".isExists"), &Resource::new_bool(true))?;
@@ -183,6 +186,12 @@ impl Indexer {
                             iwp.index_uri(self, predicate, oo)?;
                         }
                         DataType::String => {
+                            if oo.get_lang() == Lang::RU {
+                                p_text_ru.push_str(oo.get_str());
+                            } else if oo.get_lang() == Lang::EN {
+                                p_text_en.push_str(oo.get_str());
+                            }
+
                             iwp.index_string(self, predicate, oo)?;
                         }
                         DataType::Integer => {
@@ -204,14 +213,14 @@ impl Indexer {
                 if !resources.is_empty() {
                     if !p_text_ru.is_empty() {
                         let slot_l1 = self.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_ru"));
-                        self.tg.index_text_with_prefix(p_text_ru, &format!("X{}X", slot_l1))?;
-                        iwp.doc_add_text_value(slot_l1, p_text_ru)?;
+                        self.tg.index_text_with_prefix(&p_text_ru, &format!("X{}X", slot_l1))?;
+                        iwp.doc_add_text_value(slot_l1, &mut p_text_ru)?;
                     }
 
                     if !p_text_en.is_empty() {
                         let slot_l1 = self.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_en"));
-                        self.tg.index_text_with_prefix(p_text_ru, &format!("X{}X", slot_l1))?;
-                        iwp.doc_add_text_value(slot_l1, p_text_en)?;
+                        self.tg.index_text_with_prefix(&p_text_ru, &format!("X{}X", slot_l1))?;
+                        iwp.doc_add_text_value(slot_l1, &mut p_text_en)?;
                     }
                 }
             }
@@ -236,9 +245,9 @@ impl Indexer {
                 }
             }
 
-            if self.index_dbs.contains_key("dbname") {
-                info!("index to {}, uri={}", dbname, new_indv.get_id());
+            if self.index_dbs.contains_key(&dbname) {
                 if let Some(db) = self.index_dbs.get_mut(&dbname) {
+                    info!("index to [{}], uri=[{}]", dbname, new_indv.get_id());
                     db.replace_document(&uuid, &mut iwp.doc)?;
                 }
             }
@@ -259,10 +268,7 @@ impl Indexer {
         return Ok(());
     }
 
-    fn commit_all_db(&mut self) {
-        //let delta = self.counter - self.prev_committed_counter;
-
-        self.prev_committed_counter = self.counter;
+    pub(crate) fn commit_all_db(&mut self) {
         let mut is_fail_commit = false;
         for (name, db) in self.index_dbs.iter_mut() {
             if let Err(e) = db.commit() {
@@ -275,6 +281,13 @@ impl Indexer {
             warn!("EXIT");
             exit(-1);
         }
+
+        let delta = self.counter - self.prev_committed_counter;
+        let duration = self.prev_committed_time.elapsed().as_millis() as f64 / 1000.0;
+        info!("COMMIT, INDEXED {}, cps={:.1}", self.counter, delta as f64 / duration);
+
+        self.prev_committed_counter = self.counter;
+        self.prev_committed_time = Instant::now();
     }
 
     fn prepare_index(&mut self, module: &mut Module, iwp: &mut IndexDocWorkplace, idx_id: &str, predicate: &str, rs: &Resource, ln: &str, level: i32) -> Result<()> {

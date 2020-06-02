@@ -2,15 +2,14 @@ use crate::error::Result;
 use crate::indexer::to_lower_and_replace_delimeters;
 use crate::Indexer;
 use chrono::{TimeZone, Utc};
-use v_onto::datatype::Lang;
 use v_onto::resource::Resource;
 use xapian_rusty::Document;
 
 pub struct IndexDocWorkplace {
     pub(crate) doc: Document,
     pub(crate) all_text: String,
-    p_text_ru: String,
-    p_text_en: String,
+    //p_text_ru: String,
+    //p_text_en: String,
 }
 
 impl IndexDocWorkplace {
@@ -18,8 +17,8 @@ impl IndexDocWorkplace {
         IndexDocWorkplace {
             doc,
             all_text: "".to_string(),
-            p_text_ru: "".to_string(),
-            p_text_en: "".to_string(),
+            //p_text_ru: "".to_string(),
+            //p_text_en: "".to_string(),
         }
     }
 
@@ -96,11 +95,11 @@ impl IndexDocWorkplace {
 
         let data = oo.get_str();
 
-        if oo.get_lang() == Lang::RU {
-            self.p_text_ru.push_str(oo.get_str());
-        } else if oo.get_lang() == Lang::EN {
-            self.p_text_en.push_str(oo.get_str());
-        }
+        //        if oo.get_lang() == Lang::RU {
+        //            self.p_text_ru.push_str(oo.get_str());
+        //        } else if oo.get_lang() == Lang::EN {
+        //            self.p_text_en.push_str(oo.get_str());
+        //        }
 
         let prefix = format!("X{}X", slot_l1);
         indexer.tg.index_text_with_prefix(data, &prefix)?;
@@ -124,8 +123,10 @@ impl IndexDocWorkplace {
     }
 
     pub(crate) fn doc_add_text_value(&mut self, l_slot: u32, data: &str) -> Result<()> {
-        if data.len() > 16 {
-            self.doc.add_string(l_slot, &data[..16])?;
+        if data.chars().count() > 16 {
+            let end_pos = data.char_indices().nth(16).map(|(n, _)| n).unwrap_or(0);
+            let substr = &data[..end_pos];
+            self.doc.add_string(l_slot, substr)?;
         } else {
             self.doc.add_string(l_slot, &data)?;
         }
