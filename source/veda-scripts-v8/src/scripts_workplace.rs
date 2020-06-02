@@ -1,8 +1,8 @@
 use crate::common::*;
 use crate::script_info::ScriptInfo;
-use rusty_v8_m as v8;
-use rusty_v8_m::scope::Entered;
-use rusty_v8_m::{Context, HandleScope, Isolate, Local, OwnedIsolate};
+use rusty_v8 as v8;
+use rusty_v8::scope::Entered;
+use rusty_v8::{Context, HandleScope, Isolate, Local, OwnedIsolate};
 use std::collections::HashMap;
 use std::fs;
 use std::fs::File;

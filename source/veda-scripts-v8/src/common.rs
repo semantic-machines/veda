@@ -1,7 +1,7 @@
 use chrono::{TimeZone, Utc};
 use rust_decimal::prelude::ToPrimitive;
 use rust_decimal::Decimal;
-use rusty_v8_m as v8;
+use rusty_v8 as v8;
 use std::collections::HashSet;
 use std::fs::DirEntry;
 use std::path::Path;
@@ -54,47 +54,47 @@ pub fn v8obj2individual<'a>(scope: &mut impl v8::ToLocal<'a>, context: &v8::Loca
     let type_key = str_2_v8(scope, "type");
     let lang_key = str_2_v8(scope, "lang");
 
-    let j_predicates = v8_obj.get_property_names(scope, *context);
+    if let Some(j_predicates) = v8_obj.get_property_names(scope, *context) {
+        for idx in 0..j_predicates.length() {
+            let j_idx = v8::Integer::new(scope, idx as i32);
+            let key = j_predicates.get(scope, *context, j_idx.into()).unwrap();
+            let predicate = v8_2_str(scope, &key);
+            let val = v8_obj.get(scope, *context, key).unwrap();
 
-    for idx in 0..j_predicates.length() {
-        let j_idx = v8::Integer::new(scope, idx as i32);
-        let key = j_predicates.get(scope, *context, j_idx.into()).unwrap();
-        let predicate = v8_2_str(scope, &key);
-        let val = v8_obj.get(scope, *context, key).unwrap();
-
-        if predicate == "@" {
-            res.set_id(&v8_2_str(scope, &val));
-        } else {
-            if let Some(resources) = val.to_object(scope) {
-                if !resources.is_array() {
-                    add_v8_value_obj_to_individual(scope, context, &predicate, resources, &mut res, data_key, type_key, lang_key);
-                } else {
-                    let key_list = resources.get_property_names(scope, *context);
-
-                    for resources_idx in 0..key_list.length() {
-                        let j_resources_idx = v8::Integer::new(scope, resources_idx as i32);
-                        if let Some(v) = resources.get(scope, *context, j_resources_idx.into()) {
-                            if let Some(resource) = v.to_object(scope) {
-                                if resource.is_array() {
-                                    let idx_0 = v8::Integer::new(scope, 0);
-                                    if let Some(v) = resource.get(scope, *context, idx_0.into()) {
-                                        if let Some(resource) = v.to_object(scope) {
+            if predicate == "@" {
+                res.set_id(&v8_2_str(scope, &val));
+            } else {
+                if let Some(resources) = val.to_object(scope) {
+                    if !resources.is_array() {
+                        add_v8_value_obj_to_individual(scope, context, &predicate, resources, &mut res, data_key, type_key, lang_key);
+                    } else {
+                        if let Some(key_list) = resources.get_property_names(scope, *context) {
+                            for resources_idx in 0..key_list.length() {
+                                let j_resources_idx = v8::Integer::new(scope, resources_idx as i32);
+                                if let Some(v) = resources.get(scope, *context, j_resources_idx.into()) {
+                                    if let Some(resource) = v.to_object(scope) {
+                                        if resource.is_array() {
+                                            let idx_0 = v8::Integer::new(scope, 0);
+                                            if let Some(v) = resource.get(scope, *context, idx_0.into()) {
+                                                if let Some(resource) = v.to_object(scope) {
+                                                    add_v8_value_obj_to_individual(scope, context, &predicate, resource, &mut res, data_key, type_key, lang_key);
+                                                }
+                                            }
+                                        } else {
                                             add_v8_value_obj_to_individual(scope, context, &predicate, resource, &mut res, data_key, type_key, lang_key);
                                         }
+                                    } else {
+                                        error!("v8obj2individual: invalid value predicate[{}], idx={}", predicate, resources_idx);
                                     }
-                                } else {
-                                    add_v8_value_obj_to_individual(scope, context, &predicate, resource, &mut res, data_key, type_key, lang_key);
                                 }
-                            } else {
-                                error!("v8obj2individual: invalid value predicate[{}], idx={}", predicate, resources_idx);
                             }
                         }
                     }
                 }
             }
-        }
 
-        debug!("res={}", res.to_string());
+            debug!("res={}", res.to_string());
+        }
     }
 
     res
