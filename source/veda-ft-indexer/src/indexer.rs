@@ -8,6 +8,7 @@ use std::fs;
 use std::process::exit;
 use std::time::Instant;
 use v_api::IndvOp;
+use v_module::info::ModuleInfo;
 use v_module::module::Module;
 use v_onto::datatype::{DataType, Lang};
 use v_onto::individual::Individual;
@@ -25,9 +26,9 @@ pub struct Indexer {
     pub(crate) idx_schema: IndexerSchema,
     pub(crate) use_db: String,
 
-    pub(crate) counter: i64,
-    pub(crate) prev_committed_counter: i64,
-    pub(crate) prev_committed_time: Instant,
+    pub(crate) committed_op_id: i64,
+    pub(crate) op_id: i64,
+    pub(crate) committed_time: Instant,
 }
 
 impl Indexer {
@@ -64,7 +65,17 @@ impl Indexer {
     //        self.idx_prop.load(true, &self.onto, module);
     //    }
 
-    pub(crate) fn index_msg(&mut self, new_indv: &mut Individual, prev_indv: &mut Individual, cmd: IndvOp, op_id: i64, module: &mut Module) -> Result<()> {
+    pub(crate) fn index_msg(
+        &mut self,
+        new_indv: &mut Individual,
+        prev_indv: &mut Individual,
+        cmd: IndvOp,
+        op_id: i64,
+        module: &mut Module,
+        module_info: &mut ModuleInfo,
+    ) -> Result<()> {
+        self.op_id = op_id;
+
         if cmd == IndvOp::Remove {
             return Ok(());
         }
@@ -252,42 +263,49 @@ impl Indexer {
                 }
             }
 
-            if self.counter % 5000 == 0 {
+            if (op_id - self.committed_op_id) % 5000 == 0 {
                 if !self.key2slot.is_empty() {
                     if let Err(e) = self.key2slot.store() {
                         error!("fail store key2slot, err={:?}", e);
                     }
                 }
 
-                self.commit_all_db();
+                self.commit_all_db(module_info)?;
             }
         }
-
-        self.counter = op_id;
 
         return Ok(());
     }
 
-    pub(crate) fn commit_all_db(&mut self) {
-        let mut is_fail_commit = false;
-        for (name, db) in self.index_dbs.iter_mut() {
-            if let Err(e) = db.commit() {
-                is_fail_commit = true;
-                error!("FT:commit:{} fail={}, err={:?}", name, self.counter, get_xapian_err_type(e));
+    pub(crate) fn commit_all_db(&mut self, module_info: &mut ModuleInfo) -> Result<()> {
+        let delta = self.op_id - self.committed_op_id;
+        let duration = self.committed_time.elapsed().as_millis();
+
+        //info! ("@duration = {}", duration);
+
+        if delta > 0 {
+            let mut is_fail_commit = false;
+            for (name, db) in self.index_dbs.iter_mut() {
+                if let Err(e) = db.commit() {
+                    is_fail_commit = true;
+                    error!("FT:commit:{} fail={}, err={:?}", name, self.op_id, get_xapian_err_type(e));
+                }
             }
+
+            if is_fail_commit == true {
+                warn!("EXIT");
+                exit(-1);
+            }
+
+            self.committed_op_id = self.op_id;
+            self.committed_time = Instant::now();
+
+            module_info.put_info(self.op_id, self.committed_op_id)?;
+
+            info!("COMMIT, INDEXED {}, delta={}, cps={:.1}", self.committed_op_id, delta, delta as f64 / (duration as f64 / 1000.0));
         }
 
-        if is_fail_commit == true {
-            warn!("EXIT");
-            exit(-1);
-        }
-
-        let delta = self.counter - self.prev_committed_counter;
-        let duration = self.prev_committed_time.elapsed().as_millis() as f64 / 1000.0;
-        info!("COMMIT, INDEXED {}, cps={:.1}", self.counter, delta as f64 / duration);
-
-        self.prev_committed_counter = self.counter;
-        self.prev_committed_time = Instant::now();
+        Ok(())
     }
 
     fn prepare_index(&mut self, module: &mut Module, iwp: &mut IndexDocWorkplace, idx_id: &str, predicate: &str, rs: &Resource, ln: &str, level: i32) -> Result<()> {
