@@ -71,15 +71,21 @@ impl Key2Slot {
 
         let mut key2slot = Key2Slot::default();
 
-        if let Some(line) = BufReader::new(ff).lines().next() {
-            if let Ok(ll) = line {
-                let (field, slot) = scan_fmt!(&ll, "\"{}\",{}", String, u32);
+        let mut lines = BufReader::new(ff).lines();
 
-                if field.is_some() && slot.is_some() {
-                    key2slot.data.insert(field.unwrap(), slot.unwrap());
-                } else {
-                    error!("fail parse key2slot, line={}", ll);
+        loop {
+            if let Some(line) = lines.next() {
+                if let Ok(ll) = line {
+                    let (field, slot) = scan_fmt!(&ll, "\"{}\",{}", String, u32);
+
+                    if field.is_some() && slot.is_some() {
+                        key2slot.data.insert(field.unwrap(), slot.unwrap());
+                    } else {
+                        error!("fail parse key2slot, line={}", ll);
+                    }
                 }
+            } else {
+                break;
             }
         }
 
@@ -93,8 +99,7 @@ impl Key2Slot {
             return Ok(());
         }
 
-        let mut ff = OpenOptions::new().read(true).write(true).create(true).open(XAPIAN_INFO_PATH.to_owned() + "/key2slot")?;
-        ff.seek(SeekFrom::Start(0))?;
+        let mut ff = OpenOptions::new().write(true).truncate(true).create(true).open(XAPIAN_INFO_PATH.to_owned() + "/key2slot")?;
         ff.write(format!("\"{}\",{}\n{}", hash, data.len(), data).as_bytes())?;
 
         Ok(())

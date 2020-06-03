@@ -60,7 +60,7 @@ fn main() -> Result<(), i32> {
         idx_schema: Default::default(),
         use_db: "".to_string(),
         committed_op_id: 0,
-        op_id: 0,
+        prepared_op_id: 0,
         committed_time: Instant::now(),
     };
 

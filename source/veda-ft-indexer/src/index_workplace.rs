@@ -73,9 +73,14 @@ impl IndexDocWorkplace {
     }
 
     pub(crate) fn index_uri(&mut self, indexer: &mut Indexer, predicate: &str, oo: &Resource) -> Result<()> {
+        let uri = oo.get_uri();
+        if uri.is_empty() {
+            return Ok(());
+        }
+
         let slot_l1 = indexer.key2slot.get_slot_and_set_if_not_found(predicate);
 
-        let data = to_lower_and_replace_delimeters(oo.get_str());
+        let data = to_lower_and_replace_delimeters(uri);
 
         let prefix = format!("X{}X", slot_l1);
         indexer.tg.index_text_with_prefix(&data, &prefix)?;
@@ -87,9 +92,12 @@ impl IndexDocWorkplace {
     }
 
     pub(crate) fn index_string(&mut self, indexer: &mut Indexer, predicate: &str, oo: &Resource) -> Result<()> {
-        let slot_l1 = indexer.key2slot.get_slot_and_set_if_not_found(predicate);
-
         let data = oo.get_str();
+        if data.is_empty() {
+            return Ok(());
+        }
+
+        let slot_l1 = indexer.key2slot.get_slot_and_set_if_not_found(predicate);
 
         let prefix = format!("X{}X", slot_l1);
         indexer.tg.index_text_with_prefix(data, &prefix)?;
@@ -102,12 +110,17 @@ impl IndexDocWorkplace {
     }
 
     pub(crate) fn index_string_for_first_wildcard(&mut self, indexer: &mut Indexer, predicate: &str, oo: &Resource) -> Result<()> {
+        let data = oo.get_str();
+        if data.is_empty() {
+            return Ok(());
+        }
+
         let slot_l1 = indexer.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "#F"));
 
-        let data: String = oo.get_str().chars().rev().collect();
+        let data_r: String = data.chars().rev().collect();
 
         let prefix = format!("X{}X", slot_l1);
-        indexer.tg.index_text_with_prefix(&data, &prefix)?;
+        indexer.tg.index_text_with_prefix(&data_r, &prefix)?;
 
         Ok(())
     }

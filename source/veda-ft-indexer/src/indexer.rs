@@ -27,7 +27,7 @@ pub struct Indexer {
     pub(crate) use_db: String,
 
     pub(crate) committed_op_id: i64,
-    pub(crate) op_id: i64,
+    pub(crate) prepared_op_id: i64,
     pub(crate) committed_time: Instant,
 }
 
@@ -74,8 +74,6 @@ impl Indexer {
         module: &mut Module,
         module_info: &mut ModuleInfo,
     ) -> Result<()> {
-        self.op_id = op_id;
-
         if cmd == IndvOp::Remove {
             return Ok(());
         }
@@ -171,6 +169,7 @@ impl Indexer {
             }
 
             let mut iwp = IndexDocWorkplace::new(Document::new()?);
+            self.tg.set_document(&mut iwp.doc)?;
 
             new_indv.parse_all();
             for (predicate, resources) in new_indv.get_obj().get_resources() {
@@ -230,7 +229,7 @@ impl Indexer {
 
                     if !p_text_en.is_empty() {
                         let slot_l1 = self.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_en"));
-                        self.tg.index_text_with_prefix(&p_text_ru, &format!("X{}X", slot_l1))?;
+                        self.tg.index_text_with_prefix(&p_text_en, &format!("X{}X", slot_l1))?;
                         iwp.doc_add_text_value(slot_l1, &mut p_text_en)?;
                     }
                 }
@@ -263,6 +262,8 @@ impl Indexer {
                 }
             }
 
+            self.prepared_op_id = op_id;
+
             if (op_id - self.committed_op_id) % 5000 == 0 {
                 if !self.key2slot.is_empty() {
                     if let Err(e) = self.key2slot.store() {
@@ -278,7 +279,7 @@ impl Indexer {
     }
 
     pub(crate) fn commit_all_db(&mut self, module_info: &mut ModuleInfo) -> Result<()> {
-        let delta = self.op_id - self.committed_op_id;
+        let delta = self.prepared_op_id - self.committed_op_id;
         let duration = self.committed_time.elapsed().as_millis();
 
         //info! ("@duration = {}", duration);
@@ -288,7 +289,7 @@ impl Indexer {
             for (name, db) in self.index_dbs.iter_mut() {
                 if let Err(e) = db.commit() {
                     is_fail_commit = true;
-                    error!("FT:commit:{} fail={}, err={:?}", name, self.op_id, get_xapian_err_type(e));
+                    error!("FT:commit:{} fail={}, err={:?}", name, self.prepared_op_id, get_xapian_err_type(e));
                 }
             }
 
@@ -297,10 +298,10 @@ impl Indexer {
                 exit(-1);
             }
 
-            self.committed_op_id = self.op_id;
+            self.committed_op_id = self.prepared_op_id;
             self.committed_time = Instant::now();
 
-            module_info.put_info(self.op_id, self.committed_op_id)?;
+            module_info.put_info(self.prepared_op_id, self.committed_op_id)?;
 
             info!("COMMIT, INDEXED {}, delta={}, cps={:.1}", self.committed_op_id, delta, delta as f64 / (duration as f64 / 1000.0));
         }
