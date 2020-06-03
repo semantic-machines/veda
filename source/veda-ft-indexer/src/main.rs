@@ -39,8 +39,8 @@ fn main() -> Result<(), i32> {
         wait_module("input-onto", wait_load_ontology());
     }
 
-    let mut queue_consumer = Consumer::new(&format!("./{}/queue", BASE_PATH), "index_ft", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
-    let module_info = ModuleInfo::new(BASE_PATH, "index_ft1", true);
+    let mut queue_consumer = Consumer::new(&format!("./{}/queue", BASE_PATH), "fulltext_indexer0", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let module_info = ModuleInfo::new(BASE_PATH, "fulltext_indexer", true);
     if module_info.is_err() {
         error!("{:?}", module_info.err());
         process::exit(101);
@@ -56,12 +56,12 @@ fn main() -> Result<(), i32> {
         tg: TermGenerator::new()?,
         lang: "russian".to_string(),
         key2slot: Default::default(),
-        db2path: hashmap! { "base".to_owned() => "data1/xapian-search-base".to_owned(), "system".to_owned()=>"data1/xapian-search-system".to_owned(), "deleted".to_owned()=>"data1/xapian-search-deleted".to_owned(), "az".to_owned()=>"data1/xapian-search-az".to_owned() },
+        db2path: hashmap! { "base".to_owned() => "data/xapian-search-base".to_owned(), "system".to_owned()=>"data/xapian-search-system".to_owned(), "deleted".to_owned()=>"data/xapian-search-deleted".to_owned(), "az".to_owned()=>"data/xapian-search-az".to_owned() },
         idx_schema: Default::default(),
         use_db: "".to_string(),
-        counter: 0,
-        prev_committed_counter: 0,
-        prev_committed_time: Instant::now(),
+        committed_op_id: 0,
+        op_id: 0,
+        committed_time: Instant::now(),
     };
 
     info!("Rusty search-index: start listening to queue");
@@ -75,24 +75,27 @@ fn main() -> Result<(), i32> {
         &mut (before as fn(&mut Module, &mut Indexer, u32) -> Option<u32>),
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Indexer, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
         &mut (after as fn(&mut Module, &mut Indexer, u32) -> bool),
-        &mut (heartbeat as fn(&mut Module, &mut Indexer)),
+        &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Indexer)),
     );
 
     Ok(())
 }
 
-fn heartbeat(_module: &mut Module, _ctx: &mut Indexer) {}
+fn heartbeat(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Indexer) {
+    if let Err(e) = ctx.commit_all_db(module_info) {
+        error!("fail commit, err={:?}", e);
+    }
+}
 
 fn before(_module: &mut Module, _ctx: &mut Indexer, _batch_size: u32) -> Option<u32> {
     None
 }
 
-fn after(_module: &mut Module, ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
-    ctx.commit_all_db();
+fn after(_module: &mut Module, _ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
     true
 }
 
-fn process(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Indexer, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
+fn process(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Indexer, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
@@ -107,7 +110,7 @@ fn process(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Indexer
     let mut new_state = Individual::default();
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
-    if let Err(e) = ctx.index_msg(&mut new_state, &mut prev_state, cmd.unwrap(), op_id, module) {
+    if let Err(e) = ctx.index_msg(&mut new_state, &mut prev_state, cmd.unwrap(), op_id, module, module_info) {
         error!("fail index msg, err={:?}", e);
     }
 

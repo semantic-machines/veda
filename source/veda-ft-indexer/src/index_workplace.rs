@@ -8,8 +8,6 @@ use xapian_rusty::Document;
 pub struct IndexDocWorkplace {
     pub(crate) doc: Document,
     pub(crate) all_text: String,
-    //p_text_ru: String,
-    //p_text_en: String,
 }
 
 impl IndexDocWorkplace {
@@ -17,8 +15,6 @@ impl IndexDocWorkplace {
         IndexDocWorkplace {
             doc,
             all_text: "".to_string(),
-            //p_text_ru: "".to_string(),
-            //p_text_en: "".to_string(),
         }
     }
 
@@ -94,12 +90,6 @@ impl IndexDocWorkplace {
         let slot_l1 = indexer.key2slot.get_slot_and_set_if_not_found(predicate);
 
         let data = oo.get_str();
-
-        //        if oo.get_lang() == Lang::RU {
-        //            self.p_text_ru.push_str(oo.get_str());
-        //        } else if oo.get_lang() == Lang::EN {
-        //            self.p_text_en.push_str(oo.get_str());
-        //        }
 
         let prefix = format!("X{}X", slot_l1);
         indexer.tg.index_text_with_prefix(data, &prefix)?;
