@@ -9,7 +9,8 @@ chrono = "0.4"
 env_logger = "0.6"
 log = "0.4"
 rust-ini = "0.13"
-#xapian-rusty = "0.0.26"
+xapian-rusty = "0.0.28"
+#xapian-rusty = { path = "../xapian-rusty" }
 maplit = "1.0.2"
 crc32fast = "1.2"
 scan_fmt = "0.1.3"
@@ -20,4 +21,3 @@ v_storage = { path = "../v-storage" }
 v_module = { path = "../v-module" }
 v_api = { path = "../v-api" }
 v_search = { path = "../v-search" }
-xapian-rusty = { path = "../xapian-rusty" }

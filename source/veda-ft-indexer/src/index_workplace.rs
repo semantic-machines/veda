@@ -63,11 +63,15 @@ impl IndexDocWorkplace {
         let slot_l1 = indexer.key2slot.get_slot_and_set_if_not_found(predicate);
 
         let l_data = oo.get_datetime();
-        let data = Utc.timestamp(l_data, 0).to_string();
-        self.doc.add_string(slot_l1, &data)?;
+        let mut data = format!("{:?}", Utc.timestamp(l_data, 0));
+        data.truncate(data.len() - 1);
+        self.doc.add_long(slot_l1, l_data)?;
+
+        let prefix = format!("X{}X", slot_l1);
+        indexer.tg.index_text_with_prefix(&data, &prefix)?;
 
         let prefix = format!("X{}D", slot_l1);
-        indexer.tg.index_text_with_prefix(&data, &prefix)?;
+        indexer.tg.index_long(l_data, &prefix)?;
 
         Ok(())
     }
