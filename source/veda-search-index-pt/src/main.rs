@@ -601,7 +601,7 @@ async fn main() ->  Result<(), Error> {
         &mut ctx,
         &mut (before as fn(&mut Module, &mut Context, u32) -> Option<u32>),
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
-        &mut (after as fn(&mut Module, &mut Context, u32) -> bool),
+        &mut (after as fn(&mut Module, &mut ModuleInfo, &mut Context, u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Context))
     );
     Ok(())
@@ -613,7 +613,7 @@ fn before(_module: &mut Module, _ctx: &mut Context, _batch_size: u32) -> Option<
     Some(BATCH_SIZE)
 }
 
-fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) -> bool {
+fn after(_module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, _processed_batch_size: u32) -> bool {
     if let Err(e) = block_on(ctx.process_typed_batch()) {
         error!("Error processing batch: {}", e);
         process::exit(101);

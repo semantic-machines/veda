@@ -74,7 +74,7 @@ fn main() -> Result<(), i32> {
         &mut ctx,
         &mut (before as fn(&mut Module, &mut Indexer, u32) -> Option<u32>),
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Indexer, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
-        &mut (after as fn(&mut Module, &mut Indexer, u32) -> bool),
+        &mut (after as fn(&mut Module, &mut ModuleInfo, &mut Indexer, u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Indexer)),
     );
 
@@ -91,7 +91,10 @@ fn before(_module: &mut Module, _ctx: &mut Indexer, _batch_size: u32) -> Option<
     None
 }
 
-fn after(_module: &mut Module, _ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
+fn after(_module: &mut Module,  module_info: &mut ModuleInfo, ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
+    if let Err(e) = ctx.commit_all_db(module_info) {
+        error!("fail commit, err={:?}", e);
+    }
     true
 }
 
