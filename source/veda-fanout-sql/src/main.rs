@@ -62,7 +62,7 @@ fn main() {
         &mut ctx,
         &mut (before_bath as fn(&mut Module, &mut Context, size_batch: u32) -> Option<u32>),
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
-        &mut (void as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
+        &mut (void as fn(&mut Module, _module_info: &mut ModuleInfo, &mut Context, prepared_batch_size: u32) -> bool),
         &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Context)),
     );
 }
@@ -71,7 +71,7 @@ fn heartbeat(_module: &mut Module, _module_info: &mut ModuleInfo, _ctx: &mut Con
 fn before_bath(_module: &mut Module, _ctx: &mut Context, _size_batch: u32) -> Option<u32> {
     None
 }
-fn void(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u32) -> bool {
+fn void(_module: &mut Module, _module_info: &mut ModuleInfo, _ctx: &mut Context, _prepared_batch_size: u32) -> bool {
     false
 }
 
