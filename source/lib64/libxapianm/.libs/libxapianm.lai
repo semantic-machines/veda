@@ -11,7 +11,7 @@ dlname='libxapianm.so.22'
 library_names='libxapianm.so.22.7.3 libxapianm.so.22 libxapianm.so'
 
 # The name of the static archive.
-old_library=''
+old_library='libxapianm.a'
 
 # Linker flags that cannot go in dependency_libs.
 inherited_linker_flags=''
