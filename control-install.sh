@@ -238,3 +238,6 @@ fi
     cp ./tmp/xapian-d-$XAPIAND_VER/lib64/libxapiand.a ./source/lib64
 
     sudo libtool --mode=install install -c $INSTALL_PATH/source/lib64/libxapianm/libxapianm.la /usr/local/lib/libxapianm.la
+
+
+sudo apt-get install -y libglib2.0-dev
