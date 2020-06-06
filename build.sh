@@ -246,7 +246,7 @@ if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-scripts-v8 $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "ft-indexer-n" ] || [ $1 == "veda-ft-indexer-n" ] || [ $1 == "mva" ]; then
+if [ -z $1 ] || [ $1 == "ft-indexer-n" ] || [ $1 == "veda-ft-indexer-n" ] || [ $1 == "mv2" ]; then
     echo BUILD FT-INDEXER-N
     cd source/veda-ft-indexer
     cargo build --release
@@ -254,9 +254,9 @@ if [ -z $1 ] || [ $1 == "ft-indexer-n" ] || [ $1 == "veda-ft-indexer-n" ] || [ $
     cp $CARGO_TARGET_DIR/release/veda-ft-indexer $PWD/veda-ft-indexer-n
 fi
 
-if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "mv1" ]; then
-    ./tools/build-component.sh veda-ft-indexer ft-indexer
-fi
+#if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "mv1" ]; then
+#    ./tools/build-component.sh veda-ft-indexer ft-indexer
+#fi
 
 if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-ft-query ft-query
