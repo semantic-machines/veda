@@ -246,12 +246,12 @@ if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-scripts-v8 $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "ft-indexer-n" ] || [ $1 == "veda-ft-indexer-n" ] || [ $1 == "mv2" ]; then
-    echo BUILD FT-INDEXER-N
+if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "mv2" ]; then
+    echo BUILD FT-INDEXER
     cd source/veda-ft-indexer
     cargo build --release
     cd $BUILD_PATH
-    cp $CARGO_TARGET_DIR/release/veda-ft-indexer $PWD/veda-ft-indexer-n
+    cp $CARGO_TARGET_DIR/release/veda-ft-indexer $PWD/veda-ft-indexer
 fi
 
 #if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "mv1" ]; then

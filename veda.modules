@@ -8,7 +8,7 @@ az-indexer
     module = az-indexer
     args = --use_index_format_v2
 
-ft-indexer-n
+ft-indexer
 
 ft-query
     module = ft-query
