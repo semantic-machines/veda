@@ -43,9 +43,6 @@ interface Context
     public Authorization get_az();
     public void set_az(Authorization in_az);
 
-    public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
-                           OptAuthorize opt_request);
-
     public Individual[] get_individuals_via_query(string user_uri, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000);
 
     /**
