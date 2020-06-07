@@ -254,10 +254,6 @@ if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-ft-indexer $PWD/veda-ft-indexer
 fi
 
-#if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "mv1" ]; then
-#    ./tools/build-component.sh veda-ft-indexer ft-indexer
-#fi
-
 if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-ft-query ft-query
 fi
