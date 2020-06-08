@@ -7,6 +7,7 @@ use std::cell::RefCell;
 use std::sync::Mutex;
 use v_api::*;
 use v_module::module::Module;
+use v_onto::individual::Individual;
 use v_onto::parser::parse_raw;
 use v_search::ft_client::*;
 use v_storage::inproc_indv_r_storage::get_individual;
@@ -237,12 +238,30 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
     }
     let mut ticket = wticket.unwrap_or_default();
 
-    let obj = args.get(1);
-    if obj.is_object() {
-        let js_obj = obj.to_object(scope).unwrap();
-        let indv = v8obj2individual(scope, &context, js_obj);
-        //let indv_id = indv.get_id().to_owned();
+    let arg1 = args.get(1);
+    let mut indv;
 
+    if opt == IndvOp::Remove {
+        indv = Individual::default();
+
+        if arg1.is_string() {
+            if let Some(id) = arg1.to_string(scope) {
+                indv.set_id(&id.to_rust_string_lossy(scope));
+            }
+        } else {
+            error!("callback {:?}, arg is not string", opt);
+        }
+    } else {
+        if arg1.is_object() {
+            let js_obj = arg1.to_object(scope).unwrap();
+            indv = v8obj2individual(scope, &context, js_obj);
+        } else {
+            indv = Individual::default();
+            error!("callback {:?}, arg is not object", opt);
+        }
+    }
+
+    if !indv.get_id().is_empty() {
         let mut sh_tnx = G_TRANSACTION.lock().unwrap();
         let tnx = sh_tnx.get_mut();
 
@@ -254,9 +273,6 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
 
         //info!("ADD TO TRANSACTION {:?} {}, {:?}", &opt, indv_id, res);
         rv.set(v8::Integer::new(scope, res as i32).into());
-    //drop(sh_tnx);
-    } else {
-        error!("callback {:?}, arg is not object", opt);
     }
 }
 
