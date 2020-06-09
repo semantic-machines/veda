@@ -301,6 +301,8 @@ fn operation_prepare(
         return Response::new(new_indv.get_id(), ResultCode::NoContent, -1, -1);
     }
 
+    debug! ("cmd={:?}, new_indv.id={}", cmd, new_indv.get_id());
+
     let mut prev_indv = Individual::default();
     let prev_state = primary_storage.get_raw_value(StorageId::Individuals, new_indv.get_id());
 
