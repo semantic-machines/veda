@@ -1,19 +1,11 @@
 #[macro_use]
-extern crate scan_fmt;
-
-#[macro_use]
 extern crate log;
 
 #[macro_use]
 extern crate maplit;
 
-mod error;
-mod index_schema;
 mod index_workplace;
 mod indexer;
-mod key2slot;
-
-use crate::error::Result;
 
 use std::process;
 
@@ -91,7 +83,7 @@ fn before(_module: &mut Module, _ctx: &mut Indexer, _batch_size: u32) -> Option<
     None
 }
 
-fn after(_module: &mut Module,  module_info: &mut ModuleInfo, ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
+fn after(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Indexer, _processed_batch_size: u32) -> bool {
     if let Err(e) = ctx.commit_all_db(module_info) {
         error!("fail commit, err={:?}", e);
     }

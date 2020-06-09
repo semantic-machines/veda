@@ -21,3 +21,4 @@ v_storage = { path = "../v-storage" }
 v_module = { path = "../v-module" }
 v_api = { path = "../v-api" }
 v_search = { path = "../v-search" }
+v_ft_xapian = { path = "../v-ft-xapian" }

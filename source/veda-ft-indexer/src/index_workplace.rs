@@ -1,7 +1,7 @@
-use crate::error::Result;
 use crate::indexer::to_lower_and_replace_delimeters;
 use crate::Indexer;
 use chrono::{TimeZone, Utc};
+use v_ft_xapian::xerror::Result;
 use v_onto::resource::Resource;
 use xapian_rusty::Document;
 
