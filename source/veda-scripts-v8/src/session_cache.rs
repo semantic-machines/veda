@@ -181,7 +181,7 @@ impl Transaction {
 
 pub(crate) fn commit(tnx: &Transaction, api_client: &mut APIClient) -> ResultCode {
     for ti in tnx.queue.iter() {
-        if ti.cmd == IndvOp::Remove && ti.indv.is_empty() {
+        if ti.cmd == IndvOp::Remove && ti.indv.get_id().is_empty() {
             continue;
         }
 

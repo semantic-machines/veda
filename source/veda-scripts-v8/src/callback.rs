@@ -249,7 +249,7 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
                 indv.set_id(&id.to_rust_string_lossy(scope));
             }
         } else {
-            error!("callback {:?}, arg is not string", opt);
+            error!("callback {:?}, argument is not string", opt);
         }
     } else {
         if arg1.is_object() {
@@ -257,7 +257,7 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
             indv = v8obj2individual(scope, &context, js_obj);
         } else {
             indv = Individual::default();
-            error!("callback {:?}, arg is not object", opt);
+            error!("callback {:?}, argument is not object", opt);
         }
     }
 
@@ -269,10 +269,13 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
             ticket = tnx.sys_ticket.to_owned();
         }
 
+        debug!("ADD TO TRANSACTION {:?} {}", &opt, indv.get_id());
         let res = tnx.add_to_transaction(opt.clone(), indv, ticket, "".to_string());
+        debug!("res={:?}", res);
 
-        //info!("ADD TO TRANSACTION {:?} {}, {:?}", &opt, indv_id, res);
         rv.set(v8::Integer::new(scope, res as i32).into());
+    } else {
+        error!("callback {:?}, invalid argument", opt);
     }
 }
 
