@@ -1,13 +1,13 @@
-use crate::error::Result;
-use crate::index_schema::IndexerSchema;
 use crate::index_workplace::IndexDocWorkplace;
-use crate::key2slot::{Key2Slot, XAPIAN_INFO_PATH};
 use crate::XAPIAN_DB_TYPE;
 use std::collections::HashMap;
 use std::fs;
 use std::process::exit;
 use std::time::Instant;
 use v_api::IndvOp;
+use v_ft_xapian::index_schema::IndexerSchema;
+use v_ft_xapian::key2slot::{Key2Slot, XAPIAN_INFO_PATH};
+use v_ft_xapian::xerror::Result;
 use v_module::info::ModuleInfo;
 use v_module::module::Module;
 use v_onto::datatype::{DataType, Lang};

@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::xerror::Result;
 use crc32fast::Hasher;
 use std::collections::HashMap;
 use std::fs::OpenOptions;
@@ -21,7 +21,7 @@ impl Default for Key2Slot {
 }
 
 impl Key2Slot {
-    pub(crate) fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.data.is_empty()
     }
 
@@ -65,7 +65,7 @@ impl Key2Slot {
         slot
     }
 
-    pub(crate) fn load() -> Result<Key2Slot> {
+    pub fn load() -> Result<Key2Slot> {
         let mut ff = OpenOptions::new().read(true).open(XAPIAN_INFO_PATH.to_owned() + "/key2slot")?;
         ff.seek(SeekFrom::Start(0))?;
 
@@ -92,7 +92,7 @@ impl Key2Slot {
         Ok(key2slot)
     }
 
-    pub(crate) fn store(&mut self) -> Result<()> {
+    pub fn store(&mut self) -> Result<()> {
         let (data, hash) = self.serialize();
 
         if data.len() == self.last_size_key2slot {
