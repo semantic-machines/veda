@@ -32,7 +32,7 @@ impl IndexerSchema {
         }
     }
 
-    pub fn get_dbname_of_class(&mut self, id: &str) -> &str {
+    pub fn get_dbname_of_class(&self, id: &str) -> &str {
         if let Some(v) = self.class_2_database.get(id) {
             return v;
         }
