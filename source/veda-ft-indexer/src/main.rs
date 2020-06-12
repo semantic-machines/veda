@@ -1,9 +1,6 @@
 #[macro_use]
 extern crate log;
 
-#[macro_use]
-extern crate maplit;
-
 mod index_workplace;
 mod indexer;
 
@@ -20,6 +17,7 @@ use crate::indexer::Indexer;
 use std::time::Instant;
 use v_queue::consumer::*;
 use xapian_rusty::*;
+use v_ft_xapian::init_db_path;
 
 const XAPIAN_DB_TYPE: i8 = BRASS;
 const BASE_PATH: &str = "./data";
@@ -48,7 +46,7 @@ fn main() -> Result<(), i32> {
         tg: TermGenerator::new()?,
         lang: "russian".to_string(),
         key2slot: Default::default(),
-        db2path: hashmap! { "base".to_owned() => "data/xapian-search-base".to_owned(), "system".to_owned()=>"data/xapian-search-system".to_owned(), "deleted".to_owned()=>"data/xapian-search-deleted".to_owned(), "az".to_owned()=>"data/xapian-search-az".to_owned() },
+        db2path: init_db_path() ,
         idx_schema: Default::default(),
         use_db: "".to_string(),
         committed_op_id: 0,
