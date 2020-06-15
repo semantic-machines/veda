@@ -96,6 +96,7 @@ v-s:VersionOfLocalRegulatoryDocument
   rdfs:subClassOf v-s:LocalRegulatoryDocument ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Labeled ;
+  rdfs:subClassOf v-s:Embedded;
   rdfs:label "Версия локального нормативного документа"@ru ;
   rdfs:label "Verions of local regulatory document"@en ;
   v-s:labelPattern "{@.v-s:registrationNumber} - {@.v-s:title}" ;
