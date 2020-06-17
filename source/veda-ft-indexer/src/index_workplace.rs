@@ -1,6 +1,6 @@
-use crate::indexer::to_lower_and_replace_delimeters;
 use crate::Indexer;
 use chrono::{TimeZone, Utc};
+use v_ft_xapian::to_lower_and_replace_delimiters;
 use v_ft_xapian::xerror::Result;
 use v_onto::resource::Resource;
 use xapian_rusty::Document;
@@ -84,7 +84,7 @@ impl IndexDocWorkplace {
 
         let slot_l1 = indexer.key2slot.get_slot_and_set_if_not_found(predicate);
 
-        let data = to_lower_and_replace_delimeters(uri);
+        let data = to_lower_and_replace_delimiters(uri);
 
         let prefix = format!("X{}X", slot_l1);
         indexer.tg.index_text_with_prefix(&data, &prefix)?;

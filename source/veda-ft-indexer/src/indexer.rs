@@ -7,6 +7,7 @@ use std::time::Instant;
 use v_api::IndvOp;
 use v_ft_xapian::index_schema::IndexerSchema;
 use v_ft_xapian::key2slot::{Key2Slot, XAPIAN_INFO_PATH};
+use v_ft_xapian::to_lower_and_replace_delimiters;
 use v_ft_xapian::xerror::Result;
 use v_module::info::ModuleInfo;
 use v_module::module::Module;
@@ -128,7 +129,7 @@ impl Indexer {
                 }
             }
 
-            let uuid = "uid_".to_owned() + &to_lower_and_replace_delimeters(new_indv.get_id());
+            let uuid = "uid_".to_owned() + &to_lower_and_replace_delimiters(new_indv.get_id());
 
             // используем информацию о типе, для определения, в какой базе следует проводить индексацию
             let mut dbname = "base".to_owned();
@@ -392,14 +393,4 @@ impl Indexer {
         }
         Ok(())
     }
-}
-
-pub(crate) fn to_lower_and_replace_delimeters(src: &str) -> String {
-    src.chars()
-        .map(|x| match x {
-            '-' => '_',
-            ':' => '_',
-            _ => x.to_ascii_lowercase(),
-        })
-        .collect()
 }
