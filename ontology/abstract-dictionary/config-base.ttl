@@ -449,10 +449,10 @@ cfg:Event_9
  */
 
 // First class event
-if (parent_script_id) {
-  // print("Not first class event. Exit.");
-  return;
-}
+//if (parent_script_id) {
+//  print("Not first class event. Exit.");
+//  return;
+//}
 
 var doc_uri = document["@"],
   parent_uri = veda.Util.getUri( document["v-s:parent"] ),
