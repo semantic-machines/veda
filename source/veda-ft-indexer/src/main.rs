@@ -15,9 +15,9 @@ use v_onto::onto::Onto;
 
 use crate::indexer::Indexer;
 use std::time::Instant;
+use v_ft_xapian::init_db_path;
 use v_queue::consumer::*;
 use xapian_rusty::*;
-use v_ft_xapian::init_db_path;
 
 const XAPIAN_DB_TYPE: i8 = BRASS;
 const BASE_PATH: &str = "./data";
@@ -46,7 +46,7 @@ fn main() -> Result<(), i32> {
         tg: TermGenerator::new()?,
         lang: "russian".to_string(),
         key2slot: Default::default(),
-        db2path: init_db_path() ,
+        db2path: init_db_path(),
         idx_schema: Default::default(),
         use_db: "".to_string(),
         committed_op_id: 0,
