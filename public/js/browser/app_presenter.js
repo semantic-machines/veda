@@ -175,15 +175,20 @@ veda.Module(function (veda) { "use strict";
   function installRouter (main) {
     // Router function
     riot.route( function (hash) {
+      $("#load-indicator").show();
       if (typeof hash === "string") {
         var hash_index = hash.indexOf("#");
         if (hash_index >= 0) {
           hash = hash.substring(hash_index);
         } else {
-          return main.present();
+          return main.present().then(function () {
+            $("#load-indicator").hide();
+          });
         }
       } else {
-        return main.present();
+        return main.present().then(function () {
+          $("#load-indicator").hide();
+        });
       }
       var tokens = decodeURI(hash).slice(2).split("/"),
           uri = tokens[0],
@@ -204,7 +209,6 @@ veda.Module(function (veda) { "use strict";
         }, {});
       }
 
-      $("#load-indicator").show();
       if (uri) {
         var individual = new veda.IndividualModel(uri);
         individual.present(container, template, mode, extra).then(function () {
