@@ -1,6 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <style>
+      #load-indicator {
+        background-color: white;
+        z-index: 9999;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: 0.5;
+      }
+      #load-indicator > .loader {
+        position: fixed;
+        top: 35%;
+        left: 50%;
+        width: 2em;
+        height: 2em;
+        border-width: 0.2em;
+      }
+      .loader {
+        display: inline-block;
+        border: 0.125em solid #555;
+        border-top: 0.125em solid transparent;
+        border-radius: 50%;
+        width: 1.25em;
+        height: 1.25em;
+        margin-left: 0.5em;
+        vertical-align: middle;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
     <meta charset="utf-8"/>
     <title>Veda</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -24,6 +59,12 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src https://www.google.com:443 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src https://www.google.com:443 https://www.gstatic.com:443 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:;" />
   </head>
   <body>
+    <!-- Load indicator -->
+    <div id="load-indicator">
+      <span class="loader"></span>
+    </div>
+
+    <!-- Line status -->
     <div class="container-fluid text-right online" id="line-status" style="display:none;">
       <span class="online"><span class="text-success glyphicon glyphicon-ok-sign"></span> ONLINE</span>
       <span class="limited"><span class="text-warning glyphicon glyphicon-exclamation-sign"></span> LIMITED</span>
@@ -116,11 +157,6 @@
       <!-- Application container -->
       <div id="app"></div>
     </form>
-
-    <!-- Load indicator -->
-    <div id="load-indicator" style="display:none;">
-      <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-    </div>
 
     <!-- Notification alerts -->
     <div id="notification-container"></div>
@@ -508,6 +544,8 @@
       document.addEventListener("DOMContentLoaded", function (event) {
         var xhr = new XMLHttpRequest();
         xhr.onload = function (e) {
+          var loadIndicator = document.getElementById("load-indicator");
+          loadIndicator.style.display = "none";
           if (this.status == 200) {
             var manifest = JSON.parse(xhr.response);
             veda.Module(manifest);

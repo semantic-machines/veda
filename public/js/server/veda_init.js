@@ -18,7 +18,10 @@
 
   veda.Module({/* configuration object */});
 
-  veda.ontology = new veda.OntologyModel();
+  var ontology = new veda.OntologyModel();
+  ontology.then(function (ontology) {
+    veda.ontology = ontology;
+  });
 
   veda.user = new veda.UserModel("cfg:Administrator");
 

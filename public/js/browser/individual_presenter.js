@@ -54,7 +54,7 @@ veda.Module(function (veda) { "use strict";
             return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
           });
         } else {
-          var ontology = new veda.OntologyModel();
+          var ontology = veda.ontology;
           var defaultTemplateUri = ontology.getClassTemplate(individual["rdf:type"][0].id);
           if (defaultTemplateUri) {
             templatePromise = new veda.IndividualModel(defaultTemplateUri).load().then(function (template) {
@@ -166,7 +166,7 @@ veda.Module(function (veda) { "use strict";
   function processTemplate (individual, container, template, mode) {
 
     // Get properties specifications
-    var ontology = new veda.OntologyModel();
+    var ontology = veda.ontology;
     var specs = $.extend.apply (
       {}, [{}].concat(
         individual["rdf:type"].map( function (_class) {
