@@ -19,7 +19,7 @@ veda.Module(function (veda) { "use strict";
     this.classTree = {};
     this.templates = {};
 
-    return veda.OntologyModel.prototype._singletonInstance = this;
+    return veda.OntologyModel.prototype._singletonInstance = this.init();
   };
 
   var proto = veda.OntologyModel.prototype;
@@ -85,6 +85,7 @@ veda.Module(function (veda) { "use strict";
   };
 
   proto.processOntology = function () {
+    var self = this;
     var ontology = this.ontology;
     var ontologies = this.ontologies;
     var datatypes = this.datatypes;
@@ -219,13 +220,15 @@ veda.Module(function (veda) { "use strict";
       });
 
       // Init ontology individuals
-      ontology.forEach( function (individual) {
+      var initPromises = ontology.map( function (individual) {
         if ( !individual ) { return; }
-        try {
-          individual.init();
-        } catch (error) {
+        return individual.init().catch(function (error) {
           console.error("Ontology individual init error, uri = %s", individual.id, error);
-        }
+        });
+      });
+
+      return Promise.all(initPromises).then(function () {
+        return self;
       });
 
     });

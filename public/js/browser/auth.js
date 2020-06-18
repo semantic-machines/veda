@@ -362,7 +362,11 @@ veda.Module(function (veda) { "use strict";
         veda.trigger("login:failed");
       }, ticketDelay);
     }
-    veda.start();
+    $("#load-indicator").show();
+    veda.init(veda.user_uri).then(function () {
+      $("#load-indicator").hide();
+      veda.trigger("started");
+    });
   });
 
   // Logout handler
@@ -376,7 +380,8 @@ veda.Module(function (veda) { "use strict";
   });
 
   // Init application
-  veda.init()
+  $("#load-indicator").show();
+  veda.init("cfg:Guest")
     .then(function () {
       // Check if ticket is valid
       var ticket = storage.ticket,
@@ -409,5 +414,8 @@ veda.Module(function (veda) { "use strict";
           }
         });
       }
+    })
+    .then(function () {
+      $("#load-indicator").hide();
     });
 });

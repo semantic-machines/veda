@@ -3072,7 +3072,7 @@ v-ui:generic
   var propTmpl = props.html();
   props.empty();
 
-  var ontology = new veda.OntologyModel();
+  var ontology = veda.ontology;
 
   var properties = [].concat.apply(
     [],

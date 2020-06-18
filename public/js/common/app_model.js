@@ -102,20 +102,12 @@
     };
 
     // Load ontology
-    self.init = function () {
-      self.ontology = new veda.OntologyModel();
-      return self.ontology.init().then(function () {
-        self.user = new veda.UserModel("cfg:Guest");
+    self.init = function (user) {
+      var ontology = new veda.OntologyModel();
+      return ontology.then(function (ontology) {
+        self.ontology = ontology;
+        self.user = new veda.UserModel(user);
         return self.user._init();
-      });
-    };
-
-    // Start application
-    self.start = function () {
-      self.trigger("starting");
-      self.user = new veda.UserModel(self.user_uri);
-      return self.user._init().then(function () {
-        self.trigger("started");
       });
     };
 

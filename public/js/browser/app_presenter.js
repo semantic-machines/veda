@@ -110,16 +110,9 @@ veda.Module(function (veda) { "use strict";
     }
   });
 
-  // App loading indicator
-  var loadIndicator = $("#load-indicator");
-  veda.on("starting", function () {
-    loadIndicator.show();
-  }).on("started", function () {
-    loadIndicator.hide();
-  });
-
-  // Triggered in veda.start()
+  // Triggered in auth
   veda.on("started", function () {
+    $("#load-indicator").show();
     var layout_uri = veda.manifest.veda_layout;
     var main_uri = veda.manifest.veda_main;
     var start_url = veda.manifest.start_url;
@@ -211,17 +204,19 @@ veda.Module(function (veda) { "use strict";
         }, {});
       }
 
+      $("#load-indicator").show();
       if (uri) {
-        loadIndicator.show();
         var individual = new veda.IndividualModel(uri);
         individual.present(container, template, mode, extra).then(function () {
-          loadIndicator.hide();
+          $("#load-indicator").hide();
           if ( !individual.scroll ) {
             window.scrollTo(0, 0);
           }
         });
       } else {
-        main.present();
+        main.present().then(function () {
+          $("#load-indicator").hide();
+        });
       }
     });
   }
