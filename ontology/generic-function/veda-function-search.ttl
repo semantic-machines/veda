@@ -1500,7 +1500,7 @@ v-fs:DocumentsBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Мои документы"@ru ;
   rdfs:label "My documents"@en ;
-  v-fc:targetType v-s:Document ;
+  v-fc:targetType v-s:UserSearchableDocument ;
 .
 
 v-fs:DocumentsSearchBlankTemplate

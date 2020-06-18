@@ -1229,11 +1229,11 @@ v-s:MembershipRegistryTemplate
 
   <em about="v-s:memberOf" property="rdfs:label"></em>
   <div rel="v-s:memberOf" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
-  <veda-control data-type="link" rel="v-s:memberOf" class="-view edit search fulltext dropdown"></veda-control>
+  <input id="memberOf" type="text" class="-vew edit search form-control"/>
 
   <em about="v-s:resource" property="rdfs:label"></em>
   <div rel="v-s:resource" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
-  <veda-control data-type="link" rel="v-s:resource" class="-view edit search fulltext dropdown"></veda-control>
+  <input id="resource" type="text" class="-vew edit search form-control"/>
 
   <em about="v-s:updateCounter" property="rdfs:label"></em>
   <div property="v-s:updateCounter" class="view edit search"></div>
@@ -1267,6 +1267,26 @@ v-s:MembershipRegistryTemplate
   </div>
   <div about="@" data-template="v-ui:SystemPropertiesNewTemplate" data-embedded="true"></div>
 </div>
+<script>
+  $("#memberOf", template).change(function() {
+    var uri = $(this).val();
+    if (uri) {
+      individual["v-s:memberOf"] = [new veda.IndividualModel(uri)];
+    } else {
+      individual["v-s:memberOf"] = [];
+    }
+  });
+
+  $("#resource", template).change(function() {
+    var uri = $(this).val();
+    if (uri) {
+      individual["v-s:resource"] = [new veda.IndividualModel(uri)];
+    } else {
+      individual["v-s:resource"] = [];
+    }
+  });
+  //# sourceURL=v-s:MembershipRegistryTemplate_post
+</script>
 """ ;
 .
 
@@ -1332,11 +1352,11 @@ v-s:PermissionStatementRegistryTemplate
   <hr>
   <em about="v-s:permissionObject" property="rdfs:label"></em>
   <div rel="v-s:permissionObject" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
-  <veda-control data-type="link" rel="v-s:permissionObject" class="-view edit search fulltext dropdown"></veda-control>
+  <input id="object" type="text" class="-vew edit search form-control"/>
 
   <em about="v-s:permissionSubject" property="rdfs:label"></em>
   <div rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
-  <veda-control data-type="link" rel="v-s:permissionSubject" class="-view edit search fulltext dropdown"></veda-control>
+  <input id="subject" type="text" class="-vew edit search form-control"/>
   <hr>
   <div class="checkbox">
     <label>
@@ -1366,6 +1386,27 @@ v-s:PermissionStatementRegistryTemplate
   <br>
   <div about="@" data-template="v-ui:SystemPropertiesNewTemplate" data-embedded="true"></div>
 </div>
+<script>
+  $("#object", template).change(function() {
+    var uri = $(this).val();
+    if (uri) {
+      individual["v-s:permissionObject"] = [new veda.IndividualModel(uri)];
+    } else {
+      individual["v-s:permissionObject"] = [];
+    }
+  });
+
+  $("#subject", template).change(function() {
+    var uri = $(this).val();
+    if (uri) {
+      individual["v-s:permissionSubject"] = [new veda.IndividualModel(uri)];
+    } else {
+      individual["v-s:permissionSubject"] = [];
+    }
+  });
+
+  //# sourceURL=v-s:PermissionStatementRegistryTemplate_post
+</script>
 """ ;
 .
 v-s:PermissionStatementRegistryResultTemplate
