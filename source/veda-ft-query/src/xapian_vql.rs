@@ -37,7 +37,7 @@ pub fn exec_xapian_query_and_queue_authorize(
 
 pub fn transform_vql_to_xapian(
     tta: &mut TTA,
-    p_op: &str,
+    _prev_op: &str,
     l_token: Option<&mut String>,
     op: Option<&mut String>,
     query: &mut Query,
@@ -130,9 +130,17 @@ pub fn transform_vql_to_xapian(
 
                     if let Some(slot) = wslot {
                         let (rs_type, value) = get_token_type(&rs)?;
-                        let xtr = format!("X{}D", slot);
 
                         if rs_type == TokenType::BOOLEAN {
+                            let xtr = format!("X{}D", slot);
+                            let query_str = if value == 1.0 {
+                                "T"
+                            } else {
+                                "F"
+                            };
+                            let mut flags = FeatureFlag::FLAG_DEFAULT as i16 | FeatureFlag::FLAG_PHRASE as i16 | FeatureFlag::FLAG_LOVEHATE as i16;
+
+                            *query = parse_query_with_prefix(qp, &query_str, flags, &xtr)?;
                         } else {
                             if let Some(r) = &tta.r {
                                 if r.token_decor == Decor::QUOTED || (rs.find('*').is_some() && is_good_token(&rs)) {
@@ -160,7 +168,7 @@ pub fn transform_vql_to_xapian(
                                         query_str = "NOT ".to_owned() + &query_str;
                                     }
 
-                                    *query = parse_query(qp, &query_str, flags)?;
+                                    *query = parse_query_with_prefix(qp, &query_str, flags, &xtr)?;
                                 } else if r.token_decor == Decor::RANGE {
                                     let vals: Vec<&str> = rs.split(',').collect();
                                     if vals.len() == 2 {
@@ -188,12 +196,12 @@ pub fn transform_vql_to_xapian(
                                             }
                                         }
 
-                                        let mut flags = FeatureFlag::FLAG_DEFAULT as i16
+                                        let flags = FeatureFlag::FLAG_DEFAULT as i16
                                             | FeatureFlag::FLAG_WILDCARD as i16
                                             | FeatureFlag::FLAG_PHRASE as i16
                                             | FeatureFlag::FLAG_LOVEHATE as i16;
 
-                                        *query = parse_query(qp, &query_str, flags)?;
+                                        *query = parse_query_with_prefix(qp, &query_str, flags, &xtr)?;
                                     } else {
                                         if let Ok(d) = rs.parse::<f64>() {
                                             *query = Query::new_double_with_prefix(&format!("X{}X", slot), d)?;
@@ -222,15 +230,110 @@ pub fn transform_vql_to_xapian(
 
                     *query = parse_query(qp, &query_str, flags)?;
                 } else {
-                    let mut flags = FeatureFlag::FLAG_DEFAULT as i16;
+                    let flags = FeatureFlag::FLAG_DEFAULT as i16;
 
                     *query = parse_query(qp, &query_str, flags)?;
                 }
             }
-        } else {
         }
     } else if tta.op == "&&" {
+        let mut t_op_l = String::new();
+        let mut t_op_r = String::new();
+        let mut token_l = String::new();
+
+        //let mut tta_r = String::new();
+        if let Some(t) = &mut tta.r {
+            //tta_r =
+            transform_vql_to_xapian(t, &tta.op, Some(&mut token_l), Some(&mut t_op_r), &mut query_r, key2slot, &mut rd, level + 1, qp, onto)?;
+        }
+
+        if !t_op_r.is_empty() {
+            if let Some(v) = op {
+                *v = t_op_r.clone();
+            }
+        }
+
+        let mut tta_l = String::new();
+        if let Some(t) = &mut tta.l {
+            tta_l = transform_vql_to_xapian(t, &tta.op, None, Some(&mut t_op_l), &mut query_l, key2slot, &mut ld, level + 1, qp, onto)?;
+        }
+
+        //        if !t_op_l.is_empty() {
+        //            if let Some(v) = op {
+        //                *v = t_op_l.clone();
+        //            }
+        //        }
+
+        //writeln("@p && token_L=", token_L);
+        //writeln("@p query_l=", get_query_description(query_l));
+        //writeln("@p query_r=", get_query_description(query_r));
+
+        if !token_l.is_empty() && !tta_l.is_empty() {
+            //writeln("@p #E0.1 &&");
+            // это range
+            //writeln("@p token_L=", token_L);
+            //writeln("@p tta_R=", tta_R);
+            //writeln("@p tta_L=", tta_L);
+            //writeln("@p t_op_l=", t_op_l);
+            //writeln("@p t_op_r=", t_op_r);
+
+            let mut c_to = 0.0;
+            let mut c_from = 0.0;
+
+            if t_op_r == ">" {
+                c_from = rd;
+            }
+            if t_op_r == "<" {
+                c_to = rd;
+            }
+
+            if t_op_l == ">" {
+                c_from = ld;
+            }
+            if t_op_l == "<" {
+                c_to = ld;
+            }
+
+            //writeln("@p c_from=", c_from);
+            //writeln("@p c_to=", c_to);
+
+            if let Some(slot) = key2slot.get_slot(&token_l) {
+                query_r = Query::new_range(XapianOp::OP_VALUE_RANGE, slot, c_from, c_to)?;
+
+                if query_l.is_empty() {
+                    *query = query_r;
+                } else {
+                    if !query_r.is_empty() {
+                        //*query = query_l.add_right(XapianOp::OP_AND, &mut query_r)?;
+                    }
+                }
+            }
+            if query.is_empty() {
+                return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
+            }
+        }
     } else if tta.op == "||" {
+        //let mut tta_r = String::new();
+        if let Some(t) = &mut tta.r {
+            //tta_r =
+            transform_vql_to_xapian(t, &tta.op, None, None, &mut query_r, key2slot, &mut rd, level + 1, qp, onto)?;
+        }
+
+        //let mut tta_l = String::new();
+        if let Some(t) = &mut tta.l {
+            //tta_l =
+            transform_vql_to_xapian(t, &tta.op, None, None, &mut query_l, key2slot, &mut ld, level + 1, qp, onto)?;
+        }
+
+        if !query_l.is_empty() {
+            if !query_r.is_empty() {
+                *query = query_l.add_right(XapianOp::OP_OR, &mut query_r)?;
+            }
+        }
+
+        if query.is_empty() {
+            return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
+        }
     } else {
     }
 
@@ -251,6 +354,15 @@ fn add_subclasses_to_query(rs: &str, onto: &Onto) -> Option<String> {
         return Some(to_lower_and_replace_delimiters(&new_rs));
     }
     None
+}
+
+fn parse_query_with_prefix(qp: &mut QueryParser, query_str: &str, flags: i16, prefix: &str) -> Result<Query> {
+    if let Ok(q) = qp.parse_query_with_prefix(query_str, flags, prefix) {
+        Ok(q)
+    } else {
+        warn!("The search query has been changed: [{}]->[\"{}\"]", query_str, query_str);
+        Ok(qp.parse_query(&(format!("\"{}\"", query_str)), flags)?)
+    }
 }
 
 fn parse_query(qp: &mut QueryParser, query_str: &str, flags: i16) -> Result<Query> {

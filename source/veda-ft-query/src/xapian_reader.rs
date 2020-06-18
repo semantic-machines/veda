@@ -9,17 +9,17 @@ use v_ft_xapian::xerror::{Result, XError};
 use v_module::info::ModuleInfo;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use xapian_rusty::{get_xapian_err_type, Database, Enquire, Query, QueryParser, Stem, BRASS};
+use xapian_rusty::{Database, Query, QueryParser, Stem, BRASS};
 
 const XAPIAN_DB_TYPE: i8 = BRASS;
 const MAX_WILDCARD_EXPANSION: i32 = 20_000;
 
-pub struct Database_QueryParser {
+pub struct DatabaseQueryParser {
     db: Database,
     qp: QueryParser,
 }
 
-impl Database_QueryParser {
+impl DatabaseQueryParser {
     fn add_database(&mut self, db_name: &str, opened_db: &mut HashMap<String, Database>) -> Result<()> {
         if let Some(add_db) = opened_db.get_mut(db_name) {
             self.db.add_database(add_db)?;
@@ -29,7 +29,7 @@ impl Database_QueryParser {
 }
 
 pub struct XapianReader {
-    pub(crate) using_dbqp: HashMap<Vec<String>, Database_QueryParser>,
+    pub(crate) using_dbqp: HashMap<Vec<String>, DatabaseQueryParser>,
     pub(crate) opened_db: HashMap<String, Database>,
     pub(crate) xapian_stemmer: Stem,
     pub(crate) xapian_lang: String,
@@ -65,7 +65,7 @@ impl XapianReader {
 
         let mut tta = wtta.unwrap();
 
-        let mut db_names = self.get_dn_names(&tta, db_names_str);
+        let db_names = self.get_dn_names(&tta, db_names_str);
 
         info!("db_names={:?}", db_names);
 
@@ -82,8 +82,6 @@ impl XapianReader {
         //       }
 
         self.open_dbqp_if_need(&db_names)?;
-
-        let mut attempt_count = 1;
 
         let mut query = Query::new()?;
         loop {
@@ -146,7 +144,7 @@ impl XapianReader {
                 self.open_db_if_need(el)?;
             }
 
-            let mut dbqp = Database_QueryParser {
+            let mut dbqp = DatabaseQueryParser {
                 db: Database::new()?,
                 qp: QueryParser::new()?,
             };
