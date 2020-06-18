@@ -5,6 +5,9 @@ veda.Module(function Backend(veda) { "use strict";
 
   veda.Backend = {};
 
+  var default_timeout = 15000;
+  var query_timeout = default_timeout * 10;
+
   // Check server health
   veda.Backend.ping = function () {
     return new Promise(function (resolve, reject) {
@@ -20,7 +23,7 @@ veda.Module(function Backend(veda) { "use strict";
       xhr.ontimeout = reject;
       xhr.open("GET", "/ping");
       xhr.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      xhr.timeout = 5000;
+      xhr.timeout = default_timeout;
       xhr.send();
     });
   };
@@ -42,7 +45,7 @@ veda.Module(function Backend(veda) { "use strict";
   veda.on("online offline ccus-online ccus-offline", setStatus);
 
   var interval;
-  var duration = 5000;
+  var duration = default_timeout;
   veda.Backend.check = function () {
     if (interval) { return; }
     interval = setInterval(check, duration);
@@ -115,9 +118,6 @@ veda.Module(function Backend(veda) { "use strict";
   }
   BackendError.prototype = Object.create(Error.prototype);
   BackendError.prototype.constructor = BackendError;
-
-  var default_timeout = 10000;
-  var query_timeout = 120000;
 
   // Common server call function
   function call_server(params) {
