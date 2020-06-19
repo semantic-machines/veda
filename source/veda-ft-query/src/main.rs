@@ -11,13 +11,14 @@ use v_api::app::ResultCode;
 use v_ft_xapian::init_db_path;
 use v_ft_xapian::key2slot::Key2Slot;
 //use v_ft_xapian::xerror::Result;
+use v_ft_xapian::xerror::XError::{Io, Xapian};
 use v_module::info::ModuleInfo;
 use v_module::module::init_log;
 use v_module::onto::load_onto;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_storage::storage::*;
-use xapian_rusty::Stem;
+use xapian_rusty::{get_xapian_err_type, Stem};
 
 mod vql;
 mod xapian_reader;
@@ -101,10 +102,17 @@ pub fn load_index_schema(onto: &Onto, storage: &mut VStorage, xr: &mut XapianRea
                         xr.index_schema.add_schema_data(onto, indv);
                     }
                 }
+            } else {
+                error!("fail load index schema, err={:?}", res.result_code);
             }
         }
-        Err(e) => {
-            error!("fail load index schema, err={:?}", e);
-        }
+        Err(e) => match e {
+            Xapian(code) => {
+                error!("fail load index schema, err={} ({})", get_xapian_err_type(code), code);
+            }
+            Io(e) => {
+                error!("fail load index schema, err={:?}", e);
+            }
+        },
     }
 }

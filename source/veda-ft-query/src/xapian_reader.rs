@@ -9,9 +9,9 @@ use v_ft_xapian::xerror::{Result, XError};
 //use v_module::info::ModuleInfo;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use xapian_rusty::{Database, Query, QueryParser, Stem, BRASS};
+use xapian_rusty::{Database, Query, QueryParser, Stem, UNKNOWN};
 
-const XAPIAN_DB_TYPE: i8 = BRASS;
+const XAPIAN_DB_TYPE: i8 = UNKNOWN;
 const MAX_WILDCARD_EXPANSION: i32 = 20_000;
 
 pub struct DatabaseQueryParser {
@@ -82,14 +82,16 @@ impl XapianReader {
         self.open_dbqp_if_need(&db_names)?;
 
         let mut query = Query::new()?;
-        loop {
-            if let Some(dbqp) = self.using_dbqp.get_mut(&db_names) {
-                let mut _rd: f64 = 0.0;
-                if transform_vql_to_xapian(&mut tta, "", None, None, &mut query, &self.key2slot, &mut _rd, 0, &mut dbqp.qp, &self.onto).is_ok() {
-                    break;
-                }
-            }
+        //loop {
+        if let Some(dbqp) = self.using_dbqp.get_mut(&db_names) {
+            let mut _rd: f64 = 0.0;
+            //if
+            transform_vql_to_xapian(&mut tta, "", None, None, &mut query, &self.key2slot, &mut _rd, 0, &mut dbqp.qp, &self.onto);
+            //.is_ok() {
+            //    break;
+            //}
         }
+        //}
 
         if query.is_empty() {
             sr.result_code = ResultCode::BadRequest;
@@ -145,7 +147,7 @@ impl XapianReader {
     fn open_db_if_need(&mut self, db_name: &str) -> Result<()> {
         if !self.opened_db.contains_key(db_name) {
             if let Some(path) = self.db2path.get(db_name) {
-                let db = Database::new_with_path(path, XAPIAN_DB_TYPE)?;
+                let db = Database::new_with_path(&("./".to_owned() + path), XAPIAN_DB_TYPE)?;
                 self.opened_db.insert(db_name.to_owned(), db);
             } else {
                 return Err(XError::from(Error::new(ErrorKind::Other, "db2path invalid")));
