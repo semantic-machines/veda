@@ -1389,6 +1389,15 @@ v-ui:IconModalTemplate
     modal = $(modal).modal({"show": false});
     $("body").append(modal);
     modal.modal("show");
+    
+    modal.find("#follow").click( function () {
+      var resourceTemplate = modal.find("[resource]").first();
+      var uri = resourceTemplate.attr("resource");
+      var mode = resourceTemplate.data("mode");
+      modal.modal("hide");
+      riot.route( ["#", uri, "#main", undefined, mode].join("/") );
+    });
+
     template.one("remove", function () {
       modal.modal("hide").remove();
     });
