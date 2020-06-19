@@ -151,7 +151,7 @@ pub fn transform_vql_to_xapian(
             rs = transform_vql_to_xapian(r, &tta.op, None, None, &mut query_r, key2slot, &mut rd, level + 1, qp, onto)?;
         }
 
-        let (rs_type, value) = get_token_type(&rs)?;
+        let (rs_type, value) = get_token_type(&rs);
         if rs_type == TokenType::DATE || rs_type == TokenType::NUMBER {
             if let Some(l_out) = l_token {
                 *l_out = ls;
@@ -203,8 +203,13 @@ pub fn transform_vql_to_xapian(
 
                     *query = parse_query(qp, &query_str, flags)?;
                 } else {
-                    let rs_first_byte = rs.as_bytes()[0];
-                    let rs_last_byte = rs.as_bytes()[rs.len() - 1];
+                    let mut rs_first_byte = 0;
+                    let mut rs_last_byte = 0;
+
+                    if !rs.is_empty() {
+                        rs_first_byte = rs.as_bytes()[0];
+                        rs_last_byte = rs.as_bytes()[rs.len() - 1];
+                    }
 
                     let wslot = if !rs.is_empty() && rs_first_byte == b'*' && is_good_token(&rs) {
                         key2slot.get_slot(&(ls + "#F"))
@@ -213,7 +218,7 @@ pub fn transform_vql_to_xapian(
                     };
 
                     if let Some(slot) = wslot {
-                        let (rs_type, value) = get_token_type(&rs)?;
+                        let (rs_type, value) = get_token_type(&rs);
 
                         if rs_type == TokenType::BOOLEAN {
                             let xtr = format!("X{}D", slot);
@@ -256,9 +261,9 @@ pub fn transform_vql_to_xapian(
                                 } else if r.token_decor == Decor::RANGE {
                                     let vals: Vec<&str> = rs.split(',').collect();
                                     if vals.len() == 2 {
-                                        let (tt, c_from) = get_token_type(vals.get(0).unwrap())?;
+                                        let (tt, c_from) = get_token_type(vals.get(0).unwrap());
                                         if tt == TokenType::DATE || tt == TokenType::NUMBER {
-                                            let (tt, c_to) = get_token_type(vals.get(1).unwrap())?;
+                                            let (tt, c_to) = get_token_type(vals.get(1).unwrap());
                                             if tt == TokenType::DATE || tt == TokenType::NUMBER {
                                                 *query = Query::new_range(XapianOp::OpValueRange, slot, c_from, c_to)?;
                                             }
@@ -419,6 +424,7 @@ pub fn transform_vql_to_xapian(
             return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
         }
     } else {
+        return Ok(tta.op.clone());
     }
 
     Ok(Default::default())
@@ -485,7 +491,7 @@ fn parse_query(qp: &mut QueryParser, query_str: &str, flags: i16) -> Result<Quer
     }
 }
 
-fn get_token_type(token_in: &str) -> Result<(TokenType, f64)> {
+fn get_token_type(token_in: &str) -> (TokenType, f64) {
     let res = TokenType::TEXT;
 
     debug!("token=[{}]", token_in);
@@ -493,24 +499,24 @@ fn get_token_type(token_in: &str) -> Result<(TokenType, f64)> {
     let token = token_in.trim().as_bytes();
 
     if token == b"true" {
-        return Ok((TokenType::BOOLEAN, 1.0));
+        return (TokenType::BOOLEAN, 1.0);
     } else if token == b"false" {
-        return Ok((TokenType::BOOLEAN, 0.0));
+        return (TokenType::BOOLEAN, 0.0);
     } else if token.len() == 19 && token[4] == b'-' && token[7] == b'-' && token[10] == b'T' && token[13] == b':' && token[16] == b':' {
         if let Ok(nv) = NaiveDateTime::parse_from_str(token_in, "%Y-%m-%dT%H:%M:%S") {
-            return Ok((TokenType::DATE, nv.timestamp() as f64));
+            return (TokenType::DATE, nv.timestamp() as f64);
         }
     } else if token.len() == 24 && token[4] == b'-' && token[7] == b'-' && token[10] == b'T' && token[13] == b':' && token[16] == b':' && token[19] == b'.' {
         if let Ok(nv) = NaiveDateTime::parse_from_str(token_in, "%Y-%m-%dT%H:%M:%S.sss") {
-            return Ok((TokenType::DATE, nv.timestamp() as f64));
+            return (TokenType::DATE, nv.timestamp() as f64);
         }
     }
 
     if let Ok(v) = token_in.parse::<f64>() {
-        return Ok((res, v));
+        return (res, v);
     }
 
-    return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid token=[{}]", token_in))));
+    (res, 0.0)
 }
 
 fn is_good_token(str: &str) -> bool {
