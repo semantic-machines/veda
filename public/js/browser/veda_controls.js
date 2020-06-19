@@ -176,7 +176,7 @@
     if (tabindex) {
       this.removeAttr("tabindex");
       control.attr("tabindex", tabindex);
-    }
+    };
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
@@ -190,8 +190,11 @@
       if (control.val()) {
         individual.id = control.val();
       };
-      console.log(individual.id);
     }
+
+    individual.on("idChanged", function() {
+      control.attr("placeholder", individual.id);
+    });
 
     this.append(control);
     return this;
