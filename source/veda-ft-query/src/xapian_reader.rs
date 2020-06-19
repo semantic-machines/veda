@@ -1,12 +1,12 @@
 use crate::vql::TTA;
-use crate::xapian_vql::{transform_vql_to_xapian, OptAuthorize};
+use crate::xapian_vql::{exec_xapian_query_and_queue_authorize, get_sorter, transform_vql_to_xapian, OptAuthorize};
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use v_api::app::ResultCode;
 use v_ft_xapian::index_schema::IndexerSchema;
 use v_ft_xapian::key2slot::Key2Slot;
 use v_ft_xapian::xerror::{Result, XError};
-use v_module::info::ModuleInfo;
+//use v_module::info::ModuleInfo;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
 use xapian_rusty::{Database, Query, QueryParser, Stem, BRASS};
@@ -34,7 +34,7 @@ pub struct XapianReader {
     pub(crate) xapian_stemmer: Stem,
     pub(crate) xapian_lang: String,
     pub(crate) index_schema: IndexerSchema,
-    pub(crate) mdif: ModuleInfo,
+    //pub(crate) mdif: ModuleInfo,
     pub(crate) key2slot: Key2Slot,
     pub(crate) onto: Onto,
     pub(crate) db2path: HashMap<String, String>,
@@ -68,9 +68,7 @@ impl XapianReader {
         let db_names = self.get_dn_names(&tta, db_names_str);
 
         info!("db_names={:?}", db_names);
-
         info!("user_uri=[{}] query=[{}] str_sort=[{}], db_names=[{:?}], from=[{}], top=[{}], limit=[{}]", user_uri, str_query, str_sort, db_names, from, top, limit);
-
         info!("TTA [{}]", tta);
 
         //        long cur_committed_op_id = get_info().committed_op_id;
@@ -93,10 +91,28 @@ impl XapianReader {
             }
         }
 
+        if query.is_empty() {
+            sr.result_code = ResultCode::BadRequest;
+            error!("fail prepare query [{}]", str_query);
+            return Ok(sr);
+        }
+
+        if let Some(dbqp) = self.using_dbqp.get_mut(&db_names) {
+            let mut xapian_enquire = dbqp.db.new_enquire()?;
+
+            xapian_enquire.set_query(&mut query)?;
+
+            if let Some(mut sorter) = get_sorter(str_sort, &self.key2slot)? {
+                xapian_enquire.set_sort_by_key(&mut sorter, true)?;
+            }
+
+            sr = exec_xapian_query_and_queue_authorize(user_uri, &mut xapian_enquire, from, top, limit, add_out_element, op_auth);
+        }
+
         Ok(sr)
     }
 
-    fn reopen_dbs(&mut self) -> Result<()> {
+    fn _reopen_dbs(&mut self) -> Result<()> {
         //let cur_committed_op_id = get_info().committed_op_id;
         //debug!("reopen_db, prev committed_op_id={}, now committed_op_id={}", committed_op_id, cur_committed_op_id);
 
@@ -114,7 +130,7 @@ impl XapianReader {
         Ok(())
     }
 
-    fn close_dbs(&mut self) -> Result<()> {
+    fn _close_dbs(&mut self) -> Result<()> {
         for (_, el) in self.using_dbqp.iter_mut() {
             el.db.close()?;
         }

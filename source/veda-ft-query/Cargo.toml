@@ -22,3 +22,6 @@ v_api = { path = "../v-api" }
 v_search = { path = "../v-search" }
 v_ft_xapian = { path = "../v-ft-xapian" }
 v_storage = { path = "../v-storage" }
+v_authorization = { path = "../v-authorization" }
+v_az_lmdb = { path = "../v-az-lmdb" }
+
