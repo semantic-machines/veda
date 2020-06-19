@@ -3,8 +3,10 @@ use chrono::NaiveDateTime;
 use regex::Regex;
 use std::collections::HashSet;
 use std::io::{Error, ErrorKind};
+use v_api::app::ResultCode;
 use v_ft_xapian::key2slot::Key2Slot;
 use v_ft_xapian::to_lower_and_replace_delimiters;
+use v_ft_xapian::xerror::XError::Xapian;
 use v_ft_xapian::xerror::{Result, XError};
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
@@ -25,14 +27,51 @@ pub enum OptAuthorize {
 
 pub fn exec_xapian_query_and_queue_authorize(
     user_uri: &str,
-    xapian_enquire: Enquire,
+    xapian_enquire: &mut Enquire,
     from: i32,
     top: i32,
     limit: i32,
     add_out_element: fn(uri: &str),
     op_auth: OptAuthorize,
 ) -> QueryResult {
-    Default::default()
+    let mut sr = QueryResult::default();
+    match exec(user_uri, xapian_enquire, from, top, limit, add_out_element, op_auth) {
+        Ok(res) => return res,
+        Err(e) => match e {
+            Xapian(err_code) => {
+                if err_code == -1 {
+                    sr.result_code = ResultCode::DatabaseModifiedError;
+                } else {
+                    sr.result_code = ResultCode::InternalServerError;
+                }
+            }
+            _ => {
+                sr.result_code = ResultCode::InternalServerError;
+            }
+        },
+    }
+    sr
+}
+
+fn exec(user_uri: &str, xapian_enquire: &mut Enquire, from: i32, top: i32, limit: i32, add_out_element: fn(uri: &str), op_auth: OptAuthorize) -> Result<QueryResult> {
+    let mut sr = QueryResult::default();
+
+    if user_uri.is_empty() {
+        sr.result_code = ResultCode::TicketNotFound;
+    }
+
+    let mut matches = xapian_enquire.get_mset(from, limit)?;
+    let mut processed = 0;
+
+    sr.estimated = matches.get_matches_estimated()? as i64;
+
+    let mut it = matches.iterator()?;
+
+    while it.is_next()? {
+        let data = it.get_document_data()?;
+    }
+
+    Ok(sr)
 }
 
 pub fn transform_vql_to_xapian(
