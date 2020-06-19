@@ -76,13 +76,13 @@ fn main() {
         xapian_stemmer: Stem::new("russian").unwrap(),
         xapian_lang: "".to_string(),
         index_schema: Default::default(),
-        mdif: module_info.unwrap(),
+        //mdif: module_info.unwrap(),
         key2slot: key2slot.unwrap(),
         onto: Default::default(),
         db2path: init_db_path(),
     };
 
-    let schema = load_index_schema(&onto, &mut storage, &mut xr);
+    let _schema = load_index_schema(&onto, &mut storage, &mut xr);
 
     //xr.query("", "'rdf:type' == '*'", "", "", 0, 0, 0, add_out_element, OptAuthorize::NO);
 }

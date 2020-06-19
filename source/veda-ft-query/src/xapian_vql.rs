@@ -4,13 +4,15 @@ use regex::Regex;
 use std::collections::HashSet;
 use std::io::{Error, ErrorKind};
 use v_api::app::ResultCode;
+use v_authorization::common::Access;
+use v_az_lmdb::_authorize;
 use v_ft_xapian::key2slot::Key2Slot;
 use v_ft_xapian::to_lower_and_replace_delimiters;
 use v_ft_xapian::xerror::XError::Xapian;
 use v_ft_xapian::xerror::{Result, XError};
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use xapian_rusty::{Enquire, FeatureFlag, Query, QueryParser, XapianOp};
+use xapian_rusty::{Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp};
 
 #[derive(Debug, PartialEq)]
 enum TokenType {
@@ -20,6 +22,7 @@ enum TokenType {
     BOOLEAN,
 }
 
+#[derive(Debug, PartialEq)]
 pub enum OptAuthorize {
     NO,
     YES,
@@ -53,22 +56,64 @@ pub fn exec_xapian_query_and_queue_authorize(
     sr
 }
 
-fn exec(user_uri: &str, xapian_enquire: &mut Enquire, from: i32, top: i32, limit: i32, add_out_element: fn(uri: &str), op_auth: OptAuthorize) -> Result<QueryResult> {
+fn exec(
+    user_uri: &str,
+    xapian_enquire: &mut Enquire,
+    from: i32,
+    in_top: i32,
+    in_limit: i32,
+    add_out_element: fn(uri: &str),
+    op_auth: OptAuthorize,
+) -> Result<QueryResult> {
     let mut sr = QueryResult::default();
 
     if user_uri.is_empty() {
         sr.result_code = ResultCode::TicketNotFound;
+        return Ok(sr);
     }
 
+    let top = if in_top == 0 {
+        10000
+    } else {
+        in_top
+    };
+
+    let limit = if in_limit == 0 {
+        10000
+    } else {
+        in_limit
+    };
+
+    let mut read_count = 0;
+
     let mut matches = xapian_enquire.get_mset(from, limit)?;
-    let mut processed = 0;
+    //let mut processed = 0;
 
     sr.estimated = matches.get_matches_estimated()? as i64;
 
     let mut it = matches.iterator()?;
 
     while it.is_next()? {
-        let data = it.get_document_data()?;
+        let subject_id = it.get_document_data()?;
+
+        //processed += 1;
+        let mut is_passed = true;
+
+        if op_auth == OptAuthorize::YES {
+            if _authorize(&subject_id, user_uri, Access::CanRead as u8, true, None).unwrap_or(0) != Access::CanRead as u8 {
+                is_passed = false;
+            }
+        }
+
+        if is_passed {
+            //log.trace("found subject_id:[%s] authorized", subject_id);
+
+            add_out_element(&subject_id);
+            read_count += 1;
+            if read_count >= top {
+                break;
+            }
+        }
     }
 
     Ok(sr)
@@ -148,11 +193,11 @@ pub fn transform_vql_to_xapian(
         if query_l.is_empty() && query_r.is_empty() {
             if ls != "*" {
                 if ls == "@" {
-                    let mut flags = FeatureFlag::FLAG_DEFAULT as i16 | FeatureFlag::FLAG_WILDCARD as i16;
+                    let mut flags = FeatureFlag::FlagDefault as i16 | FeatureFlag::FlagWildcard as i16;
                     let mut query_str = format!("uid_{}", to_lower_and_replace_delimiters(&rs));
 
                     if tta.op == "!=" {
-                        flags = flags | FeatureFlag::FLAG_PURE_NOT as i16;
+                        flags = flags | FeatureFlag::FlagPureNot as i16;
                         query_str = "NOT ".to_owned() + &query_str;
                     }
 
@@ -177,7 +222,7 @@ pub fn transform_vql_to_xapian(
                             } else {
                                 "F"
                             };
-                            let mut flags = FeatureFlag::FLAG_DEFAULT as i16 | FeatureFlag::FLAG_PHRASE as i16 | FeatureFlag::FLAG_LOVEHATE as i16;
+                            let flags = FeatureFlag::FlagDefault as i16 | FeatureFlag::FlagPhrase as i16 | FeatureFlag::FlagLovehate as i16;
 
                             *query = parse_query_with_prefix(qp, &query_str, flags, &xtr)?;
                         } else {
@@ -197,13 +242,13 @@ pub fn transform_vql_to_xapian(
                                     }
 
                                     let xtr = format!("X{}X", slot);
-                                    let mut flags = FeatureFlag::FLAG_DEFAULT as i16
-                                        | FeatureFlag::FLAG_WILDCARD as i16
-                                        | FeatureFlag::FLAG_PHRASE as i16
-                                        | FeatureFlag::FLAG_LOVEHATE as i16;
+                                    let mut flags = FeatureFlag::FlagDefault as i16
+                                        | FeatureFlag::FlagWildcard as i16
+                                        | FeatureFlag::FlagPhrase as i16
+                                        | FeatureFlag::FlagLovehate as i16;
 
                                     if tta.op == "!=" {
-                                        flags = flags | FeatureFlag::FLAG_PURE_NOT as i16;
+                                        flags = flags | FeatureFlag::FlagPureNot as i16;
                                         query_str = "NOT ".to_owned() + &query_str;
                                     }
 
@@ -215,7 +260,7 @@ pub fn transform_vql_to_xapian(
                                         if tt == TokenType::DATE || tt == TokenType::NUMBER {
                                             let (tt, c_to) = get_token_type(vals.get(1).unwrap())?;
                                             if tt == TokenType::DATE || tt == TokenType::NUMBER {
-                                                *query = Query::new_range(XapianOp::OP_VALUE_RANGE, slot, c_from, c_to)?;
+                                                *query = Query::new_range(XapianOp::OpValueRange, slot, c_from, c_to)?;
                                             }
                                         }
                                     } else if vals.len() == 1 {
@@ -235,10 +280,10 @@ pub fn transform_vql_to_xapian(
                                             }
                                         }
 
-                                        let flags = FeatureFlag::FLAG_DEFAULT as i16
-                                            | FeatureFlag::FLAG_WILDCARD as i16
-                                            | FeatureFlag::FLAG_PHRASE as i16
-                                            | FeatureFlag::FLAG_LOVEHATE as i16;
+                                        let flags = FeatureFlag::FlagDefault as i16
+                                            | FeatureFlag::FlagWildcard as i16
+                                            | FeatureFlag::FlagPhrase as i16
+                                            | FeatureFlag::FlagLovehate as i16;
 
                                         *query = parse_query_with_prefix(qp, &query_str, flags, &xtr)?;
                                     } else {
@@ -260,16 +305,16 @@ pub fn transform_vql_to_xapian(
                 }
 
                 if query_str.find('*').is_some() && is_good_token(&query_str) {
-                    let mut flags = FeatureFlag::FLAG_DEFAULT as i16 | FeatureFlag::FLAG_WILDCARD as i16 | FeatureFlag::FLAG_LOVEHATE as i16;
+                    let mut flags = FeatureFlag::FlagDefault as i16 | FeatureFlag::FlagPhrase as i16 | FeatureFlag::FlagLovehate as i16;
 
                     if tta.op == "!=" {
-                        flags = flags | FeatureFlag::FLAG_PURE_NOT as i16;
+                        flags = flags | FeatureFlag::FlagPureNot as i16;
                         query_str = "NOT ".to_owned() + &query_str;
                     }
 
                     *query = parse_query(qp, &query_str, flags)?;
                 } else {
-                    let flags = FeatureFlag::FLAG_DEFAULT as i16;
+                    let flags = FeatureFlag::FlagDefault as i16;
 
                     *query = parse_query(qp, &query_str, flags)?;
                 }
@@ -337,7 +382,7 @@ pub fn transform_vql_to_xapian(
             //writeln("@p c_to=", c_to);
 
             if let Some(slot) = key2slot.get_slot(&token_l) {
-                query_r = Query::new_range(XapianOp::OP_VALUE_RANGE, slot, c_from, c_to)?;
+                query_r = Query::new_range(XapianOp::OpValueRange, slot, c_from, c_to)?;
 
                 if query_l.is_empty() {
                     *query = query_r;
@@ -366,7 +411,7 @@ pub fn transform_vql_to_xapian(
 
         if !query_l.is_empty() {
             if !query_r.is_empty() {
-                *query = query_l.add_right(XapianOp::OP_OR, &mut query_r)?;
+                *query = query_l.add_right(XapianOp::OpOr, &mut query_r)?;
             }
         }
 
@@ -377,6 +422,33 @@ pub fn transform_vql_to_xapian(
     }
 
     Ok(Default::default())
+}
+
+pub fn get_sorter(sort: &str, key2slot: &Key2Slot) -> Result<Option<MultiValueKeyMaker>> {
+    if !sort.is_empty() {
+        let fields: Vec<&str> = sort.split(',').collect();
+        for f in fields {
+            let el: Vec<&str> = f.split(' ').collect();
+
+            if el.len() == 2 {
+                let key = el.get(0).unwrap().replace('\'', " ");
+
+                let direction = el.get(1).unwrap().trim();
+                let asc_desc = if direction == "desc" {
+                    false
+                } else {
+                    true
+                };
+
+                if let Some(slot) = key2slot.get_slot(key.trim()) {
+                    let mut sorter = MultiValueKeyMaker::new()?;
+                    sorter.add_value(slot, asc_desc)?;
+                    return Ok(Some(sorter));
+                }
+            }
+        }
+    }
+    Ok(None)
 }
 
 fn add_subclasses_to_query(rs: &str, onto: &Onto) -> Option<String> {
