@@ -114,7 +114,9 @@ fn exec(
                 break;
             }
         }
+        it.next()?;
     }
+    sr.result_code = ResultCode::Ok;
 
     Ok(sr)
 }
@@ -184,7 +186,7 @@ pub fn transform_vql_to_xapian(
             rs = transform_vql_to_xapian(r, &tta.op, None, None, &mut query_r, key2slot, &mut rd, level + 1, qp, onto)?;
         }
 
-        if !is_strict_equality {
+        if !is_strict_equality && rs.find(':').is_some() {
             if let Some(s) = add_subclasses_to_query(&rs, &onto) {
                 rs = s;
             }
@@ -242,8 +244,8 @@ pub fn transform_vql_to_xapian(
                                         query_str = query_str.chars().rev().collect();
                                     }
 
-                                    if Regex::new(r"^[a-z0-9_-]+:[a-z0-9_-]*$").unwrap().is_match(&query_str) {
-                                        query_str = to_lower_and_replace_delimiters(&query_str);
+                                    if let Some(s) = normalize_if_uri(&query_str) {
+                                        query_str = s;
                                     }
 
                                     let xtr = format!("X{}X", slot);
@@ -305,8 +307,8 @@ pub fn transform_vql_to_xapian(
                 }
             } else {
                 let mut query_str = rs;
-                if Regex::new(r"^[a-z0-9_-]+:[a-z0-9_-]*$").unwrap().is_match(&query_str) {
-                    query_str = to_lower_and_replace_delimiters(&query_str);
+                if let Some(s) = normalize_if_uri(&query_str) {
+                    query_str = s;
                 }
 
                 if query_str.find('*').is_some() && is_good_token(&query_str) {
@@ -543,4 +545,11 @@ fn is_good_token(str: &str) -> bool {
     }
 
     return true;
+}
+
+fn normalize_if_uri(str: &str) -> Option<String> {
+    if Regex::new(r"^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]*$").unwrap().is_match(str) {
+        return Some(to_lower_and_replace_delimiters(str));
+    }
+    None
 }
