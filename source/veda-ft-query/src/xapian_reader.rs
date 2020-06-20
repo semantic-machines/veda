@@ -86,12 +86,14 @@ impl XapianReader {
         if let Some(dbqp) = self.using_dbqp.get_mut(&db_names) {
             let mut _rd: f64 = 0.0;
             //if
-            transform_vql_to_xapian(&mut tta, "", None, None, &mut query, &self.key2slot, &mut _rd, 0, &mut dbqp.qp, &self.onto);
+            transform_vql_to_xapian(&mut tta, "", None, None, &mut query, &self.key2slot, &mut _rd, 0, &mut dbqp.qp, &self.onto)?;
             //.is_ok() {
             //    break;
             //}
         }
         //}
+
+        info!("query={:?}", query.get_description());
 
         if query.is_empty() {
             sr.result_code = ResultCode::BadRequest;

@@ -164,7 +164,7 @@ class XapianVQL {
 		//if (level == 0)
 		//	log.trace ("----------------------------");
 
-		//log.trace ("%d TTA=%s", level, tta);
+		log.trace ("%d TTA=%s", level, tta);
 
 		try {
 			if (key2slot.length == 0) {
@@ -185,6 +185,7 @@ class XapianVQL {
 
 				string ls = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace);
 				string rs = _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp, trace);
+										log.trace ("rs=%s", rs);	
 
 				double value;
 				TokenType rs_type = get_token_type(rs, value);
@@ -211,10 +212,10 @@ class XapianVQL {
 				string ls = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace);
 				string rs = _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp, trace);
 
-				//log.trace("%d query_l=%s", level, query_l);
-				//log.trace("%d query_r=%s", level, query_r);
-				//log.trace("%d ls=%s", level, ls);
-				//log.trace("%d rs=%s", level, rs);
+				log.trace("%d query_l=%s", level, query_l);
+				log.trace("%d query_r=%s", level, query_r);
+				log.trace("%d ls=%s", level, ls);
+				log.trace("%d rs=%s", level, rs);
 
 				if (!is_strict_equality && rs.indexOf(':') > 0) {
 					Names subclasses = ctx.get_onto().get_sub_classes(rs);
@@ -226,6 +227,8 @@ class XapianVQL {
 						rs = to_lower_and_replace_delimeters(rs);
 					}
 				}
+
+				log.trace("%d #1 rs=%s", level, rs);
 
 				if (query_l is null && query_r is null) {
 					string xtr;
@@ -288,13 +291,19 @@ class XapianVQL {
 										throw new XapianError(err, "parse_query1.1 query=" ~ query_str);
 								} else   {
 									if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0 && is_good_token(rs))) {
+
+				log.trace("%d #2 rs=%s", level, rs);
+
 										if ((indexOf(rs, '*') >= 0) && (rs[ 0 ] == '+' && !is_good_token(rs))) {
 											rs = replaceAll(rs, regex(r"[*]", "g"), "");
 										}
+				log.trace("%d #3 rs=%s", level, rs);
 
 										char[] query_str = rs.dup;
 										if (rs[ 0 ] == '*')
 											reverse(query_str);
+
+				log.trace("%d #4 query_str=%s", level, query_str);
 
 										if (!matchFirst(query_str, r_is_uuid).empty)
 											query_str = cast(char[]) to_lower_and_replace_delimeters(cast(string) query_str);
@@ -312,6 +321,8 @@ class XapianVQL {
 											flags     = flags | feature_flag.FLAG_PURE_NOT;
 											query_str = "NOT " ~ query_str;
 										}
+
+										log.trace ("query_str=%s", query_str);	
 
 										query = qp.parse_query(cast(char *) query_str, query_str.length, flags, cast(char *) xtr,
 										                       xtr.length, &err);
