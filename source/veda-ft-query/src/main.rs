@@ -88,15 +88,17 @@ fn main() {
     //xr.query("", "'rdf:type' == '*'", "", "", 0, 0, 0, add_out_element, OptAuthorize::NO);
 }
 
-fn add_out_element(id: &str) {
-    info!("out id={}", id);
-}
-
 pub fn load_index_schema(onto: &Onto, storage: &mut VStorage, xr: &mut XapianReader) {
-    match xr.query("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'", "", "", 0, 0, 0, add_out_element, OptAuthorize::NO) {
+    fn add_out_element(id: &str, ctx: &mut Vec<String>) {
+        ctx.push(id.to_owned());
+    }
+
+    let mut ctx = vec![];
+
+    match xr.query("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'", "", "", 0, 0, 0, add_out_element, OptAuthorize::NO, &mut ctx) {
         Ok(res) => {
             if res.result_code == ResultCode::Ok && res.count > 0 {
-                for id in res.result.iter() {
+                for id in ctx.iter() {
                     let mut indv = &mut Individual::default();
                     if storage.get_individual(id, &mut indv) {
                         xr.index_schema.add_schema_data(onto, indv);

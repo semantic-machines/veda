@@ -41,7 +41,7 @@ pub struct XapianReader {
 }
 
 impl XapianReader {
-    pub fn query(
+    pub fn query<T>(
         &mut self,
         user_uri: &str,
         str_query: &str,
@@ -50,8 +50,9 @@ impl XapianReader {
         from: i32,
         top: i32,
         limit: i32,
-        add_out_element: fn(uri: &str),
+        add_out_element: fn(uri: &str, ctx: &mut T),
         op_auth: OptAuthorize,
+        ctx: &mut T,
     ) -> Result<QueryResult> {
         let mut sr = QueryResult::default();
 
@@ -110,7 +111,7 @@ impl XapianReader {
                 xapian_enquire.set_sort_by_key(&mut sorter, true)?;
             }
 
-            sr = exec_xapian_query_and_queue_authorize(user_uri, &mut xapian_enquire, from, top, limit, add_out_element, op_auth);
+            sr = exec_xapian_query_and_queue_authorize(user_uri, &mut xapian_enquire, from, top, limit, add_out_element, op_auth, ctx);
         }
 
         Ok(sr)
