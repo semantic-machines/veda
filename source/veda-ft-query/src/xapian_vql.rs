@@ -28,17 +28,18 @@ pub enum OptAuthorize {
     YES,
 }
 
-pub fn exec_xapian_query_and_queue_authorize(
+pub fn exec_xapian_query_and_queue_authorize<T>(
     user_uri: &str,
     xapian_enquire: &mut Enquire,
     from: i32,
     top: i32,
     limit: i32,
-    add_out_element: fn(uri: &str),
+    add_out_element: fn(uri: &str, ctx: &mut T),
     op_auth: OptAuthorize,
+    ctx: &mut T,
 ) -> QueryResult {
     let mut sr = QueryResult::default();
-    match exec(user_uri, xapian_enquire, from, top, limit, add_out_element, op_auth) {
+    match exec(user_uri, xapian_enquire, from, top, limit, add_out_element, op_auth, ctx) {
         Ok(res) => return res,
         Err(e) => match e {
             Xapian(err_code) => {
@@ -56,14 +57,15 @@ pub fn exec_xapian_query_and_queue_authorize(
     sr
 }
 
-fn exec(
+fn exec<T>(
     user_uri: &str,
     xapian_enquire: &mut Enquire,
     from: i32,
     in_top: i32,
     in_limit: i32,
-    add_out_element: fn(uri: &str),
+    add_out_element: fn(uri: &str, ctx: &mut T),
     op_auth: OptAuthorize,
+    ctx: &mut T,
 ) -> Result<QueryResult> {
     let mut sr = QueryResult::default();
 
@@ -87,7 +89,7 @@ fn exec(
     let mut read_count = 0;
 
     let mut matches = xapian_enquire.get_mset(from, limit)?;
-    //let mut processed = 0;
+    let mut processed: i32 = 0;
 
     sr.estimated = matches.get_matches_estimated()? as i64;
 
@@ -96,7 +98,7 @@ fn exec(
     while it.is_next()? {
         let subject_id = it.get_document_data()?;
 
-        //processed += 1;
+        processed += 1;
         let mut is_passed = true;
 
         if op_auth == OptAuthorize::YES {
@@ -106,9 +108,9 @@ fn exec(
         }
 
         if is_passed {
-            //log.trace("found subject_id:[%s] authorized", subject_id);
+            debug!("found subject_id:[{}] authorized", subject_id);
 
-            add_out_element(&subject_id);
+            add_out_element(&subject_id, ctx);
             read_count += 1;
             if read_count >= top {
                 break;
@@ -117,6 +119,13 @@ fn exec(
         it.next()?;
     }
     sr.result_code = ResultCode::Ok;
+    sr.processed = processed as i64;
+    sr.count = read_count as i64;
+    sr.cursor = (from + processed) as i64;
+    //    sw.stop;
+    //    sr.total_time     = sw.peek.total !"msecs";
+    //    sr.authorize_time = sw_az.peek.total !"msecs";
+    //    sr.query_time     = sr.total_time - sr.authorize_time;
 
     Ok(sr)
 }
