@@ -246,7 +246,7 @@ class XapianReader : SearchReader {
 		if (opened_db.keys.length == 0)
 			return sr;
 
-		//if (trace == 1)
+		if (trace == 1)
 			log.trace("[Q:%X] xapian query [%s]", cast(void *) str_query, xpnvql.get_query_description(query));
 
 		if (query !is null) {
