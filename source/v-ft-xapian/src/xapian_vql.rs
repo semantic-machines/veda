@@ -1,4 +1,8 @@
+use crate::key2slot::*;
+use crate::to_lower_and_replace_delimiters;
 use crate::vql::{Decor, TTA};
+use crate::xerror::XError::*;
+use crate::xerror::*;
 use chrono::NaiveDateTime;
 use regex::Regex;
 use std::collections::HashSet;
@@ -6,10 +10,6 @@ use std::io::{Error, ErrorKind};
 use v_api::app::ResultCode;
 use v_authorization::common::Access;
 use v_az_lmdb::_authorize;
-use v_ft_xapian::key2slot::Key2Slot;
-use v_ft_xapian::to_lower_and_replace_delimiters;
-use v_ft_xapian::xerror::XError::Xapian;
-use v_ft_xapian::xerror::{Result, XError};
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
 use xapian_rusty::{Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp};
@@ -195,7 +195,7 @@ pub fn transform_vql_to_xapian(
             rs = transform_vql_to_xapian(r, &tta.op, None, None, &mut query_r, key2slot, &mut rd, level + 1, qp, onto)?;
         }
 
-        if !is_strict_equality && rs.find(':').is_some() {
+        if !is_strict_equality {
             if let Some(s) = add_subclasses_to_query(&rs, &onto) {
                 rs = s;
             }

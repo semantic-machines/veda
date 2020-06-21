@@ -1,11 +1,11 @@
-use crate::vql::TTA;
-use crate::xapian_vql::{exec_xapian_query_and_queue_authorize, get_sorter, transform_vql_to_xapian, OptAuthorize};
+use crate::index_schema::*;
+use crate::key2slot::*;
+use crate::vql::*;
+use crate::xapian_vql::*;
+use crate::xerror::*;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use v_api::app::ResultCode;
-use v_ft_xapian::index_schema::IndexerSchema;
-use v_ft_xapian::key2slot::Key2Slot;
-use v_ft_xapian::xerror::{Result, XError};
 //use v_module::info::ModuleInfo;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
@@ -29,15 +29,15 @@ impl DatabaseQueryParser {
 }
 
 pub struct XapianReader {
-    pub(crate) using_dbqp: HashMap<Vec<String>, DatabaseQueryParser>,
-    pub(crate) opened_db: HashMap<String, Database>,
-    pub(crate) xapian_stemmer: Stem,
-    pub(crate) xapian_lang: String,
-    pub(crate) index_schema: IndexerSchema,
+    pub using_dbqp: HashMap<Vec<String>, DatabaseQueryParser>,
+    pub opened_db: HashMap<String, Database>,
+    pub xapian_stemmer: Stem,
+    pub xapian_lang: String,
+    pub index_schema: IndexerSchema,
     //pub(crate) mdif: ModuleInfo,
-    pub(crate) key2slot: Key2Slot,
-    pub(crate) onto: Onto,
-    pub(crate) db2path: HashMap<String, String>,
+    pub key2slot: Key2Slot,
+    pub onto: Onto,
+    pub db2path: HashMap<String, String>,
 }
 
 impl XapianReader {

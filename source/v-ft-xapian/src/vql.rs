@@ -172,7 +172,7 @@ impl TTA {
             }
         }
 
-        println!("st={:?}", st);
+        debug!("st={:?}", st);
 
         st.pop()
     }

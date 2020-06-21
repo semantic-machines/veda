@@ -11,6 +11,9 @@ use std::collections::HashMap;
 
 pub mod index_schema;
 pub mod key2slot;
+pub mod vql;
+pub mod xapian_reader;
+pub mod xapian_vql;
 pub mod xerror;
 
 pub fn init_db_path() -> HashMap<String, String> {
