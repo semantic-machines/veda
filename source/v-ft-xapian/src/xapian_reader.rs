@@ -9,7 +9,10 @@ use v_api::app::ResultCode;
 //use v_module::info::ModuleInfo;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use xapian_rusty::{Database, Query, QueryParser, Stem, UNKNOWN};
+use xapian_rusty::{Database, Query, QueryParser, Stem, UNKNOWN, get_xapian_err_type};
+use v_onto::individual::Individual;
+use crate::xerror::XError::{Xapian, Io};
+use v_storage::storage::VStorage;
 
 const XAPIAN_DB_TYPE: i8 = UNKNOWN;
 const MAX_WILDCARD_EXPANSION: i32 = 20_000;
@@ -116,6 +119,38 @@ impl XapianReader {
 
         Ok(sr)
     }
+
+    pub fn load_index_schema(&mut self, storage: &mut VStorage) {
+        fn add_out_element(id: &str, ctx: &mut Vec<String>) {
+            ctx.push(id.to_owned());
+        }
+
+        let mut ctx = vec![];
+
+        match self.query("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'", "", "", 0, 0, 0, add_out_element, OptAuthorize::NO, &mut ctx) {
+            Ok(res) => {
+                if res.result_code == ResultCode::Ok && res.count > 0 {
+                    for id in ctx.iter() {
+                        let mut indv = &mut Individual::default();
+                        if storage.get_individual(id, &mut indv) {
+                            self.index_schema.add_schema_data(&self.onto, indv);
+                        }
+                    }
+                } else {
+                    error!("fail load index schema, err={:?}", res.result_code);
+                }
+            }
+            Err(e) => match e {
+                Xapian(code) => {
+                    error!("fail load index schema, err={} ({})", get_xapian_err_type(code), code);
+                }
+                Io(e) => {
+                    error!("fail load index schema, err={:?}", e);
+                }
+            },
+        }
+    }
+
 
     fn _reopen_dbs(&mut self) -> Result<()> {
         //let cur_committed_op_id = get_info().committed_op_id;
