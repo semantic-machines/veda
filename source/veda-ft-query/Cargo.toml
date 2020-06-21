@@ -11,10 +11,6 @@ log = "0.4"
 rust-ini = "0.13"
 #xapian-rusty = "0.0.29"
 xapian-rusty = { path = "../xapian-rusty" }
-maplit = "1.0.2"
-crc32fast = "1.2"
-scan_fmt = "0.1.3"
-regex = "1.3.9"
 
 v_onto = { path = "../v-onto" }
 v_module = { path = "../v-module" }
@@ -22,6 +18,4 @@ v_api = { path = "../v-api" }
 v_search = { path = "../v-search" }
 v_ft_xapian = { path = "../v-ft-xapian" }
 v_storage = { path = "../v-storage" }
-v_authorization = { path = "../v-authorization" }
-v_az_lmdb = { path = "../v-az-lmdb" }
 
