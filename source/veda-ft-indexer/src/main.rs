@@ -19,7 +19,7 @@ use v_ft_xapian::init_db_path;
 use v_queue::consumer::*;
 use xapian_rusty::*;
 
-const XAPIAN_DB_TYPE: i8 = BRASS;
+//const XAPIAN_DB_TYPE: i8 = BRASS;
 const BASE_PATH: &str = "./data";
 
 fn main() -> Result<(), i32> {
