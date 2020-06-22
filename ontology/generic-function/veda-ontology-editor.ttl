@@ -1169,6 +1169,22 @@ v-ui:ModuleTemplate
 
 # -- ПРАВА --
 
+v-s:RightsApplication
+  rdf:type v-s:Application ;
+  rdfs:label "Управление правами"@ru ;
+  rdfs:label "Rights management"@en ;
+  v-s:shortLabel "Права"@ru ;
+  v-s:shortLabel "Rights"@en ;
+  #v-s:hasImage v-s:OrganizationStructureImage ;
+  #v-s:hasIcon v-s:OrganizationStructureIcon ;
+  v-ui:hasTemplate v-s:ApplicationTemplate ;
+  v-s:hasRegistry v-s:MembershipRegistry ;
+  v-s:hasRegistry v-s:PermissionStatementRegistry ;
+  v-s:hasRegistry v-s:GroupGeneratorRegistry ;
+  v-s:hasRegistry v-s:PermissionGeneratorRegistry ;
+.
+
+
 v-s:MembershipBlank
   a v-fc:Blank ;
   rdfs:label "Запись о включении в группу"@ru ;
