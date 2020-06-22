@@ -100,7 +100,7 @@ impl Key2Slot {
         }
 
         let mut ff = OpenOptions::new().write(true).truncate(true).create(true).open(XAPIAN_INFO_PATH.to_owned() + "/key2slot")?;
-        ff.write(format!("\"{}\",{}\n{}", hash, data.len(), data).as_bytes())?;
+        ff.write_all(format!("\"{}\",{}\n{}", hash, data.len(), data).as_bytes())?;
 
         Ok(())
     }

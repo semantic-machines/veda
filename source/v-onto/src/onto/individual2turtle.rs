@@ -27,7 +27,7 @@ fn from_boolean<'a>(id: &'a str, in_predicate: &'a str, v: &'a str) -> Triple<'a
 
     Triple {
         subject: subject.into(),
-        predicate: predicate,
+        predicate,
         object: obj.into(),
     }
 }
@@ -182,7 +182,7 @@ fn format_resources(subject: &str, predicate: &String, resources: &Vec<Resource>
 }
 
 pub fn get_prefix(v: &str) -> Option<&str> {
-    for el in v.split(':') {
+    if let Some (el) = v.split(':').next() {
         return Some(el);
     }
     None

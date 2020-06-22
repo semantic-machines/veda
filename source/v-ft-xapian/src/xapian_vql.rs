@@ -233,10 +233,10 @@ pub fn transform_vql_to_xapian(
 
                         if rs_type == TokenType::BOOLEAN {
                             let xtr = format!("X{}D", slot);
-                            let query_str = if value == 1.0 {
-                                "T"
-                            } else {
+                            let query_str = if value == 0.0 {
                                 "F"
+                            } else {
+                                "T"
                             };
                             let flags = FeatureFlag::FlagDefault as i16 | FeatureFlag::FlagPhrase as i16 | FeatureFlag::FlagLovehate as i16;
 

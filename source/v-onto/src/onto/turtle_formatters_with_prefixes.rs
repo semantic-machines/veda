@@ -53,7 +53,7 @@ impl<W: Write> TurtleFormatterWithPrefixes<W> {
         for prefix in keys.iter() {
             writeln!(self.write, "@prefix {}: <{}> .", prefix, prefixes.get(prefix.to_owned()).unwrap())?;
         }
-        writeln!(self.write, "")?;
+        writeln!(self.write)?;
         Ok(())
     }
 
