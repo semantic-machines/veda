@@ -9,7 +9,7 @@ chrono = "0.4"
 env_logger = "0.6"
 log = "0.4"
 rust-ini = "0.13"
-xapian-rusty = "0.0.29"
+xapian-rusty = "0.0.30"
 #xapian-rusty = { path = "../xapian-rusty" }
 maplit = "1.0.2"
 crc32fast = "1.2"

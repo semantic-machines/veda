@@ -1,5 +1,5 @@
 use crate::index_workplace::IndexDocWorkplace;
-use crate::XAPIAN_DB_TYPE;
+//use crate::XAPIAN_DB_TYPE;
 use std::collections::HashMap;
 use std::fs;
 use std::process::exit;
@@ -51,7 +51,7 @@ impl Indexer {
         for (db_name, path) in self.db2path.iter() {
             debug!("path={}", path);
             fs::create_dir_all(&("./".to_owned() + path))?;
-            if let Ok(db) = WritableDatabase::new(path, DB_CREATE_OR_OPEN, XAPIAN_DB_TYPE) {
+            if let Ok(db) = WritableDatabase::new(path, DB_CREATE_OR_OPEN) {
                 self.index_dbs.insert(db_name.to_owned(), db);
             }
         }

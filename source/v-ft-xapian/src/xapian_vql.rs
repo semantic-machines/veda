@@ -12,7 +12,7 @@ use v_authorization::common::Access;
 use v_az_lmdb::_authorize;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use xapian_rusty::{Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp};
+use xapian_rusty::{Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp, get_xapian_err_type};
 
 #[derive(Debug, PartialEq)]
 enum TokenType {
@@ -46,6 +46,7 @@ pub fn exec_xapian_query_and_queue_authorize<T>(
                 if err_code == -1 {
                     sr.result_code = ResultCode::DatabaseModifiedError;
                 } else {
+                    error! ("{}", get_xapian_err_type(err_code));
                     sr.result_code = ResultCode::InternalServerError;
                 }
             }
