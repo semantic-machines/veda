@@ -502,25 +502,6 @@ v-s:ContractorInteractionCategory
   rdfs:label "Contractor interaction category"@en ;
 .
 # ------------------------------------------------------------
-v-s:ContractorLock
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Contractual ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Блокировка контрагента"@ru ;
-  rdfs:label "Contractor lock"@en ;
-  v-s:deleted "true"^^xsd:boolean ;
-.
-# v-s:dateFrom
-# v-s:dateTo
-v-s:hasLockedReason
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Причина блокировки"@ru ;
-  rdfs:label "Locked reason"@en ;
-  rdfs:range v-s:LockedReason ;
-  rdfs:domain v-s:ContractorLock ;
-  v-s:deleted "true"^^xsd:boolean ;
-.
 
 # ------------------------------------------------------------ Расширение класса v-s:Contractor
 # v-s:locked

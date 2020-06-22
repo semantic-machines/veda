@@ -176,7 +176,7 @@ v-s:ContactsTemplate
     return Promise.resolve(controls);
   }
 
-  function generateAppointmentControls(targetAppointment){
+  /*function generateAppointmentControls(targetAppointment){
     var controls = $('<div class="controlButtons" style="float:right"></div>');
     var delAppointmentControl = '<button id="delete-Appointment" class="btn btn-xs margin-sm-h btn-danger">Удалить назначение</button>';
     if (veda.appointment.id !== 'cfg:AdministratorAppointment') {
@@ -196,7 +196,7 @@ v-s:ContactsTemplate
       controls.append(delAppointmentControl);
     }
     return Promise.resolve(controls);
-  }
+  }*/
 
   function initialStructure() {
     orgTree.empty();
@@ -445,7 +445,7 @@ v-s:ContactsTemplate
     return false;
   });
 
-  template.on("click", "#delete-Appointment", function (e) {
+  /*template.on("click", "#delete-Appointment", function (e) {
     e.stopPropagation();
     e.preventDefault();
     var self = $(this);
@@ -459,7 +459,7 @@ v-s:ContactsTemplate
       drawChildren(parentRow.attr('resource'), parentRow);
     }, 2000);
     return false;
-  });
+  });*/
 
   initialStructure();
   individual.on('v-s:managedOrganization', initialStructure);

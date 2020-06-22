@@ -740,6 +740,10 @@ v-s:NewAppointmentTemplate
       state: individual.hasValue('v-s:occupation'),
       cause: ["v-ui:minCardinality"]
     };
+    result["v-s:parentUnit"] = {
+      state: individual.hasValue('v-s:parentUnit'),
+      cause: ["v-ui:minCardinality"]
+    };
     template.trigger("validated", result);
   });
   template.on("special-validate", function (e, validStates) {
@@ -801,7 +805,7 @@ v-s:NewAppointmentTemplate
   <hr>
   <div id="mainProperties">
     <em about="v-s:parentUnit" property="rdfs:label"></em>
-    <div about="@" rel="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <div rel="v-s:parentUnit" class="view edit search" data-template="v-ui:LabelTemplate"></div>
     <veda-control id="select-ParentUnit" rel="v-s:parentUnit" data-query-prefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='{individual['v-s:parentOrganization'][0].id}') || '@'==='{individual['v-s:parentOrganization'][0].id}'" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
     <em about="v-s:date" property="rdfs:label"></em>
     <div class="form-inline">
@@ -1223,12 +1227,6 @@ v-s:AppointmentTemplate
         cause: ["v-ui:minCardinality"]
       };
     }
-    if (!individual.hasValue('v-s:description')) {
-      result["v-s:description"] = {
-        state: false,
-        cause: ["v-ui:minCardinality"]
-      };
-    }
     template.trigger("validated", result);
   });
   template.on("special-validate", function (e, validStates) {
@@ -1327,7 +1325,7 @@ v-s:AppointmentTemplate
         </div>
       </div>
     </div>
-    <section id="ForAdmin">
+    <section id="ForAdmin" class="notEditForUsers">
       <h4 class="section-header -view edit search">
         <span about="cfg:Administrator" property="rdfs:label"></span>
       </h4>
@@ -1383,8 +1381,9 @@ v-s:AppointmentTemplate
             </button>
           </div>
         </div>
+        <hr>
     </section> 
-    <hr>
+    
     <!--Системные свойства -->
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
     <br>
@@ -1398,7 +1397,9 @@ v-s:AppointmentTemplate
   if (template.data("mode") === "view" && veda.appointment.id != 'cfg:AdministratorAppointment'){
     $('#edit.action', template).remove();
   }
-
+  if(veda.appointment.id != 'cfg:AdministratorAppointment'){
+    $('.notEditForUsers').addClass('hide'); 
+  }
   //проставляет признаки по умолчанию для Назначения
   if(mode === "edit" && individual.isNew()) {
     individual["v-s:origin"]=["ExternalUser"];
@@ -1553,6 +1554,7 @@ v-s:AppointmentTemplate
     var id_occup = individual["v-s:occupation"][0]["v-s:subjectCode"][0];
     individual.id = id_emp +"_pos_"+ id_occup;
   }
+
   $("#recalculate", template).click(autoID);
 
 
@@ -1716,6 +1718,14 @@ v-s:PersonTemplate
             <h4 class="view edit -search"><span about="@" property="v-s:lastName"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:middleName"></span></h4>
           </div>
         </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="v-s:parentOrganization" property="rdfs:label" class="-view edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <veda-control rel="v-s:parentOrganization" data-query-prefix = "'rdf:type'=='v-s:Organization'" data-type="link" class="-view edit search fulltext dropdown notEditForUsers"></veda-control>
+          </div>
+        </div>
         <div id="notEditForUsers" class="alert alert-info hide -view edit -search">
           <span>ФИО пользователя редактировать нельзя. Если Вы допустили опечатку, то обратитесь в службу поддержки.
           </span>
@@ -1764,11 +1774,10 @@ v-s:PersonTemplate
         </div>
         <div class="row row-attribute">
           <div class="col-sm-3 col-xs-5">
-            <label about="v-s:parentOrganization" property="rdfs:label"></label>
+            <label about="v-s:parentOrganization" property="rdfs:label" class="view -edit -search"></label>
           </div>
           <div class="col-sm-9 col-xs-7">
-            <div about="@" rel="v-s:parentOrganization" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
-            <veda-control rel="v-s:parentOrganization" data-query-prefix = "'rdf:type'=='v-s:Organization'" data-type="link" class="-view edit search fulltext dropdown notEditForUsers"></veda-control>
+            <div about="@" rel="v-s:parentOrganization" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
           </div>
         </div>
         <div class="row row-attribute">
@@ -1793,20 +1802,24 @@ v-s:PersonTemplate
                   <th about="rdfs:label" property="rdfs:label"></th>
                   <th about="v-s:dateFrom" property="rdfs:label"></th>
                   <th about="v-s:dateTo" property="rdfs:label"></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody about="@" rel="v-s:hasAppointment" data-embedded="true" data-template="v-s:AppointmentEmbeddedTableTemplate"></tbody>
-
             </table>
             <div class="view -edit -search">
-                <button class="btn btn-xs btn-success" id="add-Appointment">
-                  <span class="glyphicon glyphicon-zoom-in"></span>
-                  <span  about="v-s:Appointment" property="rdfs:label"> </span>
-                </button>
-              </div>
-            <veda-control data-type="link" rel="v-s:hasAppointment" class="-view edit -search create"></veda-control>
+              <button class="btn btn-xs btn-success" id="add-Appointment">
+                <span class="glyphicon glyphicon-zoom-in"></span>
+                <span  about="mnd-s:AppointmentBundle" property="rdfs:label"> </span>
+              </button>
+              <button class="btn btn-xs btn-danger" id="dismissEmployee">
+                <span  about="mnd-s:DismissBundle" property="rdfs:label"> </span>
+              </button>
+            </div>
+            <veda-control data-type="link" rel="v-s:hasAppointment" class="-view edit -search"></veda-control>
           </div>
         </div>
+        <br>
         <div class="row row-attribute">
           <div class="col-sm-3 col-xs-5">
             <label about="v-s:hasCommunicationMean" property="rdfs:label" class="view edit -search"></label>
@@ -1841,16 +1854,26 @@ v-s:PersonTemplate
             </button>
           </div>
         </div>
+        <div class="row row-attribute">
+          <div class="col-sm-3 col-xs-5">
+            <label about="mnd-s:hasEmployeeProfile" property="rdfs:label" class="view -edit -search"></label>
+          </div>
+          <div class="col-sm-9 col-xs-7">
+            <div rel="mnd-s:hasEmployeeProfile" class="view -edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+            <div class="view -edit -search">
+              <button class="btn btn-xs btn-success" id="add-employeeProfile">
+                <span class="glyphicon glyphicon-zoom-in"></span>
+                <span  about="mnd-s:AddEmployeeProfile" property="rdfs:label"> </span>
+              </button>
+            </div>
+          </div>
+        </div>
         <div class="row row-attribute notEditForUsers">
           <div class="col-sm-3 col-xs-5">
+            <label about="v-s:description" property="rdfs:label" class="-view edit -search"></label>
           </div>
-          <div class="col-sm-8 col-xs-6">
-            <veda-control rel="@" data-type="uri" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-sm-1 col-xs-1">
-            <button id="recalculate" class="btn btn-xs btn-success">
-              <span class="glyphicon glyphicon-refresh"></span>
-            </button>
+          <div class="col-sm-9 col-xs-7">
+            <veda-control property="v-s:description" data-type="string" class="-view edit -search"></veda-control>
           </div>
         </div>
     </div>
@@ -1871,7 +1894,7 @@ v-s:PersonTemplate
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
     <br>
     <div class="actions">
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete cancel"></span>
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
     </div>
 </div>
 <script>
@@ -1889,14 +1912,28 @@ v-s:PersonTemplate
     var org = org1.slice(6);
     var number = individual["v-s:tabNumber"];
     individual.id = "d:"+ org +"_emp_"+ number;
+    console.log(individual.id);
   }
   $("#recalculate", template).click(autoID);
  
+  $(".actions #save").on("click", function() {
+    tempCommunicationMean = individual['v-s:hasCommunicationMean'];
+  
+    if(tempCommunicationMean) tempCommunicationMean.map(function(CommunicationMean){
+      CommunicationMean["v-s:parent"] = [individual];
+      return CommunicationMean.save(); 
+    });
+      individual.save();
+  });
+
+
+
+
+
  
   //Скрываем поле ФИ и орг от редактирования пользователем
   if(!individual.isNew() && veda.appointment.id != 'cfg:AdministratorAppointment'){
     $('.notEditForUsers').addClass('hide'); 
-    $('#notEditForUsers').removeClass('hide');
   }
 
   //добавить аккаунт
@@ -1947,8 +1984,7 @@ v-s:PersonTemplate
       });
     }
   }
-
-  
+ 
   individual.on("v-s:deleted", deletedHandler);
   individual.on("v-s:hasAccount", handlerAccount);
   template.one("remove", function () {
@@ -2273,8 +2309,8 @@ v-s:PositionTemplate
       <div class="col-sm-8 col-xs-6">
         <veda-control rel="@" data-type="uri" class="-view edit search"></veda-control>
       </div>
-      <div class="col-sm-1 col-xs-1">
-        <button id="recalculate" class="btn btn-xs btn-success" class="-view edit -search">
+      <div class="col-sm-1 col-xs-1 -view edit -search">
+        <button id="recalculate" class="btn btn-xs btn-success" >
           <span class="glyphicon glyphicon-refresh"></span>
         </button>
       </div>
@@ -2291,8 +2327,7 @@ v-s:PositionTemplate
   </div>
 </div>
 <script>
-  if(mode === "edit" && individual.isNew()) individual["v-s:origin"]=["ExternalUser"];
-
+  if(mode === "edit" && individual.isNew()) individual["v-s:origin"] = ["ExternalUser"];
 
 
   if(!individual.isNew() && veda.appointment.id != 'cfg:AdministratorAppointment')
@@ -2303,8 +2338,7 @@ v-s:PositionTemplate
     var org1 = individual["v-s:parentOrganization"][0].id;
     var org = org1.slice(6);
     var number = individual["v-s:subjectCode"];
-    individual.id = "d:"+ org +"_pos_"+ number;
-
+    individual["@"] = "d:"+ org +"_pos_"+ number;
   }
   $("#recalculate", template).click(autoID);
  
@@ -2360,7 +2394,7 @@ v-s:PositionEmbeddedTemplate
         }
       });
     }
-    if ( individual.hasValue('v-s:description')) {
+   /* if ( individual.hasValue('v-s:description')) {
       var queryString = "'@'=='" + individual['v-s:description'][0] + "'";
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
@@ -2370,7 +2404,7 @@ v-s:PositionEmbeddedTemplate
           $('#warningID').removeClass('hide');
         }
       });
-    }
+    }*/
     template.trigger("validated", result);
   });
 </script>
@@ -2477,7 +2511,7 @@ v-s:AccountTemplate
     }
 
     if( individual.hasValue('v-s:login'))  {
-      var queryString = "'rdf:type'==='v-s:Account'" + "' && 'v-s:login'=='" + individual['v-s:login'][0] + "'";
+      var queryString = "'rdf:type'==='v-s:Account'" + " && 'v-s:login'=='" + individual['v-s:login'][0] + "'";
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
@@ -2506,7 +2540,7 @@ v-s:AccountTemplate
       </div>
       <div class="col-sm-9 col-xs-7">
         <div property="rdfs:label" class="view -edit -search"></div>
-        <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+        <veda-control data-type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
       </div>
     </div>
     <div class="row row-attribute">
@@ -2681,12 +2715,20 @@ v-s:AccountEmbeddedTemplate
 .
 v-s:AppointmentEmbeddedTableTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-s:Appoitnment ;
+  v-ui:forClass v-s:Appointment ;
   rdfs:label "Шаблон для класса v-s:CommunicationMean"@ru ;
   rdfs:label "Template for v-s:CommunicationMean class"@en ;
   v-ui:template """
+<script>
+  var canUpdateAppointment = individual.canUpdate();
+  Promise.all([canUpdateAppointment]).then(function(results) {
+    if ( !results[0]) {
+      $("#deleteAppointment", template).remove();
+    }
+  })
+</script>
 <tr>
-  <td about="@" data-template="v-ui:IconModalTemplate"></td>
+  <td about="@" data-template="v-ui:IconModalTemplate" class="view -edit -search"></td>
   <td>
     <div about="@" property="rdfs:label" class="view edit -search"></div>
   </td>
@@ -2698,8 +2740,8 @@ v-s:AppointmentEmbeddedTableTemplate
     <div about="@" property="v-s:dateTo" class="view -edit -search"></div>
     <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
   </td>
-  <td>
-    <button class="btn btn-xs btn-link" id="deleteAppointment">
+  <td class="view -edit -search">
+    <button class="btn btn-xs btn-danger" id="deleteAppointment">
       <span  about="v-s:DeleteAppointmentBundle" property="rdfs:label"> </span>
     </button>
   </td>
@@ -2707,7 +2749,7 @@ v-s:AppointmentEmbeddedTableTemplate
 <script>
   //нельзя удалить назначение по умолчанию
   individual.getPropertyChain("v-s:employee","v-s:defaultAppointment").then(function (defaultAppointment) {
-    if(individual == defaultAppointment[0]) $("#deleteAppointment", template).attr('disabled', 'disabled');
+    if(individual == defaultAppointment[0] ) $("#deleteAppointment", template).attr('disabled', 'disabled');
   });
 
   $("#deleteAppointment", template).click(function() {
