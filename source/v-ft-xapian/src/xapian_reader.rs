@@ -7,12 +7,13 @@ use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use v_api::app::ResultCode;
 //use v_module::info::ModuleInfo;
+use crate::init_db_path;
+use crate::xerror::XError::{Io, Xapian};
+use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use xapian_rusty::{Database, Query, QueryParser, Stem, UNKNOWN, get_xapian_err_type};
-use v_onto::individual::Individual;
-use crate::xerror::XError::{Xapian, Io};
 use v_storage::storage::VStorage;
+use xapian_rusty::{get_xapian_err_type, Database, Query, QueryParser, Stem, UNKNOWN};
 
 const XAPIAN_DB_TYPE: i8 = UNKNOWN;
 const MAX_WILDCARD_EXPANSION: i32 = 20_000;
@@ -32,18 +33,42 @@ impl DatabaseQueryParser {
 }
 
 pub struct XapianReader {
-    pub using_dbqp: HashMap<Vec<String>, DatabaseQueryParser>,
-    pub opened_db: HashMap<String, Database>,
-    pub xapian_stemmer: Stem,
-    pub xapian_lang: String,
-    pub index_schema: IndexerSchema,
-    //pub(crate) mdif: ModuleInfo,
-    pub key2slot: Key2Slot,
-    pub onto: Onto,
-    pub db2path: HashMap<String, String>,
+    using_dbqp: HashMap<Vec<String>, DatabaseQueryParser>,
+    opened_db: HashMap<String, Database>,
+    xapian_stemmer: Stem,
+    xapian_lang: String,
+    index_schema: IndexerSchema,
+    // mdif: ModuleInfo,
+    key2slot: Key2Slot,
+    onto: Onto,
+    db2path: HashMap<String, String>,
 }
 
 impl XapianReader {
+    pub fn new(lang: &str, storage: &mut VStorage, onto: Onto) -> Option<Self> {
+        let key2slot = Key2Slot::load();
+        if key2slot.is_err() {
+            error!("load key2slot, err={:?}", key2slot.err());
+            return None;
+        }
+
+        let mut xr = XapianReader {
+            using_dbqp: Default::default(),
+            opened_db: Default::default(),
+            xapian_stemmer: Stem::new(lang).unwrap(),
+            xapian_lang: "".to_string(),
+            index_schema: Default::default(),
+            //mdif: module_info.unwrap(),
+            key2slot: key2slot.unwrap(),
+            onto,
+            db2path: init_db_path(),
+        };
+
+        xr.load_index_schema(storage);
+
+        Some(xr)
+    }
+
     pub fn query<T>(
         &mut self,
         user_uri: &str,
@@ -150,7 +175,6 @@ impl XapianReader {
             },
         }
     }
-
 
     fn _reopen_dbs(&mut self) -> Result<()> {
         //let cur_committed_op_id = get_info().committed_op_id;

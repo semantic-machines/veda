@@ -58,7 +58,7 @@ pub fn update_counters(counters: &mut HashMap<char, u16>, prev_access: u8, cur_a
                     if is_deleted {
                         if prev_access & check_bit > 0 {
                             *cc -= 1;
-                            if *cc <= 0 {
+                            if *cc == 0 {
                                 out_access &= !check_bit;
                             }
                         }

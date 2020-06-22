@@ -67,7 +67,7 @@ impl IndexerSchema {
     }
 
     pub fn add_schema_data(&mut self, onto: &Onto, indv: &mut Individual) {
-        self.id_2_individual.insert(indv.get_id().to_owned(), Individual::new_from_obj(indv.get_obj().clone()));
+        self.id_2_individual.insert(indv.get_id().to_owned(), Individual::new_from_obj(indv.get_obj()));
 
         let for_classes = indv.get_literals("vdi:forClass").unwrap_or_default();
         let for_properties = indv.get_literals("vdi:forProperty").unwrap_or_default();
