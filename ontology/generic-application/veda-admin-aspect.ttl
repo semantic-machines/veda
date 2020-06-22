@@ -834,6 +834,10 @@ v-ui:AdministrationAspectTemplate
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Rights">
+      <div class="panel panel-default">
+        <div about="v-s:RightsApplication" data-template="v-s:ApplicationTemplate"></div>
+      </div>
+
       <div class="row">
         <div class="col-md-6">
           <h3 about="v-s:GroupsBundle" property="rdfs:label"></h3>
