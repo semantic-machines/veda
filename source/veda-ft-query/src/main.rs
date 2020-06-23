@@ -4,26 +4,17 @@ extern crate log;
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;
-use std::{process, str};
+use std::str;
 use v_api::app::ResultCode;
 use v_ft_xapian::xapian_reader::XapianReader;
 use v_ft_xapian::xapian_vql::OptAuthorize;
-use v_module::info::ModuleInfo;
 use v_module::module::{init_log, Module};
 use v_module::onto::load_onto;
 use v_onto::onto::Onto;
 use v_storage::storage::*;
 
-const BASE_PATH: &str = "./data";
-
 fn main() {
     init_log();
-
-    let module_info = ModuleInfo::new(BASE_PATH, "fulltext_indexer", true);
-    if module_info.is_err() {
-        error!("{:?}", module_info.err());
-        process::exit(101);
-    }
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
@@ -87,7 +78,11 @@ fn req_prepare(module: &mut Module, request: &Message, xr: &mut XapianReader) ->
 
         if let Some(a) = v.as_array() {
             let ticket_id = a.get(TICKET).unwrap().as_str().unwrap_or_default();
-            let query = a.get(QUERY).unwrap().as_str().unwrap_or_default();
+            let mut query = a.get(QUERY).unwrap().as_str().unwrap_or_default().to_string();
+
+            if !(query.find("==").is_some() || query.find("&&").is_some() || query.find("||").is_some()) {
+                query = "'*' == '".to_owned() + &query + "'";
+            }
 
             let top = a.get(TOP).unwrap().as_i64().unwrap_or_default() as i32;
             let limit = a.get(LIMIT).unwrap().as_i64().unwrap_or_default() as i32;
@@ -104,11 +99,12 @@ fn req_prepare(module: &mut Module, request: &Message, xr: &mut XapianReader) ->
             let mut ctx = vec![];
             fn add_out_element(id: &str, ctx: &mut Vec<String>) {
                 ctx.push(id.to_owned());
-                info!("id={:?}", id);
+                debug!("id={:?}", id);
             }
 
-            if let Ok(res) = xr.query(&user_uri, query, "", "", from, top, limit, add_out_element, OptAuthorize::YES, &mut ctx) {
-                info!("res={:?}", res);
+            if let Ok(mut res) = xr.query(&user_uri, &query, "", "", from, top, limit, add_out_element, OptAuthorize::YES, &mut ctx) {
+                res.result = ctx;
+                debug!("res={:?}", res);
                 if let Ok(s) = serde_json::to_string(&res) {
                     return Message::from(s.as_bytes());
                 }

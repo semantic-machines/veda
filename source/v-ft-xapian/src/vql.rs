@@ -61,11 +61,13 @@ impl TTA {
                     op.push("(");
                 } else if s[i] == b')' {
                     while !op.is_empty() {
-                        if let Some(last) = op.pop() {
-                            if last == "(" {
+                        if let Some(last) = op.last() {
+                            if *last == "(" {
                                 break;
                             }
-                            process_op(&mut st, last);
+                            if let Some(p) = op.pop() {
+                                process_op(&mut st, p);
+                            }
                         }
                     }
                     op.pop();
@@ -80,15 +82,16 @@ impl TTA {
                     }
 
                     let cur_op = is_op(&s[i..e]);
-
+                    debug!("cur_op={}", cur_op);
                     if !cur_op.is_empty() {
                         while !op.is_empty() {
-                            if let Some(last) = op.pop() {
-                                if priority(last) <= priority(cur_op) {
+                            if let Some(last) = op.last() {
+                                if priority(last) < priority(cur_op) {
                                     break;
                                 }
-
-                                process_op(&mut st, last);
+                            }
+                            if let Some(p) = op.pop() {
+                                process_op(&mut st, p);
                             }
                         }
                         op.push(cur_op);
@@ -119,7 +122,11 @@ impl TTA {
                                 operand = from_utf8(&s[bp..i]);
 
                                 if let Ok(op) = operand {
-                                    st.push(Box::from(TTA::new(op, None, None, Decor::QUOTED)));
+                                    if cur_tag == b'[' {
+                                        st.push(Box::from(TTA::new(op, None, None, Decor::RANGE)));
+                                    } else {
+                                        st.push(Box::from(TTA::new(op, None, None, Decor::QUOTED)));
+                                    }
                                 }
                             }
                             _ => {
