@@ -470,6 +470,9 @@ veda.Module(function (veda) { "use strict";
       .then(processOriginal)
       .catch(function (error) {
         console.log("reset individual error", error);
+        if (error.code === 472) {
+          self.isResetting(false);
+        };
         self.trigger("afterReset");
       });
     return self.isResetting(promise);
