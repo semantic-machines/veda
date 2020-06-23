@@ -1,14 +1,14 @@
 use crate::index_schema::*;
+use crate::init_db_path;
 use crate::key2slot::*;
 use crate::vql::*;
 use crate::xapian_vql::*;
+use crate::xerror::XError::{Io, Xapian};
 use crate::xerror::*;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use v_api::app::ResultCode;
-//use v_module::info::ModuleInfo;
-use crate::init_db_path;
-use crate::xerror::XError::{Io, Xapian};
+use v_module::info::ModuleInfo;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
@@ -17,6 +17,7 @@ use xapian_rusty::{get_xapian_err_type, Database, Query, QueryParser, Stem, UNKN
 
 const XAPIAN_DB_TYPE: i8 = UNKNOWN;
 const MAX_WILDCARD_EXPANSION: i32 = 20_000;
+const BASE_PATH: &str = "./data";
 
 pub struct DatabaseQueryParser {
     db: Database,
@@ -38,10 +39,11 @@ pub struct XapianReader {
     xapian_stemmer: Stem,
     xapian_lang: String,
     index_schema: IndexerSchema,
-    // mdif: ModuleInfo,
+    mdif: ModuleInfo,
     key2slot: Key2Slot,
     onto: Onto,
     db2path: HashMap<String, String>,
+    committed_op_id: i64,
 }
 
 impl XapianReader {
@@ -52,16 +54,23 @@ impl XapianReader {
             return None;
         }
 
+        let indexer_module_info = ModuleInfo::new(BASE_PATH, "fulltext_indexer", true);
+        if indexer_module_info.is_err() {
+            error!("{:?}", indexer_module_info.err());
+            return None;
+        }
+
         let mut xr = XapianReader {
             using_dbqp: Default::default(),
             opened_db: Default::default(),
             xapian_stemmer: Stem::new(lang).unwrap(),
-            xapian_lang: "".to_string(),
+            xapian_lang: lang.to_string(),
             index_schema: Default::default(),
-            //mdif: module_info.unwrap(),
+            mdif: indexer_module_info.unwrap(),
             key2slot: key2slot.unwrap(),
             onto,
             db2path: init_db_path(),
+            committed_op_id: 0,
         };
 
         xr.load_index_schema(storage);
@@ -96,17 +105,18 @@ impl XapianReader {
 
         let db_names = self.get_dn_names(&tta, db_names_str);
 
-        info!("db_names={:?}", db_names);
-        info!("user_uri=[{}] query=[{}] str_sort=[{}], db_names=[{:?}], from=[{}], top=[{}], limit=[{}]", user_uri, str_query, str_sort, db_names, from, top, limit);
-        info!("TTA [{}]", tta);
+        debug!("db_names={:?}", db_names);
+        debug!("user_uri=[{}] query=[{}] str_sort=[{}], db_names=[{:?}], from=[{}], top=[{}], limit=[{}]", user_uri, str_query, str_sort, db_names, from, top, limit);
+        debug!("TTA [{}]", tta);
 
-        //        long cur_committed_op_id = get_info().committed_op_id;
-        //        if (cur_committed_op_id > committed_op_id) {
-        //log.trace("search:reopen_db: cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
-        //            reopen_dbs();
-        //        } else   {
-        //log.trace ("search:check reopen_db: cur_committed_op_id=%d, committed_op_id=%d", cur_committed_op_id, committed_op_id);
-        //       }
+        if let Some((_, cur_committed_op_id)) = self.mdif.read_info() {
+            if cur_committed_op_id > self.committed_op_id {
+                info!("search:reopen_db: cur_committed_op_id={} > committed_op_id={}", cur_committed_op_id, self.committed_op_id);
+                self.reopen_dbs()?;
+            } else {
+                debug!("search:check reopen_db: cur_committed_op_id={}, committed_op_id={}", cur_committed_op_id, self.committed_op_id);
+            }
+        }
 
         self.open_dbqp_if_need(&db_names)?;
 
@@ -122,11 +132,11 @@ impl XapianReader {
         }
         //}
 
-        info!("query={:?}", query.get_description());
+        debug!("query={:?}", query.get_description());
 
         if query.is_empty() {
-            sr.result_code = ResultCode::BadRequest;
-            error!("fail prepare query [{}]", str_query);
+            sr.result_code = ResultCode::Ok;
+            warn!("query is empty [{}]", str_query);
             return Ok(sr);
         }
 
@@ -176,21 +186,21 @@ impl XapianReader {
         }
     }
 
-    fn _reopen_dbs(&mut self) -> Result<()> {
-        //let cur_committed_op_id = get_info().committed_op_id;
-        //debug!("reopen_db, prev committed_op_id={}, now committed_op_id={}", committed_op_id, cur_committed_op_id);
+    fn reopen_dbs(&mut self) -> Result<()> {
+        if let Some((cur_committed_op_id, _)) = self.mdif.read_info() {
+            debug!("reopen_db, prev committed_op_id={}, now committed_op_id={}", self.committed_op_id, cur_committed_op_id);
 
-        for (_, el) in self.using_dbqp.iter_mut() {
-            el.db.reopen()?;
-            el.qp.set_database(&mut el.db)?;
+            for (_, el) in self.using_dbqp.iter_mut() {
+                el.db.reopen()?;
+                el.qp.set_database(&mut el.db)?;
+            }
+
+            for (_, db) in self.opened_db.iter_mut() {
+                db.reopen()?;
+            }
+
+            self.committed_op_id = cur_committed_op_id;
         }
-
-        for (_, db) in self.opened_db.iter_mut() {
-            db.reopen()?;
-        }
-
-        //    committed_op_id = cur_committed_op_id;
-
         Ok(())
     }
 

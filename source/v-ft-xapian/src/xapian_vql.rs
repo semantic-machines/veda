@@ -12,7 +12,7 @@ use v_authorization::common::Access;
 use v_az_lmdb::_authorize;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use xapian_rusty::{Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp, get_xapian_err_type};
+use xapian_rusty::{get_xapian_err_type, Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp};
 
 #[derive(Debug, PartialEq)]
 enum TokenType {
@@ -46,7 +46,7 @@ pub fn exec_xapian_query_and_queue_authorize<T>(
                 if err_code == -1 {
                     sr.result_code = ResultCode::DatabaseModifiedError;
                 } else {
-                    error! ("{}", get_xapian_err_type(err_code));
+                    error!("{}", get_xapian_err_type(err_code));
                     sr.result_code = ResultCode::InternalServerError;
                 }
             }
@@ -322,7 +322,7 @@ pub fn transform_vql_to_xapian(
                 }
 
                 if query_str.find('*').is_some() && is_good_token(&query_str) {
-                    let mut flags = FeatureFlag::FlagDefault as i16 | FeatureFlag::FlagPhrase as i16 | FeatureFlag::FlagLovehate as i16;
+                    let mut flags = FeatureFlag::FlagDefault as i16 | FeatureFlag::FlagWildcard as i16 | FeatureFlag::FlagPhrase as i16;
 
                     if tta.op == "!=" {
                         flags = flags | FeatureFlag::FlagPureNot as i16;
@@ -370,14 +370,6 @@ pub fn transform_vql_to_xapian(
         //writeln("@p query_r=", get_query_description(query_r));
 
         if !token_l.is_empty() && !tta_l.is_empty() {
-            //writeln("@p #E0.1 &&");
-            // это range
-            //writeln("@p token_L=", token_L);
-            //writeln("@p tta_R=", tta_R);
-            //writeln("@p tta_L=", tta_L);
-            //writeln("@p t_op_l=", t_op_l);
-            //writeln("@p t_op_r=", t_op_r);
-
             let mut c_to = 0.0;
             let mut c_from = 0.0;
 
@@ -405,13 +397,43 @@ pub fn transform_vql_to_xapian(
                     *query = query_r;
                 } else {
                     if !query_r.is_empty() {
-                        //*query = query_l.add_right(XapianOp::OP_AND, &mut query_r)?;
+                        *query = query_l.add_right(XapianOp::OpAnd, &mut query_r)?;
                     }
                 }
             }
             if query.is_empty() {
                 return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
             }
+        } else {
+            if !query_r.is_empty() {
+                //writeln("#E0.2 && query_l=", get_query_description(query_l));
+                //writeln("#E0.2 && query_r=", get_query_description(query_r));
+                if query_l.is_empty() {
+                    *query = query_r;
+                //query_r = null;
+                } else {
+                    if !query_r.is_empty() {
+                        *query = query_l.add_right(XapianOp::OpAnd, &mut query_r)?;
+                    }
+                }
+
+                if query.is_empty() {
+                    return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
+                }
+            //writeln("#3.1 && query=", get_query_description(query));
+            } else {
+                *query = query_l;
+                //query_l = null;
+            }
+        }
+        if !tta_l.is_empty() && tta_l.is_empty() {
+            *_rd = rd;
+            return Ok(tta_l);
+        }
+
+        if !tta_l.is_empty() && tta_l.is_empty() {
+            *_rd = ld;
+            return Ok(tta_l);
         }
     } else if tta.op == "||" {
         //let mut tta_r = String::new();
