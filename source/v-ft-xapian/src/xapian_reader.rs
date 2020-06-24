@@ -7,10 +7,13 @@ use crate::xerror::XError::{Io, Xapian};
 use crate::xerror::*;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
+use std::time::SystemTime;
 use v_api::app::ResultCode;
 use v_module::info::ModuleInfo;
+use v_module::onto::load_onto;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
+use v_onto::onto_index::OntoIndex;
 use v_search::common::QueryResult;
 use v_storage::storage::VStorage;
 use xapian_rusty::{get_xapian_err_type, Database, Query, QueryParser, Stem, UNKNOWN};
@@ -44,10 +47,12 @@ pub struct XapianReader {
     onto: Onto,
     db2path: HashMap<String, String>,
     committed_op_id: i64,
+    onto_modified: SystemTime,
+    storage: VStorage,
 }
 
 impl XapianReader {
-    pub fn new(lang: &str, storage: &mut VStorage, onto: Onto) -> Option<Self> {
+    pub fn new(lang: &str, storage: VStorage, onto: Onto) -> Option<Self> {
         let indexer_module_info = ModuleInfo::new(BASE_PATH, "fulltext_indexer", true);
         if indexer_module_info.is_err() {
             error!("{:?}", indexer_module_info.err());
@@ -65,9 +70,11 @@ impl XapianReader {
             onto,
             db2path: init_db_path(),
             committed_op_id: 0,
+            onto_modified: SystemTime::now(),
+            storage,
         };
 
-        xr.load_index_schema(storage);
+        xr.load_index_schema();
 
         Some(xr)
     }
@@ -107,16 +114,24 @@ impl XapianReader {
         debug!("user_uri=[{}] query=[{}] str_sort=[{}], db_names=[{:?}], from=[{}], top=[{}], limit=[{}]", user_uri, str_query, str_sort, db_names, from, top, limit);
         debug!("TTA [{}]", tta);
 
-        if let Some((_, cur_committed_op_id)) = self.mdif.read_info() {
-            if cur_committed_op_id > self.committed_op_id {
-                info!("search:reopen_db: cur_committed_op_id={} > committed_op_id={}", cur_committed_op_id, self.committed_op_id);
+        if let Some((_, new_committed_op_id)) = self.mdif.read_info() {
+            if new_committed_op_id > self.committed_op_id {
+                info!("search:reopen_db: new committed_op_id={} > prev committed_op_id={}", new_committed_op_id, self.committed_op_id);
                 self.reopen_dbs()?;
+                self.committed_op_id = new_committed_op_id;
             } else {
-                debug!("search:check reopen_db: cur_committed_op_id={}, committed_op_id={}", cur_committed_op_id, self.committed_op_id);
+                debug!("search:check reopen_db: new committed_op_id={}, prev committed_op_id={}", new_committed_op_id, self.committed_op_id);
             }
         }
 
         self.open_dbqp_if_need(&db_names)?;
+
+        if let Some(t) = OntoIndex::get_modified() {
+            if t > self.onto_modified {
+                load_onto(&mut self.storage, &mut self.onto);
+                self.onto_modified = t;
+            }
+        }
 
         let mut query = Query::new()?;
         //loop {
@@ -153,7 +168,7 @@ impl XapianReader {
         Ok(sr)
     }
 
-    pub fn load_index_schema(&mut self, storage: &mut VStorage) {
+    pub fn load_index_schema(&mut self) {
         fn add_out_element(id: &str, ctx: &mut Vec<String>) {
             ctx.push(id.to_owned());
         }
@@ -165,7 +180,7 @@ impl XapianReader {
                 if res.result_code == ResultCode::Ok && res.count > 0 {
                     for id in ctx.iter() {
                         let mut indv = &mut Individual::default();
-                        if storage.get_individual(id, &mut indv) {
+                        if self.storage.get_individual(id, &mut indv) {
                             self.index_schema.add_schema_data(&self.onto, indv);
                         }
                     }
@@ -185,20 +200,15 @@ impl XapianReader {
     }
 
     fn reopen_dbs(&mut self) -> Result<()> {
-        if let Some((cur_committed_op_id, _)) = self.mdif.read_info() {
-            debug!("reopen_db, prev committed_op_id={}, now committed_op_id={}", self.committed_op_id, cur_committed_op_id);
-
-            for (_, el) in self.using_dbqp.iter_mut() {
-                el.db.reopen()?;
-                el.qp.set_database(&mut el.db)?;
-            }
-
-            for (_, db) in self.opened_db.iter_mut() {
-                db.reopen()?;
-            }
-
-            self.committed_op_id = cur_committed_op_id;
+        for (_, el) in self.using_dbqp.iter_mut() {
+            el.db.reopen()?;
+            el.qp.set_database(&mut el.db)?;
         }
+
+        for (_, db) in self.opened_db.iter_mut() {
+            db.reopen()?;
+        }
+
         Ok(())
     }
 

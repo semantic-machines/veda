@@ -1,10 +1,12 @@
 use bincode::{deserialize_from, serialize_into, ErrorKind};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fs;
 use std::fs::rename;
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter};
 use std::path::Path;
+use std::time::SystemTime;
 
 const LOCAL_STORAGE_FILE_NAME: &str = "data/onto-index";
 
@@ -14,6 +16,15 @@ pub struct OntoIndex {
 }
 
 impl OntoIndex {
+    pub fn get_modified() -> Option<SystemTime> {
+        if let Ok(m) = fs::metadata(LOCAL_STORAGE_FILE_NAME) {
+            if let Ok(t) = m.modified() {
+                return Some(t);
+            }
+        }
+        None
+    }
+
     pub fn load() -> Self {
         if let Ok(f) = File::open(LOCAL_STORAGE_FILE_NAME) {
             let mut r = BufReader::new(f);
