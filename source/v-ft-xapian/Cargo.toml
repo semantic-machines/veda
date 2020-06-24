@@ -15,7 +15,7 @@ maplit = "1.0.2"
 chrono = "0.4"
 env_logger = "0.6"
 rust-ini = "0.13"
-xapian-rusty = "0.0.30"
+xapian-rusty = "0.0.31"
 #xapian-rusty = { path = "../xapian-rusty" }
 regex = "1.3.9"
 

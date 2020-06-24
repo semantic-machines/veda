@@ -1,14 +1,17 @@
 use crate::xerror::Result;
 use crc32fast::Hasher;
 use std::collections::HashMap;
+use std::fs;
 use std::fs::OpenOptions;
 use std::io::{BufRead, BufReader, Seek, SeekFrom, Write};
+use std::time::SystemTime;
 
 pub const XAPIAN_INFO_PATH: &str = "./data/xapian-info";
 
 pub struct Key2Slot {
     data: HashMap<String, u32>,
     last_size_key2slot: usize,
+    modified: SystemTime,
 }
 
 impl Default for Key2Slot {
@@ -16,6 +19,7 @@ impl Default for Key2Slot {
         Key2Slot {
             data: Default::default(),
             last_size_key2slot: 0,
+            modified: SystemTime::now(),
         }
     }
 }
@@ -65,11 +69,19 @@ impl Key2Slot {
         slot
     }
 
+    pub fn is_need_reload(&mut self) -> Result<bool> {
+        let fname = XAPIAN_INFO_PATH.to_owned() + "/key2slot";
+        let cur_modified = fs::metadata(fname)?.modified()?;
+        Ok(cur_modified != self.modified)
+    }
+
     pub fn load() -> Result<Key2Slot> {
-        let mut ff = OpenOptions::new().read(true).open(XAPIAN_INFO_PATH.to_owned() + "/key2slot")?;
+        let fname = XAPIAN_INFO_PATH.to_owned() + "/key2slot";
+        let mut ff = OpenOptions::new().read(true).open(fname)?;
         ff.seek(SeekFrom::Start(0))?;
 
         let mut key2slot = Key2Slot::default();
+        key2slot.modified = ff.metadata()?.modified()?;
 
         let mut lines = BufReader::new(ff).lines();
 

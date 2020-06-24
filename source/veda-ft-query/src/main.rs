@@ -64,6 +64,9 @@ fn main() {
 
 const TICKET: usize = 0;
 const QUERY: usize = 1;
+const SORT: usize = 2;
+const DATABASES: usize = 3;
+//const REOPEN: usize = 4;
 const TOP: usize = 5;
 const LIMIT: usize = 6;
 const FROM: usize = 7;
@@ -84,15 +87,22 @@ fn req_prepare(module: &mut Module, request: &Message, xr: &mut XapianReader) ->
                 query = "'*' == '".to_owned() + &query + "'";
             }
 
+            let sort = a.get(SORT).unwrap().as_str().unwrap_or_default().to_string();
+            let databases = a.get(DATABASES).unwrap().as_str().unwrap_or_default().to_string();
+
             let top = a.get(TOP).unwrap().as_i64().unwrap_or_default() as i32;
             let limit = a.get(LIMIT).unwrap().as_i64().unwrap_or_default() as i32;
             let from = a.get(FROM).unwrap().as_i64().unwrap_or_default() as i32;
 
             let mut user_uri = "cfg:Guest".to_owned();
             if !ticket_id.is_empty() {
-                let ticket = module.get_ticket_from_db(&ticket_id);
-                if ticket.result == ResultCode::Ok {
-                    user_uri = ticket.user_uri;
+                if ticket_id.starts_with("UU=") {
+                    user_uri = ticket_id.trim_start_matches("UU=").to_owned();
+                } else {
+                    let ticket = module.get_ticket_from_db(&ticket_id);
+                    if ticket.result == ResultCode::Ok {
+                        user_uri = ticket.user_uri;
+                    }
                 }
             }
 
@@ -102,7 +112,7 @@ fn req_prepare(module: &mut Module, request: &Message, xr: &mut XapianReader) ->
                 debug!("id={:?}", id);
             }
 
-            if let Ok(mut res) = xr.query(&user_uri, &query, "", "", from, top, limit, add_out_element, OptAuthorize::YES, &mut ctx) {
+            if let Ok(mut res) = xr.query(&user_uri, &query, &sort, &databases, from, top, limit, add_out_element, OptAuthorize::YES, &mut ctx) {
                 res.result = ctx;
                 debug!("res={:?}", res);
                 if let Ok(s) = serde_json::to_string(&res) {
