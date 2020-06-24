@@ -182,7 +182,7 @@ fn format_resources(subject: &str, predicate: &String, resources: &Vec<Resource>
 }
 
 pub fn get_prefix(v: &str) -> Option<&str> {
-    if let Some (el) = v.split(':').next() {
+    if let Some(el) = v.split(':').next() {
         return Some(el);
     }
     None

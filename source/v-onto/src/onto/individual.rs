@@ -418,28 +418,25 @@ impl Individual {
     }
 
     pub fn get_literals_nm(&self, predicate: &str) -> Option<Vec<String>> {
-
-            match self.obj.resources.get(predicate) {
-                Some(v) => {
-                    return Some(
-                        v.iter()
-                            .map(|el| {
-                                if let Value::Str(s, _l) = &el.value {
-                                    s.to_string()
-                                } else if let Value::Uri(s) = &el.value {
-                                    s.to_string()
-                                } else {
-                                    "".to_string()
-                                }
-                            })
-                            .collect::<Vec<String>>(),
-                    );
-                }
-                None => None
+        match self.obj.resources.get(predicate) {
+            Some(v) => {
+                return Some(
+                    v.iter()
+                        .map(|el| {
+                            if let Value::Str(s, _l) = &el.value {
+                                s.to_string()
+                            } else if let Value::Uri(s) = &el.value {
+                                s.to_string()
+                            } else {
+                                "".to_string()
+                            }
+                        })
+                        .collect::<Vec<String>>(),
+                );
             }
-
+            None => None,
+        }
     }
-
 
     pub fn get_first_literal(&mut self, predicate: &str) -> Option<String> {
         for _ in 0..2 {
