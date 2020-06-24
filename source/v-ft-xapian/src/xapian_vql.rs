@@ -277,6 +277,7 @@ pub fn transform_vql_to_xapian(
                                         if tt == TokenType::DATE || tt == TokenType::NUMBER {
                                             let (tt, c_to) = get_token_type(vals.get(1).unwrap());
                                             if tt == TokenType::DATE || tt == TokenType::NUMBER {
+                                                info!("@ c_from={}, c_to={}", c_from, c_to);
                                                 *query = Query::new_range(XapianOp::OpValueRange, slot, c_from, c_to)?;
                                             }
                                         }
@@ -492,7 +493,7 @@ pub fn get_sorter(sort: &str, key2slot: &Key2Slot) -> Result<Option<MultiValueKe
 }
 
 fn add_subclasses_to_query(rs: &str, onto: &Onto) -> Option<String> {
-    if rs.find(':').is_some() {
+    if rs.find(':').is_some() && rs.find(',').is_none() {
         let mut new_rs = rs.to_string();
         let mut subclasses = HashSet::new();
         onto.get_subs(&new_rs, &mut subclasses);

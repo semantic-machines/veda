@@ -48,12 +48,6 @@ pub struct XapianReader {
 
 impl XapianReader {
     pub fn new(lang: &str, storage: &mut VStorage, onto: Onto) -> Option<Self> {
-        let key2slot = Key2Slot::load();
-        if key2slot.is_err() {
-            error!("load key2slot, err={:?}", key2slot.err());
-            return None;
-        }
-
         let indexer_module_info = ModuleInfo::new(BASE_PATH, "fulltext_indexer", true);
         if indexer_module_info.is_err() {
             error!("{:?}", indexer_module_info.err());
@@ -67,7 +61,7 @@ impl XapianReader {
             xapian_lang: lang.to_string(),
             index_schema: Default::default(),
             mdif: indexer_module_info.unwrap(),
-            key2slot: key2slot.unwrap(),
+            key2slot: Key2Slot::load().unwrap_or_default(),
             onto,
             db2path: init_db_path(),
             committed_op_id: 0,
@@ -99,6 +93,10 @@ impl XapianReader {
             error!("fail parse query (phase 1) [{}], tta is empty", str_query);
             sr.result_code = ResultCode::BadRequest;
             return Ok(sr);
+        }
+
+        if self.key2slot.is_need_reload()? {
+            self.key2slot = Key2Slot::load()?;
         }
 
         let mut tta = wtta.unwrap();
@@ -145,8 +143,8 @@ impl XapianReader {
 
             xapian_enquire.set_query(&mut query)?;
 
-            if let Some(mut sorter) = get_sorter(str_sort, &self.key2slot)? {
-                xapian_enquire.set_sort_by_key(&mut sorter, true)?;
+            if let Some(s) = get_sorter(str_sort, &self.key2slot)? {
+                xapian_enquire.set_sort_by_key(s, true)?;
             }
 
             sr = exec_xapian_query_and_queue_authorize(user_uri, &mut xapian_enquire, from, top, limit, add_out_element, op_auth, ctx);
