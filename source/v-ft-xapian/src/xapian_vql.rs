@@ -277,7 +277,6 @@ pub fn transform_vql_to_xapian(
                                         if tt == TokenType::DATE || tt == TokenType::NUMBER {
                                             let (tt, c_to) = get_token_type(vals.get(1).unwrap());
                                             if tt == TokenType::DATE || tt == TokenType::NUMBER {
-                                                info!("@ c_from={}, c_to={}", c_from, c_to);
                                                 *query = Query::new_range(XapianOp::OpValueRange, slot, c_from, c_to)?;
                                             }
                                         }

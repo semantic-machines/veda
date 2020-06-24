@@ -254,17 +254,17 @@ if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-ft-indexer $PWD/veda-ft-indexer
 fi
 
-#if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv2" ]; then
-#    echo BUILD FT-QUERY
-#    cd source/veda-ft-query
-#    cargo build --release
-#    cd $BUILD_PATH
-#    cp $CARGO_TARGET_DIR/release/veda-ft-query $PWD/veda-ft-query
-#fi
-
-if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv1" ]; then
-    ./tools/build-component.sh veda-ft-query ft-query
+if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv2" ]; then
+    echo BUILD FT-QUERY
+    cd source/veda-ft-query
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-ft-query $PWD/veda-ft-query
 fi
+
+#if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv1" ]; then
+#    ./tools/build-component.sh veda-ft-query ft-query
+#fi
 
 if [ $1 == "input-queue" ] || [ $1 == "veda-input-queue" ] ; then
     ./tools/build-component.sh veda-input-queue input-queue
