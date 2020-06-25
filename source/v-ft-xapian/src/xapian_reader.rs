@@ -165,6 +165,8 @@ impl XapianReader {
             sr = exec_xapian_query_and_queue_authorize(user_uri, &mut xapian_enquire, from, top, limit, add_out_element, op_auth, ctx);
         }
 
+        debug!("res={:?}", sr);
+
         Ok(sr)
     }
 
