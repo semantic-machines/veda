@@ -14,4 +14,9 @@ then
   cp ./ontology/system-accounts.ttl.cfg ./ontology/system-accounts.ttl
 fi
 
+if [ ! -f ./ontology/test-data.ttl ]
+then
+  cp ./ontology/test-data.ttl.cfg ./ontology/test-data.ttl
+fi
+
 ./tools/update-version-ttl.sh
