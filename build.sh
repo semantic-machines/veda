@@ -191,10 +191,6 @@ if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] || [ $1 ==
 
 fi
 
-if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
-    ./tools/build-component.sh veda-authorization authorization
-fi
-
 if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
     echo BUILD FANOUT-EMAIL
     cd source/veda-fanout-email
@@ -265,14 +261,6 @@ if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv
     cargo build --release
     cd $BUILD_PATH
     cp $CARGO_TARGET_DIR/release/veda-ft-query $PWD/veda-ft-query
-fi
-
-#if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv1" ]; then
-#    ./tools/build-component.sh veda-ft-query ft-query
-#fi
-
-if [ $1 == "input-queue" ] || [ $1 == "veda-input-queue" ] ; then
-    ./tools/build-component.sh veda-input-queue input-queue
 fi
 
 if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ] || [ $1 == "mv1" ]; then
