@@ -106,7 +106,7 @@ fn exec<T>(
             if _authorize(&subject_id, user_uri, Access::CanRead as u8, true, None).unwrap_or(0) != Access::CanRead as u8 {
                 is_passed = false;
             } else {
-                info!("found subject_id=[{}] authorized for user_id=[{}]", subject_id, user_uri);
+                debug!("found subject_id=[{}] authorized for user_id=[{}]", subject_id, user_uri);
             }
         }
 
@@ -209,19 +209,20 @@ pub fn transform_vql_to_xapian(
                     let mut query_str = format!("uid_{}", to_lower_and_replace_delimiters(&rs));
 
                     if tta.op == "!=" {
-                        flags = flags | FeatureFlag::FlagPureNot as i16;
+                        flags |= FeatureFlag::FlagPureNot as i16;
                         query_str = "NOT ".to_owned() + &query_str;
                     }
 
                     *query = parse_query(qp, &query_str, flags)?;
                 } else {
                     let mut rs_first_byte = 0;
-                    let mut rs_last_byte = 0;
 
-                    if !rs.is_empty() {
+                    let rs_last_byte = if !rs.is_empty() {
                         rs_first_byte = rs.as_bytes()[0];
-                        rs_last_byte = rs.as_bytes()[rs.len() - 1];
-                    }
+                        rs.as_bytes()[rs.len() - 1]
+                    } else {
+                        0
+                    };
 
                     let wslot = if !rs.is_empty() && rs_first_byte == b'*' && is_good_token(&rs) {
                         key2slot.get_slot(&(ls + "#F"))
@@ -265,7 +266,7 @@ pub fn transform_vql_to_xapian(
                                         | FeatureFlag::FlagLovehate as i16;
 
                                     if tta.op == "!=" {
-                                        flags = flags | FeatureFlag::FlagPureNot as i16;
+                                        flags |= FeatureFlag::FlagPureNot as i16;
                                         query_str = "NOT ".to_owned() + &query_str;
                                     }
 
@@ -284,7 +285,7 @@ pub fn transform_vql_to_xapian(
                                         let mut el = rs.clone();
                                         if rs_first_byte == b'\'' && el.len() > 2 && rs_last_byte == b'\'' {
                                             if let Some(s) = &rs.get(1..rs.len() - 1) {
-                                                el = s.to_string();
+                                                el = (*s).to_string();
                                             }
                                         }
 
@@ -325,7 +326,7 @@ pub fn transform_vql_to_xapian(
                     let mut flags = FeatureFlag::FlagDefault as i16 | FeatureFlag::FlagWildcard as i16 | FeatureFlag::FlagPhrase as i16;
 
                     if tta.op == "!=" {
-                        flags = flags | FeatureFlag::FlagPureNot as i16;
+                        flags |= FeatureFlag::FlagPureNot as i16;
                         query_str = "NOT ".to_owned() + &query_str;
                     }
 
@@ -370,15 +371,17 @@ pub fn transform_vql_to_xapian(
         //writeln("@p query_r=", get_query_description(query_r));
 
         if !token_l.is_empty() && !tta_l.is_empty() {
-            let mut c_to = 0.0;
-            let mut c_from = 0.0;
+            let mut c_from = if t_op_r == ">" {
+                rd
+            } else {
+                0.0
+            };
 
-            if t_op_r == ">" {
-                c_from = rd;
-            }
-            if t_op_r == "<" {
-                c_to = rd;
-            }
+            let mut c_to = if t_op_r == "<" {
+                rd
+            } else {
+                0.0
+            };
 
             if t_op_l == ">" {
                 c_from = ld;
@@ -474,11 +477,7 @@ pub fn get_sorter(sort: &str, key2slot: &Key2Slot) -> Result<Option<MultiValueKe
                 let key = el.get(0).unwrap().replace('\'', " ");
 
                 let direction = el.get(1).unwrap().trim();
-                let asc_desc = if direction == "desc" {
-                    false
-                } else {
-                    true
-                };
+                let asc_desc = direction != "desc";
 
                 if let Some(slot) = key2slot.get_slot(key.trim()) {
                     let mut sorter = MultiValueKeyMaker::new()?;
