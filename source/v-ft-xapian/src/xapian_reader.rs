@@ -278,7 +278,7 @@ impl XapianReader {
             self.db_names_from_tta(&tta, &mut databases);
 
             for (key, value) in databases.iter() {
-                if *value == false {
+                if !(*value) {
                     if key != "not-indexed" {
                         db_names.push(key.to_owned());
                     }
