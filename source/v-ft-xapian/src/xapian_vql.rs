@@ -105,12 +105,12 @@ fn exec<T>(
         if op_auth == OptAuthorize::YES {
             if _authorize(&subject_id, user_uri, Access::CanRead as u8, true, None).unwrap_or(0) != Access::CanRead as u8 {
                 is_passed = false;
+            } else {
+                info!("found subject_id=[{}] authorized for user_id=[{}]", subject_id, user_uri);
             }
         }
 
         if is_passed {
-            debug!("found subject_id:[{}] authorized", subject_id);
-
             add_out_element(&subject_id, ctx);
             read_count += 1;
             if read_count >= top {
@@ -405,9 +405,9 @@ pub fn transform_vql_to_xapian(
                 return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
             }
         } else {
+            debug!("#E0.2 && query_l={}", query_l.get_description());
+            debug!("#E0.2 && query_r={}", query_r.get_description());
             if !query_r.is_empty() {
-                //writeln("#E0.2 && query_l=", get_query_description(query_l));
-                //writeln("#E0.2 && query_r=", get_query_description(query_r));
                 if query_l.is_empty() {
                     *query = query_r;
                 //query_r = null;
@@ -541,7 +541,8 @@ fn get_token_type(token_in: &str) -> (TokenType, f64) {
             return (TokenType::DATE, nv.timestamp() as f64);
         }
     } else if token.len() == 24 && token[4] == b'-' && token[7] == b'-' && token[10] == b'T' && token[13] == b':' && token[16] == b':' && token[19] == b'.' {
-        if let Ok(nv) = NaiveDateTime::parse_from_str(token_in, "%Y-%m-%dT%H:%M:%S.sss") {
+        let (token, _) = token_in.split_at(token_in.len() - 1);
+        if let Ok(nv) = NaiveDateTime::parse_from_str(token, "%Y-%m-%dT%H:%M:%S%.f") {
             return (TokenType::DATE, nv.timestamp() as f64);
         }
     }
