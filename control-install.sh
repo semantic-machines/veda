@@ -112,6 +112,7 @@ go get -v gopkg.in/vmihailenco/msgpack.v2
 cp -a ./source/golang-third-party/cbor $GOPATH/src
 ls $HOME/go/src
 
+
 ### LIB NANOMSG ###
 
 if ([ "$1" = force ] ||  [ "$1" = force-nanomsg ]) || ! ldconfig -p | grep libnanomsg ; then
