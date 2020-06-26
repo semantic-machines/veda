@@ -112,34 +112,6 @@ go get -v gopkg.in/vmihailenco/msgpack.v2
 cp -a ./source/golang-third-party/cbor $GOPATH/src
 ls $HOME/go/src
 
-### LIB NANOMSG ###
-
-if ([ "$1" = force ] ||  [ "$1" = force-nanomsg ]) || ! ldconfig -p | grep libnanomsg ; then
-    echo "--- INSTALL NANOMSG ---"
-    # make nanomsg dependency
-    TRAVIS_TAG=$NANOMSG_VER
-    mkdir tmp
-    wget https://github.com/nanomsg/nanomsg/archive/$NANOMSG_VER.tar.gz -P tmp
-    cd tmp
-    tar -xvzf $NANOMSG_VER.tar.gz
-    cd nanomsg-$NANOMSG_VER
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
-
-    echo '/usr/local/lib/x86_64-linux-gnu' > x86_64-linux-gnu-local.conf
-    sudo cp x86_64-linux-gnu-local.conf /etc/ld.so.conf.d/x86_64-linux-gnu-local.conf
-    sudo ldconfig
-
-    cd ..
-    cd ..
-    cd ..
-else
-    echo "--- NANOMSG INSTALLED ---"
-fi
-
 if [ "$1" = force ] || [ "$1" = force-tarantool ] || ! ldconfig -p | grep libtarantool ; then
     echo "--- INSTALL LIBTARANTOOL ---"
     TTC=d93096a9d39e36c456af82e5e53c6ca4f4be608f
