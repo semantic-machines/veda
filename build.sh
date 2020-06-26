@@ -163,14 +163,12 @@ fi
 
 if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
     echo BUILD VEDA-BOOTSTRAP
+    rm ./veda
 
     cd source/veda-bootstrap
     cargo build --release
     cd $BUILD_PATH
-    cp $CARGO_TARGET_DIR/release/veda-bootstrap $PWD
-
-    rm veda
-    rename "s/veda-bootstrap/veda/g" *
+    cp $CARGO_TARGET_DIR/release/veda-bootstrap $PWD/veda
 fi
 
 if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "mv2" ] || [ $1 == "mva" ]; then
