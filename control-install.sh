@@ -3,8 +3,6 @@
 
 ./tools/install-repo-libs.sh
 
-DMD_VER=2.080.0
-DUB_VER=1.5.0
 GO_VER=go1.12.1
 MSGPUCK_VER=2.0
 NANOMSG_VER=1.1.5
@@ -63,31 +61,6 @@ fi
 whereis rustc
 rustc -V
 cargo -V
-
-### D LANG ###
-
-# Get right version of DMD
-if [ "$1" = force ] || ! dmd --version | grep $DMD_VER ; then
-    echo "--- INSTALL DMD ---"
-    wget -w 10 http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
-    sudo dpkg -i dmd_$DMD_VER-0_amd64.deb
-    rm dmd_$DMD_VER-0_amd64.deb
-    rm -r ~/.dub
-else
-    echo "--- DMD INSTALLED ---"
-fi
-
-# Get right version of DUB
-if [ "$1" = force ] || ! dub --version | grep $DUB_VER ; then
-    echo "--- INSTALL DUB ---"
-    wget https://github.com/dlang/dub/releases/download/v$DUB_VER/dub-$DUB_VER-linux-x86_64.tar.gz
-    tar -xvzf dub-$DUB_VER-linux-x86_64.tar.gz
-    sudo cp ./dub /usr/bin/dub
-    rm dub-$DUB_VER-linux-x86_64.tar.gz
-    rm dub
-else
-    echo "--- DUB INSTALLED ---"
-fi
 
 ### GO LANG ###
 if [ "$1" = force ] || ! go version | grep $GO_VER ; then
@@ -207,37 +180,8 @@ fi
     sudo cp ./source/lib64/libauthorization.so /usr/local/lib
     sudo ldconfig
 
-### LIB LMDB ###
 
-    echo "--- INSTALL LIBLMDB ---"
-    # make liblmdb dependency
-    mkdir tmp
-    wget https://github.com/itiu/lmdb/archive/$LMDB_VER.tar.gz -P tmp
-    cd tmp
-    tar -xvzf $LMDB_VER.tar.gz
-    cd lmdb-$LMDB_VER/libraries/liblmdb
-    make
-    cd ..
-    cd ..
-    cd ..
-    cd ..
-    cp ./tmp/lmdb-$LMDB_VER/libraries/liblmdb/liblmdb.a ./source/lib64
-
-
-### libxapiand ###
-
-    cd $INSTALL_PATH
-    echo "--- INSTALL LIBXAPIAN ---"
-    mkdir tmp
-    wget https://github.com/itiu/xapian-d/archive/v$XAPIAND_VER.tar.gz -P tmp
-    cd tmp
-    tar -xvzf v$XAPIAND_VER.tar.gz
-    cd xapian-d-$XAPIAND_VER
-#    ./make-xapian-d.sh
-    cd $INSTALL_PATH
-    cp ./tmp/xapian-d-$XAPIAND_VER/lib64/libxapiand.a ./source/lib64
-
-    sudo libtool --mode=install install -c $INSTALL_PATH/source/lib64/libxapianm/libxapianm.la /usr/local/lib/libxapianm.la
+sudo libtool --mode=install install -c $INSTALL_PATH/source/lib64/libxapianm/libxapianm.la /usr/local/lib/libxapianm.la
 
 
 sudo apt-get install -y libglib2.0-dev
