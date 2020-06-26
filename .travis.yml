@@ -24,7 +24,6 @@ jobs:
         - ./control-install.sh
         - source $HOME/.cargo/env
         - go version
-        - dmd --version
         - rustc -V
       script:
         - ./build.sh
