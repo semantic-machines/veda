@@ -447,8 +447,10 @@ v-s:CorrespondentTemplate
   }
 
   $(".create .create", template).off("click");
-
-  $(".create .create", template).click(function () {
+  $(".create", template).off("click");
+  $(".create .create", template).click(function (e) {
+    e.preventDefault();
+    e.stopPropagation();
     var modal = $("#notification-modal-template").html();
     modal = $(modal);
     modal.modal({"show": false});
