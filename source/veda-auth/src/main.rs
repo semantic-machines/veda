@@ -15,8 +15,6 @@ use serde_json::value::Value as JSONValue;
 use std::collections::HashMap;
 use v_ft_xapian::xapian_reader::XapianReader;
 use v_module::module::{create_sys_ticket, init_log, Module};
-use v_module::onto::load_onto;
-use v_onto::onto::Onto;
 use v_storage::storage::StorageMode;
 
 fn main() -> std::io::Result<()> {
@@ -46,10 +44,8 @@ fn main() -> std::io::Result<()> {
     let mut suspicious: HashMap<String, UserStat> = HashMap::new();
 
     let conf = read_auth_configuration(&mut module);
-    let mut onto = Onto::default();
-    load_onto(&mut module.storage, &mut onto);
 
-    if let Some(mut xr) = XapianReader::new("russian", &mut module.storage, onto) {
+    if let Some(mut xr) = XapianReader::new("russian", &mut module.storage) {
         loop {
             if let Ok(recv_msg) = server.recv() {
                 let res = req_prepare(&conf, &recv_msg, &systicket, &mut xr, &mut module, &mut suspicious);

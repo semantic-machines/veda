@@ -51,12 +51,15 @@ pub struct XapianReader {
 }
 
 impl XapianReader {
-    pub fn new(lang: &str, storage: &mut VStorage, onto: Onto) -> Option<Self> {
+    pub fn new(lang: &str, storage: &mut VStorage) -> Option<Self> {
         let indexer_module_info = ModuleInfo::new(BASE_PATH, "fulltext_indexer", true);
         if indexer_module_info.is_err() {
             error!("{:?}", indexer_module_info.err());
             return None;
         }
+
+        let mut onto = Onto::default();
+        load_onto(storage, &mut onto);
 
         let mut xr = XapianReader {
             using_dbqp: Default::default(),
