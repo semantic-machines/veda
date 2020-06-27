@@ -18,7 +18,7 @@ use v_onto::individual2turtle::to_turtle;
 use v_onto::onto_index::OntoIndex;
 use v_onto::{individual::*, parser::*};
 use v_queue::consumer::*;
-use v_search::ft_client::FTQuery;
+use v_search::common::FTQuery;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";

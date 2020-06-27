@@ -12,7 +12,7 @@ use v_api::app::ResultCode;
 use v_module::module::Module;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
-use v_search::ft_client::FTQuery;
+use v_search::common::FTQuery;
 
 const BEFORE_VARS: &str = "var document = get_individual (ticket, '$document'); if (document) {";
 const AFTER_VARS: &str = "};";

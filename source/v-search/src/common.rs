@@ -29,3 +29,75 @@ impl Default for QueryResult {
         }
     }
 }
+
+pub struct FTQuery {
+    pub ticket: String,
+    pub user: String,
+    pub query: String,
+    pub sort: String,
+    pub databases: String,
+    pub reopen: bool,
+    pub top: i32,
+    pub limit: i32,
+    pub from: i32,
+}
+
+impl FTQuery {
+    pub fn new_with_user(user: &str, query: &str) -> FTQuery {
+        FTQuery {
+            ticket: "".to_owned(),
+            user: user.to_owned(),
+            query: query.to_owned(),
+            sort: "".to_owned(),
+            databases: "".to_owned(),
+            reopen: false,
+            top: 10000,
+            limit: 10000,
+            from: 0,
+        }
+    }
+
+    pub fn new_with_ticket(ticket: &str, query: &str) -> FTQuery {
+        FTQuery {
+            ticket: ticket.to_owned(),
+            user: "".to_owned(),
+            query: query.to_owned(),
+            sort: "".to_owned(),
+            databases: "".to_owned(),
+            reopen: false,
+            top: 10000,
+            limit: 10000,
+            from: 0,
+        }
+    }
+
+    pub fn as_string(&self) -> String {
+        let mut s = String::new();
+
+        if self.ticket.is_empty() {
+            s.push_str("[\"UU=");
+            s.push_str(&self.user);
+        } else {
+            s.push_str("[\"");
+            s.push_str(&self.ticket);
+        }
+
+        s.push_str("\",\"");
+        s.push_str(&self.query);
+        s.push_str("\",\"");
+        s.push_str(&self.sort);
+        s.push_str("\",\"");
+        s.push_str(&self.databases);
+        s.push_str("\",");
+        s.push_str(&self.reopen.to_string());
+        s.push(',');
+        s.push_str(&self.top.to_string());
+        s.push(',');
+        s.push_str(&self.limit.to_string());
+        s.push(',');
+        s.push_str(&self.from.to_string());
+        s.push(']');
+
+        s
+    }
+}
