@@ -4,6 +4,7 @@ use v_module::module::Module;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_search::common::FTQuery;
+use crate::xapian_reader::XapianReader;
 
 pub struct IndexerSchema {
     class_property_2_id: HashMap<String, String>,
@@ -13,7 +14,7 @@ pub struct IndexerSchema {
 }
 
 impl IndexerSchema {
-    pub fn load(&mut self, force: bool, onto: &Onto, module: &mut Module) {
+    pub fn load(&mut self, force: bool, onto: &Onto, module: &mut Module, xr: &mut XapianReader) {
         if self.class_property_2_id.is_empty() || force {
             if force {
                 info!("force reload schema");
@@ -21,7 +22,7 @@ impl IndexerSchema {
                 info!("reload schema");
             }
 
-            let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'"));
+            let res = xr.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'"), &mut module.storage);
             if res.result_code == ResultCode::Ok && res.count > 0 {
                 for id in res.result.iter() {
                     if let Some(i) = module.get_individual(id, &mut Individual::default()) {
