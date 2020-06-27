@@ -12,7 +12,6 @@ use v_module::module::{init_log, Module};
 use v_module::onto::load_onto;
 use v_onto::onto::Onto;
 use v_search::common::FTQuery;
-use v_storage::storage::*;
 
 fn main() {
     init_log();
@@ -31,21 +30,13 @@ fn main() {
         info!("tarantool addr={}", &tarantool_addr);
     }
 
-    let mut storage: VStorage;
-    if !tarantool_addr.is_empty() {
-        storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
-    } else {
-        storage = VStorage::new_lmdb("./data", StorageMode::ReadOnly);
-    }
-
     let query_url = section.get("ft_query_service_url").expect("param [search_query_url] not found in veda.properties");
 
     let mut module = Module::default();
-
     let mut onto = Onto::default();
-    load_onto(&mut storage, &mut onto);
+    load_onto(&mut module.storage, &mut onto);
 
-    if let Some(mut xr) = XapianReader::new("russian", Box::new(storage), onto) {
+    if let Some(mut xr) = XapianReader::new("russian", &mut module.storage, onto) {
         let server = Socket::new(Protocol::Rep0).unwrap();
         if let Err(e) = server.listen(&query_url) {
             error!("fail listen {}, {:?}", query_url, e);
@@ -125,7 +116,7 @@ fn req_prepare(module: &mut Module, request: &Message, xr: &mut XapianReader) ->
                 from,
             };
 
-            if let Ok(mut res) = xr.query_use_collect_fn(&request, add_out_element, OptAuthorize::YES, &mut ctx) {
+            if let Ok(mut res) = xr.query_use_collect_fn(&request, add_out_element, OptAuthorize::YES, &mut module.storage, &mut ctx) {
                 res.result = ctx;
                 debug!("res={:?}", res);
                 if let Ok(s) = serde_json::to_string(&res) {
