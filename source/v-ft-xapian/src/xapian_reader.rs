@@ -79,7 +79,22 @@ impl XapianReader {
         Some(xr)
     }
 
-    pub fn query<T>(&mut self, request: &FTQuery, add_out_element: fn(uri: &str, ctx: &mut T), op_auth: OptAuthorize, ctx: &mut T) -> Result<QueryResult> {
+    pub fn query(&mut self, request: FTQuery) -> QueryResult {
+        let mut ctx = vec![];
+        fn add_out_element(id: &str, ctx: &mut Vec<String>) {
+            ctx.push(id.to_owned());
+            debug!("id={:?}", id);
+        }
+
+        if let Ok(mut res) = self.query_use_collect_fn(&request, add_out_element, OptAuthorize::YES, &mut ctx) {
+            res.result = ctx;
+            debug!("res={:?}", res);
+            return res;
+        }
+        QueryResult::default()
+    }
+
+    pub fn query_use_collect_fn<T>(&mut self, request: &FTQuery, add_out_element: fn(uri: &str, ctx: &mut T), op_auth: OptAuthorize, ctx: &mut T) -> Result<QueryResult> {
         let mut sr = QueryResult::default();
 
         let wtta = TTA::parse_expr(&request.query);
@@ -125,16 +140,10 @@ impl XapianReader {
         }
 
         let mut query = Query::new()?;
-        //loop {
         if let Some(dbqp) = self.using_dbqp.get_mut(&db_names) {
             let mut _rd: f64 = 0.0;
-            //if
             transform_vql_to_xapian(&mut tta, "", None, None, &mut query, &self.key2slot, &mut _rd, 0, &mut dbqp.qp, &self.onto)?;
-            //.is_ok() {
-            //    break;
-            //}
         }
-        //}
 
         debug!("query={:?}", query.get_description());
 
@@ -168,7 +177,7 @@ impl XapianReader {
 
         let mut ctx = vec![];
 
-        match self.query(&FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'"), add_out_element, OptAuthorize::NO, &mut ctx) {
+        match self.query_use_collect_fn(&FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'"), add_out_element, OptAuthorize::NO, &mut ctx) {
             Ok(res) => {
                 if res.result_code == ResultCode::Ok && res.count > 0 {
                     for id in ctx.iter() {

@@ -125,7 +125,7 @@ fn req_prepare(module: &mut Module, request: &Message, xr: &mut XapianReader) ->
                 from,
             };
 
-            if let Ok(mut res) = xr.query(&request, add_out_element, OptAuthorize::YES, &mut ctx) {
+            if let Ok(mut res) = xr.query_use_collect_fn(&request, add_out_element, OptAuthorize::YES, &mut ctx) {
                 res.result = ctx;
                 debug!("res={:?}", res);
                 if let Ok(s) = serde_json::to_string(&res) {
