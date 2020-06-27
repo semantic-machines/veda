@@ -28,7 +28,7 @@ pub enum OptAuthorize {
     YES,
 }
 
-pub fn exec_xapian_query_and_queue_authorize<T>(
+pub(crate) fn exec_xapian_query_and_queue_authorize<T>(
     user_uri: &str,
     xapian_enquire: &mut Enquire,
     from: i32,
@@ -131,7 +131,7 @@ fn exec<T>(
     Ok(sr)
 }
 
-pub fn transform_vql_to_xapian(
+pub(crate) fn transform_vql_to_xapian(
     tta: &mut TTA,
     _prev_op: &str,
     l_token: Option<&mut String>,
