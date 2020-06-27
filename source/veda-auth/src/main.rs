@@ -21,8 +21,7 @@ use v_module::module::{create_new_ticket, create_sys_ticket, init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
-use v_search::common::QueryResult;
-use v_search::ft_client::*;
+use v_search::common::{QueryResult, FTQuery};
 use v_storage::storage::StorageMode;
 
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";

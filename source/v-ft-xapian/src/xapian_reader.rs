@@ -14,7 +14,7 @@ use v_module::onto::load_onto;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_onto::onto_index::OntoIndex;
-use v_search::common::QueryResult;
+use v_search::common::{FTQuery, QueryResult};
 use v_storage::storage::VStorage;
 use xapian_rusty::{get_xapian_err_type, Database, Query, QueryParser, Stem, UNKNOWN};
 
@@ -79,25 +79,13 @@ impl XapianReader {
         Some(xr)
     }
 
-    pub fn query<T>(
-        &mut self,
-        user_uri: &str,
-        str_query: &str,
-        str_sort: &str,
-        db_names_str: &str,
-        from: i32,
-        top: i32,
-        limit: i32,
-        add_out_element: fn(uri: &str, ctx: &mut T),
-        op_auth: OptAuthorize,
-        ctx: &mut T,
-    ) -> Result<QueryResult> {
+    pub fn query<T>(&mut self, request: &FTQuery, add_out_element: fn(uri: &str, ctx: &mut T), op_auth: OptAuthorize, ctx: &mut T) -> Result<QueryResult> {
         let mut sr = QueryResult::default();
 
-        let wtta = TTA::parse_expr(str_query);
+        let wtta = TTA::parse_expr(&request.query);
 
         if wtta.is_none() {
-            error!("fail parse query (phase 1) [{}], tta is empty", str_query);
+            error!("fail parse query (phase 1) [{}], tta is empty", request.query);
             sr.result_code = ResultCode::BadRequest;
             return Ok(sr);
         }
@@ -108,10 +96,13 @@ impl XapianReader {
 
         let mut tta = wtta.unwrap();
 
-        let db_names = self.get_dn_names(&tta, db_names_str);
+        let db_names = self.get_dn_names(&tta, &request.databases);
 
         debug!("db_names={:?}", db_names);
-        debug!("user_uri=[{}] query=[{}] str_sort=[{}], db_names=[{:?}], from=[{}], top=[{}], limit=[{}]", user_uri, str_query, str_sort, db_names, from, top, limit);
+        debug!(
+            "user_uri=[{}] query=[{}] str_sort=[{}], db_names=[{:?}], from=[{}], top=[{}], limit=[{}]",
+            request.user, request.query, request.sort, request.databases, request.from, request.top, request.limit
+        );
         debug!("TTA [{}]", tta);
 
         if let Some((_, new_committed_op_id)) = self.mdif.read_info() {
@@ -149,7 +140,7 @@ impl XapianReader {
 
         if query.is_empty() {
             sr.result_code = ResultCode::Ok;
-            warn!("query is empty [{}]", str_query);
+            warn!("query is empty [{}]", request.query);
             return Ok(sr);
         }
 
@@ -158,11 +149,11 @@ impl XapianReader {
 
             xapian_enquire.set_query(&mut query)?;
 
-            if let Some(s) = get_sorter(str_sort, &self.key2slot)? {
+            if let Some(s) = get_sorter(&request.sort, &self.key2slot)? {
                 xapian_enquire.set_sort_by_key(s, true)?;
             }
 
-            sr = exec_xapian_query_and_queue_authorize(user_uri, &mut xapian_enquire, from, top, limit, add_out_element, op_auth, ctx);
+            sr = exec_xapian_query_and_queue_authorize(&request.user, &mut xapian_enquire, request.from, request.top, request.limit, add_out_element, op_auth, ctx);
         }
 
         debug!("res={:?}", sr);
@@ -177,7 +168,7 @@ impl XapianReader {
 
         let mut ctx = vec![];
 
-        match self.query("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'", "", "", 0, 0, 0, add_out_element, OptAuthorize::NO, &mut ctx) {
+        match self.query(&FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'vdi:ClassIndex'"), add_out_element, OptAuthorize::NO, &mut ctx) {
             Ok(res) => {
                 if res.result_code == ResultCode::Ok && res.count > 0 {
                     for id in ctx.iter() {

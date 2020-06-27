@@ -11,6 +11,7 @@ use v_onto::individual::Individual;
 use v_onto::parser::parse_raw;
 use v_search::ft_client::*;
 use v_storage::inproc_indv_r_storage::get_individual;
+use v_search::common::FTQuery;
 
 lazy_static! {
     static ref FT_CLIENT: Mutex<RefCell<FTClient>> = Mutex::new(RefCell::new(FTClient::new(Module::get_property("ft_query_service_url").unwrap_or_default())));
@@ -197,19 +198,19 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
     let mut query = FTQuery::new_with_ticket(&ticket, &query.unwrap());
     if args.length() > 2 {
         sort = get_string_arg(&mut scope, &args, 2, "callback_get_individual: arg2 [sort] not found or invalid");
-        query.set_sort(sort.unwrap_or_default());
+        query.sort = sort.unwrap_or_default();
         if args.length() > 3 {
             databases = get_string_arg(&mut scope, &args, 3, "callback_get_individual: arg3 [databases] not found or invalid");
-            query.set_databases(databases.unwrap_or_default());
+            query.databases = databases.unwrap_or_default();
             if args.length() > 4 {
                 top = get_string_i32(&mut scope, &args, 4, "callback_get_individual: arg4 [top] not found or invalid");
-                query.set_top(top.unwrap_or(100000));
+                query.top = top.unwrap_or(100000);
                 if args.length() > 5 {
                     limit = get_string_i32(&mut scope, &args, 5, "callback_get_individual: arg5 [limit] not found or invalid");
-                    query.set_limit(limit.unwrap_or(100000));
+                    query.limit = limit.unwrap_or(100000);
                     if args.length() > 6 {
                         from = get_string_i32(&mut scope, &args, 6, "callback_get_individual: arg6 [from] not found or invalid");
-                        query.set_from(from.unwrap_or_default());
+                        query.from = from.unwrap_or_default();
                     }
                 }
             }

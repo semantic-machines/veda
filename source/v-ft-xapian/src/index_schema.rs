@@ -3,7 +3,7 @@ use v_api::app::ResultCode;
 use v_module::module::Module;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
-use v_search::ft_client::FTQuery;
+use v_search::common::FTQuery;
 
 pub struct IndexerSchema {
     class_property_2_id: HashMap<String, String>,

@@ -15,7 +15,7 @@ use v_module::onto::load_onto;
 use v_onto::individual::*;
 use v_onto::onto::Onto;
 use v_queue::consumer::*;
-use v_search::ft_client::*;
+use v_search::common::FTQuery;
 
 const ATTACHMENTS_DB_PATH: &str = "data/files";
 

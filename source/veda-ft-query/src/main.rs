@@ -11,6 +11,7 @@ use v_ft_xapian::xapian_vql::OptAuthorize;
 use v_module::module::{init_log, Module};
 use v_module::onto::load_onto;
 use v_onto::onto::Onto;
+use v_search::common::FTQuery;
 use v_storage::storage::*;
 
 fn main() {
@@ -112,7 +113,19 @@ fn req_prepare(module: &mut Module, request: &Message, xr: &mut XapianReader) ->
                 debug!("id={:?}", id);
             }
 
-            if let Ok(mut res) = xr.query(&user_uri, &query, &sort, &databases, from, top, limit, add_out_element, OptAuthorize::YES, &mut ctx) {
+            let request = FTQuery {
+                ticket: "".to_string(),
+                user: user_uri,
+                query,
+                sort,
+                databases,
+                reopen: false,
+                top,
+                limit,
+                from,
+            };
+
+            if let Ok(mut res) = xr.query(&request, add_out_element, OptAuthorize::YES, &mut ctx) {
                 res.result = ctx;
                 debug!("res={:?}", res);
                 if let Ok(s) = serde_json::to_string(&res) {
