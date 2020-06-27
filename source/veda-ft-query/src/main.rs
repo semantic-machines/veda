@@ -45,7 +45,7 @@ fn main() {
     let mut onto = Onto::default();
     load_onto(&mut storage, &mut onto);
 
-    if let Some(mut xr) = XapianReader::new("russian", storage, onto) {
+    if let Some(mut xr) = XapianReader::new("russian", Box::new(storage), onto) {
         let server = Socket::new(Protocol::Rep0).unwrap();
         if let Err(e) = server.listen(&query_url) {
             error!("fail listen {}, {:?}", query_url, e);

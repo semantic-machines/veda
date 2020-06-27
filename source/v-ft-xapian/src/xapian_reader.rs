@@ -48,11 +48,11 @@ pub struct XapianReader {
     db2path: HashMap<String, String>,
     committed_op_id: i64,
     onto_modified: SystemTime,
-    storage: VStorage,
+    storage: Box<VStorage>
 }
 
 impl XapianReader {
-    pub fn new(lang: &str, storage: VStorage, onto: Onto) -> Option<Self> {
+    pub fn new(lang: &str, storage: Box<VStorage>, onto: Onto) -> Option<Self> {
         let indexer_module_info = ModuleInfo::new(BASE_PATH, "fulltext_indexer", true);
         if indexer_module_info.is_err() {
             error!("{:?}", indexer_module_info.err());
@@ -71,7 +71,7 @@ impl XapianReader {
             db2path: init_db_path(),
             committed_op_id: 0,
             onto_modified: SystemTime::now(),
-            storage,
+            storage
         };
 
         xr.load_index_schema();
