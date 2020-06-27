@@ -18,6 +18,7 @@ use std::time::Instant;
 use v_ft_xapian::init_db_path;
 use v_queue::consumer::*;
 use xapian_rusty::*;
+use v_ft_xapian::xapian_reader::XapianReader;
 
 //const XAPIAN_DB_TYPE: i8 = BRASS;
 const BASE_PATH: &str = "./data";
@@ -37,36 +38,38 @@ fn main() -> Result<(), i32> {
     }
     let mut module = Module::default();
     let mut onto = Onto::default();
-
     load_onto(&mut module.storage, &mut onto);
 
-    let mut ctx = Indexer {
-        onto,
-        index_dbs: Default::default(),
-        tg: TermGenerator::new()?,
-        lang: "russian".to_string(),
-        key2slot: Default::default(),
-        db2path: init_db_path(),
-        idx_schema: Default::default(),
-        use_db: "".to_string(),
-        committed_op_id: 0,
-        prepared_op_id: 0,
-        committed_time: Instant::now(),
-    };
+    if let Some(xr) = XapianReader::new("russian", &mut module.storage) {
+        let mut ctx = Indexer {
+            onto,
+            index_dbs: Default::default(),
+            tg: TermGenerator::new()?,
+            lang: "russian".to_string(),
+            key2slot: Default::default(),
+            db2path: init_db_path(),
+            idx_schema: Default::default(),
+            use_db: "".to_string(),
+            committed_op_id: 0,
+            prepared_op_id: 0,
+            committed_time: Instant::now(),
+            xr
+        };
 
-    info!("Rusty search-index: start listening to queue");
+        info!("Rusty search-index: start listening to queue");
 
-    ctx.init("").expect("fail init");
+        ctx.init("").expect("fail init");
 
-    module.listen_queue(
-        &mut queue_consumer,
-        &mut module_info.unwrap(),
-        &mut ctx,
-        &mut (before as fn(&mut Module, &mut Indexer, u32) -> Option<u32>),
-        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Indexer, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
-        &mut (after as fn(&mut Module, &mut ModuleInfo, &mut Indexer, u32) -> bool),
-        &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Indexer)),
-    );
+        module.listen_queue(
+            &mut queue_consumer,
+            &mut module_info.unwrap(),
+            &mut ctx,
+            &mut (before as fn(&mut Module, &mut Indexer, u32) -> Option<u32>),
+            &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Indexer, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
+            &mut (after as fn(&mut Module, &mut ModuleInfo, &mut Indexer, u32) -> bool),
+            &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Indexer)),
+        );
+    }
 
     Ok(())
 }
