@@ -16,20 +16,22 @@ use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_onto::resource::Resource;
 use xapian_rusty::{get_xapian_err_type, Document, Stem, TermGenerator, WritableDatabase, DB_CREATE_OR_OPEN};
+use v_ft_xapian::xapian_reader::XapianReader;
 
-pub struct Indexer {
-    pub(crate) onto: Onto,
-    pub(crate) index_dbs: HashMap<String, WritableDatabase>,
-    pub(crate) tg: TermGenerator,
-    pub(crate) lang: String,
-    pub(crate) key2slot: Key2Slot,
-    pub(crate) db2path: HashMap<String, String>,
-    pub(crate) idx_schema: IndexerSchema,
-    pub(crate) use_db: String,
+pub(crate) struct Indexer {
+    pub onto: Onto,
+    pub index_dbs: HashMap<String, WritableDatabase>,
+    pub tg: TermGenerator,
+    pub lang: String,
+    pub key2slot: Key2Slot,
+    pub db2path: HashMap<String, String>,
+    pub idx_schema: IndexerSchema,
+    pub use_db: String,
 
-    pub(crate) committed_op_id: i64,
-    pub(crate) prepared_op_id: i64,
-    pub(crate) committed_time: Instant,
+    pub committed_op_id: i64,
+    pub prepared_op_id: i64,
+    pub committed_time: Instant,
+    pub xr: XapianReader
 }
 
 impl Indexer {
@@ -98,7 +100,7 @@ impl Indexer {
             false
         };
 
-        self.idx_schema.load(false, &self.onto, module);
+        self.idx_schema.load(false, &self.onto, module, &mut self.xr);
 
         if !new_indv.is_empty() {
             let is_draft_of = new_indv.get_first_literal("v-s:is_draft_of");
