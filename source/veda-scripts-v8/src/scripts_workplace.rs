@@ -9,6 +9,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 use v_api::app::ResultCode;
+use v_ft_xapian::xapian_reader::XapianReader;
 use v_module::module::Module;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
@@ -93,8 +94,8 @@ impl<'a> ScriptsWorkPlace<'a> {
         }
     }
 
-    pub fn load_event_scripts(&mut self) {
-        let res = self.module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'v-s:Event'"));
+    pub fn load_event_scripts(&mut self, xr: &mut XapianReader) {
+        let res = xr.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'v-s:Event'"), &mut self.module.storage);
         if res.result_code == ResultCode::Ok && res.count > 0 {
             for id in &res.result {
                 if let Some(ev_indv) = self.module.get_individual(id, &mut Individual::default()) {

@@ -13,6 +13,7 @@ use std::sync::Mutex;
 use std::{env, thread, time};
 use v_api::app::ResultCode;
 use v_api::{APIClient, IndvOp};
+use v_ft_xapian::xapian_reader::XapianReader;
 use v_module::info::ModuleInfo;
 use v_module::module::{get_cmd, get_info_of_module, get_inner_binobj_as_individual, init_log, wait_load_ontology, wait_module, Module, PrepareError};
 use v_module::onto::load_onto;
@@ -70,6 +71,7 @@ fn get_storage_init_param() -> String {
 
 pub struct MyContext<'a> {
     api_client: APIClient,
+    xr: XapianReader,
     onto: Onto,
     workplace: ScriptsWorkPlace<'a>,
     vm_id: String,
@@ -128,58 +130,63 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
     let consumer_name = &(process_name.to_owned() + "0");
     let main_queue_name = "individuals-flow";
 
-    let mut ctx = MyContext {
-        api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
-        workplace: ScriptsWorkPlace::new(parent_scope, context),
-        onto,
-        vm_id: "main".to_owned(),
-        sys_ticket: w_sys_ticket.unwrap(),
-        main_queue_cs: None,
-        queue_name: consumer_name.to_owned(),
-        count_exec: 0,
-    };
+    if let Some(xr) = XapianReader::new("russian", &mut module.storage) {
+        let mut ctx = MyContext {
+            api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
+            workplace: ScriptsWorkPlace::new(parent_scope, context),
+            onto,
+            vm_id: "main".to_owned(),
+            sys_ticket: w_sys_ticket.unwrap(),
+            main_queue_cs: None,
+            queue_name: consumer_name.to_owned(),
+            count_exec: 0,
+            xr,
+        };
 
-    info!("use VM id={}", process_name);
+        info!("use VM id={}", process_name);
 
-    if vm_id == "lp" {
-        ctx.vm_id = "V8.LowPriority".to_owned();
-    } else if vm_id == "lp1" {
-        ctx.vm_id = "V8.LowPriority1".to_owned();
-    } else {
-        ctx.vm_id = "main".to_owned();
-    }
-
-    ctx.workplace.load_ext_scripts();
-    ctx.workplace.load_event_scripts();
-
-    let module_info = ModuleInfo::new("./data", &process_name, true);
-    if module_info.is_err() {
-        error!("{:?}", module_info.err());
-        return Err(-1);
-    }
-
-    let mut queue_consumer = Consumer::new("./data/queue", consumer_name, main_queue_name).expect("!!!!!!!!! FAIL OPEN RW CONSUMER");
-
-    if vm_id == "lp" || vm_id == "lp1" {
-        loop {
-            if let Ok(cs) = Consumer::new_with_mode("./data/queue", MAIN_QUEUE_CS, main_queue_name, Mode::Read) {
-                ctx.main_queue_cs = Some(cs);
-                break;
-            }
-            warn!("main queue consumer not open, sleep and repeat");
-            thread::sleep(time::Duration::from_millis(1000));
+        if vm_id == "lp" {
+            ctx.vm_id = "V8.LowPriority".to_owned();
+        } else if vm_id == "lp1" {
+            ctx.vm_id = "V8.LowPriority1".to_owned();
+        } else {
+            ctx.vm_id = "main".to_owned();
         }
-    }
 
-    module.listen_queue(
-        &mut queue_consumer,
-        &mut module_info.unwrap(),
-        &mut ctx,
-        &mut (before_batch as fn(&mut Module, &mut MyContext<'a>, batch_size: u32) -> Option<u32>),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
-        &mut (after_batch as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, prepared_batch_size: u32) -> bool),
-        &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>)),
-    );
+        ctx.workplace.load_ext_scripts();
+        ctx.workplace.load_event_scripts(&mut ctx.xr);
+
+        let module_info = ModuleInfo::new("./data", &process_name, true);
+        if module_info.is_err() {
+            error!("{:?}", module_info.err());
+            return Err(-1);
+        }
+
+        let mut queue_consumer = Consumer::new("./data/queue", consumer_name, main_queue_name).expect("!!!!!!!!! FAIL OPEN RW CONSUMER");
+
+        if vm_id == "lp" || vm_id == "lp1" {
+            loop {
+                if let Ok(cs) = Consumer::new_with_mode("./data/queue", MAIN_QUEUE_CS, main_queue_name, Mode::Read) {
+                    ctx.main_queue_cs = Some(cs);
+                    break;
+                }
+                warn!("main queue consumer not open, sleep and repeat");
+                thread::sleep(time::Duration::from_millis(1000));
+            }
+        }
+
+        module.listen_queue(
+            &mut queue_consumer,
+            &mut module_info.unwrap(),
+            &mut ctx,
+            &mut (before_batch as fn(&mut Module, &mut MyContext<'a>, batch_size: u32) -> Option<u32>),
+            &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
+            &mut (after_batch as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>, prepared_batch_size: u32) -> bool),
+            &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut MyContext<'a>)),
+        );
+    } else {
+        error!("fail init ft-query");
+    }
     Ok(())
 }
 
