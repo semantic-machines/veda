@@ -1,10 +1,10 @@
+use crate::xapian_reader::XapianReader;
 use std::collections::{HashMap, HashSet};
 use v_api::app::ResultCode;
 use v_module::module::Module;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_search::common::FTQuery;
-use crate::xapian_reader::XapianReader;
 
 pub struct IndexerSchema {
     class_property_2_id: HashMap<String, String>,
