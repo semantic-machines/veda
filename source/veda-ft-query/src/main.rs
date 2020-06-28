@@ -47,6 +47,8 @@ fn main() {
                 }
             }
         }
+    } else {
+        error!("fail init ft-query");
     }
 }
 

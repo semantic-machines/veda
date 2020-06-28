@@ -54,8 +54,9 @@ fn main() -> std::io::Result<()> {
                 }
             }
         }
+    } else {
+        error!("fail init ft-query");
     }
-
     Ok(())
 }
 
