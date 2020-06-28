@@ -34,7 +34,7 @@ impl Key2Slot {
             return None;
         }
 
-        if let Some(c) = key.chars().nth(0) {
+        if let Some(c) = key.chars().next() {
             if c == '#' {
                 if let Ok(v) = key[1..].parse::<u32>() {
                     return Some(v);
@@ -83,21 +83,15 @@ impl Key2Slot {
         let mut key2slot = Key2Slot::default();
         key2slot.modified = ff.metadata()?.modified()?;
 
-        let mut lines = BufReader::new(ff).lines();
+        for line in BufReader::new(ff).lines() {
+            if let Ok(ll) = line {
+                let (field, slot) = scan_fmt!(&ll, "\"{}\",{}", String, u32);
 
-        loop {
-            if let Some(line) = lines.next() {
-                if let Ok(ll) = line {
-                    let (field, slot) = scan_fmt!(&ll, "\"{}\",{}", String, u32);
-
-                    if field.is_some() && slot.is_some() {
-                        key2slot.data.insert(field.unwrap(), slot.unwrap());
-                    } else {
-                        error!("fail parse key2slot, line={}", ll);
-                    }
+                if field.is_some() && slot.is_some() {
+                    key2slot.data.insert(field.unwrap(), slot.unwrap());
+                } else {
+                    error!("fail parse key2slot, line={}", ll);
                 }
-            } else {
-                break;
             }
         }
 
