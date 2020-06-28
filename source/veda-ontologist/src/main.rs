@@ -5,13 +5,14 @@ extern crate env_logger;
 use chrono::Local;
 use env_logger::Builder;
 use log::LevelFilter;
-use std::collections::{HashMap};
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
 use v_api::app::ResultCode;
 use v_api::IndvOp;
+use v_ft_xapian::xapian_reader::XapianReader;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_onto::individual2turtle::to_turtle;
@@ -78,32 +79,37 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
-    let mut ctx = Context {
-        last_found_changes: Instant::now(),
-        query,
-        ontology_file_path: ontology_file_path.to_owned(),
-        onto_types: onto_types.iter().map(|s| String::from(*s)).collect(),
-        onto_index: OntoIndex::load(),
-        is_need_generate: false,
-    };
+    if let Some(xr) = XapianReader::new("russian", &mut module.storage) {
+        let mut ctx = Context {
+            last_found_changes: Instant::now(),
+            query,
+            ontology_file_path: ontology_file_path.to_owned(),
+            onto_types: onto_types.iter().map(|s| String::from(*s)).collect(),
+            onto_index: OntoIndex::load(),
+            is_need_generate: false,
+            xr,
+        };
 
-    if ctx.onto_index.len() == 0 {
-        recover_index_from_ft(&mut ctx, &mut module);
-        if let Err(e) = ctx.onto_index.dump() {
-            error!("fail flush onto index, err={}", e);
+        if ctx.onto_index.len() == 0 {
+            recover_index_from_ft(&mut ctx, &mut module);
+            if let Err(e) = ctx.onto_index.dump() {
+                error!("fail flush onto index, err={}", e);
+            }
         }
-    }
 
-    let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
-    module.listen_queue(
-        &mut queue_consumer,
-        &mut module_info.unwrap(),
-        &mut ctx,
-        &mut (before_batch as fn(&mut Module, &mut Context, batch_size: u32) -> Option<u32>),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
-        &mut (after_batch as fn(&mut Module, &mut ModuleInfo, &mut Context, prepared_batch_size: u32) -> bool),
-        &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Context)),
-    );
+        let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+        module.listen_queue(
+            &mut queue_consumer,
+            &mut module_info.unwrap(),
+            &mut ctx,
+            &mut (before_batch as fn(&mut Module, &mut Context, batch_size: u32) -> Option<u32>),
+            &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual, my_consumer: &Consumer) -> Result<bool, PrepareError>),
+            &mut (after_batch as fn(&mut Module, &mut ModuleInfo, &mut Context, prepared_batch_size: u32) -> bool),
+            &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Context)),
+        );
+    } else {
+        error!("fail init ft-query");
+    }
     Ok(())
 }
 
@@ -114,6 +120,7 @@ pub struct Context {
     onto_types: Vec<String>,
     onto_index: OntoIndex,
     is_need_generate: bool,
+    pub xr: XapianReader,
 }
 
 fn heartbeat(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context) {
@@ -144,7 +151,13 @@ fn after_batch(_module: &mut Module, _module_info: &mut ModuleInfo, _ctx: &mut C
     true
 }
 
-fn prepare(_module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
+fn prepare(
+    _module: &mut Module,
+    _module_info: &mut ModuleInfo,
+    ctx: &mut Context,
+    queue_element: &mut Individual,
+    _my_consumer: &Consumer,
+) -> Result<bool, PrepareError> {
     if let Some((id, counter, is_deleted)) = test_on_onto(queue_element, &ctx.onto_types) {
         ctx.last_found_changes = Instant::now();
         ctx.is_need_generate = true;
@@ -168,7 +181,7 @@ fn recover_index_from_ft(ctx: &mut Context, module: &mut Module) -> bool {
     info!("recover index from ft");
     info!("query={}", ctx.query);
 
-    let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", &ctx.query));
+    let res = ctx.xr.query(FTQuery::new_with_user("cfg:VedaSystem", &ctx.query), &mut module.storage);
     if res.result_code == ResultCode::Ok && res.count > 0 {
         //        if let Err(e) = ctx.onto_index.drop() {
         //            error!("fail clean index, err={}", e);
@@ -205,8 +218,7 @@ fn generate_turtle_file(ctx: &mut Context, module: &mut Module) -> bool {
                 if let Some(full_url) = rindv.get_first_literal("v-s:fullUrl") {
                     debug!("prefix : {} -> {}", rindv.get_id(), full_url);
                     let short_prefix = rindv.get_id().trim_end_matches(':');
-                        prefixes.insert(short_prefix.to_owned(), full_url);
-
+                    prefixes.insert(short_prefix.to_owned(), full_url);
                 }
             }
 
