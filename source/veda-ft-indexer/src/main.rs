@@ -69,6 +69,8 @@ fn main() -> Result<(), i32> {
             &mut (after as fn(&mut Module, &mut ModuleInfo, &mut Indexer, u32) -> bool),
             &mut (heartbeat as fn(&mut Module, &mut ModuleInfo, &mut Indexer)),
         );
+    } else {
+        error!("fail init ft-query");
     }
 
     Ok(())
