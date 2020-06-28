@@ -9,9 +9,9 @@ use v_api::*;
 use v_module::module::Module;
 use v_onto::individual::Individual;
 use v_onto::parser::parse_raw;
+use v_search::common::FTQuery;
 use v_search::ft_client::*;
 use v_storage::inproc_indv_r_storage::get_individual;
-use v_search::common::FTQuery;
 
 lazy_static! {
     static ref FT_CLIENT: Mutex<RefCell<FTClient>> = Mutex::new(RefCell::new(FTClient::new(Module::get_property("ft_query_service_url").unwrap_or_default())));
