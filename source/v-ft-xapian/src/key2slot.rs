@@ -128,6 +128,6 @@ impl Key2Slot {
 
         let hash_hex = format!("{:X}", hash.finalize());
 
-        return (outbuff, hash_hex);
+        (outbuff, hash_hex)
     }
 }

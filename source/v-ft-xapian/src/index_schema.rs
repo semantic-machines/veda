@@ -42,7 +42,7 @@ impl IndexerSchema {
 
     pub fn get_copy_of_index(&self, id: &str) -> Option<Individual> {
         if let Some(indv) = self.id_2_individual.get(id) {
-            return Some(Individual::new_from_obj(indv.get_obj()));
+            Some(Individual::new_from_obj(indv.get_obj()))
         } else {
             None
         }

@@ -249,7 +249,7 @@ impl XapianReader {
                 return Err(XError::from(Error::new(ErrorKind::Other, "db2path invalid")));
             }
         }
-        return Ok(());
+        Ok(())
     }
 
     fn open_dbqp_if_need(&mut self, db_names: &Vec<String>) -> Result<()> {
