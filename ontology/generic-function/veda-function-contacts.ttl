@@ -73,9 +73,11 @@ v-s:ContactsTemplate
   rdfs:label "Contacts function template"@en ;
   v-ui:template """
 <script>
-  return veda.appointment.getOrganization().then(function (managedOrganization) {
-    individual["v-s:managedOrganization"] = [ managedOrganization ];
-  });
+  if (!individual.hasValue("v-s:managedOrganization")) {
+    return veda.appointment.getOrganization().then(function (managedOrganization) {
+      individual["v-s:managedOrganization"] = [ managedOrganization ];
+    });
+  };
 //# sourceURL=v-s:ContactsTemplate_pre
 </script>
 <div class="container sheet">
@@ -263,7 +265,7 @@ v-s:ContactsTemplate
       queryStringArray = [queryAppointment];
     } else if (parent.hasValue('rdf:type', 'v-s:Organization')) {
       var queryOrgGroup = queryPattern + "'rdf:type'=='v-s:OrgGroup'";
-      var querySubsidiary = "'v-s:parentOrganization'=='" + parentOrgUri + "' && 'rdf:type'=='v-s:Subsidiary'";
+      var querySubsidiary = "'v-s:parentOrganization'=='" + parentUri + "' && 'rdf:type'=='v-s:Subsidiary'";
       var queryOrganization = queryPattern + "'rdf:type'=='v-s:Organization'";
       queryStringArray = [queryOrganization, querySubsidiary, queryDepartments, queryOrgGroup, queryAppointment];
     }
@@ -276,6 +278,7 @@ v-s:ContactsTemplate
       queryResults.forEach(function (queryResult) {
         childrenUris = childrenUris.concat(queryResult.result);
       });
+      childrenUris = veda.Util.unique(childrenUris);
       parent.children = childrenUris;
       return childrenUris;
     });
@@ -348,7 +351,7 @@ v-s:ContactsTemplate
     } else if (obj.hasValue('rdf:type', 'v-s:Department')) {
       tmpl = 'v-s:DepartmentTemplate';
     } else if (obj.hasValue('rdf:type', 'v-s:Organization')) {
-      tmpl = 'v-s:OrganizationTemplate';
+      tmpl = undefined;
     }
     riot.route( ["#", obj.id, "#main", tmpl].join("/") );
     //veda.Util.showModal(obj, tmpl);
