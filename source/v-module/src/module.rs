@@ -347,17 +347,13 @@ impl Module {
             if let Some(t) = self.max_timeout_between_batches {
                 let delta = prev_batch_time.elapsed().as_millis() as u64;
                 if let Some(c) = self.min_batch_size_to_cancel_timeout {
-                    if prepared_batch_size < c {
-                        if delta < t {
-                            thread::sleep(time::Duration::from_millis(t - delta));
-                            info!("sleep {} ms", t - delta);
-                        }
-                    }
-                } else {
-                    if delta < t {
+                    if prepared_batch_size < c && delta < t {
                         thread::sleep(time::Duration::from_millis(t - delta));
                         info!("sleep {} ms", t - delta);
                     }
+                } else if delta < t {
+                    thread::sleep(time::Duration::from_millis(t - delta));
+                    info!("sleep {} ms", t - delta);
                 }
             }
 

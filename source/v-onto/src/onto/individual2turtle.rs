@@ -50,7 +50,7 @@ fn from_integer<'a>(id: &'a str, in_predicate: &'a str, v: &'a str) -> Triple<'a
 
     Triple {
         subject: subject.into(),
-        predicate: predicate,
+        predicate,
         object: obj.into(),
     }
 }
@@ -73,7 +73,7 @@ fn from_decimal<'a>(id: &'a str, in_predicate: &'a str, v: &'a str) -> Triple<'a
 
     Triple {
         subject: subject.into(),
-        predicate: predicate,
+        predicate,
         object: obj.into(),
     }
 }
@@ -96,7 +96,7 @@ fn from_datetime<'a>(id: &'a str, in_predicate: &'a str, v: &'a str) -> Triple<'
 
     Triple {
         subject: subject.into(),
-        predicate: predicate,
+        predicate,
         object: obj.into(),
     }
 }
@@ -116,7 +116,7 @@ fn from_uri<'a>(id: &'a str, in_predicate: &'a str, v: &'a str) -> Triple<'a> {
 
     Triple {
         subject: subject.into(),
-        predicate: predicate,
+        predicate,
         object: obj.into(),
     }
 }
@@ -146,12 +146,12 @@ fn from_string<'a>(id: &'a str, in_predicate: &'a str, s: &'a str, l: Lang) -> T
 
     Triple {
         subject: subject.into(),
-        predicate: predicate,
+        predicate,
         object: obj.into(),
     }
 }
 
-fn format_resources(subject: &str, predicate: &String, resources: &Vec<Resource>, formatter: &mut TurtleFormatterWithPrefixes<Vec<u8>>) -> Result<(), io::Error> {
+fn format_resources(subject: &str, predicate: &str, resources: &[Resource], formatter: &mut TurtleFormatterWithPrefixes<Vec<u8>>) -> Result<(), io::Error> {
     for r in resources {
         match r.rtype {
             DataType::Boolean => {
@@ -198,7 +198,7 @@ fn collect_prefix(v: &str, all_prefixes: &HashMap<String, String>, used_prefixes
     }
 }
 
-fn extract_prefixes<'a>(indvs: &Vec<Individual>, all_prefixes: &HashMap<String, String>) -> HashMap<String, String> {
+fn extract_prefixes(indvs: &[Individual], all_prefixes: &HashMap<String, String>) -> HashMap<String, String> {
     let mut used_prefixes = HashMap::new();
 
     for indv in indvs.iter() {
@@ -206,11 +206,8 @@ fn extract_prefixes<'a>(indvs: &Vec<Individual>, all_prefixes: &HashMap<String, 
         for (predicate, resources) in &indv.obj.resources {
             collect_prefix(predicate, &all_prefixes, &mut used_prefixes);
             for r in resources {
-                match r.rtype {
-                    DataType::Uri => {
-                        collect_prefix(&r.get_uri(), &all_prefixes, &mut used_prefixes);
-                    }
-                    _ => {}
+                if let DataType::Uri = r.rtype {
+                    collect_prefix(&r.get_uri(), &all_prefixes, &mut used_prefixes);
                 }
             }
         }
@@ -238,6 +235,5 @@ pub fn to_turtle(indvs: Vec<Individual>, all_prefixes: &mut HashMap<String, Stri
         }
     }
 
-    let nt = formatter.finish();
-    nt
+    formatter.finish()
 }
