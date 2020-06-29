@@ -240,7 +240,7 @@ fn is_op(c: &[u8]) -> &str {
             return "";
         }
     }
-    return "";
+    ""
 }
 
 fn priority(op: &str) -> i32 {
@@ -260,5 +260,5 @@ fn priority(op: &str) -> i32 {
         return 1;
     }
 
-    return -1;
+    -1
 }
