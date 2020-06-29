@@ -919,12 +919,12 @@ v-s:GG_OrganizationStructure
 return veda.Util.getPropertyChain(this, "v-s:parentUnit");
   """;
   rdfs:label "Auth group generator: put organization unit to parent unit group " ;
-  v-s:canRead true ;
 .
 
 v-s:GG_OrganizationStructureGroup
   rdf:type v-s:GroupGenerator ;
-  v-s:authClass v-s:Organization ;
+  v-s:authClass v-s:OrgGroup ;
+  v-s:authClass v-s:Subsidiary ;
   v-s:authClass v-s:Department ;
   v-s:authClass v-s:Position ;
   v-s:authClass v-s:Appointment ;
