@@ -58,6 +58,10 @@ impl OntoIndex {
         self.data.keys().len()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.data.keys().len() > 0
+    }
+
     pub fn remove(&mut self, key: &str) -> Result<(), Box<ErrorKind>> {
         self.data.remove(key);
         self.dump()

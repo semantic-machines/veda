@@ -121,11 +121,9 @@ impl Onto {
             let mut buf = Vec::new();
             if let Some(qqq) = self.relations.get(el) {
                 for (x, t) in qqq {
-                    if *t == RelType::Sub {
-                        if !collector.contains(x) {
-                            collector.insert(x.to_string());
-                            buf.push(x.to_string());
-                        }
+                    if *t == RelType::Sub && !collector.contains(x) {
+                        collector.insert(x.to_string());
+                        buf.push(x.to_string());
                     }
                 }
             }
@@ -141,11 +139,9 @@ impl Onto {
             let mut buf = Vec::new();
             if let Some(qqq) = self.relations.get(el) {
                 for (x, t) in qqq {
-                    if *t == RelType::Super {
-                        if !collector.contains(x) {
-                            collector.insert(x.to_string());
-                            buf.push(x.to_string());
-                        }
+                    if *t == RelType::Super && !collector.contains(x) {
+                        collector.insert(x.to_string());
+                        buf.push(x.to_string());
                     }
                 }
             }
