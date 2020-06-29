@@ -237,7 +237,7 @@ if [ -z $1 ] || [ $1 == "cleaner" ] || [ $1 == "veda-cleaner" ] || [ $1 == "basi
     cp $CARGO_TARGET_DIR/release/veda-cleaner $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 == "all" ]; then
+if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 == "basic" ] || [ $1 == "all" ]; then
     echo BUILD SCRIPTS-V8
     cd source/veda-scripts-v8
     cargo build --release
@@ -245,7 +245,7 @@ if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-scripts-v8 $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "basic" ]; then
+if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "basic" ] || [ $1 == "all" ]; then
     echo BUILD FT-INDEXER
     cd source/veda-ft-indexer
     cargo build --release
@@ -253,7 +253,7 @@ if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-ft-indexer $PWD/veda-ft-indexer
 fi
 
-if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "basic" ]; then
+if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "basic" ] || [ $1 == "all" ]; then
     echo BUILD FT-QUERY
     cd source/veda-ft-query
     cargo build --release
@@ -261,7 +261,7 @@ if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "ba
     cp $CARGO_TARGET_DIR/release/veda-ft-query $PWD/veda-ft-query
 fi
 
-if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ] || [ $1 == "mv1" ]; then
+if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ] || [ $1 == "basic" ] || [ $1 == "all" ]; then
 
     if [ -z $GOROOT ]; then
 	export GOROOT=/usr/local/go
