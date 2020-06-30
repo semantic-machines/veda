@@ -1606,6 +1606,7 @@ v-s:AppointmentTemplate
           tempEmployee['v-s:owner'] = [tempEmployee];
           tempEmployee['v-s:origin'] = individual['v-s:origin'];
           tempEmployee['v-s:hasAccount'] = [ tempAccount];
+          if(tempAccount) tempEmployee['v-s:hasAccount'] = [ tempAccount];
         }
 
       if (savedOccupation) {
