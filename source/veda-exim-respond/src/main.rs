@@ -4,11 +4,7 @@
 #[macro_use]
 extern crate log;
 
-use chrono::Local;
-use env_logger::Builder;
-use log::LevelFilter;
 use nng::{Message, Protocol, Socket};
-use std::io::Write;
 use std::str::from_utf8;
 use v_exim::*;
 use v_module::module::*;
@@ -18,16 +14,12 @@ use v_queue::consumer::Consumer;
 use v_queue::record::ErrorQueue;
 
 fn main() -> std::io::Result<()> {
+    init_log();
     let env_var = "RUST_LOG";
     match std::env::var_os(env_var) {
-        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
+        Some(val) => info!("use env var: {}: {:?}", env_var, val.to_str()),
         None => std::env::set_var(env_var, "info"),
     }
-
-    Builder::new()
-        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
-        .filter(None, LevelFilter::Info)
-        .init();
 
     let mut module = Module::default();
 
