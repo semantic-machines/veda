@@ -1389,7 +1389,7 @@ v-ui:IconModalTemplate
     modal = $(modal).modal({"show": false});
     $("body").append(modal);
     modal.modal("show");
-    
+
     modal.find("#follow").click( function () {
       var resourceTemplate = modal.find("[resource]").first();
       var uri = resourceTemplate.attr("resource");
@@ -3086,9 +3086,6 @@ v-ui:generic
   var properties = [].concat.apply(
     [],
     individual["rdf:type"].map( function (_class) {
-      $(".className", template).append (
-        $("<span/>", {"about": _class.id, "property": "rdfs:label"})
-      );
       return ontology.getClassProperties(_class.id);
     })
   );
@@ -3182,7 +3179,7 @@ v-ui:generic
   <div class="container sheet">
     <div class="row">
       <div class="col-md-4 col-xs-5 text-right">
-        <h2 class="text-muted className"></h2>
+        <h2 class="text-muted" rel="rdf:type" data-template="v-ui:LabelTemplate"></h2>
       </div>
       <div class="col-md-8 col-xs-7">
         <h2 about="@" property="rdfs:label"></h2>
