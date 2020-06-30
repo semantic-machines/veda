@@ -5,12 +5,8 @@
 #[macro_use]
 extern crate log;
 
-use chrono::Local;
-use env_logger::Builder;
-use log::LevelFilter;
 use nng::{Message, Protocol, Socket};
 use std::collections::HashMap;
-use std::io::Write;
 use std::{thread, time};
 use v_exim::*;
 use v_module::module::*;
@@ -22,11 +18,6 @@ fn main() -> std::io::Result<()> {
         Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
         None => std::env::set_var(env_var, "info"),
     }
-
-    Builder::new()
-        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
-        .filter(None, LevelFilter::Info)
-        .init();
 
     let mut module = Module::default();
 

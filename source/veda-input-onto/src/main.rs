@@ -1,10 +1,7 @@
 #[macro_use]
 extern crate log;
 
-use chrono::Local;
 use crossbeam_channel::unbounded;
-use env_logger::Builder;
-use log::LevelFilter;
 use md5::{Digest, Md5};
 use notify::{EventKind, RecommendedWatcher, RecursiveMode, Result as NotifyResult, Watcher};
 use rio_api::model::Literal::{LanguageTaggedString, Simple, Typed};
@@ -60,16 +57,12 @@ impl fmt::Display for Prefixes {
 }
 
 fn main() -> NotifyResult<()> {
+    init_log();
     let env_var = "RUST_LOG";
     match std::env::var_os(env_var) {
         Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
         None => std::env::set_var(env_var, "info"),
     }
-
-    Builder::new()
-        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
-        .filter(None, LevelFilter::Info)
-        .init();
 
     let module_info = ModuleInfo::new("./data", "input-onto", true);
     if module_info.is_err() {
