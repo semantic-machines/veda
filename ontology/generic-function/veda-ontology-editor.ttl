@@ -1208,6 +1208,13 @@ v-s:MembershipRegistryBlank
   v-fc:targetType v-s:Membership ;
 .
 
+v-s:PermissionStatementBlank
+  a v-fc:Blank ;
+  rdfs:label "Право"@ru ;
+  rdfs:label "Permission"@en ;
+  v-fc:targetType v-s:PermissionStatement ;
+.
+
 v-s:PermissionStatementRegistry
   a v-fs:AttributiveSearch ;
   rdfs:label "Запись о выдаче прав"@ru ;
