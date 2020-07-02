@@ -69,15 +69,21 @@ fn req_prepare(conf: &AuthConf, request: &Message, systicket: &str, xr: &mut Xap
 
     match v["function"].as_str().unwrap_or_default() {
         "authenticate" => {
+            let login = v["login"].as_str().unwrap_or_default();
+            let password = v["password"].as_str().unwrap_or_default();
+            let secret = v["secret"].as_str().unwrap_or_default();
+
+            let user_stat = suspicious.entry(login.to_owned()).or_insert(UserStat::default());
+
             let mut ah = AuthWorkPlace {
                 conf,
-                login: v["login"].as_str().unwrap_or_default(),
-                password: v["password"].as_str().unwrap_or_default(),
-                secret: v["secret"].as_str().unwrap_or_default(),
-                systicket,
+                login,
+                password,
+                secret,
+                sys_ticket: systicket,
                 xr,
                 module,
-                suspicious,
+                user_stat,
             };
 
             let ticket = ah.authenticate();
