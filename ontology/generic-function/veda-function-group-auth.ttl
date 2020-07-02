@@ -913,12 +913,22 @@ if (subjectGroup_uri && objectGroup_uri) {
 v-s:GG_OrganizationStructure
   rdf:type v-s:GroupGenerator ;
   v-s:authClass v-s:Organization ;
+  v-s:authClass v-s:OrgGroup ;
+  v-s:authClass v-s:Subsidiary ;
   v-s:authClass v-s:Department ;
   v-s:authClass v-s:Position ;
   v-s:authGroupFunction """
-return veda.Util.getPropertyChain(this, "v-s:parentUnit");
+var this_is_organization = veda.Util.hasValue(this, "rdf:type", {data: "v-s:Organization", type: "Uri"});
+var parent_unit_uri = veda.Util.getUri(this["v-s:parentUnit"]);
+if (parent_unit_uri) {
+  var parent_unit = get_individual(veda.ticket, parent_unit_uri);
+  var parent_is_organization = veda.Util.hasValue(parent_unit, "rdf:type", {data: "v-s:Organization", type: "Uri"});
+  if ( !parent_is_organization || this_is_organization ) {
+    return parent_unit_uri;
+  }
+}
   """;
-  rdfs:label "Auth group generator: put organization unit to parent unit group " ;
+  rdfs:label "Auth group generator: put organization unit to parent unit group" ;
 .
 
 v-s:GG_OrganizationStructureGroup
@@ -933,7 +943,52 @@ v-s:GG_OrganizationStructureGroup
 var org = veda.Util.getUri(this["v-s:parentOrganization"]);
 return org ? org + "_group" : undefined;
   """;
-  rdfs:label "Auth group generator: put all organization's units to special group with id = organizationId_group " ;
+  rdfs:label "Auth group generator: put all organization's units to special group with id = organizationId_group" ;
+.
+
+v-s:OrganizationStructure
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Group ;
+  rdfs:label "Группа организационной структуры"@ru ;
+  rdfs:label "Organization structure group"@en ;
+  rdfs:comment "Special class of Organization structure groups with id = organizationId_group" ;
+.
+
+v-s:Event_OrganizationStructureGroup
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystemAppointment ;
+  rdfs:label "Скрипт добавляет группам вида orgID_group тип v-s:OrganizationStructure" ;
+  rdfs:comment "Скрипт добавляет группам вида orgID_group тип v-s:OrganizationStructure" ;
+  v-s:triggerByType v-s:Group ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+var group = document;
+var group_uri = document["@"];
+var suffix = "_group";
+if (group_uri.indexOf(suffix) > 0) {
+  var org_uri = group_uri.substring(0, group_uri.length - suffix.length);
+  var org = get_individual(ticket, org_uri);
+  var org_is_organization = veda.Util.hasValue(org, "rdf:type", {data: "v-s:Organization", type: "Uri"});
+  if (org_is_organization) {
+    var group_is_organization_structure = veda.Util.hasValue(group, "rdf:type", {data: "v-s:OrganizationStructure", type: "Uri"});
+    if ( !group_is_organization_structure ) {
+      add_to_individual(ticket, {
+        "@": group_uri,
+        "rdf:type": [{ data: "v-s:OrganizationStructure", type: "Uri" }]
+      });
+    }
+  }
+}
+  """;
 .
 
 v-s:GG_AppointmentToOrganization
