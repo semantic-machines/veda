@@ -94,6 +94,28 @@ v-s:CompletedTasksCount_Report_Parameters
   v-ui:hasTemplate v-s:CompletedTasksCount_Report_ParametersTemplate ;
 .
 
+# SPECIFICATIONS ------------------------------------------------------------
+
+v-s:PS_dates_CountOfUsersTasks_Report_Parameters
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CountOfUsersTasks_Report_Parameters ;
+  v-ui:forProperty v-s:dateFrom ;
+  v-ui:forProperty v-s:dateTo ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:dateFrom v-s:dateTo для класса v-s:CountOfUsersTasks_Report_Parameters "@ru ;
+  rdfs:label "v-s:dateFrom v-s:dateTo property specification for v-s:CountOfUsersTasks_Report_Parameters class"@en ;
+.
+v-s:PS_checkedDepartment_CountOfUsersTasks_Report_Parameters
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CountOfUsersTasks_Report_Parameters ;
+  v-ui:forProperty v-s:checkedDepartment ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:checkedDepartment для класса v-s:CountOfUsersTasks_Report_Parameters "@ru ;
+  rdfs:label "v-s:checkedDepartment property specification for v-s:CountOfUsersTasks_Report_Parameters class"@en ;
+.
+
 # TEMPLATES ------------------------------------------------------------
 
 v-s:CountOfUsersTasks_Report_ParametersTemplate
