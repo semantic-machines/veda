@@ -10,18 +10,18 @@ use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
 
-pub struct AuthWorkPlace<'a> {
-    pub(crate) conf: &'a AuthConf,
-    pub(crate) login: &'a str,
-    pub(crate) password: &'a str,
-    pub(crate) secret: &'a str,
-    pub(crate) sys_ticket: &'a str,
-    pub(crate) xr: &'a mut XapianReader,
-    pub(crate) module: &'a mut Module,
-    pub(crate) user_stat: &'a mut UserStat,
-    pub(crate) exist_password: String,
-    pub(crate) edited: i64,
-    pub(crate) credential: &'a mut Individual,
+pub(crate) struct AuthWorkPlace<'a> {
+    pub conf: &'a AuthConf,
+    pub login: &'a str,
+    pub password: &'a str,
+    pub secret: &'a str,
+    pub sys_ticket: &'a str,
+    pub xr: &'a mut XapianReader,
+    pub module: &'a mut Module,
+    pub user_stat: &'a mut UserStat,
+    pub exist_password: String,
+    pub edited: i64,
+    pub credential: &'a mut Individual,
 }
 
 impl<'a> AuthWorkPlace<'a> {
@@ -103,8 +103,6 @@ impl<'a> AuthWorkPlace<'a> {
 
             self.get_credential(account);
 
-            //let origin = person.get_first_literal("v-s:origin");
-
             if !self.secret.is_empty() && self.secret.len() > 5 {
                 self.prepare_secret_code(ticket, &person);
             } else {
@@ -121,7 +119,7 @@ impl<'a> AuthWorkPlace<'a> {
                 };
 
                 if is_request_new_password {
-                    let res = self.set_password(person.get_id(), self.edited, account);
+                    let res = self.request_new_password(person.get_id(), self.edited, account);
                     if res != ResultCode::Ok {
                         ticket.result = res;
                         return true;
@@ -230,9 +228,21 @@ impl<'a> AuthWorkPlace<'a> {
         }
     }
 
-    fn set_password(&mut self, user_id: &str, edited: i64, account: &mut Individual) -> ResultCode {
+    fn request_new_password(&mut self, user_id: &str, edited: i64, account: &mut Individual) -> ResultCode {
         let now = Utc::now().naive_utc().timestamp();
         warn!("request new password, login={} password={} secret={}", self.login, self.password, self.secret);
+
+        if let Some(account_origin) = account.get_first_literal("v-s:authOrigin") {
+            if account_origin != "veda" {
+                return ResultCode::ChangePasswordForbidden;
+            }
+        }
+
+        if let Some(person_origin) = account.get_first_literal("v-s:origin") {
+            if person_origin == "ExternalUser" {
+                return ResultCode::ChangePasswordForbidden;
+            }
+        }
 
         if (now - edited > 0) && now - edited < self.conf.success_pass_change_lock_period {
             error!("request new password: too many requests, login={} password={} secret={}", self.login, self.password, self.secret);
