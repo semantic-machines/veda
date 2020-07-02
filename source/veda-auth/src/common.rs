@@ -24,14 +24,14 @@ pub(crate) struct UserStat {
 
 #[derive(Debug)]
 pub(crate) struct AuthConf {
-    pub(crate) failed_auth_attempts: i32,
-    pub(crate) failed_change_pass_attempts: i32,
-    pub(crate) failed_auth_lock_period: i64,
-    pub(crate) failed_pass_change_lock_period: i64,
-    pub(crate) success_pass_change_lock_period: i64,
-    pub(crate) ticket_lifetime: i64,
-    pub(crate) secret_lifetime: i64,
-    pub(crate) pass_lifetime: i64,
+    pub failed_auth_attempts: i32,
+    pub failed_change_pass_attempts: i32,
+    pub failed_auth_lock_period: i64,
+    pub failed_pass_change_lock_period: i64,
+    pub success_pass_change_lock_period: i64,
+    pub ticket_lifetime: i64,
+    pub secret_lifetime: i64,
+    pub pass_lifetime: i64,
 }
 
 impl Default for AuthConf {
