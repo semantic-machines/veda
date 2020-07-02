@@ -19,6 +19,9 @@ pub struct AuthWorkPlace<'a> {
     pub(crate) xr: &'a mut XapianReader,
     pub(crate) module: &'a mut Module,
     pub(crate) user_stat: &'a mut UserStat,
+    pub(crate) exist_password: String,
+    pub(crate) edited: i64,
+    pub(crate) credential: &'a mut Individual,
 }
 
 impl<'a> AuthWorkPlace<'a> {
@@ -98,116 +101,35 @@ impl<'a> AuthWorkPlace<'a> {
                 return false;
             }
 
-            let now = Utc::now().naive_utc().timestamp();
-            let mut exist_password = String::default();
-            let mut edited = 0;
-            let mut credential = Individual::default();
-
-            match account.get_first_literal("v-s:usesCredential") {
-                Some(uses_credential_uri) => {
-                    if let Some(_credential) = self.module.get_individual(&uses_credential_uri, &mut credential) {
-                        _credential.parse_all();
-                        exist_password = _credential.get_first_literal("v-s:password").unwrap_or_default();
-                        edited = _credential.get_first_datetime("v-s:dateFrom").unwrap_or_default();
-                    } else {
-                        error!("fail read credential: {}", uses_credential_uri);
-                        create_new_credential(self.sys_ticket, self.module, &mut credential, account);
-                    }
-                }
-                None => {
-                    warn!("credential not found, create new");
-                    exist_password = account.get_first_literal("v-s:password").unwrap_or_default();
-
-                    create_new_credential(self.sys_ticket, self.module, &mut credential, account);
-                }
-            }
+            self.get_credential(account);
 
             //let origin = person.get_first_literal("v-s:origin");
-            let old_secret = credential.get_first_literal("v-s:secret").unwrap_or_default();
 
-            // PREPARE SECRET CODE
             if !self.secret.is_empty() && self.secret.len() > 5 {
-                if old_secret.is_empty() {
-                    error!("update password: secret not found, user={}", person.get_id());
-                    ticket.result = ResultCode::InvalidSecret;
-                    remove_secret(&mut credential, person.get_id(), self.module, self.sys_ticket);
-                    return true;
-                }
-
-                if self.secret != old_secret {
-                    error!("request for update password: send secret not equal request secret {}, user={}", self.secret, person.get_id());
-                    ticket.result = ResultCode::InvalidSecret;
-                    remove_secret(&mut credential, person.get_id(), self.module, self.sys_ticket);
-                    return true;
-                }
-
-                let prev_secret_date = credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
-                if now - prev_secret_date > self.conf.secret_lifetime {
-                    ticket.result = ResultCode::SecretExpired;
-                    error!("request new password, secret expired, login={} password={} secret={}", self.login, self.password, self.secret);
-                    return true;
-                }
-
-                if exist_password == self.password {
-                    error!("update password: now password equal previous password, reject. user={}", person.get_id());
-                    ticket.result = ResultCode::NewPasswordIsEqualToOld;
-                    remove_secret(&mut credential, person.get_id(), self.module, self.sys_ticket);
-                    return true;
-                }
-
-                if self.password == EMPTY_SHA256_HASH {
-                    error!("update password: now password is empty, reject. user={}", person.get_id());
-                    ticket.result = ResultCode::EmptyPassword;
-                    remove_secret(&mut credential, person.get_id(), self.module, self.sys_ticket);
-                    return true;
-                }
-
-                if (now - edited > 0) && now - edited < self.conf.success_pass_change_lock_period {
-                    ticket.result = ResultCode::Locked;
-                    error!("request new password: too many requests, login={} password={} secret={}", self.login, self.password, self.secret);
-                    return true;
-                }
-
-                // update password
-                credential.set_string("v-s:password", &self.password, Lang::NONE);
-                credential.set_datetime("v-s:dateFrom", now);
-                credential.remove("v-s:secret");
-                credential.remove("v-s:SecretDateFrom");
-
-                let res = self.module.api.update(&self.sys_ticket, IndvOp::Put, &credential);
-                if res.result != ResultCode::Ok {
-                    ticket.result = ResultCode::AuthenticationFailed;
-                    error!("fail store new password {} for user, user={}", self.password, person.get_id());
-                } else {
-                    create_new_ticket(self.login, &user_id, self.conf.ticket_lifetime, ticket, &mut self.module.storage);
-                    self.user_stat.attempt_change_pass = 0;
-                    info!("update password {} for user, user={}", self.password, person.get_id());
-                }
-                return true;
+                self.prepare_secret_code(ticket, &person);
             } else {
-                // ATTEMPT AUTHENTICATION
+                let now = Utc::now().naive_utc().timestamp();
 
-                let mut is_request_new_password = if self.conf.pass_lifetime > 0 && edited > 0 && now - edited > self.conf.pass_lifetime {
+                let is_request_new_password = if self.secret == "?" {
+                    warn!("request for new password, user={}", account.get_id());
+                    true
+                } else if self.conf.pass_lifetime > 0 && self.edited > 0 && now - self.edited > self.conf.pass_lifetime {
                     error!("password is old, lifetime > {} days, user={}", self.conf.pass_lifetime, account.get_id());
                     true
                 } else {
                     false
                 };
 
-                if self.secret == "?" {
-                    warn!("request for new password, user={}", account.get_id());
-                    is_request_new_password = true;
-                }
-
                 if is_request_new_password {
-                    let res = self.set_password(person.get_id(), edited, &mut credential, account);
+                    let res = self.set_password(person.get_id(), self.edited, account);
                     if res != ResultCode::Ok {
                         ticket.result = res;
                         return true;
                     }
                 }
 
-                if !exist_password.is_empty() && !self.password.is_empty() && self.password.len() > 63 && exist_password == self.password {
+                // ATTEMPT AUTHENTICATION
+                if !self.exist_password.is_empty() && !self.password.is_empty() && self.password.len() > 63 && self.exist_password == self.password {
                     create_new_ticket(self.login, &user_id, self.conf.ticket_lifetime, ticket, &mut self.module.storage);
                     self.user_stat.wrong_count_login = 0;
                     self.user_stat.last_wrong_login_date = 0;
@@ -222,10 +144,93 @@ impl<'a> AuthWorkPlace<'a> {
         } else {
             error!("fail read, uri={}", &account_id);
         }
-        return false;
+        false
     }
 
-    fn set_password(&mut self, user_id: &str, edited: i64, credential: &mut Individual, account: &mut Individual) -> ResultCode {
+    fn prepare_secret_code(&mut self, ticket: &mut Ticket, person: &Individual) {
+        let old_secret = self.credential.get_first_literal("v-s:secret").unwrap_or_default();
+        let now = Utc::now().naive_utc().timestamp();
+
+        if old_secret.is_empty() {
+            error!("update password: secret not found, user={}", person.get_id());
+            ticket.result = ResultCode::InvalidSecret;
+            remove_secret(&mut self.credential, person.get_id(), self.module, self.sys_ticket);
+            return;
+        }
+
+        if self.secret != old_secret {
+            error!("request for update password: send secret not equal request secret {}, user={}", self.secret, person.get_id());
+            ticket.result = ResultCode::InvalidSecret;
+            remove_secret(&mut self.credential, person.get_id(), self.module, self.sys_ticket);
+            return;
+        }
+
+        let prev_secret_date = self.credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
+        if now - prev_secret_date > self.conf.secret_lifetime {
+            ticket.result = ResultCode::SecretExpired;
+            error!("request new password, secret expired, login={} password={} secret={}", self.login, self.password, self.secret);
+            return;
+        }
+
+        if self.exist_password == self.password {
+            error!("update password: now password equal previous password, reject. user={}", person.get_id());
+            ticket.result = ResultCode::NewPasswordIsEqualToOld;
+            remove_secret(&mut self.credential, person.get_id(), self.module, self.sys_ticket);
+            return;
+        }
+
+        if self.password == EMPTY_SHA256_HASH {
+            error!("update password: now password is empty, reject. user={}", person.get_id());
+            ticket.result = ResultCode::EmptyPassword;
+            remove_secret(&mut self.credential, person.get_id(), self.module, self.sys_ticket);
+            return;
+        }
+
+        if (now - self.edited > 0) && now - self.edited < self.conf.success_pass_change_lock_period {
+            ticket.result = ResultCode::Locked;
+            error!("request new password: too many requests, login={} password={} secret={}", self.login, self.password, self.secret);
+            return;
+        }
+
+        // update password
+        self.credential.set_string("v-s:password", &self.password, Lang::NONE);
+        self.credential.set_datetime("v-s:dateFrom", now);
+        self.credential.remove("v-s:secret");
+        self.credential.remove("v-s:SecretDateFrom");
+
+        let res = self.module.api.update(&self.sys_ticket, IndvOp::Put, &self.credential);
+        if res.result != ResultCode::Ok {
+            ticket.result = ResultCode::AuthenticationFailed;
+            error!("fail store new password {} for user, user={}", self.password, person.get_id());
+        } else {
+            create_new_ticket(self.login, &person.get_id(), self.conf.ticket_lifetime, ticket, &mut self.module.storage);
+            self.user_stat.attempt_change_pass = 0;
+            info!("update password {} for user, user={}", self.password, person.get_id());
+        }
+    }
+
+    fn get_credential(&mut self, account: &mut Individual) {
+        match account.get_first_literal("v-s:usesCredential") {
+            Some(uses_credential_uri) => {
+                if let Some(_credential) = self.module.get_individual(&uses_credential_uri, &mut self.credential) {
+                    _credential.parse_all();
+                    self.exist_password = _credential.get_first_literal("v-s:password").unwrap_or_default();
+                    self.edited = _credential.get_first_datetime("v-s:dateFrom").unwrap_or_default();
+                } else {
+                    error!("fail read credential: {}", uses_credential_uri);
+                    create_new_credential(self.sys_ticket, self.module, &mut self.credential, account);
+                }
+            }
+            None => {
+                warn!("credential not found, create new");
+                self.exist_password = account.get_first_literal("v-s:password").unwrap_or_default();
+
+                create_new_credential(self.sys_ticket, self.module, &mut self.credential, account);
+            }
+        }
+    }
+
+    fn set_password(&mut self, user_id: &str, edited: i64, account: &mut Individual) -> ResultCode {
         let now = Utc::now().naive_utc().timestamp();
         warn!("request new password, login={} password={} secret={}", self.login, self.password, self.secret);
 
@@ -235,7 +240,7 @@ impl<'a> AuthWorkPlace<'a> {
         }
 
         if self.user_stat.attempt_change_pass >= self.conf.failed_change_pass_attempts {
-            let prev_secret_date = credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
+            let prev_secret_date = self.credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
             if now - prev_secret_date < self.conf.failed_pass_change_lock_period {
                 self.user_stat.wrong_count_login = self.conf.failed_auth_attempts + 1;
                 self.user_stat.last_wrong_login_date = Utc::now().timestamp();
@@ -258,10 +263,10 @@ impl<'a> AuthWorkPlace<'a> {
 
         let n_secret = thread_rng().gen_range(100_000, 999_999).to_string();
 
-        credential.set_string("v-s:secret", &n_secret, Lang::NONE);
-        credential.set_datetime("v-s:SecretDateFrom", now);
+        self.credential.set_string("v-s:secret", &n_secret, Lang::NONE);
+        self.credential.set_datetime("v-s:SecretDateFrom", now);
 
-        let res = self.module.api.update(&self.sys_ticket, IndvOp::Put, &credential);
+        let res = self.module.api.update(&self.sys_ticket, IndvOp::Put, &self.credential);
         if res.result != ResultCode::Ok {
             error!("fail store new secret, user={}, result={:?}", user_id, res);
             return ResultCode::InternalServerError;
@@ -291,6 +296,6 @@ impl<'a> AuthWorkPlace<'a> {
         } else {
             error!("mailbox not found, user={}", account.get_id());
         }
-        return ResultCode::PasswordExpired;
+        ResultCode::PasswordExpired
     }
 }
