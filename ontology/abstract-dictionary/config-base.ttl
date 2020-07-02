@@ -291,6 +291,12 @@ if (deleted) {
     "v-s:memberOf" : veda.Util.newUri(position_uri),
     "rdfs:comment" : veda.Util.newStr("создано автоматически в обработчике cfg:Event_4"),
   };
+  if ( veda.Util.hasValue(document, "v-s:official") ) {
+    membership["v-s:official"] = document["v-s:official"];
+  }
+  if ( veda.Util.hasValue(document, "v-s:ignoreExclusive") ) {
+    membership["v-s:ignoreExclusive"] = document["v-s:ignoreExclusive"];
+  }
   put_individual (ticket, membership);
 }
   """ ;

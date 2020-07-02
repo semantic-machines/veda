@@ -27,6 +27,7 @@ v-s:CommunicationMean
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Средство связи"@ru ;
   rdfs:label "Communication box"@en ;
   v-ui:hasTemplate v-s:CommunicationMeanTemplate ;

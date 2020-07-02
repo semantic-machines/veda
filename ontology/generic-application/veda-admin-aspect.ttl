@@ -389,27 +389,7 @@ v-s:RegistryRegistryBlank
 
 # -- ПРАВА --
 
-v-s:PermissionStatementBlank
-  a v-fc:Blank ;
-  rdfs:label "Право"@ru ;
-  rdfs:label "Permission"@en ;
-  v-fc:targetType v-s:PermissionStatement ;
-.
-v-s:PermissionStatementRegistry
-  a v-fs:AttributiveSearch ;
-  rdfs:label "Права"@ru ;
-  rdfs:label "Permissions"@en ;
-  v-fs:searchBlank v-s:PermissionStatementRegistryBlank ;
-  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
-  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
-  v-fs:sortOrder "'rdfs:label' asc";
-.
-v-s:PermissionStatementRegistryBlank
-  rdf:type v-fc:Blank ;
-  rdfs:label "Право"@ru ;
-  rdfs:label "Permission"@en ;
-  v-fc:targetType v-s:PermissionStatement ;
-.
+
 
 v-s:GroupGeneratorBlank_Admin
   a v-fc:Blank ;
