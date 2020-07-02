@@ -62,17 +62,18 @@ veda.Module(function (veda) { "use strict";
     return hash;
   };
 
-  veda.Util.processQuery = function (vql, sql, sort, limit, delta, pause, fn) {
+  veda.Util.processQuery = function (vql, sql, sort, limit, queryDelta, processDelta, pause, fn) {
     if (typeof vql === "object") {
       sort  = vql.sort;
       limit = vql.limit;
-      delta = vql.delta;
+      queryDelta = vql.queryDelta;
+      processDelta = vql.processDelta;
       pause = vql.pause;
       fn    = vql.fn;
       sql   = vql.sql;
       vql   = vql.vql;
     }
-    console.log((new Date()).toISOString(), "Process query results |||", "query:", vql || sql, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
+    console.log((new Date()).toISOString(), "Process query results |||", "query:", vql || sql, " | ", "limit:", limit, " | ", "query delta:", queryDelta, " | ", "process delta:", processDelta, " | ", "pause:", pause);
     var result = [], append = [].push, fetchingProgress = 0;
     console.time("Fetching total");
     fetchResult();
@@ -86,7 +87,7 @@ veda.Module(function (veda) { "use strict";
         sql: sql,
         sort: sort || "'v-s:created' desc",
         from: from,
-        top: delta,
+        top: queryDelta,
         limit: limit
       }).then(function (query_result) {
         var cursor = query_result.cursor;
@@ -103,7 +104,7 @@ veda.Module(function (veda) { "use strict";
           console.log((new Date()).toString(), "Fetching done:", limit);
           console.timeEnd("Fetching total");
           result.splice(limit - cursor || limit); // cut result to limit
-          veda.Util.processResult(result, delta, pause, fn);
+          veda.Util.processResult(result, processDelta, pause, fn);
         } else {
           fetchResult(query_result.cursor);
         }
