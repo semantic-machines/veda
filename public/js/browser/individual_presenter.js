@@ -55,34 +55,32 @@ veda.Module(function (veda) { "use strict";
           });
         } else {
           var ontology = veda.ontology;
-          var defaultTemplateUri = ontology.getClassTemplate(individual["rdf:type"][0].id);
-          if (defaultTemplateUri) {
-            templatePromise = new veda.IndividualModel(defaultTemplateUri).load().then(function (template) {
+
+          var typePromises = individual["rdf:type"].map(function (type) {
+            return type.load();
+          });
+          templatePromise = Promise.all(typePromises).then(function (types) {
+            var templatesPromises = types.map( function (type) {
+              var defaultTemplateUri = ontology.getClassTemplate(type.id);
+              if (defaultTemplateUri) {
+                return new veda.IndividualModel(defaultTemplateUri).load();
+              } else {
+                return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
+              }
+            });
+            return Promise.all(templatesPromises);
+          }).then(function (templates) {
+            var renderedTemplatesPromises = templates.map( function (template) {
               template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
               return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
             });
-          } else {
-            var typePromises = individual["rdf:type"].map(function (type) {
-              return type.load();
-            });
-            templatePromise = Promise.all(typePromises).then(function (types) {
-              var templatesPromises = types.map( function (type) {
-                return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
-              });
-              return Promise.all(templatesPromises);
-            }).then(function (templates) {
-              var renderedTemplatesPromises = templates.map( function (template) {
-                template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
-                return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
-              });
-              return Promise.all(renderedTemplatesPromises);
-            }).then(function (renderedTemplates) {
-              return renderedTemplates.reduce(function (acc, renderedTemplate) {
-                return acc.add(renderedTemplate);
-              }, $());
-            });
-          }
-        }
+            return Promise.all(renderedTemplatesPromises);
+          }).then(function (renderedTemplates) {
+            return renderedTemplates.reduce(function (acc, renderedTemplate) {
+              return acc.add(renderedTemplate);
+            }, $());
+          });
+        };
         return templatePromise;
       }
     })
