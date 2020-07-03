@@ -16,6 +16,13 @@
 .
 
 #----------------------------------------------------------------------
+v-s:TS_CurrencyExchangeRate 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:CurrencyExchangeRateTemplate;
+  v-ui:forClass v-s:CurrencyExchangeRate
+.
+
 v-s:CurrencyExchangeRateTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:CurrencyExchangeRate ;

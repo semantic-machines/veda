@@ -84,6 +84,13 @@ v-s:InitiatorDepartmentForInternalDocumentBundle
 .
 
 # Templates ------------------------------------------------------------
+v-s:TS_InternalDocument 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:InternalDocumentTemplate;
+  v-ui:forClass v-s:InternalDocument
+.
+
 
 v-s:InternalDocumentTemplate
   rdf:type v-ui:ClassTemplate ;
