@@ -25,7 +25,6 @@ v-s:News
   rdfs:subClassOf v-s:Labeled;
   rdfs:label "Новость"@ru ;
   rdfs:label "News"@en ;
-  v-ui:hasTemplate v-s:NewsTemplate ;
   v-s:labelPattern "{@.v-s:title} {@.v-s:created}" ;
 .
 
@@ -60,6 +59,12 @@ v-s:AllNotificationsBundle
   rdfs:label "All notifications"@en ;
 .
 
+v-s:TS_News 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:NewsTemplate;
+  v-ui:forClass v-s:News
+.
 v-s:NewsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:News"@ru ;
