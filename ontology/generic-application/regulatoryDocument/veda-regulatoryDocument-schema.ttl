@@ -160,6 +160,5 @@ v-s:Addendum
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Addendum"@en ;
   rdfs:label "Приложение"@ru ;
-  v-ui:hasTemplate v-s:AddendumTemplate ;
 .
 # --- В связи с вводом класса может использоваться предикат v-s:hasAddendum. Он описан в классе v-s:VersionOfLocalRegulatoryDocument

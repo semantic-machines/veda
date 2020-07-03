@@ -15,6 +15,13 @@
   v-s:loadPriority 6 ;
 .
 #---------------------------------------
+v-s:TS_Addendum 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:AddendumTemplate;
+  v-ui:forClass v-s:Addendum
+.
+
 v-s:AddendumTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Addendum ;
