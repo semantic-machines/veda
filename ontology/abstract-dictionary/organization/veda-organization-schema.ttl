@@ -63,7 +63,6 @@ v-s:Organization
   rdfs:label "Организация"@ru ;
   rdfs:label "Organization"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
-  v-ui:hasTemplate v-s:OrganizationTemplate ;
 .
 v-s:taxId
   rdf:type owl:DatatypeProperty ;
@@ -143,7 +142,6 @@ v-s:Department
   rdfs:label "Подразделение"@ru ;
   rdfs:label "Department"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
-  v-ui:hasTemplate v-s:DepartmentTemplate ;
 .
 v-s:parentOrganization
   rdf:type owl:ObjectProperty ;
@@ -172,7 +170,6 @@ v-s:Subsidiary
   rdfs:label "Филиал"@ru ;
   rdfs:label "Subsidiary"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
-  v-ui:hasTemplate v-s:SubsidiaryTemplate ;
 .
 # ------------------------------------------------------------
 v-s:OrgGroup
@@ -191,7 +188,6 @@ v-s:Position
   rdfs:label "Должность"@ru ;
   rdfs:label "Position"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
-  v-ui:hasTemplate v-s:PositionTemplate;
 .
 #v-s:subjectCode
 # ------------------------------------------------------------
@@ -249,7 +245,6 @@ v-s:Person
   rdfs:comment "A person." ;
   rdfs:label "Персона"@ru ;
   rdfs:label "Person"@en ;
-  v-ui:hasTemplate v-s:PersonTemplate ;
   v-s:labelPattern "{@.v-s:lastName} {@.v-s:firstName} {@.v-s:middleName [0,1]}." ;
 .
 v-s:tabNumber

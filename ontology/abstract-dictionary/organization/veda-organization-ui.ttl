@@ -318,6 +318,36 @@ v-s:DefaultAppointmentBundle
   rdfs:label "Default appointment"@en ;
 .
 # ------------------------------------------------------------ ШАБЛОНЫ --
+v-s:TS_Organization
+  rdf:type v-ui:TemplateSpecification ;
+  v-ui:forClass v-s:Person ;
+  v-ui:defaultTemplate v-s:OrganizationTemplate ;
+  v-s:loadPriority "15" ;
+.
+v-s:TS_Department rdf:type 
+  v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:DepartmentTemplate;
+  v-ui:forClass v-s:Department
+.
+v-s:TS_Subsidiary 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:SubsidiaryTemplate;
+  v-ui:forClass v-s:Subsidiary
+.
+v-s:TS_Position
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:PositionTemplate;
+  v-ui:forClass v-s:Position
+.
+v-s:TS_Person
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:PersonTemplate;
+  v-ui:forClass v-s:Person
+.
 
 v-s:OrganizationTemplate
   rdf:type v-ui:ClassTemplate ;
