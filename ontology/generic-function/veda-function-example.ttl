@@ -19,7 +19,6 @@ v-fe:FunctionExample
   rdfs:label "Функция-пример"@ru ;
   rdfs:label "Example function"@en ;
   v-ui:hasModel v-fe:FunctionExampleModel ;
-  v-ui:hasTemplate v-fe:FunctionExampleTemplate ;
 .
 v-fe:FunctionExample1
   rdf:type v-fe:FunctionExample ;
@@ -47,6 +46,12 @@ v-fe:FunctionExampleModel
     }
   //# sourceURL=v-fe:FunctionExampleModel
   """
+.
+v-s:TS_FunctionExample 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-fe:FunctionExampleTemplate;
+  v-ui:forClass v-fe:FunctionExample
 .
 v-fe:FunctionExampleTemplate
   rdf:type v-ui:ClassTemplate ;

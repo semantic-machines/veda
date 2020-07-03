@@ -43,7 +43,6 @@ v-s:GroupGenerator
   rdfs:comment "Используется для распределения индивидов в группы авторизации на основе вычисленного от объекта значения предиката или функции."@ru ;
   rdfs:comment "Used to distribute individuals to auth groups based on calculated value of predicate or function."@en ;
   rdfs:subClassOf v-s:SystemThing ;
-  v-ui:hasTemplate v-s:GroupGeneratorTemplate ;
 .
 
 v-s:authClass
@@ -100,7 +99,6 @@ v-s:PermissionGenerator
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Генератор прав"@ru ;
   rdfs:label "Permissions generator"@en ;
-  v-ui:hasTemplate v-s:PermissionGeneratorTemplate ;
 .
 
 v-s:objectGroupGenerator
@@ -136,6 +134,18 @@ v-s:subjectGroupGeneratorValue
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
+v-s:TS_GroupGenerator 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:GroupGeneratorTemplate;
+  v-ui:forClass v-s:GroupGenerator
+.
+v-s:TS_PermissionGenerator 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:PermissionGeneratorTemplate;
+  v-ui:forClass v-s:PermissionGenerator
+.
 
 v-s:GroupGeneratorUri
   rdf:type v-s:Bundle ;
