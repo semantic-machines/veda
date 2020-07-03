@@ -20,14 +20,12 @@ v-s:Report
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Отчет"@ru ;
   rdfs:label "Report"@en ;
-  v-ui:hasTemplate v-s:ReportManagementTemplate ;
 .
 v-s:PersonalReport
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Report ;
   rdfs:label "Отчет"@ru ;
   rdfs:label "Report"@en ;
-  v-ui:hasTemplate v-s:ReportManagementTemplate ;
 .
 v-s:ReportsForClass
   rdf:type owl:Class ;
@@ -97,6 +95,19 @@ v-s:ReportSuccessfullyDeleted
   rdf:type v-s:Bundle ;
   rdfs:label "Отчет успешно удален"@ru ;
   rdfs:label "Report successfully deleted"@en ;
+.
+
+v-s:TS_Report 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:ReportManagementTemplate;
+  v-ui:forClass v-s:Report
+.
+v-s:TS_PersonalReport 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:ReportManagementTemplate;
+  v-ui:forClass v-s:PersonalReport
 .
 
 v-s:ReportManagementTemplate

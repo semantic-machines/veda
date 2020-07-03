@@ -25,7 +25,6 @@ v-s:UserScript
   rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Пользовательский скрипт"@ru ;
   rdfs:label "User script"@en ;
-  v-ui:hasTemplate v-s:UserScriptTemplate ;
 .
 
 v-s:executeAt
@@ -175,6 +174,13 @@ v-s:ClearBundle
   rdfs:label "Clear"@en ;
 .
 
+v-s:TS_UserScript 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:UserScriptTemplate;
+  v-ui:forClass v-s:UserScript
+.
+
 v-s:UserScriptTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:UserScript ;
@@ -308,7 +314,6 @@ v-s:Operation
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Операция"@ru ;
   rdfs:label "Operation"@en ;
-  v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
 v-s:GenericOperation
@@ -316,7 +321,6 @@ v-s:GenericOperation
   rdfs:subClassOf v-s:Operation ;
   rdfs:label "Общая операция"@ru ;
   rdfs:label "Generic operation"@en ;
-  v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
 # v-s:dateFrom
@@ -363,7 +367,6 @@ v-s:OperationDelete
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
   v-ui:hasModel v-s:OperationDeleteModel ;
-  v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
 v-s:OperationDeleteModel
@@ -386,7 +389,6 @@ v-s:OperationRemove
   rdfs:label "Уничтожить"@ru ;
   rdfs:label "Remove"@en ;
   v-ui:hasModel v-s:OperationRemoveModel ;
-  v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
 v-s:OperationRemoveModel
@@ -406,7 +408,6 @@ v-s:OperationRestore
   rdfs:label "Восстановить"@ru ;
   rdfs:label "Restore"@en ;
   v-ui:hasModel v-s:OperationRestoreModel ;
-  v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
 v-s:OperationRestoreModel
@@ -448,6 +449,43 @@ v-s:StopBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Остановить"@ru ;
   rdfs:label "Stop"@en ;
+.
+
+v-s:TS_Operation 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:OperationTemplate;
+  v-ui:forClass v-s:Operation
+.
+v-s:TS_GenericOperation 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:OperationTemplate;
+  v-ui:forClass v-s:GenericOperation
+.
+v-s:TS_OperationDelete 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:OperationTemplate;
+  v-ui:forClass v-s:OperationDelete
+.
+v-s:TS_OperationRemove 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:OperationTemplate;
+  v-ui:forClass v-s:OperationRemove
+.
+v-s:TS_OperationRestore 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:OperationTemplate;
+  v-ui:forClass v-s:OperationRestore
+.
+v-s:TS_OperationUpdate 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "10"^^xsd:integer;
+  v-ui:defaultTemplate v-s:OperationTemplate;
+  v-ui:forClass v-s:OperationUpdate
 .
 
 v-s:OperationTemplate
