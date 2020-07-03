@@ -82,9 +82,9 @@ v-s:ScheduledAction
   rdfs:subClassOf v-s:Labeled ;
   rdfs:label "Запланированное событие"@ru ;
   rdfs:label "Scheduled action"@en ;
-  v-ui:hasTemplate v-s:NewSingleScheduledActionTemplate ;
   v-s:labelPattern "{@.v-s:dateToPlan} - {@.v-s:description [0,100]}" ;
 .
+
 # v-s:parent
 # rdfs:label
 # v-s:description
@@ -215,6 +215,13 @@ v-s:AddScheduledAction
   rdf:type v-s:Bundle ;
   rdfs:label "Добавить"@ru ;
   rdfs:label "Add"@en ;
+.
+
+v-s:TS_ScheduledAction
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:NewSingleScheduledActionTemplate;
+  v-ui:forClass v-s:ScheduledAction
 .
 
 v-s:ScheduledActionTemplate
