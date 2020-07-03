@@ -25,7 +25,6 @@ v-s:Contractor
   rdfs:subClassOf v-s:Document;
   rdfs:label "Контрагент"@ru ;
   rdfs:label "Contractor"@en ;
-  v-ui:hasTemplate v-s:ContractorTemplate ;
 .
 v-s:linkedOrganization
   rdf:type owl:ObjectProperty ;
