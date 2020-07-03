@@ -29,7 +29,6 @@ v-s:InternalDocument
   rdfs:label "Внутренний документ"@ru ;
   rdfs:label "Internal document"@en ;
   v-s:hasNumeration v-s:RegistrationNumberYearNumeration2_6 ;
-  v-ui:hasTemplate v-s:InternalDocumentTemplate ;
 .
 # v-s:hasDocumentKind
 # v-s:initiator

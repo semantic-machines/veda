@@ -22,7 +22,6 @@ v-s:CurrencyExchangeRate
   rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Курс обмена валюты"@ru ;
   rdfs:label "Currency exchange rate"@en ;
-  v-ui:hasTemplate v-s:CurrencyExchangeRateTemplate ;
 .
 v-s:hasCurrencySource
   rdf:type owl:ObjectProperty ;
