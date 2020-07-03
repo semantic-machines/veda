@@ -23,7 +23,6 @@ v-s:Aspect
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Аспект"@ru ;
   rdfs:label "Aspect"@en ;
-  v-ui:hasTemplate v-s:AspectTemplate ;
 .
 
 v-s:PersonalAspect
@@ -33,7 +32,6 @@ v-s:PersonalAspect
   v-s:labelPattern "{@.v-s:owner.rdfs:label}" ;
   rdfs:label "Персональный аспект"@ru ;
   rdfs:label "Personal aspect"@en ;
-  v-ui:hasTemplate v-s:PersonalAspectTemplate ;
 .
 
 v-s:BusinessAspect
@@ -162,6 +160,20 @@ v-s:RemoveFromFavorites
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить избранное"@ru ;
   rdfs:label "Remove favorite"@en ;
+.
+
+# Templates-------------------------
+v-s:TS_Aspect 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:AspectTemplate;
+  v-ui:forClass v-s:Aspect
+.
+v-s:TS_PersonalAspect 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:PersonalAspectTemplate;
+  v-ui:forClass v-s:PersonalAspect
 .
 
 v-s:PersonalAspectTemplate
