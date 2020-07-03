@@ -107,6 +107,30 @@ v-s:OutgoingLetterPrintBlank
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
+v-s:TS_Letter 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:LetterTemplate;
+  v-ui:forClass v-s:Letter
+.
+v-s:TS_IncomingLetter 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:LetterTemplate;
+  v-ui:forClass v-s:IncomingLetter
+.
+v-s:TS_OutgoingLetter 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:LetterTemplate;
+  v-ui:forClass v-s:OutgoingLetter
+.
+v-s:TS_Delivery 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:DeliveryTemplate;
+  v-ui:forClass v-s:Delivery
+.
 
 v-s:LetterTemplate
   rdf:type v-ui:ClassTemplate ;
