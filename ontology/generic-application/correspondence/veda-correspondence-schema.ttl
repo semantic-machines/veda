@@ -75,7 +75,6 @@ v-s:Letter
   v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
   rdfs:label "Письмо"@ru ;
   rdfs:label "Letter"@en ;
-  v-ui:hasTemplate v-s:LetterTemplate ;
 .
 
 v-s:hasLetterRegistrationRecordSender
@@ -121,7 +120,6 @@ v-s:IncomingLetter
   v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description [0,100]}..." ;
   rdfs:label "Входящее письмо"@ru ;
   rdfs:label "Incoming letter"@en ;
-  v-ui:hasTemplate v-s:LetterTemplate ;
 .
 
 # ----------------------------------------------------------------------
@@ -132,7 +130,6 @@ v-s:OutgoingLetter
   v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description [0,100]}..." ;
   rdfs:label "Исходящее письмо"@ru ;
   rdfs:label "Outgoing letter"@en ;
-  v-ui:hasTemplate v-s:LetterTemplate ;
 .
 
 # ----------------------------------------------------------------------
@@ -151,7 +148,6 @@ v-s:Delivery
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:backwardTarget.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:backwardTarget.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:backwardTarget.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:backwardTarget.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:backwardTarget.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:backwardTarget.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:backwardTarget.v-s:description}" ;
   rdfs:label "Доставка"@ru ;
   rdfs:label "Delivery"@en ;
-  v-ui:hasTemplate v-s:DeliveryTemplate;
 .
 
 # ----------------------------------------------------------------------
