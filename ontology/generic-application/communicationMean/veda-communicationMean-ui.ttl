@@ -58,6 +58,13 @@ v-s:PS_comment_CommunicationMean
 .
 
 # ------------------------------------------------------------ШАБЛОНЫ --
+v-s:TS_CommunicationMean 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "10"^^xsd:integer;
+  v-ui:defaultTemplate v-s:CommunicationMeanTemplate;
+  v-ui:forClass v-s:CommunicationMean
+.
+
 v-s:CommunicationMeanTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:CommunicationMean ;

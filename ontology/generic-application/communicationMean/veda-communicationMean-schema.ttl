@@ -30,7 +30,6 @@ v-s:CommunicationMean
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Средство связи"@ru ;
   rdfs:label "Communication box"@en ;
-  v-ui:hasTemplate v-s:CommunicationMeanTemplate ;
 .
 v-s:hasCommunicationMeanChannel
   rdf:type owl:ObjectProperty ;
