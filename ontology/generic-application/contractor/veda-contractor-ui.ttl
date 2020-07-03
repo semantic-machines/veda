@@ -15,6 +15,13 @@
   v-s:loadPriority 6 ;
 .
 
+v-s:TS_Contractor 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:ContractorTemplate;
+  v-ui:forClass v-s:Contractor
+.
+
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Contractor ;
