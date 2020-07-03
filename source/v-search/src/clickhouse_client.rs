@@ -82,9 +82,6 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
     let block = client.query(fq).fetch_all().await?;
     for row in block.rows() {
         total_count += 1;
-        if total_count >= limit {
-            break;
-        }
 
         let id: String = row.get(row.name(0)?)?;
 
@@ -104,11 +101,14 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
             Err(e) => error!("fail authorization {}, err={}", user_uri, e),
         }
         out_res.authorize_time += start.elapsed().as_micros() as i64;
+
+        if total_count >= limit {
+            break;
+        }
     }
 
     out_res.result_code = ResultCode::Ok;
-
-    out_res.estimated = block.row_count() as i64;
+    out_res.estimated = from + (block.row_count() as i64);
     out_res.count = authorized_count;
     out_res.processed = total_count;
     out_res.cursor = from + total_count;
