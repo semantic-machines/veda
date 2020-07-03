@@ -21,7 +21,6 @@ v-s:Link
   rdfs:subClassOf v-s:Exportable ;
   rdfs:label "Связь"@ru ;
   rdfs:label "Link"@en ;
-  v-ui:hasTemplate v-s:LinkTemplate ;
 .
 v-s:from
   rdf:type owl:ObjectProperty ;
@@ -53,7 +52,6 @@ v-s:LinksTree
   rdfs:label "Class links setting"@en ;
   rdfs:comment "Дерево документов"@ru ;
   rdfs:comment "Documents tree"@en ;
-  v-ui:hasTemplate v-s:StandaloneLinksTreeTemplate ;
 .
 
 v-s:hasLinksTree
@@ -97,6 +95,18 @@ v-s:allowedType
 .
 
 # ---------------- Link template -----------------
+v-s:TS_Link 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:LinkTemplate;
+  v-ui:forClass v-s:Link
+.
+v-s:TS_LinksTree 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:StandaloneLinksTreeTemplate;
+  v-ui:forClass v-s:LinksTree
+.
 
 v-s:PSHasLinkThing
   rdf:type v-ui:ObjectPropertySpecification ;
