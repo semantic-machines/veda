@@ -55,6 +55,19 @@ v-s:PS_attachment_certificationDocument
   rdfs:label "v-s:dateFrom property specification for v-s:CertificationDocument class"@en ;
 .
 # ------------------------------------------------------------ШАБЛОНЫ --
+v-s:TS_CertificationDocument 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:CertificationDocumentTemplate;
+  v-ui:forClass v-s:CertificationDocument
+.
+v-s:TS_MedicalCheckupCertificationDocument 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:CertificationDocumentTemplate;
+  v-ui:forClass v-s:MedicalCheckupCertificationDocument
+.
+
 v-s:CertificationDocumentTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:CertificationDocument ;

@@ -28,7 +28,6 @@ v-s:CertificationDocument
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Удостоверяющий документ"@ru ;
   rdfs:label "Certification document"@en ;
-  v-ui:hasTemplate v-s:CertificationDocumentTemplate;
 .
 
 #-----Организация
@@ -79,5 +78,4 @@ v-s:MedicalCheckupCertificationDocument
   rdfs:subClassOf v-s:CertificationDocument ;
   rdfs:label "Удостоверяющий документ мед осмотра"@ru ;
   rdfs:label "Medical checkup Certification document"@en ;
-  v-ui:hasTemplate v-s:CertificationDocumentTemplate ;
 .
