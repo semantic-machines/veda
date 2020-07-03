@@ -22,7 +22,6 @@ v-s:BugReport
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Сообщение об ошибке"@ru ;
   rdfs:label "Bug report"@en ;
-  v-ui:hasTemplate v-s:BugReportTemplate ;
 .
 v-s:errorCode
   rdf:type owl:DatatypeProperty ;
@@ -66,6 +65,13 @@ v-s:hasError
   rdfs:range  v-s:BugReport ;
   rdfs:label "ссылка на ошибку"@ru ;
   rdfs:label "link to error"@en ;
+.
+#--------------------------------------------
+v-s:TS_BugReport 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:BugReportTemplate;
+  v-ui:forClass v-s:BugReport
 .
 
 v-s:BugReportTemplate

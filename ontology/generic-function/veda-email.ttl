@@ -22,7 +22,6 @@ v-s:Email
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Электронное письмо"@ru ;
   rdfs:label "E-mail"@en ;
-  v-ui:hasTemplate v-s:EmailTemplate ;
 .
 
 v-s:Deliverable
@@ -78,7 +77,13 @@ v-s:attachmentEmailBundle
   rdfs:comment "The total size of investments should not exceed 15 Mb"@en ;
 .
 ### ------------------------------------------------------
-
+v-s:TS_Email 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:EmailTemplate;
+  v-ui:forClass v-s:Email
+.
+    
 v-s:EmailTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Email ;

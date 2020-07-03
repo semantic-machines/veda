@@ -16,20 +16,17 @@
 .
 
 ########## CREATE FUNCTION ###########
-
 v-fc:Create
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
   rdfs:label "Создать"@ru ;
   rdfs:label "Create"@en ;
-  v-ui:hasTemplate v-fc:CreateManagementTemplate ;
 .
 v-fc:PersonalCreate
   rdf:type owl:Class ;
   rdfs:subClassOf v-fc:Create ;
   rdfs:label "Создать"@ru ;
   rdfs:label "Create"@en ;
-  v-ui:hasTemplate v-fc:CreateManagementTemplate ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
@@ -37,7 +34,6 @@ v-fc:Blank
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
   v-ui:hasModel v-fc:BlankModel ;
-  v-ui:hasTemplate v-fc:BlankTemplate ;
 .
 v-fc:CreateByType
   rdf:type v-fc:Create ;
@@ -263,6 +259,12 @@ this.updateBlank = function () {
   """
 .
 
+v-s:TS_Blank 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-fc:BlankTemplate;
+  v-ui:forClass v-fc:Blank
+.
 v-fc:BlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
@@ -352,6 +354,20 @@ v-fc:Back
   rdf:type v-s:Bundle ;
   rdfs:label "Назад"@ru ;
   rdfs:label "Back"@en ;
+.
+
+
+v-s:TS_Create 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-fc:CreateManagementTemplate;
+  v-ui:forClass v-fc:Create
+.
+v-s:TS_PersonalCreate 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-fc:CreateManagementTemplate;
+  v-ui:forClass v-fc:PersonalCreate
 .
 
 v-fc:CreateManagementTemplate
