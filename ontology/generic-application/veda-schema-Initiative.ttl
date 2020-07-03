@@ -186,7 +186,6 @@ v-s:Effect
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Эффект"@ru ;
   rdfs:label "Effect"@en ;
-  v-ui:hasTemplate mnd-s:EffectTemplate ;
 .
 v-s:planYearEffect
   rdf:type owl:DatatypeProperty ;
@@ -334,7 +333,6 @@ v-s:EffectList
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Список эффектов"@ru ;
   rdfs:label "Effect list"@en ;
-  v-ui:hasTemplate mnd-s:EffectListTemplate ;
 .
 v-s:hasTotalPlanYearEffect
   rdf:type owl:DatatypeProperty ;
@@ -456,7 +454,6 @@ v-s:ProjectPlan
   rdfs:subClassOf v-s:Measurable ;
   rdfs:label "План мероприятий проекта"@ru ;
   rdfs:label "Project plan"@en ;
-  v-ui:hasTemplate mnd-s:ProjectPlanForCostTemplate ;
 .
 v-s:hasProjectMilestone
   rdf:type owl:ObjectProperty ;
