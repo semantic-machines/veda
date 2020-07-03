@@ -23,8 +23,6 @@ v-s:Asset
   rdfs:subClassOf v-s:Vehicle ;
   rdfs:label "Основное средство"@ru ;
   rdfs:label "Asset"@en ;
-#--------- mnd-s шаблон
-  v-ui:hasTemplate mnd-s:AssetTemplate ;
 .
 # --- В связи с вводом класса возникает предикат v-s:hasAsset. Он описан в классе v-s:Contractual
 #----------------------------------------------------
@@ -36,8 +34,6 @@ v-s:RegistrationCertificate
   rdfs:subClassOf v-s:Spatial ;
   rdfs:label "Свидетельство о регистрации"@ru ;
   rdfs:label "Registration сertificate"@en ;
-#--------- mnd-s шаблон
-  v-ui:hasTemplate mnd-s:RegistrationCertificateTemplate ;
 .
 # v-s:registrationNumber
 # v-s:registrationDate
