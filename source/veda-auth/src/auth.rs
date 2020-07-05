@@ -238,12 +238,6 @@ impl<'a> AuthWorkPlace<'a> {
             }
         }
 
-        if let Some(person_origin) = account.get_first_literal("v-s:origin") {
-            if person_origin == "ExternalUser" {
-                return ResultCode::ChangePasswordForbidden;
-            }
-        }
-
         if (now - edited > 0) && now - edited < self.conf.success_pass_change_lock_period {
             error!("request new password: too many requests, login={} password={} secret={}", self.login, self.password, self.secret);
             return ResultCode::Locked;
