@@ -24,7 +24,6 @@ v-s:RequestDelegation
   rdfs:subClassOf v-s:HRRecord ;
   rdfs:subClassOf v-s:OrganizationUnit ;
   rdfs:subClassOf v-s:Temporal ;
-  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
 #-------------
 v-s:delegator
@@ -108,7 +107,6 @@ v-s:RequestDelegationUser
   rdfs:label "Заявка на делегирование для пользователя"@ru ;
   rdfs:label "Request delegation for user"@en ;
   rdfs:subClassOf v-s:RequestDelegation ;
-  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
 #v-s:hasDelegationPurpose
 v-s:PsDelegationPurposeForRequestDelegationUser
@@ -126,7 +124,6 @@ v-s:RequestDelegationAdmin
   rdfs:label "Заявка на делегирование для администратора"@ru ;
   rdfs:label "Request delegation for admin"@en ;
   rdfs:subClassOf v-s:RequestDelegation ;
-  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
 #v-s:hasDelegationPurpose
 v-s:PsDelegationPurposeForRequestDelegationAdmin
@@ -140,6 +137,24 @@ v-s:PsDelegationPurposeForRequestDelegationAdmin
 
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
+v-s:TS_RequestDelegation 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:RequestDelegationTemplate;
+  v-ui:forClass v-s:RequestDelegation
+.
+v-s:TS_RequestDelegationUser 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:RequestDelegationTemplate;
+  v-ui:forClass v-s:RequestDelegationUser
+.
+v-s:TS_RequestDelegationAdmin 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:RequestDelegationTemplate;
+  v-ui:forClass v-s:RequestDelegationAdmin
+.
 
 v-s:RequestDelegationTemplate
   rdf:type v-ui:ClassTemplate ;

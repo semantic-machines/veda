@@ -22,7 +22,6 @@ v-s:Comment
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Комментарий "@ru ;
   rdfs:label "Comment"@en ;
-  v-ui:hasTemplate v-s:SingleCommentTemplate ;
 .
 
 #-- Спецификации --
@@ -142,6 +141,12 @@ v-s:CommentsTemplate
     """;
 .
 
+v-s:TS_Comment 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:SingleCommentTemplate;
+  v-ui:forClass v-s:Comment
+.
 v-s:SingleCommentTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Comment ;
