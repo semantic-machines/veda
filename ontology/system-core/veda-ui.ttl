@@ -2715,14 +2715,14 @@ v-ui:TreeTemplate
               selectRow.remove();
             }
           }
-          return value["rdf:type"][0].id;
+          return tmpl;
         });
       });
-    })).then(function () {
+    })).then(function (rendered) {
       if ( parentRow ) {
-        parentRow.after( cont.children() );
+        parentRow.after( rendered );
       } else {
-        tbody.append( cont.children() );
+        tbody.append( rendered );
       }
       cont.remove();
     });
