@@ -18,7 +18,6 @@ v-s:Subscribed
   rdf:type owl:Class ;
   rdfs:label "Подписанный объект"@ru ;
   rdfs:label "Subscribed object"@en ;
-  v-ui:hasTemplate v-s:TestSubscribedTemplate ;
 .
 
 v-s:hasSubscription
@@ -60,6 +59,12 @@ v-s:Subscription_permission
   rdfs:label "C. Все пользователи. Класс Subscription" ;
 .
 
+v-s:TS_Subscribed 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:TestSubscribedTemplate;
+  v-ui:forClass v-s:Subscribed
+.
 v-s:TestSubscribedTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон индикатора избранных"@ru ;
