@@ -13,6 +13,7 @@ git log -1 --pretty=format:"
     v-s:loadPriority 4.
 
 v-s:vedaInfo 
+    rdf:type rdfs:Resource; 
     v-s:appBuildVersion \"%h\"; 
     v-s:appBuildDate \"%ad\"^^xsd:dateTime; 
 .

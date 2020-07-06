@@ -148,14 +148,6 @@ v-s:sql_database
   rdfs:range xsd:string ;
 .
 
-v-s:login
-  rdfs:domain v-s:Connection ;
-.
-
-v-s:password
-  rdfs:domain v-s:Connection ;
-.
-
 v-s:queue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Connection ;
