@@ -92,6 +92,11 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+	if result != 200 {
+		ctx.Write(authResponseBuf)
+		return
+	}
+
 	//check if external users feature is enabled
 	if areExternalUsers {
 		//loging about external user authentication checl
