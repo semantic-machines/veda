@@ -65,7 +65,6 @@ v-ft:TaskCounter
   rdfs:label "Счетчик задач"@ru ;
   rdfs:label "Task counter"@en ;
   v-ui:hasModel v-ft:TaskCounterModel;
-  v-ui:hasTemplate v-ft:TaskCounterTemplate;
 .
 v-ft:forceUpdate
   rdf:type owl:DatatypeProperty ;
@@ -289,6 +288,13 @@ v-ft:FunctionTasksIndicatorTemplate
   <!--span id="counter" class="label label-danger" property="v-ft:inboxCount"></span-->
 </a>
   """ ;
+.
+
+v-s:TS_TaskCounter 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ft:TaskCounterTemplate;
+  v-ui:forClass v-ft:TaskCounter
 .
 v-ft:TaskCounterTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -1235,7 +1241,6 @@ v-ft:MakeDecisionOperation
   rdfs:label "Принять решение"@ru ;
   rdfs:label "Make decision"@en ;
   v-ui:hasModel v-ft:MakeDecisionOperationModel ;
-  v-ui:hasTemplate v-ft:MakeDecisionOperationTemplate ;
 .
 
 v-ft:MakeDecisionOperationRights
@@ -1279,6 +1284,12 @@ this.fn = function (task_uri) {
   """ ;
 .
 
+v-s:TS_MakeDecisionOperation 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ft:MakeDecisionOperationTemplate;
+  v-ui:forClass v-ft:MakeDecisionOperation
+.
 v-ft:MakeDecisionOperationTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса mnd-s:OperationChangeSupportSpecialist"@ru ;
