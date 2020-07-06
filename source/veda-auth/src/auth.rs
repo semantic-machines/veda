@@ -104,7 +104,7 @@ impl<'a> AuthWorkPlace<'a> {
             self.get_credential(account);
 
             if !self.secret.is_empty() && self.secret.len() > 5 {
-                self.prepare_secret_code(ticket, &person);
+                return self.prepare_secret_code(ticket, &person);
             } else {
                 let now = Utc::now().naive_utc().timestamp();
 
@@ -145,7 +145,7 @@ impl<'a> AuthWorkPlace<'a> {
         false
     }
 
-    fn prepare_secret_code(&mut self, ticket: &mut Ticket, person: &Individual) {
+    fn prepare_secret_code(&mut self, ticket: &mut Ticket, person: &Individual) -> bool {
         let old_secret = self.credential.get_first_literal("v-s:secret").unwrap_or_default();
         let now = Utc::now().naive_utc().timestamp();
 
@@ -153,41 +153,41 @@ impl<'a> AuthWorkPlace<'a> {
             error!("update password: secret not found, user={}", person.get_id());
             ticket.result = ResultCode::InvalidSecret;
             remove_secret(&mut self.credential, person.get_id(), self.module, self.sys_ticket);
-            return;
+            return false;
         }
 
         if self.secret != old_secret {
             error!("request for update password: send secret not equal request secret {}, user={}", self.secret, person.get_id());
             ticket.result = ResultCode::InvalidSecret;
             remove_secret(&mut self.credential, person.get_id(), self.module, self.sys_ticket);
-            return;
+            return false;
         }
 
         let prev_secret_date = self.credential.get_first_datetime("v-s:SecretDateFrom").unwrap_or_default();
         if now - prev_secret_date > self.conf.secret_lifetime {
             ticket.result = ResultCode::SecretExpired;
             error!("request new password, secret expired, login={} password={} secret={}", self.login, self.password, self.secret);
-            return;
+            return false;
         }
 
         if self.exist_password == self.password {
             error!("update password: now password equal previous password, reject. user={}", person.get_id());
             ticket.result = ResultCode::NewPasswordIsEqualToOld;
             remove_secret(&mut self.credential, person.get_id(), self.module, self.sys_ticket);
-            return;
+            return false;
         }
 
         if self.password == EMPTY_SHA256_HASH {
             error!("update password: now password is empty, reject. user={}", person.get_id());
             ticket.result = ResultCode::EmptyPassword;
             remove_secret(&mut self.credential, person.get_id(), self.module, self.sys_ticket);
-            return;
+            return false;
         }
 
         if (now - self.edited > 0) && now - self.edited < self.conf.success_pass_change_lock_period {
             ticket.result = ResultCode::Locked;
             error!("request new password: too many requests, login={} password={} secret={}", self.login, self.password, self.secret);
-            return;
+            return false;
         }
 
         // update password
@@ -200,10 +200,12 @@ impl<'a> AuthWorkPlace<'a> {
         if res.result != ResultCode::Ok {
             ticket.result = ResultCode::AuthenticationFailed;
             error!("fail store new password {} for user, user={}", self.password, person.get_id());
+            return false;
         } else {
             create_new_ticket(self.login, &person.get_id(), self.conf.ticket_lifetime, ticket, &mut self.module.storage);
             self.user_stat.attempt_change_pass = 0;
             info!("update password {} for user, user={}", self.password, person.get_id());
+            return true;
         }
     }
 
