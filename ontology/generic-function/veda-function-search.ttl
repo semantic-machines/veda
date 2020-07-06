@@ -110,7 +110,6 @@ v-fs:AttributiveSearch
   rdfs:subClassOf v-s:Function ;
   rdfs:label "Найти"@ru ;
   rdfs:label "Search"@en ;
-  v-ui:hasTemplate v-fs:AttributiveSearchManagementTemplate ;
   v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
 
@@ -127,7 +126,6 @@ v-fs:PersonalSearch
   rdfs:subClassOf v-fs:AttributiveSearch ;
   rdfs:label "Найти"@ru ;
   rdfs:label "Search"@en ;
-  v-ui:hasTemplate v-fs:AttributiveSearchManagementTemplate ;
   v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
 
@@ -434,6 +432,19 @@ v-fs:RegistrySuccessfullyDeleted
   rdf:type v-s:Bundle ;
   rdfs:label "Реестр успешно удален"@ru ;
   rdfs:label "Registry successfully deleted"@en ;
+.
+
+v-s:TS_AttributiveSearch 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-fs:AttributiveSearchManagementTemplate;
+  v-ui:forClass v-fs:AttributiveSearch
+.
+v-s:TS_PersonalSearch 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-fs:AttributiveSearchManagementTemplate;
+  v-ui:forClass v-fs:PersonalSearch
 .
 
 v-fs:AttributiveSearchManagementTemplate
@@ -1874,6 +1885,12 @@ this.fn = function (task_uri) {
   """ ;
 .
 
+v-s:TS_SendToIntroductionOperation 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ft:SendToIntroductionOperationTemplate;
+  v-ui:forClass v-ft:SendToIntroductionOperation
+.
 v-ft:SendToIntroductionOperationTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-ft:SendToIntroductionOperation"@ru ;
