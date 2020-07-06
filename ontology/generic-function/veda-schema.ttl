@@ -23,7 +23,6 @@ v-s:File
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Файл"@ru ;
   rdfs:label "File"@en ;
-  v-ui:hasTemplate v-ui:FileTemplateWithComment ;
 .
 v-s:filePath
   rdf:type owl:DatatypeProperty ;
@@ -89,7 +88,6 @@ v-s:Journal
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Журнал"@ru ;
   rdfs:label "Journal"@en ;
-  v-ui:hasTemplate v-ui:SimplifiedJournalTemplate ;
 .
 v-s:childRecord
   rdf:type owl:ObjectProperty ;
@@ -153,7 +151,6 @@ v-s:DocumentCreated
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ создан"@ru ;
   rdfs:label "Document created"@en ;
-  v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
 v-s:DocumentUpdated
   rdf:type owl:Class ;
@@ -161,7 +158,6 @@ v-s:DocumentUpdated
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ изменен"@ru ;
   rdfs:label "Document updated"@en ;
-  v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
 v-s:DocumentDeleted
   rdf:type owl:Class ;
@@ -169,7 +165,6 @@ v-s:DocumentDeleted
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ удален"@ru ;
   rdfs:label "Document deleted"@en ;
-  v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
 v-s:processJournal
   rdf:type owl:ObjectProperty ;
@@ -183,7 +178,6 @@ v-s:ProcessStarted
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Запущен процесс"@ru ;
   rdfs:label "Process was started"@en ;
-  v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
 ######################## ПЕЧАТНАЯ ФОРМА ЖУРНАЛА ############################################################
 
@@ -207,7 +201,6 @@ v-s:DocumentLinkRules
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Правило связи двух документов"@ru ;
   rdfs:label "Documents link rules"@en ;
-  v-ui:hasTemplate v-s:DocumentLinkRulesTemplate ;
 .
 v-s:classFrom
   rdf:type owl:ObjectProperty ;
@@ -302,6 +295,13 @@ v-s:PsRulesBooleanProperty
   v-ui:forProperty v-s:unique ;
   v-ui:forProperty v-s:isRoute ;
   v-ui:forProperty v-s:isClone ;
+.
+
+v-s:TS_DocumentLinkRules 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:DocumentLinkRulesTemplate;
+  v-ui:forClass v-s:DocumentLinkRules
 .
 v-s:DocumentLinkRulesTemplate
   rdf:type v-ui:ClassTemplate ;

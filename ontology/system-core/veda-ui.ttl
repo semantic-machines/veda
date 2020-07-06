@@ -1975,6 +1975,13 @@ v-ui:FileMinTemplate
 </div>
   """ ;
 .
+
+v-s:TS_File 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:FileTemplateWithComment;
+  v-ui:forClass v-s:File
+.
 v-ui:FileTemplateWithComment
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла"@ru ;
@@ -2100,6 +2107,13 @@ v-ui:ModalImageTemplate
 </script>
 <a class="show-modal" href="#" about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></a>
   """ ;
+.
+
+v-s:TS_Journal 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:SimplifiedJournalTemplate;
+  v-ui:forClass v-s:Journal
 .
 v-ui:SimplifiedJournalTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -2360,6 +2374,31 @@ v-ui:SubJournalTemplate
   <div rel="v-s:childRecord"></div>
 </div>
   """ ;
+.
+
+v-s:TS_DocumentCreated 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:DocumentEventTemplate;
+  v-ui:forClass v-s:DocumentCreated
+.
+v-s:TS_DocumentUpdated 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:DocumentEventTemplate;
+  v-ui:forClass v-s:DocumentUpdated
+.
+v-s:TS_DocumentDeleted 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:DocumentEventTemplate;
+  v-ui:forClass v-s:DocumentDeleted
+.
+v-s:TS_ProcessStarted 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:DocumentEventTemplate;
+  v-ui:forClass v-s:ProcessStarted
 .
 v-ui:DocumentEventTemplate
   rdf:type v-ui:ClassTemplate ;
