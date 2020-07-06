@@ -14,6 +14,7 @@ git log -1 --pretty=format:"
 
 v-s:vedaInfo 
     rdf:type rdfs:Resource; 
+    rdfs:label \"Veda\";
     v-s:appBuildVersion \"%h\"; 
     v-s:appBuildDate \"%ad\"^^xsd:dateTime; 
 .
