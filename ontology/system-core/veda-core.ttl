@@ -202,6 +202,7 @@ v-s:Credential
 v-s:login
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Account ;
+  rdfs:domain v-s:Connection ;
   rdfs:label "Логин"@ru ;
   rdfs:label "Login"@en ;
   rdfs:range xsd:string ;
@@ -209,7 +210,9 @@ v-s:login
 
 v-s:password
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Account, v-s:Credential;
+  rdfs:domain v-s:Account ;
+  rdfs:domain v-s:Credential ;
+  rdfs:domain v-s:Connection ;
   rdfs:label "Пароль"@ru ;
   rdfs:label "Password"@en ;
   rdfs:range xsd:string ;
