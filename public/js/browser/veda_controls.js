@@ -883,6 +883,7 @@
         return true;
       }
     }).change(function () {
+      $(".tree", control).hide();
       if ( $(this).is(":checked") ) {
         chosenActorType = this.value;
         if ( chosenActorType === "v-s:Appointment" || chosenActorType === "v-s:Person" || chosenActorType === "v-s:Position" ) {
@@ -891,6 +892,7 @@
         } else if (chosenActorType === "v-s:Department") {
           $("[name='full-name']", control).parent().parent().hide();
           queryPrefix = "'rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Department'";
+          $(".tree", control).show();
         }
         queryPrefix = specQueryPrefix || queryPrefix ;
         var ftValue = $(".fulltext", control).val();
@@ -944,6 +946,31 @@
       $(document).off("click", clickOutsideMenuHandler);
       $(document).off("keydown", arrowHandler);
       fulltext.val("").focus();
+    });
+
+    // Tree feature
+    $(".tree", control).on("click keydown", function (e) {
+      var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
+      var modal = $("#individual-modal-template").html();
+      if (e.type !== "click" && e.which !== 13 && e.which !== 32) { return; }
+      e.preventDefault();
+      e.stopPropagation();
+      var $modal = $(modal);
+      var cntr = $(".modal-body", $modal);
+      $modal.on('hidden.bs.modal', function (e) {
+        $modal.remove();
+      });
+      $modal.modal();
+      $("body").append($modal);
+
+      var extra = {
+        target: individual,
+        target_rel_uri: rel_uri,
+        isSingle: isSingle,
+        withDeleted: withDeleted,
+        sort: sort
+      };
+      spec.present(cntr, treeTmpl, undefined, extra);
     });
 
     if (placeholder instanceof veda.IndividualModel) {
@@ -2454,7 +2481,6 @@
         var cntr = $(".modal-body", $modal);
         $modal.on('hidden.bs.modal', function (e) {
           $modal.remove();
-          delete individual.treeConfig;
         });
         $modal.modal();
         $("body").append($modal);
