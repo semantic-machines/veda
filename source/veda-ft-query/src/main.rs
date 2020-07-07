@@ -4,7 +4,7 @@ extern crate log;
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;
-use std::str;
+use std::{env, str};
 use v_api::app::ResultCode;
 use v_ft_xapian::xapian_reader::XapianReader;
 use v_ft_xapian::xapian_vql::OptAuthorize;
@@ -28,7 +28,16 @@ fn main() {
         info!("tarantool addr={}", &tarantool_addr);
     }
 
-    let query_url = section.get("ft_query_service_url").expect("param [search_query_url] not found in veda.properties");
+    let mut query_url = section.get("ft_query_service_url").expect("param [search_query_url] not found in veda.properties").to_owned();
+
+    let args: Vec<String> = env::args().collect();
+    for el in args.iter() {
+        if el.starts_with("--bind") {
+            let p: Vec<&str> = el.split('=').collect();
+            query_url = p[1].to_owned().trim().to_owned();
+            info!("bind to={}", query_url);
+        }
+    }
 
     let mut module = Module::default();
 
