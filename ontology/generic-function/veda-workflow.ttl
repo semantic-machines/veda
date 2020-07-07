@@ -31,7 +31,6 @@ v-wf:Net
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Сеть"@ru ;
   rdfs:label "Net"@en ;
-  v-ui:hasTemplate v-wf:NetTemplate ;
 .
 v-wf:NetElement
   rdf:type owl:Class ;
@@ -46,7 +45,6 @@ v-wf:Condition
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Состояние"@ru ;
   rdfs:label "Condition"@en ;
-  v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:InputCondition
   rdf:type owl:Class ;
@@ -54,7 +52,6 @@ v-wf:InputCondition
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Входное состояние"@ru ;
   rdfs:label "Input condition"@en ;
-  v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:OutputCondition
   rdf:type owl:Class ;
@@ -62,7 +59,6 @@ v-wf:OutputCondition
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выходное состояние"@ru ;
   rdfs:label "Output condition"@en ;
-  v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:Task
   rdf:type owl:Class ;
@@ -70,7 +66,6 @@ v-wf:Task
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Задача"@ru ;
   rdfs:label "Task"@en ;
-  v-ui:hasTemplate v-wf:TaskTemplateAsProperties ;
 .
 v-wf:Flow
   rdf:type owl:Class ;
@@ -78,7 +73,6 @@ v-wf:Flow
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Поток"@ru ;
   rdfs:label "Flow"@en ;
-  v-ui:hasTemplate v-wf:FlowTemplateAsProperties ;
 .
 v-wf:ExecutorDefinition
   rdf:type owl:Class ;
@@ -365,7 +359,6 @@ v-wf:Variable
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Переменная"@ru ;
   rdfs:label "Variable"@en ;
-  v-ui:hasTemplate v-wf:VariableTemplate ;
 .
 
 v-wf:variableName
@@ -531,6 +524,12 @@ v-wf:SimpleNetTemplate
   """ ;
 .
 
+v-wf:TS_Net 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:NetTemplate;
+  v-ui:forClass v-wf:Net
+.
 v-wf:NetTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -641,6 +640,12 @@ v-wf:NetTemplate
   """ ;
 .
 
+v-wf:TS_Process
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:ProcessTemplate;
+  v-ui:forClass v-wf:Process
+.
 v-wf:ProcessTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -861,6 +866,13 @@ v-wf:executorPropertySpecification1
   v-ui:forClass v-wf:ExecutorDefinition ;
   v-ui:forProperty v-wf:executorExpression ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
+.
+
+v-wf:TS_Task 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:TaskTemplateAsProperties;
+  v-ui:forClass v-wf:Task
 .
 v-wf:TaskTemplateAsProperties
   rdf:type v-ui:ClassTemplate ;
@@ -1252,6 +1264,24 @@ v-wf:TaskTemplateAsProperties
   """ ;
   .
 
+v-wf:TS_Condition 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:ConditionTemplateAsProperties;
+  v-ui:forClass v-wf:Condition
+.
+v-wf:TS_InputCondition 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:ConditionTemplateAsProperties;
+  v-ui:forClass v-wf:InputCondition
+.
+v-wf:TS_OutputCondition 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:ConditionTemplateAsProperties;
+  v-ui:forClass v-wf:OutputCondition
+.
 v-wf:ConditionTemplateAsProperties
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1316,6 +1346,12 @@ v-wf:ConditionTemplateAsProperties
   """ ;
   .
 
+v-wf:TS_Flow 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:FlowTemplateAsProperties;
+  v-ui:forClass v-wf:Flow
+.
 v-wf:FlowTemplateAsProperties
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1467,6 +1503,12 @@ v-wf:varWIPropertySpecification1
   v-ui:queryPrefix "('rdf:type'=='v-wf:Variable')"^^xsd:string ;
 .
 
+v-wf:TS_WorkItem
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:WorkItemTemplate;
+  v-ui:forClass v-wf:WorkItem
+.
 v-wf:WorkItemTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1521,6 +1563,12 @@ v-wf:WorkItemTemplate
 """ ;
   .
 
+v-wf:TS_Variable 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:VariableTemplate;
+  v-ui:forClass v-wf:Variable
+.
 v-wf:VariableTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1558,6 +1606,12 @@ v-wf:VariableTemplate
   """ ;
   .
 
+v-wf:TS_WorkOrder
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:WorkOrderTemplate;
+  v-ui:forClass v-wf:WorkOrder
+.
 v-wf:WorkOrderTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1619,6 +1673,12 @@ v-wf:WorkOrderTemplate
   """ ;
 .
 
+v-wf:TS_DecisionForm
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:DecisionFormTemplate;
+  v-ui:forClass v-wf:DecisionForm
+.
 v-wf:DecisionFormTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -1656,7 +1716,6 @@ v-wf:DecisionForm
   rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Форма решения"@ru ;
   rdfs:label "Decision form"@en ;
-  v-ui:hasTemplate v-wf:DecisionFormTemplate ;
 .
 
 v-wf:onWorkOrder
@@ -1783,7 +1842,6 @@ v-wf:StartForm
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Temporal ;
 .
-
 
 v-wf:StartForm_canEdit
   rdf:type rdf:Property ;
@@ -1917,7 +1975,6 @@ v-wf:Transform
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Трансформация"@ru ;
   rdfs:label "Transformation"@en ;
-  v-ui:hasTemplate v-wf:TransformationTemplate ;
 .
 
 v-wf:transformRule
@@ -1987,8 +2044,8 @@ v-wf:Process
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Процесс"@ru ;
   rdfs:label "Process"@en ;
-  v-ui:hasTemplate v-wf:ProcessTemplate ;
 .
+
 v-wf:instanceOf
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
@@ -2050,7 +2107,6 @@ v-wf:WorkItem
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выполняемая задача"@ru ;
   rdfs:label "Work item"@en ;
-  v-ui:hasTemplate v-wf:WorkItemTemplate ;
 .
 
 v-wf:forProcess
@@ -2148,7 +2204,6 @@ v-wf:WorkOrder
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Рабочее задание"@ru ;
   rdfs:label "Work order"@en ;
-  v-ui:hasTemplate v-wf:WorkOrderTemplate ;
 .
 
 v-wf:forWorkItem
@@ -2467,15 +2522,14 @@ v-wf:ProcessStarted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен процесс"@ru ;
   rdfs:label "Process was started"@en ;
-  v-ui:hasTemplate v-wf:ProcessEventTemplate ;
 .
+
 v-wf:ProcessStopped
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Процесс прерван"@ru ;
   rdfs:label "Process was stopped"@en ;
-  v-ui:hasTemplate v-wf:ProcessEventTemplate ;
 .
 
 v-wf:SubProcessStarted
@@ -2484,7 +2538,6 @@ v-wf:SubProcessStarted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен подпроцесс"@ru ;
   rdfs:label "Subprocess started"@en ;
-  v-ui:hasTemplate v-wf:SubProcessStartedEventTemplate ;
 .
 
 v-wf:WorkItemStarted
@@ -2493,7 +2546,6 @@ v-wf:WorkItemStarted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен блок"@ru ;
   rdfs:label "Item was started"@en ;
-  v-ui:hasTemplate v-wf:WorkItemStartedEventTemplate ;
 .
 
 v-wf:DecisionFormStarted
@@ -2501,7 +2553,6 @@ v-wf:DecisionFormStarted
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Decision Form Started"@en ;
-  v-ui:hasTemplate v-wf:DecisionFormStartedEventTemplate ;
 .
 
 v-wf:WorkOrderStarted
@@ -2510,7 +2561,6 @@ v-wf:WorkOrderStarted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущено действие"@ru ;
   rdfs:label "Order was started"@en ;
-  v-ui:hasTemplate v-wf:WorkOrderStartedEventTemplate ;
 .
 
 v-wf:ProcessCompleted
@@ -2519,15 +2569,14 @@ v-wf:ProcessCompleted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Завершен процесс"@ru ;
   rdfs:label "Process completed"@en ;
-  v-ui:hasTemplate v-wf:ProcessEventTemplate ;
 .
+
 v-wf:TaskGiven
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выдана задача"@ru ;
   rdfs:label "Task given"@en ;
-  v-ui:hasTemplate v-wf:TaskGivenTemplate ;
 .
 v-wf:TaskCompleted
   rdf:type owl:Class ;
@@ -2535,14 +2584,12 @@ v-wf:TaskCompleted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Задача выполнена"@ru ;
   rdfs:label "Task completed"@en ;
-  v-ui:hasTemplate v-wf:TaskCompletedTemplate ;
 .
 v-wf:TraceRecord
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Trace Record"@en ;
-  v-ui:hasTemplate v-wf:TraceRecordTemplate ;
 .
 
 v-wf:WorkflowReadUser
@@ -2564,6 +2611,12 @@ v-wf:traceJournal
 
 
 #################################################################################### JOURNAL UI
+v-wf:TS_TaskGiven
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:TaskGivenTemplate;
+  v-ui:forClass v-wf:TaskGiven
+.
 v-wf:TaskGivenTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события по задаче"@ru ;
@@ -2591,6 +2644,12 @@ v-wf:TaskGivenTemplate
   """ ;
 .
 
+v-wf:TS_TaskCompleted 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:TaskCompletedTemplate;
+  v-ui:forClass v-wf:TaskCompleted
+.
 v-wf:TaskCompletedTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события по задаче"@ru ;
@@ -2627,6 +2686,25 @@ v-wf:TaskCompletedTemplate
 </div>
   """ ;
 .
+
+v-wf:TS_ProcessStarted
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:ProcessEventTemplate;
+  v-ui:forClass v-wf:ProcessStarted
+.
+v-wf:TS_ProcessStopped
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:ProcessEventTemplate;
+  v-ui:forClass v-wf:ProcessStopped
+.
+v-wf:TS_ProcessCompleted 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:ProcessEventTemplate;
+  v-ui:forClass v-wf:ProcessCompleted
+.
 v-wf:ProcessEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события процесса"@ru ;
@@ -2658,6 +2736,12 @@ v-wf:ProcessEventTemplate
   """ ;
 .
 
+v-wf:TS_SubProcessStarted
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:SubProcessStartedEventTemplate;
+  v-ui:forClass v-wf:SubProcessStarted
+.
 v-wf:SubProcessStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события запуска подпроцесса"@ru ;
@@ -2668,6 +2752,12 @@ v-wf:SubProcessStartedEventTemplate
   """ ;
 .
 
+v-wf:TS_WorkItemStarted
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:WorkItemStartedEventTemplate;
+  v-ui:forClass v-wf:WorkItemStarted
+.
 v-wf:WorkItemStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон обработки work item"@ru ;
@@ -2700,6 +2790,12 @@ v-wf:WorkItemStartedEventTemplate
   """ ;
 .
 
+v-wf:TS_WorkOrderStarted 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:WorkOrderStartedEventTemplate;
+  v-ui:forClass v-wf:WorkOrderStarted
+.
 v-wf:WorkOrderStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон обработки work item"@ru ;
@@ -2709,6 +2805,12 @@ v-wf:WorkOrderStartedEventTemplate
   """ ;
 .
 
+v-wf:TS_DecisionFormStarted 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:DecisionFormStartedEventTemplate;
+  v-ui:forClass v-wf:DecisionFormStarted
+.
 v-wf:DecisionFormStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон обработки work item"@ru ;
@@ -2746,6 +2848,12 @@ v-wf:DecisionFormStartedEventTemplate
   """ ;
 .
 
+v-wf:TS_TraceRecord 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:TraceRecordTemplate;
+  v-ui:forClass v-wf:TraceRecord
+.
 v-wf:TraceRecordTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Trace event template"@en ;
@@ -3116,6 +3224,12 @@ v-wf:transformPropertySpecification1
   v-ui:maxCardinality "100"^^xsd:nonNegativeInteger ;
 .
 
+v-s:TS_Transform
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-wf:TransformationTemplate;
+  v-ui:forClass v-wf:Transform
+.
 v-wf:TransformationTemplate
 rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
