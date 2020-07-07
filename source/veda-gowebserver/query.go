@@ -202,6 +202,11 @@ func query(ctx *fasthttp.RequestCtx) {
     return
   }
 
+  err = querySocket.SetRecvMaxSize(1024*1024*10)
+  if err != nil {
+    log.Printf("ERR! FAIL SET MAX RECV SIZE, err=%v\n", err)
+  }
+
   //log.Println("use query service url: ", queryServiceURL)
     if is_search_query {
         _, err = querySocket.Connect(searchQueryURL)
