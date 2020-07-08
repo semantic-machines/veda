@@ -73,7 +73,7 @@ impl TTA {
                     op.pop();
                 } else {
                     let mut e = i + 2;
-                    if e > s.len() {
+                    if e >= s.len() {
                         e = s.len() - 1;
                     }
 
