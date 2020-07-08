@@ -19,7 +19,6 @@ v-s:Bundle
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Текстовая константа"@ru ;
   rdfs:label "Bundle"@en ;
-  v-ui:hasTemplate v-ui:LabelTemplate ;
 .
 
 #----------------------------
