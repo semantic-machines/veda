@@ -1053,8 +1053,7 @@ v-ui:VersionedTemplate
   </div>
 </div>
 <script>
-  var actual = individual["v-s:actualVersion"][0];
-  if (!actual) { return; }
+  var actual = individual.hasValue("v-s:actualVersion") ? individual["v-s:actualVersion"][0] : individual;
   var tmpl = ''
     + '<tr>'
       + '<td>#</td>'
@@ -1081,12 +1080,15 @@ v-ui:VersionedTemplate
   function renderVersion(current, counter, limit) {
     if (!current) { return btn.remove(); }
     if (!limit) { return; }
-    var previous = current["v-s:previousVersion"][0];
-    var row = tmpl.replace("#", counter);
-    if (current.id === actual.id) { row = row.replace("<tr>", "<tr class='info'>"); }
-    if (current.id === individual.id) { row = row.replace(/td/g, "th").replace("v-ui:LabelLinkTemplate", "v-ui:LabelTemplate"); }
-    current.present(tbody, row);
-    renderVersion(previous, ++counter, --limit);
+    return current.load().then(function (current) {
+      var previous = current["v-s:previousVersion"][0];
+      var row = tmpl.replace("#", counter);
+      if (current.id === actual.id) { row = row.replace("<tr>", "<tr class='info'>"); }
+      if (current.id === individual.id) { row = row.replace(/td/g, "th").replace("v-ui:LabelLinkTemplate", "v-ui:LabelTemplate"); }
+      return current.present(tbody, row).then(function () {
+        renderVersion(previous, ++counter, --limit);
+      });
+    });
   }
   //# sourceURL=v-ui:VersionedTemplate
 </script>
@@ -1976,7 +1978,7 @@ v-ui:FileMinTemplate
   """ ;
 .
 
-v-s:TS_File 
+v-s:TS_File
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:FileTemplateWithComment;
@@ -2109,7 +2111,7 @@ v-ui:ModalImageTemplate
   """ ;
 .
 
-v-s:TS_Journal 
+v-s:TS_Journal
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:SimplifiedJournalTemplate;
@@ -2376,25 +2378,25 @@ v-ui:SubJournalTemplate
   """ ;
 .
 
-v-s:TS_DocumentCreated 
+v-s:TS_DocumentCreated
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:DocumentEventTemplate;
   v-ui:forClass v-s:DocumentCreated
 .
-v-s:TS_DocumentUpdated 
+v-s:TS_DocumentUpdated
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:DocumentEventTemplate;
   v-ui:forClass v-s:DocumentUpdated
 .
-v-s:TS_DocumentDeleted 
+v-s:TS_DocumentDeleted
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:DocumentEventTemplate;
   v-ui:forClass v-s:DocumentDeleted
 .
-v-s:TS_ProcessStarted 
+v-s:TS_ProcessStarted
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:DocumentEventTemplate;
