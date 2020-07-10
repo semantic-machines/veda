@@ -641,7 +641,7 @@ if (parent_script_id) {
 
 // Get actual state
 document = get_individual(ticket, document["@"]);
-if ( veda.Util.hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: "Boolean"} ) || !prev_state ) {
+if ( veda.Util.hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: "Boolean"} ) ) {
   delete document['v-s:triggerVersionCreation'];
   veda.Util.create_version(ticket, document, prev_state, user_uri, _event_id);
 }
