@@ -53,7 +53,6 @@ v-s:Module
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Модуль"@ru ;
   rdfs:label "Module"@en ;
-  v-ui:hasTemplate v-ui:ModuleTemplate ;
 .
 
 v-s:moduleUrl
@@ -186,7 +185,6 @@ v-s:Account
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Учетная запись"@ru ;
   rdfs:label "Account"@en ;
-  v-ui:hasTemplate v-s:AccountTemplate;
 .
 
 v-s:GitAccount
@@ -271,7 +269,6 @@ v-s:Event
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Событие"@ru ;
   rdfs:label "Event"@en ;
-  v-ui:hasTemplate v-ui:EventTemplate;
 .
 v-s:triggerByType
   rdf:type owl:DatatypeProperty ;
@@ -324,7 +321,6 @@ v-s:Group
   rdfs:comment "Group of resources"@en ;
   rdfs:label "Группа"@ru ;
   rdfs:label "Group"@en ;
-  v-ui:hasTemplate v-ui:GroupTemplate ;
 .
 
 # ------------------------------------------------------------
@@ -333,7 +329,6 @@ v-s:Membership
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Принадлежность"@ru ;
   rdfs:label "Membership"@en ;
-  v-ui:hasTemplate v-ui:MembershipTemplate ;
 .
 v-s:memberOf
   rdf:type owl:ObjectProperty ;
@@ -427,7 +422,6 @@ v-s:PermissionStatement
   rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
   rdfs:label "Запись о выдаче прав"@ru ;
   rdfs:label "Permissions record"@en ;
-  v-ui:hasTemplate v-ui:PermissionStatementTemplate ;
 .
 
 # v-s:hasStatus (v-s:Thing)
@@ -502,7 +496,6 @@ v-s:Version
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Версия"@ru ;
   rdfs:label "Version"@en ;
-  v-ui:hasTemplate v-ui:VersionTemplate ;
 .
 
 # ------------------------------------------------------------

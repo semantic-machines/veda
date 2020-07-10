@@ -458,6 +458,12 @@ v-ui:PsTypePropertySpec
   v-ui:maxCardinality 1 ;
 .
 
+v-s:TS_PropertySpecification 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:PropertySpecificationTemplate;
+  v-ui:forClass v-ui:PropertySpecification
+.
 v-ui:PropertySpecificationTemplate
   rdf:type v-ui:ClassTemplate;
   rdfs:label "Шаблон класса v-ui:PropertySpecification"@ru ;
@@ -564,6 +570,12 @@ v-ui:PropertySpecificationTemplate
   """ ;
 .
 
+v-s:TS_DatatypePropertySpecification 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:DatatypePropertySpecificationTemplate;
+  v-ui:forClass v-ui:DatatypePropertySpecification
+.
 v-ui:DatatypePropertySpecificationTemplate
   rdf:type v-ui:ClassTemplate;
   rdfs:label "Шаблон класса v-ui:PropertySpecification"@ru ;
@@ -718,6 +730,13 @@ v-ui:DatatypePropertySpecificationTemplate
   </div>
 </div>
   """ ;
+.
+
+v-s:TS_ObjectPropertySpecification 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:ObjectPropertySpecificationTemplate;
+  v-ui:forClass v-ui:ObjectPropertySpecification
 .
 v-ui:ObjectPropertySpecificationTemplate
   rdf:type v-ui:ClassTemplate;
@@ -952,6 +971,13 @@ v-ui:PsMultiValuePropertiesForObjectPropertySpec
   v-ui:maxCardinality 100 ;
 .
 
+
+v-s:TS_ClassTemplate 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:ClassTemplateTemplate;
+  v-ui:forClass v-ui:ClassTemplate
+.
 v-ui:ClassTemplateTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса -Шаблон класса-"@ru ;
@@ -971,6 +997,13 @@ v-ui:ClassTemplateTemplate
   </div>
 </div>
   """ ;
+.
+
+v-s:TS_ClassModel 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:ClassModelTemplate;
+  v-ui:forClass v-ui:ClassModel
 .
 v-ui:ClassModelTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -1006,6 +1039,12 @@ v-ui:PsForClassSpec
   v-ui:maxCardinality 100 ;
 .
 
+v-s:TS_Event 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:EventTemplate;
+  v-ui:forClass v-s:Event
+.
 v-ui:EventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:Event"@ru ;
@@ -1093,6 +1132,12 @@ v-ui:EventTemplate
   """ ;
 .
 
+v-s:TS_Module 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:ModuleTemplate;
+  v-ui:forClass v-s:Module
+.
 v-ui:ModuleTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для 'v-s:Module'"@ru ;
@@ -1475,12 +1520,12 @@ v-s:PermissionStatementRegistryResultTemplate
   """ ;
 .
 
-
-
-
-
-
-
+v-s:TS_Group 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:GroupTemplate;
+  v-ui:forClass v-s:Group
+.
 v-ui:GroupTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:Group"@ru ;
@@ -1520,6 +1565,12 @@ v-ui:GroupTemplate
   """ ;
 .
 
+v-s:TS_PermissionStatement 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:PermissionStatementTemplate;
+  v-ui:forClass v-s:PermissionStatement
+.
 v-ui:PermissionStatementTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:PermissionStatement"@ru ;
@@ -1604,6 +1655,12 @@ v-ui:PermissionStatementTemplate
   """ ;
 .
 
+v-s:TS_Membership 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:MembershipTemplate;
+  v-ui:forClass v-s:Membership
+.
 v-ui:MembershipTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:PermissionStatement"@ru ;

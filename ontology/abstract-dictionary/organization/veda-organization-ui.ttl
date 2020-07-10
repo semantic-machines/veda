@@ -763,6 +763,12 @@ v-s:DepartmentTemplate
 .
 
 ##########НАЗНАЧЕНИЕ############
+v-s:TS_Appointment 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:AppointmentTemplate;
+  v-ui:forClass v-s:NewAppointmentTemplate
+.
 v-s:NewAppointmentTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Appointment ;
@@ -2554,6 +2560,12 @@ v-s:PositionEmbeddedTemplate
 .
 
 
+v-s:TS_Account 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:AccountTemplate;
+  v-ui:forClass v-s:Account
+.
 v-s:AccountTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:Account при создании v-s:Person"@ru ;
