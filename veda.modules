@@ -12,6 +12,7 @@ ft-indexer
 
 ft-query
     module = ft-query
+    args = --bind=tcp://127.0.0.1:8114
     memory-limit = 5 Gb
 
 #fanout-email

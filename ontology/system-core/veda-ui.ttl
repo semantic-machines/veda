@@ -90,7 +90,6 @@ v-ui:ClassModel
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Модель класса"@ru ;
   rdfs:label "Class model"@en ;
-  v-ui:hasTemplate v-ui:ClassModelTemplate ;
 .
 v-ui:template
   rdf:type owl:DatatypeProperty ;
@@ -104,14 +103,13 @@ v-ui:ClassTemplate
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Шаблон"@ru ;
   rdfs:label "Template"@en ;
-  v-ui:hasTemplate v-ui:ClassTemplateTemplate ;
 .
+
 v-ui:PropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Спецификация свойства"@ru ;
   rdfs:label "Property specification"@en ;
-  v-ui:hasTemplate v-ui:PropertySpecificationTemplate ;
 .
 v-ui:tooltip
   rdf:type owl:DatatypeProperty ;
@@ -185,7 +183,6 @@ v-ui:DatatypePropertySpecification
   rdfs:subClassOf v-ui:PropertySpecification ;
   rdfs:label "Спецификация литерального свойства"@ru ;
   rdfs:label "Datatype property specification"@en ;
-  v-ui:hasTemplate v-ui:DatatypePropertySpecificationTemplate ;
 .
 v-ui:regexp
   rdf:type owl:DatatypeProperty ;
@@ -237,7 +234,6 @@ v-ui:ObjectPropertySpecification
   rdfs:subClassOf v-ui:PropertySpecification ;
   rdfs:label "Спецификация объектного свойства"@ru ;
   rdfs:label "Object property specification"@en ;
-  v-ui:hasTemplate v-ui:ObjectPropertySpecificationTemplate ;
 .
 v-ui:rangeRestriction
   rdf:type owl:ObjectProperty ;
@@ -266,7 +262,6 @@ v-ui:Tree
   rdf:type owl:Class ;
   rdfs:label "Дерево"@ru ;
   rdfs:label "Tree"@en ;
-  v-ui:hasTemplate v-ui:TreeTemplate ;
 .
 
 v-ui:treeRoot
@@ -987,6 +982,13 @@ v-ui:IconButtonsTemplate
 </script>
 """ ;
 .
+
+v-s:TS_Version 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:VersionTemplate;
+  v-ui:forClass v-s:Version
+.
 v-ui:VersionTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:Version"@ru ;
@@ -1284,6 +1286,12 @@ v-ui:ResourceSpec
   v-ui:queryPrefix "('rdf:type'=='owl:Class' || 'rdf:type'=='rdfs:Class')"^^xsd:string ;
 .
 
+v-s:TS_Bundle 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:LabelTemplate;
+  v-ui:forClass v-s:Bundle
+.
 v-ui:LabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с меткой"@ru ;
@@ -1628,7 +1636,6 @@ v-ui:TestUIClass
   rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Класс для тестирования интерфейса"@ru ;
   rdfs:label "Test UI class"@en ;
-  v-ui:hasTemplate v-ui:TestUITemplate ;
 .
 
 v-ui:testBoolean
@@ -1832,6 +1839,12 @@ v-ui:TestUIResultTemplate
   """ ;
 .
 ##############
+v-s:TS_TestUIClass 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:TestUITemplate;
+  v-ui:forClass v-ui:TestUIClass
+.
 
 v-ui:TestUITemplate
   rdf:type v-ui:ClassTemplate ;
@@ -2602,6 +2615,12 @@ v-ui:DeepSelectBundle
   rdfs:label "Deep select"@en ;
 .
 
+v-s:TS_Tree 
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-ui:TreeTemplate;
+  v-ui:forClass v-ui:Tree
+.
 v-ui:TreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для древовоидных структур"@ru ;
