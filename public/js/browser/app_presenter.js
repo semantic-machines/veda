@@ -181,18 +181,18 @@ veda.Module(function (veda) { "use strict";
         if (hash_index >= 0) {
           hash = hash.substring(hash_index);
         } else {
-          return main.present().then(function () {
+          return main.present("#main").then(function () {
             $("#load-indicator").hide();
           });
         }
       } else {
-        return main.present().then(function () {
+        return main.present("#main").then(function () {
           $("#load-indicator").hide();
         });
       }
       var tokens = decodeURI(hash).slice(2).split("/"),
           uri = tokens[0],
-          container = tokens[1],
+          container = tokens[1] || "#main",
           template = tokens[2],
           mode = tokens[3],
           extra = tokens[4];
@@ -211,6 +211,7 @@ veda.Module(function (veda) { "use strict";
 
       if (uri) {
         var individual = new veda.IndividualModel(uri);
+        $(container).empty();
         individual.present(container, template, mode, extra).then(function () {
           $("#load-indicator").hide();
           if ( !individual.scroll ) {
@@ -218,7 +219,7 @@ veda.Module(function (veda) { "use strict";
           }
         });
       } else {
-        main.present().then(function () {
+        main.present("#main").then(function () {
           $("#load-indicator").hide();
         });
       }
