@@ -116,6 +116,7 @@ veda.Module(function (veda) { "use strict";
     var layout_uri = veda.manifest.veda_layout;
     var main_uri = veda.manifest.veda_main;
     var start_url = veda.manifest.start_url;
+    $("#app").empty();
     if (layout_uri && main_uri && start_url) {
       var layout = new veda.IndividualModel(layout_uri);
       layout.present("#app")
@@ -181,11 +182,13 @@ veda.Module(function (veda) { "use strict";
         if (hash_index >= 0) {
           hash = hash.substring(hash_index);
         } else {
+          $("#main").empty();
           return main.present("#main").then(function () {
             $("#load-indicator").hide();
           });
         }
       } else {
+        $("#main").empty();
         return main.present("#main").then(function () {
           $("#load-indicator").hide();
         });
@@ -219,6 +222,7 @@ veda.Module(function (veda) { "use strict";
           }
         });
       } else {
+        $("#main").empty();
         main.present("#main").then(function () {
           $("#load-indicator").hide();
         });
