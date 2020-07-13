@@ -8,15 +8,8 @@ veda.Module(function (veda) { "use strict";
 
     toAppend = typeof toAppend !== "undefined" ? toAppend : true;
 
-    var toEmpty;
-
-    if (typeof container === "undefined" || container === "") {
-      container = "#main";
-    }
-
     if (typeof container === "string") {
       container = $(container);
-      toEmpty = true;
     }
 
     return this.load().then(function (individual) {
@@ -42,7 +35,7 @@ veda.Module(function (veda) { "use strict";
         }
         return template.load().then(function (template) {
           template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
-          return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
+          return renderTemplate(individual, container, template, mode, extra, toAppend);
         });
       } else {
         var isClass = individual.hasValue("rdf:type", "owl:Class") || individual.hasValue("rdf:type", "rdfs:Class");
@@ -51,7 +44,7 @@ veda.Module(function (veda) { "use strict";
           template = individual["v-ui:hasTemplate"][0];
           templatePromise = template.load().then(function (template) {
             template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
-            return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
+            return renderTemplate(individual, container, template, mode, extra, toAppend);
           });
         } else {
           var ontology = veda.ontology;
@@ -72,7 +65,7 @@ veda.Module(function (veda) { "use strict";
           }).then(function (templates) {
             var renderedTemplatesPromises = templates.map( function (template) {
               template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
-              return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
+              return renderTemplate(individual, container, template, mode, extra, toAppend);
             });
             return Promise.all(renderedTemplatesPromises);
           }).then(function (renderedTemplates) {
@@ -80,7 +73,7 @@ veda.Module(function (veda) { "use strict";
               return acc.add(renderedTemplate);
             }, $());
           });
-        };
+        }
         return templatePromise;
       }
     })
@@ -89,7 +82,7 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-  function renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend) {
+  function renderTemplate(individual, container, template, mode, extra, toAppend) {
     var match,
         pre_render_src,
         pre_render,
@@ -120,10 +113,6 @@ veda.Module(function (veda) { "use strict";
       return processTemplate(individual, container, template, mode).then(function (processedTemplate) {
 
         processedTemplate.trigger(mode);
-
-        if (toEmpty) {
-          container.empty();
-        }
 
         if (toAppend) {
           container.append(processedTemplate);
