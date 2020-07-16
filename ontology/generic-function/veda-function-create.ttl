@@ -150,16 +150,23 @@ v-fc:BlankModel
   rdfs:label "v-fc:Blank class model"@en ;
   v-ui:forClass v-fc:Blank ;
   v-s:script """
-var stopList = [
+var initStopList = [
   "@",
   "rdf:type",
-  "v-s:author",
-  "v-s:publisher",
   "v-s:creator",
   "v-s:lastEditor",
   "v-s:created",
-  "v-s:drafted",
   "v-s:edited",
+  "v-s:updateCounter",
+  "v-s:deleted",
+  "rdfs:label",
+  "rdfs:isDefinedBy",
+  "v-fc:targetType"
+];
+
+var updateStopList = [
+  "@",
+  "rdf:type",
   "v-s:updateCounter",
   "v-s:deleted",
   "rdfs:label",
@@ -181,7 +188,7 @@ this.initBlank = function (blankObject) {
     delete blank.object;
   });
   var relations = Object.keys(blank.properties).filter(function (property_uri) {
-    if ( stopList.indexOf(property_uri) >= 0 ) { return false; }
+    if ( initStopList.indexOf(property_uri) >= 0 ) { return false; }
     if ( blank.hasValue(property_uri) && blank.get(property_uri)[0] instanceof veda.IndividualModel) {
       return true;
     } else {
@@ -221,7 +228,7 @@ this.initBlank = function (blankObject) {
 this.updateBlank = function () {
   var blank = this;
   var relations = Object.keys(blank.object.properties).filter(function (property_uri) {
-    if ( stopList.indexOf(property_uri) >= 0 ) { return false; }
+    if ( updateStopList.indexOf(property_uri) >= 0 ) { return false; }
     if ( blank.object.hasValue(property_uri) && blank.object.get(property_uri)[0] instanceof veda.IndividualModel ) {
       blank[property_uri] = [];
       return true;
@@ -259,7 +266,7 @@ this.updateBlank = function () {
   """
 .
 
-v-s:TS_Blank 
+v-s:TS_Blank
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-fc:BlankTemplate;
@@ -357,13 +364,13 @@ v-fc:Back
 .
 
 
-v-s:TS_Create 
+v-s:TS_Create
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-fc:CreateManagementTemplate;
   v-ui:forClass v-fc:Create
 .
-v-s:TS_PersonalCreate 
+v-s:TS_PersonalCreate
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-fc:CreateManagementTemplate;
