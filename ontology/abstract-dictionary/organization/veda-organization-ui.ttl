@@ -767,7 +767,7 @@ v-s:TS_Appointment
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:AppointmentTemplate;
-  v-ui:forClass v-s:NewAppointmentTemplate
+  v-ui:forClass v-s:Appointment
 .
 v-s:NewAppointmentTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -1102,6 +1102,12 @@ v-s:EmployeeEmbeddedTemplate
         cause: ["v-ui:minCardinality"]
       };
     }
+    if (!individual.hasValue('v-s:middleName')) {
+      result["v-s:firstName"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
     if (!individual.hasValue('v-s:birthday')) {
       result["v-s:birthday"] = {
         state: false,
@@ -1269,6 +1275,12 @@ v-s:AppointmentTemplate
     }
     if (!individual.hasValue('v-s:parentUnit')) {
       result["v-s:parentUnit"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:origin')) {
+      result["v-s:origin"] = {
         state: false,
         cause: ["v-ui:minCardinality"]
       };
@@ -1632,6 +1644,7 @@ v-s:AppointmentTemplate
         tempOccupation.id = individual['v-s:occupation'][0]["v-s:description"][0];
         tempOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
         tempOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+        tempOccupation["v-s:origin"] = individual['v-s:origin'];
         return tempOccupation.save();
       }
       else return undefined;
@@ -2308,6 +2321,12 @@ v-s:PositionTemplate
         cause: ["v-ui:minCardinality"]
       };
     }
+    if (!individual.hasValue('v-s:origin')) {
+      result["v-s:origin"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
     if( individual.hasValue('rdfs:label') && individual.hasValue('v-s:parentOrganization') && individual.isNew())  {
       var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "'";
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
@@ -2479,7 +2498,7 @@ v-s:PositionEmbeddedTemplate
         }
       });
     }
-   /* if ( individual.hasValue('v-s:description')) {
+    if ( individual.hasValue('v-s:description')) {
       var queryString = "'@'=='" + individual['v-s:description'][0] + "'";
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
@@ -2489,7 +2508,18 @@ v-s:PositionEmbeddedTemplate
           $('#warningID').removeClass('hide');
         }
       });
-    }*/
+    }
+    if ( individual.hasValue('v-s:subjectCode')) {
+      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'v-s:subjectCode'=='" + individual['v-s:subjectCode'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningID').addClass('hide'); 
+        } else {
+          $('#warningID').removeClass('hide');
+        }
+      });
+    }
     template.trigger("validated", result);
   });
 </script>
@@ -2499,7 +2529,7 @@ v-s:PositionEmbeddedTemplate
       <span>Внимание. Должность с похожим названием уже существует в данной организации. Возможно Вам следует использовать ее.</span>
     </div>
     <div id="warningID" class="alert alert-danger hide">
-      <span>Внимание. Такой ID уже существует.</span>
+      <span>Внимание. Такой ID или код должности уже существует.</span>
     </div>
     <div class="row row-attribute">
       <div class="col-sm-3 col-xs-5">
@@ -2517,15 +2547,6 @@ v-s:PositionEmbeddedTemplate
       <div class="col-sm-3 col-xs-3">
         <div property="v-s:subjectCode" class="view -edit -search"></div>
         <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
-      </div>
-    </div>
-    <div class="row row-attribute">
-      <div class="col-sm-3 col-xs-5">
-        <label about="v-s:origin" property="rdfs:label"></label>
-      </div>
-      <div class="col-sm-9 col-xs-7">
-        <div property="v-s:origin" class="view -edit -search"></div>
-        <veda-control property="v-s:origin" data-type="string" class="-view edit search"></veda-control>
       </div>
     </div>
     <div class="row row-attribute">
@@ -2748,7 +2769,7 @@ v-s:AccountEmbeddedTemplate
       </div>
       <div class="col-sm-9 col-xs-7">
         <div property="rdfs:label" class="view -edit -search"></div>
-        <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+        <veda-control data-type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
       </div>
     </div>
     <div class="row row-attribute">
