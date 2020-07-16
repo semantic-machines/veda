@@ -983,7 +983,7 @@ v-ui:IconButtonsTemplate
 """ ;
 .
 
-v-s:TS_Version 
+v-s:TS_Version
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:VersionTemplate;
@@ -1017,6 +1017,7 @@ v-ui:VersionTemplate
       }
     });
   }, 300);
+  //# sourceURL=v-ui:VersionTemplate_post
 </script>
 """ ;
 .
@@ -1286,7 +1287,7 @@ v-ui:ResourceSpec
   v-ui:queryPrefix "('rdf:type'=='owl:Class' || 'rdf:type'=='rdfs:Class')"^^xsd:string ;
 .
 
-v-s:TS_Bundle 
+v-s:TS_Bundle
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:LabelTemplate;
@@ -1839,7 +1840,7 @@ v-ui:TestUIResultTemplate
   """ ;
 .
 ##############
-v-s:TS_TestUIClass 
+v-s:TS_TestUIClass
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:TestUITemplate;
@@ -2615,7 +2616,7 @@ v-ui:DeepSelectBundle
   rdfs:label "Deep select"@en ;
 .
 
-v-s:TS_Tree 
+v-s:TS_Tree
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ui:TreeTemplate;
@@ -2736,7 +2737,16 @@ v-ui:TreeTemplate
         });
       });
     } else {
-      thatRow.nextUntil("[data-level=" + thatLvl + "]").remove();
+      var rowsToRemove = $();
+      thatRow.nextAll().each(function () {
+        var row = $(this);
+        if ( row.data("level") > thatLvl ) {
+          rowsToRemove = rowsToRemove.add(row);
+        } else {
+          return false;
+        }
+      });
+      rowsToRemove.remove();
     }
     return false;
   });
