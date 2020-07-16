@@ -1103,7 +1103,7 @@ v-s:EmployeeEmbeddedTemplate
       };
     }
     if (!individual.hasValue('v-s:middleName')) {
-      result["v-s:firstName"] = {
+      result["v-s:middleName"] = {
         state: false,
         cause: ["v-ui:minCardinality"]
       };
