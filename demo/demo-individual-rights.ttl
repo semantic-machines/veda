@@ -25,4 +25,5 @@ d:AllUsersGroup_SuperUser_membership
   v-s:memberOf cfg:SuperUser;
   v-s:resource cfg:AllUsersGroup ;
   rdfs:label "Все пользователи входят в группу cfg:SuperUser" ;
+  v-s:deleted true ;
 .
