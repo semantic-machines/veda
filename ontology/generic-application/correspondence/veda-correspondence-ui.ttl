@@ -107,25 +107,25 @@ v-s:OutgoingLetterPrintBlank
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
-v-s:TS_Letter 
+v-s:TS_Letter
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:LetterTemplate;
   v-ui:forClass v-s:Letter
 .
-v-s:TS_IncomingLetter 
+v-s:TS_IncomingLetter
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:LetterTemplate;
   v-ui:forClass v-s:IncomingLetter
 .
-v-s:TS_OutgoingLetter 
+v-s:TS_OutgoingLetter
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:LetterTemplate;
   v-ui:forClass v-s:OutgoingLetter
 .
-v-s:TS_Delivery 
+v-s:TS_Delivery
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:DeliveryTemplate;
@@ -462,10 +462,10 @@ v-s:CorrespondentTemplate
     });
   }
 
-  if ( template.parent().attr("rel") === "v-s:sender" ) {
+  if ( container.attr("rel") === "v-s:sender" ) {
     template.addClass("panel-info");
     template.children(":first").addClass("bg-info");
-  } else if ( template.parent().attr("rel") === "v-s:recipient" ) {
+  } else if ( container.attr("rel") === "v-s:recipient" ) {
     template.addClass("panel-success");
     template.children(":first").addClass("bg-success");
   }
@@ -629,26 +629,25 @@ v-s:LetterRegistrationRecordTemplate
       if (isEnumerated ) {
         var autoBundle = new veda.IndividualModel("v-s:AutomaticallyBundle");
         autoBundle.load().then(function (autoBundle) {
-          $("input", template).attr("placeholder", autoBundle["rdfs:label"].join(" "));
+          $("input, textarea", template).attr("placeholder", autoBundle["rdfs:label"].join(" "));
         });
       } else {
         var manualBundle = new veda.IndividualModel("v-s:ManuallyBundle");
         manualBundle.load().then(function (manualBundle) {
-          $("input", template).attr("placeholder", manualBundle["rdfs:label"].join(" "));
+          $("input, textarea", template).attr("placeholder", manualBundle["rdfs:label"].join(" "));
         });
       }
     });
   }
-  //временное решение так как при быстрой загрузке template.parent() пустой
-  setTimeout(function(){
-    if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
-      template.addClass("panel-info");
-      template.children(":first").addClass("bg-info");
-    } else if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordRecipient" ) {
-      template.addClass("panel-success");
-      template.children(":first").addClass("bg-success");
-    }
-  }, 300);
+
+  if ( container.attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
+    template.addClass("panel-info");
+    template.children(":first").addClass("bg-info");
+  } else if ( container.attr("rel") === "v-s:hasLetterRegistrationRecordRecipient" ) {
+    template.addClass("panel-success");
+    template.children(":first").addClass("bg-success");
+  }
+
   //# sourceURL=v-s:LetterRegistrationRecordTemplate_post
 </script>
   """ ;
