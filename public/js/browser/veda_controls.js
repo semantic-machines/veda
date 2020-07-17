@@ -374,7 +374,7 @@
       control = $(opts.template),
       format = opts.format,
       spec = opts.spec,
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
+      placeholder = this.attr("placeholder") || (spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : ""),
       property_uri = opts.property_uri,
       individual = opts.individual,
       isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
@@ -579,7 +579,7 @@
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec,
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
+      placeholder = this.attr("placeholder") || (spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : ""),
       timeout;
 
     var tabindex = this.attr("tabindex");
@@ -1370,7 +1370,7 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:SelectValueBundle"),
+      placeholder = this.attr("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:SelectValueBundle") ),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
@@ -1930,7 +1930,7 @@
       that = this,
       control = $(opts.template),
       spec = opts.spec,
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
+      placeholder = this.attr("placeholder") || (spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : ""),
       isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       property_uri = opts.property_uri,
       individual = opts.individual,
