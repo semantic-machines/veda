@@ -218,7 +218,7 @@ fn encode_value_v2(right: &Right, outbuff: &mut String) {
     for (tag, count) in right.counters.iter() {
         if let Some(c) = access_from_char(*tag) {
             if *count > 0 {
-                set_access = set_access | c as u8;
+                set_access |= c as u8;
                 outbuff.push(*tag);
                 if *count > 1 {
                     outbuff.push_str(&count.to_string());

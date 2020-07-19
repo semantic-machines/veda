@@ -252,7 +252,7 @@ impl XapianReader {
         Ok(())
     }
 
-    fn open_dbqp_if_need(&mut self, db_names: &Vec<String>) -> Result<()> {
+    fn open_dbqp_if_need(&mut self, db_names: &[String]) -> Result<()> {
         if !self.using_dbqp.contains_key(db_names) {
             for el in db_names {
                 self.open_db_if_need(el)?;
@@ -276,7 +276,7 @@ impl XapianReader {
 
             dbqp.qp.set_database(&mut dbqp.db)?;
 
-            self.using_dbqp.insert(db_names.clone(), dbqp);
+            self.using_dbqp.insert(db_names.to_vec(), dbqp);
         }
         /*
            committed_op_id = get_info().committed_op_id;
