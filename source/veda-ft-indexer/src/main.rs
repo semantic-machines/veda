@@ -16,9 +16,9 @@ use v_onto::onto::Onto;
 use crate::indexer::Indexer;
 use std::time::Instant;
 use v_ft_xapian::init_db_path;
+use v_ft_xapian::xapian_reader::XapianReader;
 use v_queue::consumer::*;
 use xapian_rusty::*;
-use v_ft_xapian::xapian_reader::XapianReader;
 
 //const XAPIAN_DB_TYPE: i8 = BRASS;
 const BASE_PATH: &str = "./data";
@@ -53,7 +53,7 @@ fn main() -> Result<(), i32> {
             committed_op_id: 0,
             prepared_op_id: 0,
             committed_time: Instant::now(),
-            xr
+            xr,
         };
 
         info!("Rusty search-index: start listening to queue");
