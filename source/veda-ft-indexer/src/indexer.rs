@@ -81,17 +81,8 @@ impl Indexer {
             return Ok(());
         }
 
-        let is_deleted = if new_indv.is_exists_bool("v-s:deleted", true) {
-            true
-        } else {
-            false
-        };
-
-        let prev_is_deleted = if prev_indv.is_exists_bool("v-s:deleted", true) {
-            true
-        } else {
-            false
-        };
+        let is_deleted = new_indv.is_exists_bool("v-s:deleted", true);
+        let prev_is_deleted = prev_indv.is_exists_bool("v-s:deleted", true);
 
         let is_restored = if prev_is_deleted && !is_deleted && self.use_db.is_empty() {
             info!("index msg: restore individual: {} ", new_indv.get_id());
@@ -137,7 +128,7 @@ impl Indexer {
             let mut dbname = "base".to_owned();
             for _type in types.iter() {
                 if _type == "vdi:ClassIndex" {
-                    self.idx_schema.add_schema_data(&mut self.onto, new_indv);
+                    self.idx_schema.add_schema_data(&self.onto, new_indv);
                 }
 
                 dbname = self.idx_schema.get_dbname_of_class(_type).to_owned();
@@ -228,13 +219,13 @@ impl Indexer {
                     if !p_text_ru.is_empty() {
                         let slot_l1 = self.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_ru"));
                         self.tg.index_text_with_prefix(&p_text_ru, &format!("X{}X", slot_l1))?;
-                        iwp.doc_add_text_value(slot_l1, &mut p_text_ru)?;
+                        iwp.doc_add_text_value(slot_l1, &p_text_ru)?;
                     }
 
                     if !p_text_en.is_empty() {
                         let slot_l1 = self.key2slot.get_slot_and_set_if_not_found(&(predicate.to_owned() + "_en"));
                         self.tg.index_text_with_prefix(&p_text_en, &format!("X{}X", slot_l1))?;
-                        iwp.doc_add_text_value(slot_l1, &mut p_text_en)?;
+                        iwp.doc_add_text_value(slot_l1, &p_text_en)?;
                     }
                 }
             }
@@ -279,14 +270,14 @@ impl Indexer {
             }
         }
 
-        return Ok(());
+        Ok(())
     }
 
     pub(crate) fn commit_all_db(&mut self, module_info: &mut ModuleInfo) -> Result<()> {
         let delta = self.prepared_op_id - self.committed_op_id;
         let duration = self.committed_time.elapsed().as_millis();
 
-        //info! ("@duration = {}", duration);
+        debug!("duration = {}", duration);
 
         if delta > 0 {
             let mut is_fail_commit = false;
@@ -297,7 +288,7 @@ impl Indexer {
                 }
             }
 
-            if is_fail_commit == true {
+            if is_fail_commit {
                 warn!("EXIT");
                 exit(-1);
             }
@@ -316,9 +307,7 @@ impl Indexer {
     fn prepare_index(&mut self, module: &mut Module, iwp: &mut IndexDocWorkplace, idx_id: &str, predicate: &str, rs: &Resource, ln: &str, level: i32) -> Result<()> {
         if let Some(idx) = self.idx_schema.get_copy_of_index(idx_id) {
             if rs.rtype == DataType::String {
-                let indexed_field_as_fwildcard_z = idx.get_literals_nm("vdi:indexed_field_as_fwildcard");
-
-                for _indexed_field_as_fwildcard in indexed_field_as_fwildcard_z {
+                if idx.get_literals_nm("vdi:indexed_field_as_fwildcard").is_some() {
                     iwp.index_string_for_first_wildcard(self, predicate, rs)?;
                 }
             } else if rs.rtype == DataType::Uri {

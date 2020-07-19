@@ -1,5 +1,6 @@
 use crate::xapian_reader::XapianReader;
 use std::collections::{HashMap, HashSet};
+use std::fmt;
 use v_api::app::ResultCode;
 use v_module::module::Module;
 use v_onto::individual::Individual;
@@ -11,6 +12,15 @@ pub struct IndexerSchema {
     class_2_database: HashMap<String, String>,
     id_2_individual: HashMap<String, Individual>,
     database_2_true: HashMap<String, bool>,
+}
+
+impl fmt::Display for IndexerSchema {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for (k, v) in self.class_property_2_id.iter() {
+            writeln!(f, "{} -> {}", k, v)?
+        }
+        Ok(())
+    }
 }
 
 impl IndexerSchema {
@@ -30,6 +40,7 @@ impl IndexerSchema {
                     }
                 }
             }
+            info!("SCHEMA \n{}", self);
         }
     }
 
@@ -53,14 +64,14 @@ impl IndexerSchema {
     }
 
     pub fn get_index_id_of_uri_and_property(&mut self, id: &str, predicate: &str) -> Option<String> {
-        if let Some(id) = self.class_property_2_id.get(&(id.to_owned() + predicate)) {
+        if let Some(id) = self.class_property_2_id.get(&format!("{}+{}", id.to_owned(), predicate)) {
             return Some(id.to_owned());
         }
         None
     }
 
     pub fn get_index_id_of_property(&mut self, predicate: &str) -> Option<String> {
-        if let Some(id) = self.class_property_2_id.get(predicate) {
+        if let Some(id) = self.class_property_2_id.get(&format!("+{}", predicate)) {
             return Some(id.to_owned());
         }
 
@@ -87,19 +98,19 @@ impl IndexerSchema {
                 sub_classes.insert("".to_owned());
             }
 
-            for sc in sub_classes.iter() {
+            for sub_class in sub_classes.iter() {
                 if let Some(i) = indexed_to.get(0) {
-                    self.class_2_database.insert(sc.to_owned(), i.to_owned());
+                    self.class_2_database.insert(sub_class.to_owned(), i.to_owned());
                     self.database_2_true.insert(i.to_owned(), true);
                 }
 
                 for for_property in for_properties.iter() {
-                    self.class_property_2_id.insert(sc.to_owned() + for_property, indv.get_id().to_owned());
+                    self.class_property_2_id.insert(format!("{}+{}", sub_class, for_property), indv.get_id().to_owned());
                 }
             }
 
             for for_property in for_properties.iter() {
-                self.class_property_2_id.insert(for_class.to_string() + for_property, indv.get_id().to_owned());
+                self.class_property_2_id.insert(format!("{}+{}", for_class, for_property), indv.get_id().to_owned());
             }
         }
     }
