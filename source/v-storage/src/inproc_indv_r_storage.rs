@@ -109,7 +109,7 @@ pub fn get_individual(id: &str) -> Option<Individual> {
 
     if let Ok(msg) = wmsg {
         let data = msg.as_slice();
-        if data == "[]".as_bytes() {
+        if data == b"[]" {
             return None;
         }
         return Some(Individual::new_raw(RawObj::new(data.to_vec())));

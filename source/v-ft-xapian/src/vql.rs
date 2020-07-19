@@ -38,18 +38,30 @@ impl fmt::Display for TTA {
 }
 
 impl TTA {
-    pub fn new(op: &str, l: Option<Box<TTA>>, r: Option<Box<TTA>>, token_decor: Decor) -> Self {
+    pub fn new(op: &str, l: Option<TTA>, r: Option<TTA>, token_decor: Decor) -> Self {
+        let l1 = if let Some(ll) = l {
+            Some(Box::new(ll))
+        } else {
+            None
+        };
+
+        let r1 = if let Some(rr) = r {
+            Some(Box::new(rr))
+        } else {
+            None
+        };
+
         Self {
             op: op.to_owned(),
             token_decor,
-            l,
-            r,
+            l: l1,
+            r: r1,
             count: 0,
         }
     }
 
-    pub fn parse_expr(src: &str) -> Option<Box<TTA>> {
-        let mut st: Vec<Box<TTA>> = vec![];
+    pub fn parse_expr(src: &str) -> Option<TTA> {
+        let mut st: Vec<TTA> = vec![];
         let mut op: Vec<&str> = vec![];
 
         let s = src.as_bytes();
@@ -123,9 +135,9 @@ impl TTA {
 
                                 if let Ok(op) = operand {
                                     if cur_tag == b'[' {
-                                        st.push(Box::from(TTA::new(op, None, None, Decor::RANGE)));
+                                        st.push(TTA::new(op, None, None, Decor::RANGE));
                                     } else {
-                                        st.push(Box::from(TTA::new(op, None, None, Decor::QUOTED)));
+                                        st.push(TTA::new(op, None, None, Decor::QUOTED));
                                     }
                                 }
                             }
@@ -164,7 +176,7 @@ impl TTA {
 
                                 debug!("operand=[{:?}]", operand);
                                 if let Ok(op) = operand {
-                                    st.push(Box::new(TTA::new(op, None, None, Decor::NONE)));
+                                    st.push(TTA::new(op, None, None, Decor::NONE));
                                 }
                             }
                         }
@@ -189,13 +201,13 @@ fn delim(c: u8) -> bool {
     c == b' ' || c == b'\t' || c == b'\r' || c == b'\n'
 }
 
-fn process_op(st: &mut Vec<Box<TTA>>, op: &str) {
+fn process_op(st: &mut Vec<TTA>, op: &str) {
     let r = st.pop();
     let l = st.pop();
 
     match op {
         "<" | ">" | "==" | "===" | "!=" | "=*" | "=+" | ">=" | "<=" | "||" | "&&" => {
-            st.push(Box::new(TTA::new(op, l, r, Decor::NONE)));
+            st.push(TTA::new(op, l, r, Decor::NONE));
         }
         _ => {}
     }

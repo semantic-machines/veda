@@ -367,9 +367,9 @@ pub(crate) fn transform_vql_to_xapian(
         //            }
         //        }
 
-        //writeln("@p && token_L=", token_L);
-        //writeln("@p query_l=", get_query_description(query_l));
-        //writeln("@p query_r=", get_query_description(query_r));
+        debug!("@p && token_L={}", token_l);
+        debug!("@p query_l={}", query_l.get_description());
+        debug!("@p query_r={}", query_r.get_description());
 
         if !token_l.is_empty() && !tta_l.is_empty() {
             let mut c_from = if t_op_r == ">" {
@@ -412,7 +412,6 @@ pub(crate) fn transform_vql_to_xapian(
             if !query_r.is_empty() {
                 if query_l.is_empty() {
                     *query = query_r;
-                //query_r = null;
                 } else if !query_r.is_empty() {
                     *query = query_l.add_right(XapianOp::OpAnd, &mut query_r)?;
                 }
@@ -420,10 +419,9 @@ pub(crate) fn transform_vql_to_xapian(
                 if query.is_empty() {
                     return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
                 }
-            //writeln("#3.1 && query=", get_query_description(query));
+                debug!("#3.1 && query={}", query.get_description());
             } else {
                 *query = query_l;
-                //query_l = null;
             }
         }
         if !tta_l.is_empty() && tta_l.is_empty() {
