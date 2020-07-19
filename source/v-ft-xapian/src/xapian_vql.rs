@@ -518,8 +518,6 @@ fn parse_query(qp: &mut QueryParser, query_str: &str, flags: i16) -> Result<Quer
 }
 
 fn get_token_type(token_in: &str) -> (TokenType, f64) {
-    let res = TokenType::TEXT;
-
     debug!("token=[{}]", token_in);
 
     let token = token_in.trim().as_bytes();
@@ -539,11 +537,15 @@ fn get_token_type(token_in: &str) -> (TokenType, f64) {
         }
     }
 
-    if let Ok(v) = token_in.parse::<f64>() {
-        return (res, v);
+    if let Ok(v) = token_in.parse::<i64>() {
+        return (TokenType::NUMBER, v as f64);
     }
 
-    (res, 0.0)
+    if let Ok(v) = token_in.parse::<f64>() {
+        return (TokenType::NUMBER, v);
+    }
+
+    (TokenType::TEXT, 0.0)
 }
 
 fn is_good_token(str: &str) -> bool {
