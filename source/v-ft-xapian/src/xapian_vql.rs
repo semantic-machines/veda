@@ -464,7 +464,7 @@ pub fn get_sorter(sort: &str, key2slot: &Key2Slot) -> Result<Option<MultiValueKe
     if !sort.is_empty() {
         let fields: Vec<&str> = sort.split(',').collect();
         for f in fields {
-            let el: Vec<&str> = f.split(' ').collect();
+            let el: Vec<&str> = f.trim().split(' ').collect();
 
             if el.len() == 2 {
                 let key = el.get(0).unwrap().replace('\'', " ");
@@ -473,10 +473,13 @@ pub fn get_sorter(sort: &str, key2slot: &Key2Slot) -> Result<Option<MultiValueKe
                 let asc_desc = direction != "desc";
 
                 if let Some(slot) = key2slot.get_slot(key.trim()) {
+                    debug!("use sort {} {}", key, asc_desc);
                     let mut sorter = MultiValueKeyMaker::new()?;
                     sorter.add_value(slot, asc_desc)?;
                     return Ok(Some(sorter));
                 }
+            } else {
+                warn!("ignore invalid sort [{}]", f);
             }
         }
     }

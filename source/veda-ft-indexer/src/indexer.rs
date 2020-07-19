@@ -8,6 +8,7 @@ use v_api::IndvOp;
 use v_ft_xapian::index_schema::IndexerSchema;
 use v_ft_xapian::key2slot::{Key2Slot, XAPIAN_INFO_PATH};
 use v_ft_xapian::to_lower_and_replace_delimiters;
+use v_ft_xapian::xapian_reader::XapianReader;
 use v_ft_xapian::xerror::Result;
 use v_module::info::ModuleInfo;
 use v_module::module::Module;
@@ -16,7 +17,6 @@ use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_onto::resource::Resource;
 use xapian_rusty::{get_xapian_err_type, Document, Stem, TermGenerator, WritableDatabase, DB_CREATE_OR_OPEN};
-use v_ft_xapian::xapian_reader::XapianReader;
 
 pub(crate) struct Indexer {
     pub onto: Onto,
@@ -31,7 +31,7 @@ pub(crate) struct Indexer {
     pub committed_op_id: i64,
     pub prepared_op_id: i64,
     pub committed_time: Instant,
-    pub xr: XapianReader
+    pub xr: XapianReader,
 }
 
 impl Indexer {
@@ -176,6 +176,7 @@ impl Indexer {
 
             new_indv.parse_all();
             for (predicate, resources) in new_indv.get_obj().get_resources() {
+                debug!("predicate={}", predicate);
                 let mut p_text_ru = String::new();
                 let mut p_text_en = String::new();
 
