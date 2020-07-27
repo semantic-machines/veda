@@ -7,11 +7,11 @@ GO_VER=go1.12.1
 MSGPUCK_VER=2.0
 NANOMSG_VER=1.1.5
 LMDB_VER=0.9.22
-XAPIAND_VER=1.0.0
 
 INSTALL_PATH=$PWD
 
 # Get other dependencies
+LIB_NAME[5]="libglib2.0-dev"
 LIB_NAME[6]="cmake"
 LIB_NAME[7]="libtool-bin"
 LIB_NAME[8]="pkg-config"
@@ -179,11 +179,11 @@ fi
     cd ..
     cd ..
     sudo cp ./source/lib64/libauthorization.so /usr/local/lib
-    sudo ldconfig
 
 
 sudo libtool --mode=install install -c $INSTALL_PATH/source/lib64/libxapianm/libxapianm.la /usr/local/lib/libxapianm.la
+sudo ldconfig
 
 
-sudo apt-get install -y libglib2.0-dev
 ldd --version
+ls /usr/local/lib
