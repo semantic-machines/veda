@@ -1,13 +1,13 @@
 ############################################
 
-adduser sedadm
-adduser sedadm sudo
+adduser sm
+adduser sm sudo
 sudo locale-gen "en_US.UTF-8"
 sudo dpkg-reconfigure locales
 
 ############################################
 
-apt-get install software-properties-common
+sudo apt-get install software-properties-common
 
 # install java 8
 sudo add-apt-repository ppa:webupd8team/java
