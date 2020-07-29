@@ -1,0 +1,18 @@
+инструкция: как удалить/просмотреть тикет (для стендов с базой на tarantool)
+
+вход к командную консоль tarantool:
+tarantoolctl connect veda6:123456@127.0.0.1:3309
+
+удаление:
+> box.space.TICKETS:delete('3e44f52b-15f9-47d2-9673-030936f7ea98')
+---
+...
+
+
+просмотр:
+> box.space.TICKETS:select('3e44f52b-15f9-47d2-9673-030936f7ea98')
+---
+- - ['3e44f52b-15f9-47d2-9673-030936f7ea98', {'ticket:accessor': [[2, 'd:persona_org_RU11045774_155']],
+      'ticket:login': [[2, 'grynovat']], 'ticket:when': [[2, '2020-07-29T07:50:21.91653192']],
+      'ticket:duration': [[2, '39600']], 'rdf:type': [[2, 'ticket:ticket']]}]
+...
