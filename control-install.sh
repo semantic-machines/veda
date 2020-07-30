@@ -4,7 +4,6 @@
 ./tools/install-repo-libs.sh
 
 GO_VER=go1.12.1
-MSGPUCK_VER=2.0
 NANOMSG_VER=1.1.5
 LMDB_VER=0.9.22
 
@@ -139,36 +138,6 @@ if ([ "$1" = force ] ||  [ "$1" = force-nanomsg ]) || ! ldconfig -p | grep libna
     cd ..
 else
     echo "--- NANOMSG INSTALLED ---"
-fi
-
-if [ "$1" = force ] || [ "$1" = force-tarantool ] || ! ldconfig -p | grep libtarantool ; then
-    echo "--- INSTALL LIBTARANTOOL ---"
-    TTC=d93096a9d39e36c456af82e5e53c6ca4f4be608f
-
-    mkdir tmp
-    cd tmp
-
-    wget https://github.com/tarantool/tarantool-c/archive/$TTC.tar.gz -P .
-    tar -xvzf $TTC.tar.gz
-
-    wget https://github.com/tarantool/msgpuck/archive/$MSGPUCK_VER.tar.gz -P third_party/msgpuck -P .
-    tar -xvzf $MSGPUCK_VER.tar.gz
-
-    cp msgpuck-$MSGPUCK_VER/* tarantool-c-$TTC/third_party/msgpuck
-    cd tarantool-c-$TTC
-
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
-    sudo ldconfig
-
-    cd ..
-    cd ..
-
-else
-    echo "--- LIBTARANTOOL INSTALLED ---"
 fi
 
     echo "--- MAKE LIBAUTHORIZATION ---"
