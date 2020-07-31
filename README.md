@@ -1,6 +1,9 @@
 # Veda - ontology driven application development platform 
 [![Build Status](https://travis-ci.org/semantic-machines/veda.svg?branch=master)](https://travis-ci.org/semantic-machines/veda)
-[![Join the chat at https://gitter.im/semantic-machines/veda](https://badges.gitter.im/semantic-machines/veda.svg)](https://gitter.im/semantic-machines/veda?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+
+
+![](https://github.com/semantic-machines/veda/blob/master/doc/images/search.png)
 
 ## I. Overview
 
@@ -26,7 +29,7 @@
   - Various visualization libraries & plugins.
 
 ## II. System requirements
-  - OS - Ubuntu 18.04 LTS 64-Bit, Ubuntu 20.04 LTS 64-Bit
+  - OS - Ubuntu 18.04, 20.04 LTS 64-Bit. For run on common Linux-based operating systems, use Veda-x86_64.AppImage
   - RAM - 1Gb
 
 ## III. How to install and run
