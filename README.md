@@ -26,7 +26,7 @@
   - Various visualization libraries & plugins.
 
 ## II. System requirements
-  - OS - Ubuntu 14.04 LTS 64-Bit, 16.04 LTS 64-Bit
+  - OS - Ubuntu 18.04 LTS 64-Bit, Ubuntu 20.04 LTS 64-Bit
   - RAM - 1Gb
 
 ## III. How to install and run
