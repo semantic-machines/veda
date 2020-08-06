@@ -1,8 +1,7 @@
 use crate::common::*;
 use crate::session_cache::*;
 use rusty_v8 as v8;
-use rusty_v8::scope::Entered;
-use rusty_v8::{Context, HandleScope, Local, OwnedIsolate};
+use rusty_v8::{Context, HandleScope, Local};
 use std::cell::RefCell;
 use std::sync::Mutex;
 use v_api::*;
@@ -19,9 +18,9 @@ lazy_static! {
     pub(crate) static ref G_TRANSACTION: Mutex<RefCell<Transaction>> = Mutex::new(RefCell::new(Transaction::default()));
 }
 
-pub fn fn_callback_get_individual(mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
+pub fn fn_callback_get_individual(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
     //let ticket = get_string_arg(&mut scope, &args, 0, "callback_get_individual: ticket not found or invalid").unwrap_or_default();
-    let id = get_string_arg(&mut scope, &args, 1, "callback_get_individual: id not found or invalid").unwrap_or_default();
+    let id = get_string_arg(scope, &args, 1, "callback_get_individual: id not found or invalid").unwrap_or_default();
 
     if id == "undefined" {
         return;
@@ -71,29 +70,29 @@ pub fn fn_callback_get_individual(mut scope: v8::FunctionCallbackScope, args: v8
     }
 }
 
-pub fn fn_callback_get_individuals(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
+pub fn fn_callback_get_individuals(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
     let j_res = v8::Array::new(scope, 0);
-    let context = scope.get_current_context().unwrap();
+
     let arg1 = args.get(0);
     if arg1.is_array() {
         if let Some(r) = arg1.to_object(scope) {
-            if let Some(arr_keys) = r.get_property_names(scope, context) {
+            if let Some(arr_keys) = r.get_property_names(scope) {
                 let mut sh_tnx = G_TRANSACTION.lock().unwrap();
                 let tnx = sh_tnx.get_mut();
 
                 for idx in 0..arr_keys.length() {
                     let j_idx = v8::Integer::new(scope, idx as i32);
-                    let j_id = r.get(scope, context, j_idx.into()).unwrap().to_object(scope).unwrap();
+                    let j_id = r.get(scope, j_idx.into()).unwrap().to_object(scope).unwrap();
                     let id = j_id.to_string(scope).unwrap().to_rust_string_lossy(scope);
 
                     if let Some(indv) = tnx.get_indv(&id) {
                         let j_indv = individual2v8obj(scope, indv);
-                        j_res.set(context, j_idx.into(), j_indv.into());
+                        j_res.set(scope, j_idx.into(), j_indv.into());
                     } else {
                         if let Some(mut indv) = get_individual(&id) {
                             if parse_raw(&mut indv).is_ok() {
                                 let j_indv = individual2v8obj(scope, &mut indv.parse_all());
-                                j_res.set(context, j_idx.into(), j_indv.into());
+                                j_res.set(scope, j_idx.into(), j_indv.into());
                             } else {
                                 error!("callback_get_individual: fail parse binobj, id={}", id);
                             }
@@ -109,7 +108,7 @@ pub fn fn_callback_get_individuals(scope: v8::FunctionCallbackScope, args: v8::F
     rv.set(j_res.into());
 }
 
-pub fn fn_callback_print(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
+pub fn fn_callback_print(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
     let mut str_out = String::new();
 
     for idx in 0..args.length() {
@@ -120,13 +119,13 @@ pub fn fn_callback_print(scope: v8::FunctionCallbackScope, args: v8::FunctionCal
     info!("{}", str_out);
 }
 
-pub fn fn_callback_log_trace(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
+pub fn fn_callback_log_trace(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
     let arg1 = args.get(0);
     info!("{}", arg1.to_string(scope).unwrap().to_rust_string_lossy(scope));
 }
 
-pub fn fn_callback_get_env_str_var(mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
-    if let Some(var_name) = get_string_arg(&mut scope, &args, 0, "fn_callback_get_env_str_var: arg not found or invalid") {
+pub fn fn_callback_get_env_str_var(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
+    if let Some(var_name) = get_string_arg(scope, &args, 0, "fn_callback_get_env_str_var: arg not found or invalid") {
         let mut sh_g_vars = G_VARS.lock().unwrap();
         let g_vars = sh_g_vars.get_mut();
 
@@ -155,8 +154,8 @@ pub fn fn_callback_get_env_str_var(mut scope: v8::FunctionCallbackScope, args: v
         drop(sh_g_vars);
     }
 }
-pub fn fn_callback_get_env_num_var(mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
-    if let Some(var_name) = get_string_arg(&mut scope, &args, 0, "fn_callback_get_env_str_var: arg not found or invalid") {
+pub fn fn_callback_get_env_num_var(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut _rv: v8::ReturnValue) {
+    if let Some(var_name) = get_string_arg(scope, &args, 0, "fn_callback_get_env_str_var: arg not found or invalid") {
         //let mut sh_g_vars = G_VARS.lock().unwrap();
         //let _g_vars = sh_g_vars.get_mut();
 
@@ -170,14 +169,14 @@ pub fn fn_callback_get_env_num_var(mut scope: v8::FunctionCallbackScope, args: v
     }
 }
 
-pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
-    let ticket = get_string_arg(&mut scope, &args, 0, "callback_query: arg0 [ticket] not found or invalid");
+pub fn fn_callback_query(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
+    let ticket = get_string_arg(scope, &args, 0, "callback_query: arg0 [ticket] not found or invalid");
     if ticket.is_none() {
         return;
     }
     let mut ticket = ticket.unwrap();
 
-    let query = get_string_arg(&mut scope, &args, 1, "callback_query: arg1 [query] not found or invalid");
+    let query = get_string_arg(scope, &args, 1, "callback_query: arg1 [query] not found or invalid");
     if query.is_none() {
         return;
     }
@@ -197,19 +196,19 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
 
     let mut query = FTQuery::new_with_ticket(&ticket, &query.unwrap());
     if args.length() > 2 {
-        sort = get_string_arg(&mut scope, &args, 2, "callback_get_individual: arg2 [sort] not found or invalid");
+        sort = get_string_arg(scope, &args, 2, "callback_get_individual: arg2 [sort] not found or invalid");
         query.sort = sort.unwrap_or_default();
         if args.length() > 3 {
-            databases = get_string_arg(&mut scope, &args, 3, "callback_get_individual: arg3 [databases] not found or invalid");
+            databases = get_string_arg(scope, &args, 3, "callback_get_individual: arg3 [databases] not found or invalid");
             query.databases = databases.unwrap_or_default();
             if args.length() > 4 {
-                top = get_string_i32(&mut scope, &args, 4, "callback_get_individual: arg4 [top] not found or invalid");
+                top = get_string_i32(scope, &args, 4, "callback_get_individual: arg4 [top] not found or invalid");
                 query.top = top.unwrap_or(100000);
                 if args.length() > 5 {
-                    limit = get_string_i32(&mut scope, &args, 5, "callback_get_individual: arg5 [limit] not found or invalid");
+                    limit = get_string_i32(scope, &args, 5, "callback_get_individual: arg5 [limit] not found or invalid");
                     query.limit = limit.unwrap_or(100000);
                     if args.length() > 6 {
-                        from = get_string_i32(&mut scope, &args, 6, "callback_get_individual: arg6 [from] not found or invalid");
+                        from = get_string_i32(scope, &args, 6, "callback_get_individual: arg6 [from] not found or invalid");
                         query.from = from.unwrap_or_default();
                     }
                 }
@@ -217,7 +216,7 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
         }
     }
 
-    let _context = scope.get_current_context().unwrap();
+    let _context = scope.get_current_context();
 
     let mut sh_ft_client = FT_CLIENT.lock().unwrap();
     let ft_client = sh_ft_client.get_mut();
@@ -230,10 +229,8 @@ pub fn fn_callback_query(mut scope: v8::FunctionCallbackScope, args: v8::Functio
     rv.set(j_res.into());
 }
 
-fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
-    let context = scope.get_current_context().unwrap();
-
-    let wticket = get_string_arg(&mut scope, &args, 0, "fn_callback_update: arg0 [ticket] not found or invalid");
+fn fn_callback_update(opt: IndvOp, scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
+    let wticket = get_string_arg(scope, &args, 0, "fn_callback_update: arg0 [ticket] not found or invalid");
     if wticket.is_none() {
         return;
     }
@@ -255,7 +252,7 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
     } else {
         if arg1.is_object() {
             let js_obj = arg1.to_object(scope).unwrap();
-            indv = v8obj2individual(scope, &context, js_obj);
+            indv = v8obj2individual(scope, js_obj);
         } else {
             indv = Individual::default();
             error!("callback {:?}, argument is not object", opt);
@@ -280,24 +277,24 @@ fn fn_callback_update(opt: IndvOp, mut scope: v8::FunctionCallbackScope, args: v
     }
 }
 
-pub fn fn_callback_put_individual(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
+pub fn fn_callback_put_individual(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
     fn_callback_update(IndvOp::Put, scope, args, rv);
 }
 
-pub fn fn_callback_remove_individual(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
+pub fn fn_callback_remove_individual(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
     fn_callback_update(IndvOp::Remove, scope, args, rv);
 }
-pub fn fn_callback_add_to_individual(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
+pub fn fn_callback_add_to_individual(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
     fn_callback_update(IndvOp::AddIn, scope, args, rv);
 }
-pub fn fn_callback_set_in_individual(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
+pub fn fn_callback_set_in_individual(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
     fn_callback_update(IndvOp::SetIn, scope, args, rv);
 }
-pub fn fn_callback_remove_from_individual(scope: v8::FunctionCallbackScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
+pub fn fn_callback_remove_from_individual(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
     fn_callback_update(IndvOp::RemoveFrom, scope, args, rv);
 }
 
-pub fn init_context_with_callback<'a>(scope: &mut Entered<'a, HandleScope, OwnedIsolate>) -> Local<'a, Context> {
+pub fn init_context_with_callback<'a>(scope: &mut HandleScope<'a, ()>) -> Local<'a, Context> {
     let object_templ = v8::ObjectTemplate::new(scope);
     object_templ.set(str_2_v8(scope, "print").into(), v8::FunctionTemplate::new(scope, fn_callback_print).into());
     object_templ.set(str_2_v8(scope, "get_individual").into(), v8::FunctionTemplate::new(scope, fn_callback_get_individual).into());
@@ -315,17 +312,17 @@ pub fn init_context_with_callback<'a>(scope: &mut Entered<'a, HandleScope, Owned
     v8::Context::new_from_template(scope, object_templ)
 }
 
-fn get_string_arg(scope: &mut v8::FunctionCallbackScope, args: &v8::FunctionCallbackArguments, idx: i32, err_msg: &str) -> Option<String> {
-    let arg = args.get(idx).to_string(*scope);
+fn get_string_arg(scope: &mut v8::HandleScope, args: &v8::FunctionCallbackArguments, idx: i32, err_msg: &str) -> Option<String> {
+    let arg = args.get(idx).to_string(scope);
     if arg.is_none() {
         error!("{}", err_msg);
         return None;
     }
-    Some(arg.unwrap().to_rust_string_lossy(*scope))
+    Some(arg.unwrap().to_rust_string_lossy(scope))
 }
 
-fn get_string_i32(scope: &mut v8::FunctionCallbackScope, args: &v8::FunctionCallbackArguments, idx: i32, err_msg: &str) -> Option<i32> {
-    let arg = args.get(idx).int32_value(*scope);
+fn get_string_i32(scope: &mut v8::HandleScope, args: &v8::FunctionCallbackArguments, idx: i32, err_msg: &str) -> Option<i32> {
+    let arg = args.get(idx).int32_value(scope);
     if arg.is_none() {
         error!("{}", err_msg);
         return None;

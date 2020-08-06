@@ -7,8 +7,7 @@ use crate::callback::*;
 use crate::scripts_workplace::{is_filter_pass, ScriptsWorkPlace};
 use crate::session_cache::{commit, CallbackSharedData, Transaction};
 use rusty_v8 as v8;
-use rusty_v8::scope::Entered;
-use rusty_v8::{Context, HandleScope, Local, OwnedIsolate};
+use rusty_v8::Isolate;
 use std::sync::Mutex;
 use std::{env, thread, time};
 use v_api::app::ResultCode;
@@ -87,16 +86,12 @@ fn main() -> Result<(), i32> {
 
     let _setup_guard = setup();
 
-    let mut isolate = v8::Isolate::new(Default::default());
+    let isolate = &mut v8::Isolate::new(Default::default());
 
-    let mut hs = v8::HandleScope::new(&mut isolate);
-    let hs_scope = hs.enter();
-
-    let context = init_context_with_callback(hs_scope);
-    main0(hs_scope, context)
+    main0(isolate)
 }
 
-fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, context: Local<'a, Context>) -> Result<(), i32> {
+fn main0<'a>(isolate: &'a mut Isolate) -> Result<(), i32> {
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
         wait_module("fulltext_indexer", wait_load_ontology());
     }
@@ -133,7 +128,7 @@ fn main0<'a>(parent_scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, conte
     if let Some(xr) = XapianReader::new("russian", &mut module.storage) {
         let mut ctx = MyContext {
             api_client: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
-            workplace: ScriptsWorkPlace::new(parent_scope, context),
+            workplace: ScriptsWorkPlace::new(isolate),
             onto,
             vm_id: "main".to_owned(),
             sys_ticket: w_sys_ticket.unwrap(),
@@ -320,13 +315,13 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
     *g_vars = session_data;
     drop(sh_g_vars);
 
-    let mut hs = v8::HandleScope::new(ctx.workplace.scope);
-    let local_scope = hs.enter();
+    let hs = v8::ContextScope::new(&mut ctx.workplace.scope, ctx.workplace.context);
+    let mut local_scope = hs;
 
     for script_id in ctx.workplace.scripts_order.iter() {
         let run_script_id = doc_id.to_owned() + "+" + script_id;
         if let Some(script) = ctx.workplace.scripts.get(script_id) {
-            if let Some(mut compiled_script) = script.compiled_script {
+            if let Some(compiled_script) = script.compiled_script {
                 if src == "?" {
                     if !run_at.is_empty() && run_at != ctx.vm_id {
                         continue;
@@ -377,7 +372,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
                 tnx.sys_ticket = ctx.sys_ticket.to_owned();
                 drop(sh_tnx);
 
-                compiled_script.run(local_scope, ctx.workplace.context);
+                compiled_script.run(&mut local_scope);
                 ctx.count_exec += 1;
 
                 sh_tnx = G_TRANSACTION.lock().unwrap();

@@ -1,7 +1,6 @@
 use crate::common::*;
 use rusty_v8 as v8;
-use rusty_v8::scope::Entered;
-use rusty_v8::{Context, HandleScope, Local, OwnedIsolate};
+use rusty_v8::HandleScope;
 
 pub(crate) struct ScriptInfo<'a> {
     pub id: String,
@@ -32,13 +31,10 @@ impl<'a> ScriptInfo<'a> {
         }
     }
 
-    pub fn compile_script(&mut self, parent_scope: &mut Entered<'a, HandleScope, OwnedIsolate>, context: Local<'a, Context>) {
-        let mut cs = v8::ContextScope::new(parent_scope, context);
-        let scope1 = cs.enter();
+    pub fn compile_script(&mut self, parent_scope: &mut HandleScope<'a>) {
+        let source = str_2_v8(parent_scope, &self.str_script);
 
-        let source = str_2_v8(scope1, &self.str_script);
-
-        match v8::Script::compile(scope1, context, source, None) {
+        match v8::Script::compile(parent_scope, source, None) {
             Some(script) => {
                 self.compiled_script = Some(script);
             }
