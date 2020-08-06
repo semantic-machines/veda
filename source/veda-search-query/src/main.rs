@@ -7,7 +7,7 @@ use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;
 use std::time::*;
 use std::{str, thread};
-use v_api::app::ResultCode;
+use v_api::app::{ResultCode, OptAuthorize};
 use v_module::module::{init_log, Module};
 use v_search::clickhouse_client::*;
 
@@ -78,7 +78,7 @@ fn req_prepare(module: &mut Module, request: &Message, ch_client: &mut CHClient)
                 }
             }
 
-            let res = ch_client.select(&user_uri, query, top, limit, from);
+            let res = ch_client.select(&user_uri, query, top, limit, from, OptAuthorize::YES);
 
             if let Ok(s) = serde_json::to_string(&res) {
                 return Message::from(s.as_bytes());

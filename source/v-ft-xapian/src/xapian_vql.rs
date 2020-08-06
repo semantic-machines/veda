@@ -12,6 +12,7 @@ use v_authorization::common::Access;
 use v_az_lmdb::_authorize;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
+use v_api::app::OptAuthorize;
 use xapian_rusty::{get_xapian_err_type, Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp};
 
 #[derive(Debug, PartialEq)]
@@ -20,12 +21,6 @@ enum TokenType {
     NUMBER,
     DATE,
     BOOLEAN,
-}
-
-#[derive(Debug, PartialEq)]
-pub enum OptAuthorize {
-    NO,
-    YES,
 }
 
 pub(crate) fn exec_xapian_query_and_queue_authorize<T>(

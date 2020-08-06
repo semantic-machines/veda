@@ -109,6 +109,12 @@ pub enum ResultCode {
     ConnectError = 4000,
 }
 
+#[derive(Debug, PartialEq)]
+pub enum OptAuthorize {
+    NO,
+    YES,
+}
+
 impl Serialize for ResultCode {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
