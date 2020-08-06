@@ -2,6 +2,7 @@ use chrono::{TimeZone, Utc};
 use rust_decimal::prelude::ToPrimitive;
 use rust_decimal::Decimal;
 use rusty_v8 as v8;
+use rusty_v8::HandleScope;
 use std::collections::HashSet;
 use std::fs::DirEntry;
 use std::path::Path;
@@ -39,49 +40,49 @@ lazy_static! {
     pub static ref SYS_TICKET: Mutex<String> = Mutex::new("?".to_owned());
 }
 
-pub fn str_2_v8<'sc>(scope: &mut impl v8::ToLocal<'sc>, s: &str) -> v8::Local<'sc, v8::String> {
+pub fn str_2_v8<'sc>(scope: &mut HandleScope<'sc, ()>, s: &str) -> v8::Local<'sc, v8::String> {
     v8::String::new(scope, s).unwrap()
 }
 
-pub fn v8_2_str<'sc>(scope: &mut impl v8::ToLocal<'sc>, s: &v8::Local<'sc, v8::Value>) -> String {
+pub fn v8_2_str<'sc>(scope: &mut HandleScope<'sc>, s: &v8::Local<'sc, v8::Value>) -> String {
     s.to_string(scope).unwrap().to_rust_string_lossy(scope)
 }
 
-pub fn v8obj2individual<'a>(scope: &mut impl v8::ToLocal<'a>, context: &v8::Local<v8::Context>, v8_obj: v8::Local<'a, v8::Object>) -> Individual {
+pub fn v8obj2individual<'a>(scope: &mut HandleScope<'a>, v8_obj: v8::Local<'a, v8::Object>) -> Individual {
     let mut res = Individual::default();
 
     let data_key = str_2_v8(scope, "data");
     let type_key = str_2_v8(scope, "type");
     let lang_key = str_2_v8(scope, "lang");
 
-    if let Some(j_predicates) = v8_obj.get_property_names(scope, *context) {
+    if let Some(j_predicates) = v8_obj.get_property_names(scope) {
         for idx in 0..j_predicates.length() {
             let j_idx = v8::Integer::new(scope, idx as i32);
-            let key = j_predicates.get(scope, *context, j_idx.into()).unwrap();
+            let key = j_predicates.get(scope, j_idx.into()).unwrap();
             let predicate = v8_2_str(scope, &key);
-            let val = v8_obj.get(scope, *context, key).unwrap();
+            let val = v8_obj.get(scope, key).unwrap();
 
             if predicate == "@" {
                 res.set_id(&v8_2_str(scope, &val));
             } else {
                 if let Some(resources) = val.to_object(scope) {
                     if !resources.is_array() {
-                        add_v8_value_obj_to_individual(scope, context, &predicate, resources, &mut res, data_key, type_key, lang_key);
+                        add_v8_value_obj_to_individual(scope, &predicate, resources, &mut res, data_key, type_key, lang_key);
                     } else {
-                        if let Some(key_list) = resources.get_property_names(scope, *context) {
+                        if let Some(key_list) = resources.get_property_names(scope) {
                             for resources_idx in 0..key_list.length() {
                                 let j_resources_idx = v8::Integer::new(scope, resources_idx as i32);
-                                if let Some(v) = resources.get(scope, *context, j_resources_idx.into()) {
+                                if let Some(v) = resources.get(scope, j_resources_idx.into()) {
                                     if let Some(resource) = v.to_object(scope) {
                                         if resource.is_array() {
                                             let idx_0 = v8::Integer::new(scope, 0);
-                                            if let Some(v) = resource.get(scope, *context, idx_0.into()) {
+                                            if let Some(v) = resource.get(scope, idx_0.into()) {
                                                 if let Some(resource) = v.to_object(scope) {
-                                                    add_v8_value_obj_to_individual(scope, context, &predicate, resource, &mut res, data_key, type_key, lang_key);
+                                                    add_v8_value_obj_to_individual(scope, &predicate, resource, &mut res, data_key, type_key, lang_key);
                                                 }
                                             }
                                         } else {
-                                            add_v8_value_obj_to_individual(scope, context, &predicate, resource, &mut res, data_key, type_key, lang_key);
+                                            add_v8_value_obj_to_individual(scope, &predicate, resource, &mut res, data_key, type_key, lang_key);
                                         }
                                     } else {
                                         error!("v8obj2individual: invalid value predicate[{}], idx={}", predicate, resources_idx);
@@ -92,17 +93,15 @@ pub fn v8obj2individual<'a>(scope: &mut impl v8::ToLocal<'a>, context: &v8::Loca
                     }
                 }
             }
-
-            debug!("res={}", res.to_string());
         }
     }
 
+    debug!("res={}", res.to_string());
     res
 }
 
 fn add_v8_value_obj_to_individual<'a>(
-    scope: &mut impl v8::ToLocal<'a>,
-    context: &v8::Local<v8::Context>,
+    scope: &mut HandleScope<'a>,
     predicate: &str,
     resource: v8::Local<v8::Object>,
     res: &mut Individual,
@@ -110,8 +109,8 @@ fn add_v8_value_obj_to_individual<'a>(
     type_key: v8::Local<v8::String>,
     lang_key: v8::Local<v8::String>,
 ) {
-    let vdata = resource.get(scope, *context, data_key.into()).unwrap();
-    let vtype = resource.get(scope, *context, type_key.into()).unwrap();
+    let vdata = resource.get(scope, data_key.into()).unwrap();
+    let vtype = resource.get(scope, type_key.into()).unwrap();
     if !vtype.is_string() {
         return;
     }
@@ -169,7 +168,7 @@ fn add_v8_value_obj_to_individual<'a>(
                 }
             }
             "String" => {
-                let lang = if let Some(vlang) = resource.get(scope, *context, lang_key.into()) {
+                let lang = if let Some(vlang) = resource.get(scope, lang_key.into()) {
                     Lang::new_from_str(&v8_2_str(scope, &vlang).to_lowercase())
                 } else {
                     Lang::NONE
@@ -191,35 +190,37 @@ fn add_v8_value_obj_to_individual<'a>(
     }
 }
 
-pub fn query_result2v8obj<'a>(scope: &mut impl v8::ToLocal<'a>, src: &QueryResult) -> v8::Local<'a, v8::Object> {
-    let context = scope.get_current_context().unwrap();
-    let v8_obj = v8::Object::new(scope);
+pub fn query_result2v8obj<'a>(scope: &mut HandleScope<'a>, src: &QueryResult) -> v8::Local<'a, v8::Object> {
+    let mut v8_obj = v8::Object::new(scope);
 
-    v8_obj.set(context, str_2_v8(scope, "count").into(), v8::Integer::new(scope, src.count as i32).into());
+    let v1 = v8::Integer::new(scope, src.count as i32).into();
+    let k1 = str_2_v8(scope, "count").into();
+    v8_obj.set(scope, k1, v1);
 
     let js_resources = v8::Array::new(scope, src.result.len() as i32);
     let mut idx = 0;
     for el in src.result.iter() {
-        js_resources.set(context, v8::Integer::new(scope, idx).into(), str_2_v8(scope, el).into());
+        let k1 = v8::Integer::new(scope, idx).into();
+        let v1 = str_2_v8(scope, el).into();
+        js_resources.set(scope, k1, v1);
         idx += 1;
     }
 
-    v8_obj.set(context, str_2_v8(scope, "result").into(), js_resources.into());
-    v8_obj.set(context, str_2_v8(scope, "estimated").into(), v8::Integer::new(scope, src.estimated as i32).into());
-    v8_obj.set(context, str_2_v8(scope, "processed").into(), v8::Integer::new(scope, src.processed as i32).into());
-    v8_obj.set(context, str_2_v8(scope, "cursor").into(), v8::Integer::new(scope, src.cursor as i32).into());
-    v8_obj.set(context, str_2_v8(scope, "total_time").into(), v8::Integer::new(scope, src.total_time as i32).into());
-    v8_obj.set(context, str_2_v8(scope, "query_time").into(), v8::Integer::new(scope, src.query_time as i32).into());
-    v8_obj.set(context, str_2_v8(scope, "authorize_time").into(), v8::Integer::new(scope, src.authorize_time as i32).into());
-    v8_obj.set(context, str_2_v8(scope, "result_code").into(), v8::Integer::new(scope, src.result_code as i32).into());
+    let key = str_2_v8(scope, "result").into();
+    v8_obj.set(scope, key, js_resources.into());
+    set_key_i32_value(scope, &mut v8_obj, "estimated", src.estimated as i32);
+    set_key_i32_value(scope, &mut v8_obj, "processed", src.processed as i32);
+    set_key_i32_value(scope, &mut v8_obj, "total_time", src.total_time as i32);
+    set_key_i32_value(scope, &mut v8_obj, "query_time", src.query_time as i32);
+    set_key_i32_value(scope, &mut v8_obj, "authorize_time", src.authorize_time as i32);
+    set_key_i32_value(scope, &mut v8_obj, "result_code", src.result_code as i32);
     v8_obj
 }
 
-pub fn individual2v8obj<'a>(scope: &mut impl v8::ToLocal<'a>, src: &mut Individual) -> v8::Local<'a, v8::Object> {
-    let context = scope.get_current_context().unwrap();
-    let v8_obj = v8::Object::new(scope);
+pub fn individual2v8obj<'a>(scope: &mut HandleScope<'a>, src: &mut Individual) -> v8::Local<'a, v8::Object> {
+    let mut v8_obj = v8::Object::new(scope);
 
-    v8_obj.set(context, str_2_v8(scope, "@").into(), str_2_v8(scope, src.get_id()).into());
+    set_key_str_value(scope, &mut v8_obj, "@", src.get_id());
 
     let map_resources = src.get_obj().get_resources();
     for (predicate, resources) in map_resources {
@@ -227,9 +228,9 @@ pub fn individual2v8obj<'a>(scope: &mut impl v8::ToLocal<'a>, src: &mut Individu
 
         let mut idx = 0;
         for resource in resources {
-            let v8_value = v8::Object::new(scope);
-
-            js_resources.set(context, v8::Integer::new(scope, idx).into(), v8_value.into());
+            let mut v8_value = v8::Object::new(scope);
+            let key = v8::Integer::new(scope, idx).into();
+            js_resources.set(scope, key, v8_value.into());
             idx += 1;
 
             match &resource.value {
@@ -248,46 +249,71 @@ pub fn individual2v8obj<'a>(scope: &mut impl v8::ToLocal<'a>, src: &mut Individu
 
                     let d = Decimal::new(num, scale);
 
-                    v8_value.set(context, str_2_v8(scope, "data").into(), v8::Number::new(scope, d.to_f64().unwrap_or_default()).into());
-                    v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "Decimal").into());
+                    set_key_f64_value(scope, &mut v8_value, "data", d.to_f64().unwrap_or_default());
+                    set_key_str_value(scope, &mut v8_value, "type", "Decimal");
                 }
                 Value::Int(i) => {
                     if *i < i32::max as i64 {
-                        v8_value.set(context, str_2_v8(scope, "data").into(), v8::Integer::new(scope, *i as i32).into());
+                        set_key_i32_value(scope, &mut v8_value, "data", *i as i32);
                     } else {
-                        v8_value.set(context, str_2_v8(scope, "data").into(), v8::Number::new(scope, *i as f64).into());
+                        set_key_f64_value(scope, &mut v8_value, "data", *i as f64);
                         //                        error!("individual2v8obj: predicate{}, {} > i32.max", predicate, i);
                     }
-                    v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "Integer").into());
+                    set_key_str_value(scope, &mut v8_value, "type", "Integer");
                 }
                 Value::Datetime(i) => {
                     let dt = *i;
-                    v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "Datetime").into());
-                    v8_value.set(context, str_2_v8(scope, "data").into(), str_2_v8(scope, &format!("{:?}", &Utc.timestamp(dt, 0))).into());
+                    set_key_str_value(scope, &mut v8_value, "data", &format!("{:?}", &Utc.timestamp(dt, 0)));
+                    set_key_str_value(scope, &mut v8_value, "type", "Datetime");
                 }
                 Value::Bool(b) => {
-                    v8_value.set(context, str_2_v8(scope, "data").into(), v8::Boolean::new(scope, *b).into());
-                    v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "Boolean").into());
+                    set_key_bool_value(scope, &mut v8_value, "data", *b);
+                    set_key_str_value(scope, &mut v8_value, "type", "Boolean");
                 }
                 Value::Str(s, l) => {
                     if *l != Lang::NONE {
-                        v8_value.set(context, str_2_v8(scope, "lang").into(), str_2_v8(scope, &l.to_string().to_uppercase()).into());
+                        set_key_str_value(scope, &mut v8_value, "lang", &l.to_string().to_uppercase());
                     }
-                    v8_value.set(context, str_2_v8(scope, "data").into(), str_2_v8(scope, s).into());
-                    v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "String").into());
+                    set_key_str_value(scope, &mut v8_value, "data", s);
+                    set_key_str_value(scope, &mut v8_value, "type", "String");
                 }
                 Value::Uri(s) => {
-                    v8_value.set(context, str_2_v8(scope, "type").into(), str_2_v8(scope, "Uri").into());
-                    v8_value.set(context, str_2_v8(scope, "data").into(), str_2_v8(scope, s).into());
+                    set_key_str_value(scope, &mut v8_value, "data", s);
+                    set_key_str_value(scope, &mut v8_value, "type", "Uri");
                 }
                 _ => {}
             }
         }
 
-        v8_obj.set(context, str_2_v8(scope, predicate).into(), js_resources.into());
+        let key = str_2_v8(scope, predicate).into();
+        v8_obj.set(scope, key, js_resources.into());
     }
 
     v8_obj
+}
+
+fn set_key_str_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>, key: &str, val: &str) {
+    let v8_key = str_2_v8(scope, key).into();
+    let v8_val = str_2_v8(scope, val).into();
+    v8_obj.set(scope, v8_key, v8_val);
+}
+
+fn set_key_bool_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>, key: &str, val: bool) {
+    let v8_key = str_2_v8(scope, key).into();
+    let v8_val = v8::Boolean::new(scope, val).into();
+    v8_obj.set(scope, v8_key, v8_val);
+}
+
+fn set_key_i32_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>, key: &str, val: i32) {
+    let v8_key = str_2_v8(scope, key).into();
+    let v8_val = v8::Integer::new(scope, val).into();
+    v8_obj.set(scope, v8_key, v8_val);
+}
+
+fn set_key_f64_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>, key: &str, val: f64) {
+    let v8_key = str_2_v8(scope, key).into();
+    let v8_val = v8::Number::new(scope, val).into();
+    v8_obj.set(scope, v8_key, v8_val);
 }
 
 fn visit_dirs<T>(in_path: &Path, res: &mut Vec<T>, cb: &dyn Fn(&DirEntry, &mut Vec<T>)) -> io::Result<()> {

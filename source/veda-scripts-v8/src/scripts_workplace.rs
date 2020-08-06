@@ -1,8 +1,8 @@
+use crate::callback::init_context_with_callback;
 use crate::common::*;
 use crate::script_info::ScriptInfo;
 use rusty_v8 as v8;
-use rusty_v8::scope::Entered;
-use rusty_v8::{Context, HandleScope, Isolate, Local, OwnedIsolate};
+use rusty_v8::{Context, HandleScope, Isolate, Local};
 use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
@@ -31,7 +31,7 @@ pub(crate) struct ScriptsWorkPlace<'a> {
     pub scripts: HashMap<String, ScriptInfo<'a>>,
     pub scripts_order: Vec<String>,
     pub module: Module,
-    pub(crate) scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>,
+    pub(crate) scope: HandleScope<'a, ()>,
     pub(crate) context: Local<'a, Context>,
 }
 
@@ -71,20 +71,17 @@ impl<'a> ScriptsWorkPlace<'a> {
             }
         }
 
-        let params = Isolate::create_params();
-        let mut isolate = Isolate::new(params);
-
         for x in o_files.iter() {
             match fs::read_to_string(x) {
                 Ok(f) => {
                     info!("{}", x);
                     let mut scr_inf = ScriptInfo::new_with_src(x, &f);
 
-                    scr_inf.compile_script(self.scope, self.context);
+                    let scope = &mut v8::ContextScope::new(&mut self.scope, self.context);
+                    scr_inf.compile_script(scope);
 
-                    if let Some(mut i_script) = scr_inf.compiled_script {
-                        let mut hs = v8::HandleScope::new(&mut isolate);
-                        i_script.run(hs.enter(), self.context);
+                    if let Some(i_script) = scr_inf.compiled_script {
+                        i_script.run(scope);
                     }
 
                     //self.scripts.insert(x.to_owned(), scr_inf);
@@ -156,7 +153,8 @@ impl<'a> ScriptsWorkPlace<'a> {
 
             self.add_to_order(&scr_inf);
 
-            scr_inf.compile_script(self.scope, self.context);
+            let scope = &mut v8::ContextScope::new(&mut self.scope, self.context);
+            scr_inf.compile_script(scope);
             self.scripts.insert(scr_inf.id.to_string(), scr_inf);
         } else {
             error!("v-s:script no found");
@@ -196,7 +194,10 @@ impl<'a> ScriptsWorkPlace<'a> {
         self.scripts_order = new_scripts_order;
     }
 
-    pub(crate) fn new(scope: &'a mut Entered<'a, HandleScope, OwnedIsolate>, context: Local<'a, Context>) -> Self {
+    pub(crate) fn new(isolate: &'a mut Isolate) -> Self {
+        let mut scope = v8::HandleScope::new(isolate);
+
+        let context = init_context_with_callback(&mut scope);
         Self {
             scripts: Default::default(),
             scripts_order: vec![],
