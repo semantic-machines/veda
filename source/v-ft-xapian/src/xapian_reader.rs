@@ -16,6 +16,7 @@ use v_onto::onto::Onto;
 use v_onto::onto_index::OntoIndex;
 use v_search::common::{FTQuery, QueryResult};
 use v_storage::storage::VStorage;
+use v_api::app::OptAuthorize;
 use xapian_rusty::{get_xapian_err_type, Database, Query, QueryParser, Stem, UNKNOWN};
 
 const XAPIAN_DB_TYPE: i8 = UNKNOWN;

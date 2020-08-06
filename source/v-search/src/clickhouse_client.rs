@@ -5,7 +5,7 @@ use futures::executor::block_on;
 use std::str;
 use std::time::*;
 use url::Url;
-use v_api::app::ResultCode;
+use v_api::app::{ResultCode, OptAuthorize};
 use v_authorization::common::Access;
 use v_az_lmdb::_authorize;
 
@@ -48,11 +48,11 @@ impl CHClient {
         }
     }
 
-    pub fn select(&mut self, user_uri: &str, query: &str, top: i64, limit: i64, from: i64) -> QueryResult {
+    pub fn select(&mut self, user_uri: &str, query: &str, top: i64, limit: i64, from: i64, op_auth: OptAuthorize,) -> QueryResult {
         let start = Instant::now();
         let mut res = QueryResult::default();
 
-        if let Err(e) = block_on(select_from_clickhouse(&mut self.client, &user_uri, query, top, limit, from, &mut res)) {
+        if let Err(e) = block_on(select_from_clickhouse(&mut self.client, &user_uri, query, top, limit, from, op_auth, &mut res)) {
             error!("fail read from clickhouse: {:?}", e);
             res.result_code = ResultCode::InternalServerError
         }
@@ -65,7 +65,7 @@ impl CHClient {
     }
 }
 
-async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, top: i64, limit: i64, from: i64, out_res: &mut QueryResult) -> Result<(), Error> {
+async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, top: i64, limit: i64, from: i64, op_auth: OptAuthorize, out_res: &mut QueryResult) -> Result<(), Error> {
     let mut authorized_count = 0;
     let mut total_count = 0;
 
@@ -85,22 +85,26 @@ async fn select_from_clickhouse(pool: &mut Pool, user_uri: &str, query: &str, to
 
         let id: String = row.get(row.name(0)?)?;
 
-        let start = Instant::now();
+        if op_auth == OptAuthorize::YES {
+            let start = Instant::now();
 
-        match _authorize(&id, user_uri, Access::CanRead as u8, true, None) {
-            Ok(res) => {
-                if res == Access::CanRead as u8 {
-                    out_res.result.push(id);
-                    authorized_count += 1;
+            match _authorize(&id, user_uri, Access::CanRead as u8, true, None) {
+                Ok(res) => {
+                    if res == Access::CanRead as u8 {
+                        out_res.result.push(id);
+                        authorized_count += 1;
 
-                    if authorized_count >= top {
-                        break;
+                        if authorized_count >= top {
+                            break;
+                        }
                     }
                 }
+                Err(e) => error!("fail authorization {}, err={}", user_uri, e),
             }
-            Err(e) => error!("fail authorization {}, err={}", user_uri, e),
+            out_res.authorize_time += start.elapsed().as_micros() as i64;
+        } else {
+            out_res.result.push(id);
         }
-        out_res.authorize_time += start.elapsed().as_micros() as i64;
 
         if total_count >= limit {
             break;

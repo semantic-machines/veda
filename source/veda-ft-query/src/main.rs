@@ -7,7 +7,7 @@ use serde_json::value::Value as JSONValue;
 use std::{env, str};
 use v_api::app::ResultCode;
 use v_ft_xapian::xapian_reader::XapianReader;
-use v_ft_xapian::xapian_vql::OptAuthorize;
+use v_api::app::OptAuthorize;
 use v_module::module::{init_log, Module};
 use v_search::common::FTQuery;
 
