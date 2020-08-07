@@ -16,7 +16,7 @@ serde_derive = "1.0.104"
 serde = "1.0.104"
 env_logger = "0.6"
 log = "0.4"
-rust-ini = "0.13"
+rust-ini = "0.15"
 quote = "1.0.3"
 
 v_queue = { path = "../v-queue" }

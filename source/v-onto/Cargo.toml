@@ -11,12 +11,10 @@ path = "src/onto/lib.rs"
 num = "0.2.1"
 num-traits = "0.2.11"
 chrono = "0.4.9"
-byteorder = ">= 0.5.0"
 cbor-codec = { git = "https://github.com/itiu/cbor-codec.git", rev="8830b95e8060972786537911f03d4e823182a1ed" }
 rmp = "^0.8"
 rmp-serialize = "0.8.0"
 bincode = "1.2.1"
-#serde_derive = "1.0.104"
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0"
 log = "0.4"
