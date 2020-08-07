@@ -14,7 +14,7 @@ time = "0.1.42"
 env_logger = "0.6"
 scan_fmt = "0.2"
 log = "0.4"
-rust-ini = "0.13"
+rust-ini = "0.15"
 ron = "0.5.1"
 serde = "1.0"
 rio_turtle = {git="https://github.com/semantic-machines/rio.git", rev="cab2cb9863df496478da6a247cc8403414d9e9eb"}

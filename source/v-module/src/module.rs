@@ -82,7 +82,7 @@ impl Module {
         }
 
         if ft_query_service_url.is_empty() {
-            ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
+            ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").to_string();
         }
 
         info!("use ft_query_service_url={}", ft_query_service_url);

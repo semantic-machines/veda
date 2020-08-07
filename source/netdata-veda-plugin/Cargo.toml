@@ -6,5 +6,5 @@ edition = "2018"
 
 [dependencies]
 chrono = "0.4"
-rust-ini = "0.14"
+rust-ini = "0.15"
 v_queue = { path = "../v-queue" }
