@@ -343,6 +343,20 @@ v-s:valid
   rdfs:label "Valid"@en ;
   rdfs:range xsd:boolean ;
 .
+v-s:isExclusive
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:label "Ограничение эксклюзивными правами"@ru ;
+  rdfs:label "Restriction with exclusive rigths"@en ;
+  rdfs:range xsd:boolean ;
+.
+v-s:ignoreExclusive
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:label "Игнорирование эксклюзивных прав"@ru ;
+  rdfs:label "Ignore exclusive rigths"@en ;
+  rdfs:range xsd:boolean ;
+.
 v-s:colorDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Thing ;
