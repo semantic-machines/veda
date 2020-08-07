@@ -2,7 +2,7 @@ use crate::CleanerContext;
 use chrono::prelude::*;
 use std::ops::Sub;
 use time::Duration;
-use v_api::app::ResultCode;
+use v_api::app::{OptAuthorize, ResultCode};
 use v_api::IndvOp;
 use v_onto::individual::Individual;
 
@@ -13,7 +13,7 @@ pub fn clean_email(ctx: &mut CleanerContext) {
 
     let query =
         format!("SELECT DISTINCT id FROM veda_tt.`v-s:Email` FINAL WHERE v_s_deleted_int[1] = 0 AND v_s_created_date[1] < toDateTime ({})", date_before.timestamp());
-    let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, 0);
+    let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, 0, OptAuthorize::NO);
 
     if res.result_code == ResultCode::Ok {
         for id in res.result.iter() {

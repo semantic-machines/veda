@@ -1,5 +1,7 @@
 use crate::CleanerContext;
-use v_api::app::ResultCode;
+use chrono::NaiveDateTime;
+use v_api::app::{OptAuthorize, ResultCode};
+use v_api::IndvOp;
 use v_module::info::ModuleInfo;
 use v_onto::individual::Individual;
 
@@ -15,7 +17,7 @@ pub fn clean_invalid_membership(ctx: &mut CleanerContext) {
 
     if let Some((mut pos, _)) = module_info.read_info() {
         let query = "SELECT DISTINCT id FROM veda_tt.`v-s:Membership` FINAL WHERE v_s_deleted_int[1] = 0";
-        let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos);
+        let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos, OptAuthorize::NO);
 
         if res.result_code == ResultCode::Ok {
             for id in res.result.iter() {
@@ -41,12 +43,13 @@ pub fn clean_invalid_membership(ctx: &mut CleanerContext) {
     }
 }
 
-fn remove(_id: &str, _indv: &mut Individual, _ctx: &mut CleanerContext) {
-    //info!(
-    //    "remove {}, created = {}, id = {}",
-    //    indv.get_first_literal("rdf:type").unwrap_or_default(),
-    //    NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S"),
-    //    id,
-    //);
-    //module.api.update(&systicket.id, IndvOp::Remove, &Individual::default().set_id(id));
+fn remove(id: &str, indv: &mut Individual, ctx: &mut CleanerContext) {
+    let res = ctx.module.api.update(&ctx.systicket.id, IndvOp::Remove, &Individual::default().set_id(id));
+    info!(
+        "remove {}, created = {}, id = {}, result={:?}",
+        indv.get_first_literal("rdf:type").unwrap_or_default(),
+        NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S"),
+        id,
+        res
+    );
 }

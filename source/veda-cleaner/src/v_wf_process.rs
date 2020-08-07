@@ -1,7 +1,7 @@
 use chrono::prelude::*;
 use std::ops::Sub;
 use time::Duration;
-use v_api::app::ResultCode;
+use v_api::app::{OptAuthorize, ResultCode};
 //use v_api::IndvOp;
 use crate::CleanerContext;
 use std::collections::HashMap;
@@ -21,7 +21,7 @@ pub fn clean_process(ctx: &mut CleanerContext) {
 
     if let Some((mut pos, _)) = module_info.read_info() {
         let query = get_query_for_work_item(ctx);
-        let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos);
+        let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos, OptAuthorize::NO);
 
         if res.result_code == ResultCode::Ok {
             for id in res.result.iter() {
@@ -61,7 +61,7 @@ pub fn clean_process(ctx: &mut CleanerContext) {
 
 fn get_query_for_work_item(ctx: &mut CleanerContext) -> String {
     let output_conditions_list =
-        ctx.ch_client.select(&ctx.systicket.user_uri, "SELECT DISTINCT id FROM veda_tt.`v-wf:OutputCondition`", MAX_SIZE_BATCH, MAX_SIZE_BATCH, 0);
+        ctx.ch_client.select(&ctx.systicket.user_uri, "SELECT DISTINCT id FROM veda_tt.`v-wf:OutputCondition`", MAX_SIZE_BATCH, MAX_SIZE_BATCH, 0, OptAuthorize::NO);
 
     let mut q0 = String::default();
     for el in output_conditions_list.result.iter() {
@@ -106,6 +106,7 @@ fn collect_work_items(process: &mut Individual, process_elements: &mut HashMap<S
             1000000,
             1000000,
             0,
+            OptAuthorize::NO,
         )
         .result
         .iter()
