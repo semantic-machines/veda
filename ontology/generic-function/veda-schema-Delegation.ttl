@@ -172,6 +172,8 @@ v-s:RequestDelegationTemplate
     $("#position-container", template).removeClass("-edit").addClass("edit");
   } else {
     $("#custom-label", template).remove();
+    $("#ignoreExclusive-control", template).remove();
+    $("#official-control", template).remove();
   }
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
@@ -184,7 +186,27 @@ v-s:RequestDelegationTemplate
       <div rel="v-s:hasDelegationPurpose" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
       <veda-control data-type="link" rel="v-s:hasDelegationPurpose" class="-view edit search fulltext dropdown" data-deleted="true"></veda-control>
     </div>
-  </div>  
+  </div>
+  <div class="row" id="official-control">
+    <div class="col-md-6 col-xs-12">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:official" data-type="boolean"></veda-control>
+          <em about="v-s:official" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="row" id="ignoreExclusive-control">
+    <div class="col-md-6 col-xs-12">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:ignoreExclusive" data-type="boolean"></veda-control>
+          <em about="v-s:ignoreExclusive" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegator" property="rdfs:label"></em>
