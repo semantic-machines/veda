@@ -103,3 +103,45 @@ v-s:OrganizationStructure_Environment_membership
   v-s:resource v-s:CommunicationMean_group ;  
   rdfs:label "Члены группы Окружение OrganizationStructure - схема и индивиды" ;
 .
+
+#-----------------------------------------------Группы для внешних организаций
+v-s:OrganizationsWithVedaAccount
+  rdf:type v-s:Group ;
+  rdfs:label "Компании созданные в Veda" ;
+.
+v-s:OrganizationsWithADAccount
+  rdf:type v-s:Group ;
+  rdfs:label "Компании созданные в AD" ;
+.
+v-s:OrganizationsWithLimitedClassTypes
+  rdf:type v-s:Group ;
+  rdfs:label "Компании с ограниченным доступом к просмотру документов" ;
+.
+v-s:OrganizationsWithoutLimitedClassTypes
+  rdf:type v-s:Group ;
+  rdfs:label "Компании с потенциальным доступом к просмотру документов" ;
+.
+#-------------------------------------------
+v-s:OrganizationsWithVedaAccount_membership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-s:OrganizationsWithVedaAccount ;
+  rdfs:label "Включение в группу компаний созданных в Veda" ;
+.
+v-s:OrganizationsWithADAccount_membership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-s:OrganizationsWithADAccount ;
+  rdfs:label "Включение в группу компаний созданных в AD" ;
+.
+v-s:OrganizationsWithLimitedClassTypes_membership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-s:OrganizationsWithLimitedClassTypes ;
+  rdfs:label "Включение в группу компаний с ограниченным доступом к просмотру документов" ;
+.
+v-s:OrganizationsWithoutLimitedClassTypes_membership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-s:OrganizationsWithoutLimitedClassTypes ;
+  rdfs:label "Включение в группу компаний с потенциальным доступом к просмотру документов" ;
+.
+
+
+  
