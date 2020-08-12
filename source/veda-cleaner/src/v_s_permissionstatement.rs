@@ -1,7 +1,7 @@
 use crate::CleanerContext;
 use chrono::NaiveDateTime;
 use v_api::app::{OptAuthorize, ResultCode};
-use v_api::IndvOp;
+//use v_api::IndvOp;
 use v_module::info::ModuleInfo;
 use v_onto::individual::Individual;
 
@@ -49,7 +49,7 @@ pub fn clean_invalid_permissionstatement(ctx: &mut CleanerContext) {
     }
 }
 
-fn remove(id: &str, indv: &mut Individual, ctx: &mut CleanerContext) {
+fn remove(id: &str, indv: &mut Individual, _ctx: &mut CleanerContext) {
     info!(
         "remove {}, created = {}, id = {}",
         indv.get_first_literal("rdf:type").unwrap_or_default(),
