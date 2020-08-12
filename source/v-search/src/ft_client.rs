@@ -1,4 +1,4 @@
-use crate::common::{QueryResult, FTQuery};
+use crate::common::{FTQuery, QueryResult};
 use nng::{Message, Protocol, Socket};
 use serde_json::Value;
 use std::{thread, time};
