@@ -678,8 +678,11 @@ v-ft:ActorFilterTemplate
       if ( veda.appointment && veda.appointment.id && appointment["@"] === veda.appointment.id ) {
         return;
       } else if ( appointment["v-s:occupation"] && appointment["v-s:occupation"].length ) {
-        var isOfficial = (appointment["v-s:official"] && appointment["v-s:official"].length) ? appointment["v-s:official"][0].data : true;
-        actors_uris.push( {uri: appointment["v-s:occupation"][0].data, official: isOfficial} );
+        var delegationPurpose = (appointment["v-s:hasDelegationPurpose"] && appointment["v-s:hasDelegationPurpose"].length) ? 
+            appointment["v-s:hasDelegationPurpose"][0].data : "";
+
+        var isControlAppointment = delegationPurpose === "d:delegate_Control"; 
+        actors_uris.push( {uri: appointment["v-s:occupation"][0].data, official: !isControlAppointment} );
       }
     });
 
@@ -758,10 +761,10 @@ v-ft:ActorFilterTemplate
 <ul class="nav nav-pills" role="tablist">
   <style scoped>
     a.not-official {
-      color: #aaaaaa;
+      color: #333333;
     }
     li.active > a.not-official {
-      color: #aaaaaa !important;
+      color: #333333 !important;
       background-color: #ffffff !important;
       border: 1px solid;
     }
