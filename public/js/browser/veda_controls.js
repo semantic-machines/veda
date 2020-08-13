@@ -2383,7 +2383,7 @@
       var inModal = this.hasClass("create-modal");
       var rel_range = rangeRestriction ? rangeRestriction : (new veda.IndividualModel(rel_uri))["rdfs:range"][0];
       rel_range.rights.then(function (rights) {
-        if ( !rights.hasValue("v-s:canCreate", true) ) {
+        if ( !rights.hasValue("v-s:canCreate", true) && opts.mode !== "search" ) {
           create.addClass("disabled");
           create.off("click keyup");
         } else {
