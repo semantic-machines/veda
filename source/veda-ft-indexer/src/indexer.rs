@@ -336,6 +336,7 @@ impl Indexer {
 
                                             if let Some(indexed_fields) = inhr_idx.get_literals_nm("vdi:indexed_field") {
                                                 for indexed_field in indexed_fields.iter() {
+                                                    inner_indv.get_first_literal(indexed_field);
                                                     if let Some(rrc) = inner_indv.get_obj().get_resources().get(indexed_field) {
                                                         for rc in rrc {
                                                             debug!("index {}.{} = {:?} ", ln, indexed_field, rc);
