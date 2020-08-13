@@ -291,6 +291,9 @@ if (deleted) {
     "v-s:memberOf" : veda.Util.newUri(position_uri),
     "rdfs:comment" : veda.Util.newStr("создано автоматически в обработчике cfg:Event_4"),
   };
+  if (veda.Util.getUri(document["v-s:hasDelegationPurpose"]) === "d:delegate_Control") {
+    membership["v-s:canRead"] = veda.Util.newBool(true);
+  }
   if ( veda.Util.hasValue(document, "v-s:official") ) {
     membership["v-s:official"] = document["v-s:official"];
   }

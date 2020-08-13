@@ -547,7 +547,8 @@ var request_uri = document["@"],
     position_uris = veda.Util.getUris(document["v-s:delegatedPosition"]),
     request_deleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"}),
     delegate,
-    custom_label = document["rdfs:label"];
+    custom_label = document["rdfs:label"],
+    delegation_purpose = veda.Util.getUri(document["v-s:hasDelegationPurpose"]);
 
 requestDateFrom.setHours(0, 0, 0, 0);
 requestDateTo.setHours(23, 59, 59, 999);
@@ -610,6 +611,16 @@ position_uris.map(function (position_uri) {
     appointment["v-s:dateFrom"] = dateFrom;
     appointment["v-s:dateTo"] = dateTo;
     appointment["v-s:deleted"] = veda.Util.newBool(!isActual);
+    if (delegation_purpose === "d:delegate_Control") {
+      appointment["v-s:hasDelegationPurpose"] = document["v-s:hasDelegationPurpose"];  
+    };
+    if (veda.Util.hasValue(document, "v-s:official", {data: true, type: "Boolean"})) {
+      appointment["v-s:official"] = veda.Util.newBool(true);
+    }
+    if (veda.Util.hasValue(document, "v-s:ignoreExclusive", {data: true, type: "Boolean"})) {
+      appointment["v-s:ignoreExclusive"] = veda.Util.newBool(true);
+    }
+    
     print("[cfg:Event_Delegation] set appointment dates", uri, "| isActual =", isActual);
   } else {
     print("[cfg:Event_Delegation] dates update is not allowed!");
