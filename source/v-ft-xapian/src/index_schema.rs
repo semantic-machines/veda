@@ -36,6 +36,7 @@ impl IndexerSchema {
             if res.result_code == ResultCode::Ok && res.count > 0 {
                 for id in res.result.iter() {
                     if let Some(i) = module.get_individual(id, &mut Individual::default()) {
+                        i.parse_all();
                         self.add_schema_data(onto, i);
                     }
                 }
