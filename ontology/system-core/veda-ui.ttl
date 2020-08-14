@@ -2498,11 +2498,14 @@ v-ui:DocumentEventTemplate
         (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false))
       ) {
         var actor = individual['v-s:actor'][0];
-        if (actor) {
-          if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
-            $(".stop-process", template).show();
+        var doc = individual['v-s:onDocument'][0];
+        doc.canDelete().then(function(canDelete) {
+          if (actor) {
+            if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment' || canDelete) {
+              $(".stop-process", template).show();
+            }
           }
-        }
+        });
         $(".stop-process", template).on("click", function (e) {
           var self = this;
           e.preventDefault();
