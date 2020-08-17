@@ -13,7 +13,7 @@ use std::path::Path;
 use std::process::{Child, Command};
 use std::time::SystemTime;
 use std::{fs, io, process, thread, time};
-use sysinfo::{ProcessExt, ProcessStatus, SystemExt};
+use sysinfo::{get_current_pid, ProcessExt, ProcessStatus, SystemExt};
 
 #[derive(Debug)]
 #[repr(u8)]
@@ -59,6 +59,7 @@ impl App {
         let mut sys = sysinfo::System::new();
         thread::sleep(time::Duration::from_millis(500));
         sys.refresh_processes();
+
         let mut success_started = 0;
         for (name, process) in self.started_modules.iter() {
             if is_ok_process(&mut sys, process.id()).0 {
@@ -308,8 +309,16 @@ fn main() {
 
     let mut sys = sysinfo::System::new();
     sys.refresh_processes();
-    for (pid, proc) in sys.get_process_list() {
-        if proc.name().starts_with("veda-") && proc.name() != "veda-bootstrap" && proc.name() != "veda" && module_full_names.contains(&proc.name().to_string()) {
+
+    let current_proc = sys.get_process(get_current_pid().unwrap()).unwrap();
+    let current_user = current_proc.uid;
+
+    for (pid, proc) in sys.get_processes() {
+        if *pid == current_proc.pid() || current_user != proc.uid {
+            continue;
+        }
+
+        if proc.name().starts_with("veda-") && module_full_names.contains(&proc.name().to_string()) {
             error!("unable start, found other running process: pid={}, {:?} ({:?}) ", pid, proc.exe(), proc.status());
             return;
         }
