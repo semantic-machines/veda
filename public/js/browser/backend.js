@@ -256,18 +256,19 @@ veda.Module(function Backend(veda) { "use strict";
         "secret": isObj ? arg.secret : secret
       }
     };
-    return call_server(params).catch(function (backendError) {
-      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
-        return {
-          "end_time": (Date.now() + 12 * 3600 * 1000) * 10000 + 621355968000000000,
-          "id":"",
-          "result":200,
-          "user_uri":"cfg:Guest"
-        };
-      } else {
-        throw backendError;
-      }
-    });
+    return call_server(params);
+    //~ return call_server(params).catch(function (backendError) {
+      //~ if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        //~ return {
+          //~ "end_time": (Date.now() + 12 * 3600 * 1000) * 10000 + 621355968000000000,
+          //~ "id":"",
+          //~ "result":200,
+          //~ "user_uri":"cfg:Guest"
+        //~ };
+      //~ } else {
+        //~ throw backendError;
+      //~ }
+    //~ });
   };
 
   veda.Backend.get_ticket_trusted = function (ticket, login) {
