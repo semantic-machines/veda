@@ -8,4 +8,4 @@ pub mod tt_storage;
 #[macro_use]
 extern crate lazy_static;
 
-pub mod inproc_indv_r_storage;
+pub mod remote_indv_r_storage;
