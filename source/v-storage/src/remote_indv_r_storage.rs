@@ -6,7 +6,13 @@ use std::sync::Mutex;
 use uuid::Uuid;
 use v_onto::individual::{Individual, RawObj};
 
-pub fn storage_manager(tarantool_addr: String) -> std::io::Result<()> {
+lazy_static! {
+    pub static ref STORAGE: Mutex<RefCell<StorageROClient>> = Mutex::new(RefCell::new(StorageROClient::default()));
+}
+
+// inproc storage server
+
+pub fn inproc_storage_manager(tarantool_addr: String) -> std::io::Result<()> {
     let ro_storage_url = "inproc://nng/".to_owned() + &Uuid::new_v4().to_hyphenated().to_string();
     STORAGE.lock().unwrap().get_mut().addr = ro_storage_url.to_owned();
 
@@ -45,16 +51,12 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
     Message::default()
 }
 
-// Inproc client
+// Remote client
 
 pub struct StorageROClient {
     soc: Socket,
     addr: String,
     is_ready: bool,
-}
-
-lazy_static! {
-    pub static ref STORAGE: Mutex<RefCell<StorageROClient>> = Mutex::new(RefCell::new(StorageROClient::default()));
 }
 
 impl Default for StorageROClient {
@@ -75,6 +77,32 @@ impl StorageROClient {
         } else {
             info!("success connect connect to storage_manager ({})", self.addr);
             self.is_ready = true;
+        }
+    }
+
+    pub fn get_individual(&mut self, id: &str) -> Option<Individual> {
+        let req = Message::from(id.to_string().as_bytes());
+
+        if let Err(e) = self.soc.send(req) {
+            error!("fail send to storage_manager, err={:?}", e);
+            return None;
+        }
+
+        // Wait for the response from the server.
+        match self.soc.recv() {
+            Err(e) => {
+                error!("fail recv from main module, err={:?}", e);
+                return None;
+            }
+
+            Ok(msg) => {
+                let data = msg.as_slice();
+                if data == b"[]" {
+                    return None;
+                }
+
+                return Some(Individual::new_raw(RawObj::new(data.to_vec())));
+            }
         }
     }
 }
@@ -105,7 +133,7 @@ pub fn get_individual(id: &str) -> Option<Individual> {
         return None;
     }
 
-    drop (sh_client);
+    drop(sh_client);
 
     if let Ok(msg) = wmsg {
         let data = msg.as_slice();

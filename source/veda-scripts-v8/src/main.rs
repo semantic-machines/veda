@@ -20,7 +20,7 @@ use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_queue::consumer::Consumer;
 use v_queue::record::Mode;
-use v_storage::inproc_indv_r_storage::storage_manager;
+use v_storage::remote_indv_r_storage::inproc_storage_manager;
 
 mod callback;
 mod common;
@@ -82,7 +82,7 @@ pub struct MyContext<'a> {
 
 fn main() -> Result<(), i32> {
     init_log();
-    thread::spawn(move || storage_manager(get_storage_init_param()));
+    thread::spawn(move || inproc_storage_manager(get_storage_init_param()));
 
     let _setup_guard = setup();
 

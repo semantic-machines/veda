@@ -6,7 +6,7 @@ use v_module::module::indv_apply_cmd;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_onto::parser::parse_raw;
-use v_storage::inproc_indv_r_storage::get_individual;
+use v_storage::remote_indv_r_storage::get_individual;
 
 pub(crate) struct CallbackSharedData {
     pub g_super_classes: String,
