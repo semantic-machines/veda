@@ -277,6 +277,10 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
 }
 
 fn get_emails_from_appointment(has_message_type: &Option<String>, ap: &mut Individual, module: &mut Module) -> Vec<Mailbox> {
+    if ap.any_exists("v-s:hasDelegationPurpose", &["d:delegate_Control"]) {
+        return vec![];
+    }
+
     let p_uri = ap.get_first_literal("v-s:employee").unwrap_or_default();
     if p_uri.is_empty() {
         return vec![];
