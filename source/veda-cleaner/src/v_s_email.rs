@@ -6,7 +6,7 @@ use v_api::app::{OptAuthorize, ResultCode};
 use v_api::IndvOp;
 use v_onto::individual::Individual;
 
-const MAX_SIZE_BATCH: i64 = 1000;
+const MAX_SIZE_BATCH: i64 = 100000;
 
 pub fn clean_email(ctx: &mut CleanerContext) {
     let date_before = Utc::now().naive_utc().sub(Duration::days(30));
