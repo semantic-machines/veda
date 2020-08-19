@@ -1,6 +1,7 @@
 mod v_s_email;
 mod v_s_membership;
 mod v_s_membership1;
+mod v_s_membership2;
 mod v_s_permissionstatement;
 mod v_wf_process;
 
@@ -10,6 +11,7 @@ extern crate log;
 use crate::v_s_email::*;
 use crate::v_s_membership::*;
 use crate::v_s_membership1::*;
+use crate::v_s_membership2::*;
 use crate::v_s_permissionstatement::*;
 use crate::v_wf_process::*;
 use ini::Ini;
@@ -94,6 +96,8 @@ async fn main() {
                 clean_invalid_membership(&mut ctx);
             } else if cleaner_modules.contains("membership1") {
                 remove_membership1(&mut ctx);
+            } else if cleaner_modules.contains("membership2") {
+                remove_membership2(&mut ctx);
             } else if cleaner_modules.contains("process") {
                 clean_process(&mut ctx);
             }
