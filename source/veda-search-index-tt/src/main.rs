@@ -16,7 +16,6 @@ use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter};
 use std::time::Instant;
 use std::{fs, process};
-use tokio;
 use url::Url;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
@@ -508,8 +507,7 @@ impl Context {
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Error> {
+fn main() -> Result<(), Error> {
     init_log();
 
     //return test().await;
@@ -534,9 +532,9 @@ async fn main() -> Result<(), Error> {
         Ok(pool) => pool,
     };
 
-    init_clickhouse(&mut pool).await?;
+    block_on(init_clickhouse(&mut pool))?;
 
-    let db_type_tables = read_type_tables(&mut pool).await?;
+    let db_type_tables = block_on(read_type_tables(&mut pool))?;
 
     info!("Tables: {:?}", db_type_tables);
 

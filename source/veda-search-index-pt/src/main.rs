@@ -543,8 +543,7 @@ impl Context {
 
 }
 
-#[tokio::main]
-async fn main() ->  Result<(), Error> {
+fn main() ->  Result<(), Error> {
     init_log();
 
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
@@ -569,9 +568,9 @@ async fn main() ->  Result<(), Error> {
         Ok(pool) => pool,
     };
 
-    init_clickhouse(&mut pool).await?;
+    block_on(init_clickhouse(&mut pool))?;
 
-    let db_predicate_tables = read_predicate_tables(&mut pool).await?;
+    let db_predicate_tables = block_on(read_predicate_tables(&mut pool))?;
 
     let typed_batch: TypedBatch = HashMap::new();
     let stats = Stats {
