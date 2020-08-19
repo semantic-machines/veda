@@ -1,3 +1,4 @@
+use crate::remote_storage_client::StorageROClient;
 use crate::storage::{StorageId, StorageMode, VStorage};
 use nng::{Message, Protocol, Socket};
 use std::cell::RefCell;
@@ -49,62 +50,6 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
     }
 
     Message::default()
-}
-
-// Remote client
-
-pub struct StorageROClient {
-    soc: Socket,
-    addr: String,
-    is_ready: bool,
-}
-
-impl Default for StorageROClient {
-    fn default() -> Self {
-        StorageROClient {
-            soc: Socket::new(Protocol::Req0).unwrap(),
-            addr: "".to_owned(),
-            is_ready: false,
-        }
-    }
-}
-
-impl StorageROClient {
-    fn connect(&mut self) {
-        if let Err(e) = self.soc.dial(&self.addr) {
-            error!("fail connect to storage_manager ({}), err={:?}", self.addr, e);
-            self.is_ready = false;
-        } else {
-            info!("success connect connect to storage_manager ({})", self.addr);
-            self.is_ready = true;
-        }
-    }
-
-    pub fn get_individual(&mut self, id: &str) -> Option<Individual> {
-        let req = Message::from(id.to_string().as_bytes());
-
-        if let Err(e) = self.soc.send(req) {
-            error!("fail send to storage_manager, err={:?}", e);
-            return None;
-        }
-
-        // Wait for the response from the server.
-        match self.soc.recv() {
-            Err(e) => {
-                error!("fail recv from main module, err={:?}", e);
-                return None;
-            }
-
-            Ok(msg) => {
-                let data = msg.as_slice();
-                if data == b"[]" {
-                    return None;
-                }
-
-                return Some(Individual::new_raw(RawObj::new(data.to_vec())));
-            }
-        }
-    }
 }
 
 pub fn get_individual(id: &str) -> Option<Individual> {

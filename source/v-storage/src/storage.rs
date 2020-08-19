@@ -1,4 +1,5 @@
 use crate::lmdb_storage::LMDBStorage;
+use crate::remote_storage_client::*;
 use crate::tt_storage::TTStorage;
 use v_onto::individual::*;
 
@@ -23,6 +24,7 @@ pub enum StorageId {
 pub(crate) enum EStorage {
     LMDB(LMDBStorage),
     TT(TTStorage),
+    REMOTE(StorageROClient),
 }
 
 pub trait Storage {
@@ -39,6 +41,12 @@ pub struct VStorage {
 }
 
 impl VStorage {
+    pub fn new_remote(addr: &str) -> VStorage {
+        VStorage {
+            storage: EStorage::REMOTE(StorageROClient::new(addr)),
+        }
+    }
+
     pub fn new_tt(tt_id: String, login: &str, pass: &str) -> VStorage {
         VStorage {
             storage: EStorage::TT(TTStorage::new(tt_id, login, pass)),
@@ -55,6 +63,7 @@ impl VStorage {
         match &mut self.storage {
             EStorage::TT(s) => s.get_individual_from_db(StorageId::Individuals, id, iraw),
             EStorage::LMDB(s) => s.get_individual_from_db(StorageId::Individuals, id, iraw),
+            EStorage::REMOTE(s) => s.get_individual_from_db(StorageId::Individuals, id, iraw),
         }
     }
 
@@ -62,6 +71,7 @@ impl VStorage {
         match &mut self.storage {
             EStorage::TT(s) => s.get_individual_from_db(storage, id, iraw),
             EStorage::LMDB(s) => s.get_individual_from_db(storage, id, iraw),
+            EStorage::REMOTE(s) => s.get_individual_from_db(storage, id, iraw),
         }
     }
 
@@ -69,6 +79,7 @@ impl VStorage {
         match &mut self.storage {
             EStorage::TT(s) => s.get_v(storage, id),
             EStorage::LMDB(s) => s.get_v(storage, id),
+            EStorage::REMOTE(_s) => None,
         }
     }
 
@@ -76,6 +87,7 @@ impl VStorage {
         match &mut self.storage {
             EStorage::TT(s) => s.get_raw(storage, id),
             EStorage::LMDB(s) => s.get_raw(storage, id),
+            EStorage::REMOTE(_s) => Default::default(),
         }
     }
 
@@ -83,6 +95,7 @@ impl VStorage {
         match &mut self.storage {
             EStorage::TT(s) => s.put_kv(storage, key, val),
             EStorage::LMDB(s) => s.put_kv(storage, key, val),
+            EStorage::REMOTE(_s) => false,
         }
     }
 
@@ -90,6 +103,7 @@ impl VStorage {
         match &mut self.storage {
             EStorage::TT(s) => s.put_kv_raw(storage, key, val),
             EStorage::LMDB(s) => s.put_kv_raw(storage, key, val),
+            EStorage::REMOTE(_s) => false,
         }
     }
 
@@ -97,6 +111,7 @@ impl VStorage {
         match &mut self.storage {
             EStorage::TT(s) => s.remove(storage, key),
             EStorage::LMDB(s) => s.remove(storage, key),
+            EStorage::REMOTE(_s) => false,
         }
     }
 }

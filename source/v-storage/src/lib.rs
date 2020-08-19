@@ -9,3 +9,4 @@ pub mod tt_storage;
 extern crate lazy_static;
 
 pub mod remote_indv_r_storage;
+pub mod remote_storage_client;

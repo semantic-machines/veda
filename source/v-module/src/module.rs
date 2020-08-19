@@ -46,16 +46,15 @@ pub struct Module {
 
 impl Default for Module {
     fn default() -> Self {
-        Module::new(StorageMode::ReadOnly)
+        Module::new(StorageMode::ReadOnly, false)
     }
 }
 
 impl Module {
-    pub fn new(storage_mode: StorageMode) -> Self {
+    pub fn new(storage_mode: StorageMode, use_remote_storage: bool) -> Self {
         let args: Vec<String> = env::args().collect();
 
         let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
-
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
 
         let mut ft_query_service_url = String::default();
@@ -87,17 +86,6 @@ impl Module {
 
         info!("use ft_query_service_url={}", ft_query_service_url);
 
-        let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
-            p.to_owned()
-        } else {
-            warn!("param [tarantool_url] not found in veda.properties");
-            "".to_owned()
-        };
-
-        if !tarantool_addr.is_empty() {
-            info!("tarantool addr={}", &tarantool_addr);
-        }
-
         let notify_channel_url = if let Some(s) = section.get("notify_channel_url") {
             s.to_owned()
         } else {
@@ -105,10 +93,27 @@ impl Module {
         };
 
         let storage: VStorage;
-        if !tarantool_addr.is_empty() {
-            storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
+
+        if !use_remote_storage {
+            let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
+                p.to_owned()
+            } else {
+                warn!("param [tarantool_url] not found in veda.properties");
+                "".to_owned()
+            };
+
+            if !tarantool_addr.is_empty() {
+                info!("tarantool addr={}", &tarantool_addr);
+            }
+
+            if !tarantool_addr.is_empty() {
+                storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
+            } else {
+                storage = VStorage::new_lmdb("./data", storage_mode);
+            }
         } else {
-            storage = VStorage::new_lmdb("./data", storage_mode);
+            let ro_storage_url = section.get("ro_storage_url").expect("param [ro_storage_url] not found in veda.properties");
+            storage = VStorage::new_remote(ro_storage_url);
         }
 
         let ft_client = FTClient::new(ft_query_service_url);
