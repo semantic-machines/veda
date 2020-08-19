@@ -11,15 +11,17 @@ use std::{thread, time};
 use v_exim::*;
 use v_module::module::*;
 use v_queue::consumer::*;
+use v_storage::storage::StorageMode;
 
 fn main() -> std::io::Result<()> {
+    init_log();
     let env_var = "RUST_LOG";
     match std::env::var_os(env_var) {
         Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
         None => std::env::set_var(env_var, "info"),
     }
 
-    let mut module = Module::default();
+    let mut module = Module::new(StorageMode::ReadOnly, true);
 
     let systicket;
     if let Ok(t) = module.get_sys_ticket_id() {
@@ -43,13 +45,13 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
     let node_id = node_id.unwrap();
-    info! ("my node_id={}", node_id);
+    info!("my node_id={}", node_id);
 
     load_linked_nodes(&mut module, &mut node_upd_counter, &mut link_node_addresses);
 
     loop {
         for (remote_node_id, remote_node_addr) in &link_node_addresses {
-            let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
+            let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE EXTRACT");
 
             let mut soc = Socket::new(Protocol::Req0).unwrap();
 
