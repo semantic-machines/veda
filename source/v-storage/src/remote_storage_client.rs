@@ -43,6 +43,13 @@ impl StorageROClient {
     }
 
     pub fn get_individual_from_db(&mut self, db_id: StorageId, id: &str, iraw: &mut Individual) -> bool {
+        if !self.is_ready {
+            if !self.connect() {
+                error!("REMOTE STORAGE: fail send to storage_manager, not ready");
+                return false;
+            }
+        }
+
         let req = if db_id == StorageId::Tickets {
             Message::from(("t,".to_string() + id).as_bytes())
         } else {
