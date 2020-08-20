@@ -101,7 +101,7 @@ fn exec<T>(
             if _authorize(&subject_id, user_uri, Access::CanRead as u8, true, None).unwrap_or(0) != Access::CanRead as u8 {
                 is_passed = false;
             } else {
-                debug!("found subject_id=[{}] authorized for user_id=[{}]", subject_id, user_uri);
+                debug!("subject_id=[{}] authorized for user_id=[{}]", subject_id, user_uri);
             }
         }
 

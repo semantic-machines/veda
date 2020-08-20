@@ -94,7 +94,6 @@ impl TTA {
                     }
 
                     let cur_op = is_op(&s[i..e]);
-                    debug!("cur_op={}", cur_op);
                     if !cur_op.is_empty() {
                         while !op.is_empty() {
                             if let Some(last) = op.last() {
@@ -174,7 +173,6 @@ impl TTA {
                                     operand = from_utf8(&s[bp..i]);
                                 }
 
-                                debug!("operand=[{:?}]", operand);
                                 if let Ok(op) = operand {
                                     st.push(TTA::new(op, None, None, Decor::NONE));
                                 }
@@ -190,8 +188,6 @@ impl TTA {
                 process_op(&mut st, operand);
             }
         }
-
-        debug!("st={:?}", st);
 
         st.pop()
     }
