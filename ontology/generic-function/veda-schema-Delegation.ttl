@@ -611,15 +611,9 @@ position_uris.map(function (position_uri) {
     appointment["v-s:dateFrom"] = dateFrom;
     appointment["v-s:dateTo"] = dateTo;
     appointment["v-s:deleted"] = veda.Util.newBool(!isActual);
-    if (delegation_purpose === "d:delegate_Control") {
-      appointment["v-s:hasDelegationPurpose"] = document["v-s:hasDelegationPurpose"];  
-    };
-    if (veda.Util.hasValue(document, "v-s:official", {data: true, type: "Boolean"})) {
-      appointment["v-s:official"] = veda.Util.newBool(true);
-    }
-    if (veda.Util.hasValue(document, "v-s:ignoreExclusive", {data: true, type: "Boolean"})) {
-      appointment["v-s:ignoreExclusive"] = veda.Util.newBool(true);
-    }
+    appointment["v-s:hasDelegationPurpose"] = document["v-s:hasDelegationPurpose"];
+    appointment["v-s:official"] = document["v-s:official"];
+    appointment["v-s:ignoreExclusive"] = document["v-s:ignoreExclusive"];
     
     print("[cfg:Event_Delegation] set appointment dates", uri, "| isActual =", isActual);
   } else {
