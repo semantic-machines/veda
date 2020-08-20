@@ -19,12 +19,7 @@ use v_queue::consumer::*;
 use v_search::common::FTQuery;
 
 fn main() -> std::io::Result<()> {
-    init_log();
-    let env_var = "RUST_LOG";
-    match std::env::var_os(env_var) {
-        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
-        None => std::env::set_var(env_var, "info"),
-    }
+    init_log("ONTOLOGIST");
 
     let mut module = Module::default();
 

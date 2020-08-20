@@ -81,7 +81,7 @@ pub struct MyContext<'a> {
 }
 
 fn main() -> Result<(), i32> {
-    init_log();
+    init_log("SCRIPT_V8");
     thread::spawn(move || inproc_storage_manager(get_storage_init_param()));
 
     let _setup_guard = setup();

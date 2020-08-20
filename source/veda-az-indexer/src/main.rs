@@ -13,7 +13,7 @@ use v_storage::storage::*;
 mod common;
 
 fn main() -> Result<(), i32> {
-    init_log();
+    init_log("AZ_INDEXER");
 
     let mut module = Module::default();
 

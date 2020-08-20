@@ -25,7 +25,7 @@ use v_queue::record::{Mode, MsgType};
 use v_storage::storage::*;
 
 fn main() -> std::io::Result<()> {
-    init_log();
+    init_log("MSTORAGE");
 
     let base_path = "./data";
 

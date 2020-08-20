@@ -25,7 +25,7 @@ pub struct Context {
 }
 
 fn main() -> Result<(), i32> {
-    init_log();
+    init_log("EXTRACTOR");
 
     let mut module = Module::default();
 

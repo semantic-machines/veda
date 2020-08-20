@@ -508,7 +508,7 @@ impl Context {
 }
 
 fn main() -> Result<(), Error> {
-    init_log();
+    init_log("SEARCH_INDEX_TT");
 
     //return test().await;
 

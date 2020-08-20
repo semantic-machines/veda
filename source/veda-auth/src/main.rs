@@ -18,7 +18,7 @@ use v_module::module::{create_sys_ticket, init_log, Module};
 use v_storage::storage::StorageMode;
 
 fn main() -> std::io::Result<()> {
-    init_log();
+    init_log("AUTH");
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");

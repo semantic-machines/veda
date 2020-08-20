@@ -28,7 +28,7 @@ pub struct Context {
 }
 
 fn main() -> Result<(), i32> {
-    init_log();
+    init_log("FANOUT_EMAIL");
 
     wait_load_ontology();
 

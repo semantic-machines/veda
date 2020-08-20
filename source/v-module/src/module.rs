@@ -4,7 +4,6 @@ use chrono::Local;
 use chrono::{NaiveDateTime, Utc};
 use env_logger::Builder;
 use ini::Ini;
-use log::LevelFilter;
 use nng::options::protocol::pubsub::Subscribe;
 use nng::options::Options;
 use nng::options::RecvTimeout;
@@ -395,16 +394,16 @@ pub fn get_cmd(queue_element: &mut Individual) -> Option<IndvOp> {
     Some(IndvOp::from_i64(wcmd.unwrap_or_default()))
 }
 
-pub fn init_log() {
-    let env_var = "RUST_LOG";
-    match std::env::var_os(env_var) {
-        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
-        None => std::env::set_var(env_var, "info"),
+pub fn init_log(module_name: &str) {
+    let var_log_name = module_name.to_owned() + "_LOG";
+    match std::env::var_os(var_log_name.to_owned()) {
+        Some(val) => println!("use env var: {}: {:?}", var_log_name, val.to_str()),
+        None => std::env::set_var(var_log_name.to_owned(), "info"),
     }
 
     Builder::new()
         .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
-        .filter(None, LevelFilter::Info)
+        .parse_filters(&env::var(var_log_name).unwrap_or_default())
         .init();
 }
 

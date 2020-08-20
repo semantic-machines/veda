@@ -31,9 +31,8 @@ pub struct CleanerContext {
     report: Option<File>,
 }
 
-#[tokio::main]
-async fn main() {
-    init_log();
+fn main() {
+    init_log("CLEANER");
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
