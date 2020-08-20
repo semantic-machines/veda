@@ -19,7 +19,7 @@ use v_module::module::init_log;
 
 fn main() -> std::io::Result<()> {
 
-    init_log ();
+    init_log ("RO_STORAGE");
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");

@@ -13,7 +13,7 @@ use v_search::clickhouse_client::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    init_log();
+    init_log("SEARCH_QUERY");
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");

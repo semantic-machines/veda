@@ -12,7 +12,7 @@ use v_module::module::{init_log, Module};
 use v_search::common::FTQuery;
 
 fn main() {
-    init_log();
+    init_log("FT_QUERY");
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");

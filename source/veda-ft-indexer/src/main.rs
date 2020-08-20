@@ -24,7 +24,7 @@ use xapian_rusty::*;
 const BASE_PATH: &str = "./data";
 
 fn main() -> Result<(), i32> {
-    init_log();
+    init_log("FT_INDEXER");
 
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
         wait_module("input-onto", wait_load_ontology());

@@ -544,7 +544,7 @@ impl Context {
 }
 
 fn main() ->  Result<(), Error> {
-    init_log();
+    init_log("SEARCH_INDEX_PT");
 
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
         wait_module("fulltext_indexer", wait_load_ontology());

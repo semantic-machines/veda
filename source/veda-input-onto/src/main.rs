@@ -57,12 +57,7 @@ impl fmt::Display for Prefixes {
 }
 
 fn main() -> NotifyResult<()> {
-    init_log();
-    let env_var = "RUST_LOG";
-    match std::env::var_os(env_var) {
-        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
-        None => std::env::set_var(env_var, "info"),
-    }
+    init_log("INPUT_ONTO");
 
     let module_info = ModuleInfo::new("./data", "input-onto", true);
     if module_info.is_err() {

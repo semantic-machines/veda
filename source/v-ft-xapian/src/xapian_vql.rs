@@ -362,10 +362,6 @@ pub(crate) fn transform_vql_to_xapian(
         //            }
         //        }
 
-        debug!("@p && token_L={}", token_l);
-        debug!("@p query_l={}", query_l.get_description());
-        debug!("@p query_r={}", query_r.get_description());
-
         if !token_l.is_empty() && !tta_l.is_empty() {
             let mut c_from = if t_op_r == ">" {
                 rd
@@ -386,9 +382,6 @@ pub(crate) fn transform_vql_to_xapian(
                 c_to = ld;
             }
 
-            //writeln("@p c_from=", c_from);
-            //writeln("@p c_to=", c_to);
-
             if let Some(slot) = key2slot.get_slot(&token_l) {
                 query_r = Query::new_range(XapianOp::OpValueRange, slot, c_from, c_to)?;
 
@@ -402,8 +395,6 @@ pub(crate) fn transform_vql_to_xapian(
                 return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
             }
         } else {
-            debug!("#E0.2 && query_l={}", query_l.get_description());
-            debug!("#E0.2 && query_r={}", query_r.get_description());
             if !query_r.is_empty() {
                 if query_l.is_empty() {
                     *query = query_r;
@@ -414,7 +405,6 @@ pub(crate) fn transform_vql_to_xapian(
                 if query.is_empty() {
                     return Err(XError::from(Error::new(ErrorKind::Other, format!("transform_vql_to_xapian, invalid tta=[{}]", tta))));
                 }
-                debug!("#3.1 && query={}", query.get_description());
             } else {
                 *query = query_l;
             }

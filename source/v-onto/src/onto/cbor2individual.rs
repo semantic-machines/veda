@@ -73,7 +73,6 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, iraw: &mut Individual) ->
     for _ in iraw.raw.cur_predicates..iraw.raw.len_predicates {
         if let Ok(type_info) = d.typeinfo() {
             if let Ok(predicate) = d._text(&type_info) {
-                debug!("predicate {:?}", &predicate);
 
                 if predicate == expect_predicate {
                     is_found = true;

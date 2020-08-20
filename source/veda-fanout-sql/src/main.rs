@@ -24,7 +24,7 @@ pub struct Context {
 }
 
 fn main() {
-    init_log();
+    init_log("FANOUT-SQL");
 
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
         wait_module("fulltext_indexer", wait_load_ontology());

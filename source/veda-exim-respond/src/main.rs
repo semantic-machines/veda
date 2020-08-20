@@ -14,12 +14,7 @@ use v_queue::consumer::Consumer;
 use v_queue::record::ErrorQueue;
 
 fn main() -> std::io::Result<()> {
-    init_log();
-    let env_var = "RUST_LOG";
-    match std::env::var_os(env_var) {
-        Some(val) => info!("use env var: {}: {:?}", env_var, val.to_str()),
-        None => std::env::set_var(env_var, "info"),
-    }
+    init_log("EXIM_RESPOND");
 
     let mut module = Module::default();
 
