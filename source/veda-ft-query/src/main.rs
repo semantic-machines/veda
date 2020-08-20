@@ -108,7 +108,6 @@ fn req_prepare(module: &mut Module, request: &Message, xr: &mut XapianReader) ->
             let mut ctx = vec![];
             fn add_out_element(id: &str, ctx: &mut Vec<String>) {
                 ctx.push(id.to_owned());
-                debug!("id={:?}", id);
             }
 
             let request = FTQuery {

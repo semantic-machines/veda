@@ -85,7 +85,6 @@ impl XapianReader {
         let mut ctx = vec![];
         fn add_out_element(id: &str, ctx: &mut Vec<String>) {
             ctx.push(id.to_owned());
-            debug!("id={:?}", id);
         }
 
         if let Ok(mut res) = self.query_use_collect_fn(&request, add_out_element, OptAuthorize::YES, storage, &mut ctx) {
