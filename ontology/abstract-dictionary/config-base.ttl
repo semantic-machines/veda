@@ -294,10 +294,10 @@ if (deleted) {
   if (veda.Util.getUri(document["v-s:hasDelegationPurpose"]) === "d:delegate_Control") {
     membership["v-s:canRead"] = veda.Util.newBool(true);
   }
-  if ( veda.Util.hasValue(document, "v-s:official") ) {
+  if ( veda.Util.hasValue(document, "v-s:official", {data: true, type: "Boolean"}) ) {
     membership["v-s:official"] = document["v-s:official"];
   }
-  if ( veda.Util.hasValue(document, "v-s:ignoreExclusive") ) {
+  if ( veda.Util.hasValue(document, "v-s:ignoreExclusive", {data: true, type: "Boolean"}) ) {
     membership["v-s:ignoreExclusive"] = document["v-s:ignoreExclusive"];
   }
   put_individual (ticket, membership);
