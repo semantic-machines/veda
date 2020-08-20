@@ -20,12 +20,17 @@ veda.Module(function (veda) { "use strict";
       }], 'actor');
   };
 
-  veda.Codelet.change_rights_actor = function (process, task, rightset, actor)
+  veda.Codelet.change_rights_actor = function (process, task, rightset, actor, docId, executors)
   {
       try
-      {
+      {   
+          var doc_id;
+          if (docId) {
+              doc_id = docId;
+          } else {
+              doc_id = process.getInputVariable('docId');  
+          }
           //print ("@JS change_rights_actor");
-          var doc_id = process.getInputVariable('docId');
           //print ("@JS doc_id=", veda.Util.toJson (doc_id));
           //print ("@JS rightset=", veda.Util.toJson (rightset));
           var allow_set = [];
@@ -37,39 +42,43 @@ veda.Module(function (veda) { "use strict";
           {
               allow_set.push("v-s:canUpdate");
           }
-
           if (doc_id)
           {
               //print ("@JS0 actor=", actor);
               //print ("@JS1 process.getLocalVariable (" + actor + ")=", veda.Util.toJson(process.getLocalVariable (actor)));
               //print ("@JS2 process.getExecutor()=", veda.Util.toJson(process.getExecutor()));
-              var executorArr = (process.getLocalVariable(actor)) ? process.getLocalVariable(actor) : process.getExecutor();
-              if (!executorArr) executorArr = task.getInputVariable(actor);
-              if (!executorArr) {
-                try {
-                  var length = executorArr.length;
-                } catch (e) {
-                  executorArr = [executorArr];
-                }  
-              };
+              var executorArr;
+              if (executors) {
+                executorArr = executors;
+              } else {
+                  executorArr = (process.getLocalVariable(actor)) ? process.getLocalVariable(actor) : process.getExecutor();
+                  if (!executorArr) executorArr = task.getInputVariable(actor);
+                  if (!executorArr) {
+                    try {
+                      var length = executorArr.length;
+                    } catch (e) {
+                      executorArr = [executorArr];
+                    }  
+                  };
+              }              
               
               for (var i = 0; i<executorArr.length; i++) {
                 var executor = [executorArr[i]];
-                //print ("@JS3 executor=", veda.Util.toJson(executor));
+                print ("@JS3 executor=", veda.Util.toJson(executor));
                 var employee = veda.Workflow.get_properties_chain(executor, [
                 {
                     $get: 'v-s:employee'
                 }], undefined);
 
-                //print ("@JS4 employee=", veda.Util.toJson(employee));
+                print ("@JS4 employee=", veda.Util.toJson(employee));
                 if (employee)
                 {
                     var employee_uri = veda.Util.getUri(employee);
 
-                    if (employee_uri)
+                    if (employee_uri) {
                         veda.Util.addRight(ticket, employee_uri, veda.Util.getUri(doc_id), allow_set);
-                    else
-                        print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + veda.Util.getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
+                    } else
+                        print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + veda.Util.getUri(doc_id) + ", process=" + veda.Util.getUri(process) + ", task=" + veda.Util.getUri(task));
                 }
 
                 executor = veda.Workflow.get_properties_chain(executor, [
@@ -85,10 +94,10 @@ veda.Module(function (veda) { "use strict";
                 if (executor)
                 {
                     var executor_uri = veda.Util.getUri(executor);
-                    if (executor_uri)
+                    if (executor_uri) {
                         veda.Util.addRight(ticket, executor_uri, veda.Util.getUri(doc_id), allow_set);
-                    else
-                        print("ERR! change_rights_actor: undefined executor_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + veda.Util.getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
+                    } else
+                        print("ERR! change_rights_actor: undefined executor_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + veda.Util.getUri(doc_id) + ", process=" + veda.Util.getUri(process) + ", task=" + veda.Util.getUri(task));
                 }
               }
               
@@ -197,6 +206,65 @@ veda.Module(function (veda) { "use strict";
           }
       };
       return [veda.Workflow.get_new_variable('status', veda.Util.newStr(status))];
+  };
+
+  veda.Codelet.createPermissionStatement = function(process, stage) 
+  {   
+      print("###### Start veda.Codelet.createPermissionStatement ######");
+      var docId = process.getInputVariable("docId");
+      print("docId:", veda.Util.toJson(docId));
+      var subjectAppointmentUri;
+      var statementUri;
+      if (stage === "rework") {
+        subjectAppointmentUri = process.getLocalVariable ('responsible');
+        statementUri = docId[0].data + '-pf-rework';
+      } else if (stage === "task") {
+        subjectAppointmentUri = process.getLocalVariable ('actor');
+        statementUri = docId[0].data + '-pf-task';
+      };
+      print("subjectAppointmentUri: ", veda.Util.toJson(subjectAppointmentUri));
+      if (subjectAppointmentUri) {
+        var subjectAppointment = get_individual(ticket, subjectAppointmentUri[0].data);
+        if (subjectAppointment) {
+          var permissionStatement= {
+            '@' : statementUri,
+            'rdf:type': veda.Util.newUri('v-s:PermissionStatement'),
+            'v-s:useFilter': veda.Util.newUri('v-s:StatusStarted'),
+            'v-s:permissionObject': docId, 
+            'v-s:permissionSubject': subjectAppointment['v-s:employee'].concat(subjectAppointment['v-s:occupation']),
+            'v-s:canUpdate': veda.Util.newBool('true')
+          };
+          print('@@@@@responsible:', veda.Util.toJson(subjectAppointment['v-s:employee'].concat(subjectAppointment['v-s:occupation'])));
+          put_individual(ticket, permissionStatement, _event_id);
+          print("put_individual: ", statementUri);
+        } else {
+          print('Error create_permission_statement_executor: not found subjectAppointment: ', subjectAppointmentUri);
+        }
+      } else {
+        print("Error create_permission_statement_executor: not found local variable 'responsible'");
+      }
+      print("###### Finish veda.Codelet.createPermissionStatement ######");
+      return veda.Util.newStr(statementUri);
+  };
+
+  veda.Codelet.deletePermissionStatement = function(process, stage) 
+  {   
+      print("###### Start veda.Codelet.deletePermissionStatement ######");
+      var docId = process.getInputVariable("docId");
+      print("docId:", veda.Util.toJson(docId));
+      var statementUri;
+      if (stage === "rework") {
+        statementUri = docId[0].data + '-pf-rework';
+      } else if (stage === "task") {
+        statementUri = docId[0].data + '-pf-task';
+      };
+      var set_in_statement = {
+        '@' : statementUri,
+        'v-s:deleted': veda.Util.newBool('true')
+      }
+      set_in_individual(ticket, set_in_statement);
+      print("###### Finish veda.Codelet.deletePermissionStatement ######");
+      return veda.Util.newStr("empty");
   };
 
   veda.Codelet.is_exists_net_executor = function (process)
