@@ -27,6 +27,7 @@ v-s:ContractorProfileSafety
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:Labeled;
+  rdfs:subClassOf v-s:Document;
   rdfs:label "Досье организации по безопасности"@ru ;
   rdfs:label "Contractor profile safety"@en ;
   #v-s:labelPattern "{@.v-s:parent.rdfs:label}" ;
@@ -132,6 +133,7 @@ v-s:EmployeeProfile
   rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Досье сотрудника"@ru ;
   rdfs:label "Employee profile"@en ;
   v-s:labelPattern "{@.v-s:creator}" ;
