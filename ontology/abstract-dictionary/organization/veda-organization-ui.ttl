@@ -6,6 +6,8 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 
 <http://semantic-machines.com/veda/veda-organization-ui>
   rdf:type owl:Ontology ;
@@ -29,6 +31,26 @@ v-s:DismissBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Уволить сотрудника"@ru ;
   rdfs:label "To dismiss"@en ;
+.
+v-s:AddInGroupOrgWithVedaAccount
+  rdf:type v-s:Bundle ;
+  rdfs:label "Учётка в Veda"@ru ;
+  rdfs:label "Group with an Veda account"@en ;
+.
+v-s:AddInGroupOrgWithVedaADAccount
+  rdf:type v-s:Bundle ;
+  rdfs:label "Учётка в AD"@ru ;
+  rdfs:label "Group with an AD account"@en ;
+.
+v-s:AddInGroupOrgWithLimitedClassTypes
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ограниченный доступ"@ru ;
+  rdfs:label "Group with an Veda account"@en ;
+.
+v-s:AddInGroupOrgWithoutLimitedClassTypes
+  rdf:type v-s:Bundle ;
+  rdfs:label "Потенциальный доступ ко всему"@ru ;
+  rdfs:label "Group with an AD account"@en ;
 .
 
 
@@ -320,7 +342,7 @@ v-s:DefaultAppointmentBundle
 # ------------------------------------------------------------ ШАБЛОНЫ --
 v-s:TS_Organization
   rdf:type v-ui:TemplateSpecification ;
-  v-ui:forClass v-s:Person ;
+  v-ui:forClass v-s:Organization ;
   v-ui:defaultTemplate v-s:OrganizationTemplate ;
   v-s:loadPriority "15" ;
 .
@@ -604,6 +626,164 @@ v-s:OrganizationTemplate
 </script>
   """ ;
 .
+
+
+v-s:hasMembership
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "Досье сотрудника"@ru ;
+  rdfs:label "Employee proile"@en ;
+  rdfs:range v-s:Membership ;
+.
+
+v-s:OrganizationForAdminTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Organization ;
+  rdfs:label "Шаблон для класса v-s:Organization"@ru ;
+  rdfs:label "Template for v-s:Organization class"@en ;
+  v-ui:template """
+<script>
+
+
+  //# sourceURL=v-s:OrganizationForAdminTemplate_pre
+</script>
+<div>
+  <div class="container sheet">
+    <h2>
+      <span about="v-s:Organization" property="rdfs:label"></span>
+      <small about="@" property="rdfs:label"></small>
+    </h2>
+    <hr>
+    <!--<h3 about="v-s:hasMembership" property="rdfs:label"></h3>-->
+    <div class="memberships" data-limit="10"></div>
+   
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <!-- BUTTONS -->
+    <div class="actions">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
+      <span id="rigthsForAdmin" class="hide">
+        <button class="btn btn-secondary view -edit -search" id="add-OrgVedaAccount" >
+          <span  about="v-s:AddInGroupOrgWithVedaAccount" property="rdfs:label"></span>
+        </button>
+        <button class="btn btn-secondary view -edit -search" id="add-OrgADAccount" >
+          <span  about="v-s:AddInGroupOrgWithVedaADAccount" property="rdfs:label"></span>
+        </button>
+        <button class="btn btn-secondary view -edit -search" id="add-OrgWithLimited" >
+          <span  about="v-s:AddInGroupOrgWithLimitedClassTypes" property="rdfs:label"></span>
+        </button>
+        <button class="btn btn-secondary view -edit -search" id="add-OrgWithoutLimited" >
+          <span  about="v-s:AddInGroupOrgWithoutLimitedClassTypes" property="rdfs:label"></span>
+        </button>
+      </span>
+    </div>
+  </div>
+  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
+  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+</div>
+<script>
+  function forAdmin(){
+    if (veda.appointment.id == 'cfg:AdministratorAppointment' && individual.id != 'd:org_RU1121003135' )  $("#rigthsForAdmin").removeClass('hide');
+  }
+  forAdmin();
+
+  $("#add-OrgVedaAccount", template).click(function() {
+    var uri = "v-s:OrganizationsWithVedaAccount_membership";
+    var organization = new veda.IndividualModel(individual + "_group");
+    new veda.IndividualModel(uri).load().then(function(member) {
+      member["v-s:resource"] = member["v-s:resource"].concat(organization);
+      member.save();
+    })
+  });
+  $("#add-OrgADAccount", template).click(function() {
+    var uri = "v-s:OrganizationsWithADAccount_membership";
+    var organization = new veda.IndividualModel(individual + "_group");
+    new veda.IndividualModel(uri).load().then(function(member) {
+      member["v-s:resource"] = member["v-s:resource"].concat(organization);
+      member.save();
+    })
+  });
+  $("#add-OrgWithLimited", template).click(function() {
+    var uri = "v-s:OrganizationsWithLimitedClassTypes_membership";
+    var organization = new veda.IndividualModel(individual + "_group");
+    new veda.IndividualModel(uri).load().then(function(member) {
+      member["v-s:resource"] = member["v-s:resource"].concat(organization);
+      member.save();
+    })
+  });
+  $("#add-OrgWithoutLimited", template).click(function() {
+    var uri = "v-s:OrganizationsWithoutLimitedClassTypes_membership";
+    var organization = new veda.IndividualModel(individual + "_group");
+    new veda.IndividualModel(uri).load().then(function(member) {
+      member["v-s:resource"] = member["v-s:resource"].concat(organization);
+      member.save();
+    })
+  });
+
+  var membershipRegistry = new veda.IndividualModel("v-s:OrganizationMembershipRegistry", false);
+  var orgUri = individual.id;
+  var membershipContainer = $(".memberships", template);
+  membershipRegistry.load().then(function(loaded) {
+    loaded["v-fs:top"] = [10];
+    loaded["v-fs:fulltextQuery"] = ["'rdf:type' == 'v-s:Membership' && 'v-s:resource' == '" + orgUri + "_group'"];
+    //loaded["v-fs:fulltextQuery"] = ["'rdf:type'=='v-s:Membership'"];
+    loaded.present(membershipContainer, "v-fs:AttributiveSearchInlineTemplate");
+  })
+  
+  //# sourceURL=v-s:OrganizationTemplate_post
+</script>
+  """ ;
+.
+
+# --------------------------------------------- Реестр, вложенный в шаблон
+
+v-s:OrganizationMembershipRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Вхождения организации в группы"@ru ;
+  rdfs:label "Entries of the organization into groups"@en ;
+  v-fs:searchBlank v-s:OrganizationMembershipRegistryBlank ;
+  v-fs:searchResultTemplate v-s:OrganizationMembershipRegistryResultTemplate ;
+  v-fs:searchOnLoad true ;
+.
+
+v-s:OrganizationMembershipRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Тестовый бланк"@ru ;
+  rdfs:label "Test blank"@en ;
+  v-fc:targetType v-s:Membership;
+.
+
+v-s:OrganizationMembershipRegistryResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:template """
+<table class="table table-condensed table-bordered">
+  <thead>
+    <tr class="active">
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></th>
+      <th about="rdfs:label" property="rdfs:label"></th>
+      <!--<th about="v-s:hasAppointment" property="rdfs:label"></th>
+      <th about="mnd-s:hasEmployeeProfile" property="rdfs:label"></th>-->
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td class="serial-number"></td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td about="@" property="rdfs:label" class="view edit -search"></td>
+      <!--<td about="@" rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view edit -search"></td>
+      <td about="@" rel="mnd-s:hasEmployeeProfile" class="view edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></td>-->
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+
+
+
+
+
 
 v-s:SubsidiaryTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -1606,9 +1786,9 @@ v-s:AppointmentTemplate
     var org1 = individual["v-s:parentOrganization"][0].id;
     var org = org1.slice(6);
   
-    var id_emp = individual["v-s:employee"][0]["v-s:description"][0];
+    var id_emp = individual["v-s:employee"][0]["v-s:tabNumber"][0];
     var id_occup = individual["v-s:occupation"][0]["v-s:subjectCode"][0];
-    individual.id = id_emp +"_pos_"+ id_occup;
+    individual.id = "d:"+ org +"_emp_"+ id_emp +"_pos_"+ id_occup;
     individual.trigger("idChanged");
   }
 
@@ -2040,7 +2220,8 @@ v-s:PersonTemplate
     var _class = new veda.IndividualModel('v-s:Appointment');
     var tmpl = new veda.IndividualModel('v-s:NewAppointmentTemplate');
     NewAppointment['rdf:type'] = [_class];
-    NewAppointment['v-s:parentUnit'] = individual['v-s:parentOrganization'] ;
+    if(individual.hasValue("v-s:hasAppointment")) NewAppointment['v-s:parentUnit'] = individual["v-s:hasAppointment"][0]['v-s:parentUnit'] ;
+    else {NewAppointment['v-s:parentUnit'] = individual['v-s:parentOrganization'] ;}
     NewAppointment['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
     NewAppointment['v-s:employee'] = [individual];
     var modal = veda.Util.showModal(NewAppointment, tmpl, "edit");
@@ -2137,20 +2318,20 @@ v-s:PersonEmbeddedTemplate
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
-          $('#warningID').addClass('hide'); 
+          $('#warningPersonID').addClass('hide'); 
         } else {
-          $('#warningID').removeClass('hide');
+          $('#warningPersonID').removeClass('hide');
         }
       });
     }
     if ( individual.hasValue('v-s:tabNumber') && individual.isNew()) {
-      var queryString = "'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id +"&& 'v-s:tabNumber'=='" + individual['v-s:tabNumber'][0] + "'";
+      var queryString = "'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id +"' && 'v-s:tabNumber'=='" + individual['v-s:tabNumber'][0] + "'";
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
-          $('#warningID').addClass('hide'); 
+          $('#warningTN').addClass('hide'); 
         } else {
-          $('#warningID').removeClass('hide');
+          $('#warningTN').removeClass('hide');
         }
       });
     }
@@ -2175,8 +2356,11 @@ v-s:PersonEmbeddedTemplate
     <div id="warningPersonFIO" class="alert alert-warning hide">
       <span>Внимание. Пользователь с такими ФИО уже существует в данной организации. Возможно Вам следует выбрать его.</span>
     </div>
-    <div id="warningID" class="alert alert-danger hide">
-      <span>Внимание. Такой ID или такой табельный номер уже существует.</span>
+    <div id="warningPersonID" class="alert alert-danger hide">
+      <span>Внимание. Такой ID уже существует.</span>
+    </div>
+    <div id="warningTN" class="alert alert-danger hide">
+      <span>Внимание. Такой табельный номер уже существует.</span>
     </div>
     <div class="row row-attribute">
       <div class="col-sm-3 col-xs-5">
@@ -2328,7 +2512,7 @@ v-s:PositionTemplate
       };
     }
     if( individual.hasValue('rdfs:label') && individual.hasValue('v-s:parentOrganization') && individual.isNew())  {
-      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "'";
+      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentUnit'=='" + individual['v-s:parentUnit'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "'";
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
@@ -2487,8 +2671,8 @@ v-s:PositionEmbeddedTemplate
         cause: ["v-ui:minCardinality"]
       };
     }
-    if( individual.hasValue('rdfs:label') && individual.hasValue('v-s:parentOrganization') && individual.isNew())  {
-      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "'";
+    if( individual.hasValue('rdfs:label') && individual.hasValue('v-s:parentUnit') && individual.isNew())  {
+      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentUnit'=='" + individual['v-s:parentUnit'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "'";
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
@@ -2514,9 +2698,9 @@ v-s:PositionEmbeddedTemplate
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
-          $('#warningID').addClass('hide'); 
+          $('#warningOccupationSubCode').addClass('hide'); 
         } else {
-          $('#warningID').removeClass('hide');
+          $('#warningOccupationSubCode').removeClass('hide');
         }
       });
     }
@@ -2528,8 +2712,11 @@ v-s:PositionEmbeddedTemplate
     <div id="warningOccupationName" class="alert alert-warning hide">
       <span>Внимание. Должность с похожим названием уже существует в данной организации. Возможно Вам следует использовать ее.</span>
     </div>
+    <div id="warningOccupationSubCode" class="alert alert-danger hide">
+      <span>Внимание. Должность с таким кодом уже существует в данной организации. </span>
+    </div>
     <div id="warningID" class="alert alert-danger hide">
-      <span>Внимание. Такой ID или код должности уже существует.</span>
+      <span>Внимание. Должность с таким кодом уже существует в данной организации. </span>
     </div>
     <div class="row row-attribute">
       <div class="col-sm-3 col-xs-5">
