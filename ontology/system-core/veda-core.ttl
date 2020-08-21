@@ -337,6 +337,21 @@ v-s:memberOf
   rdfs:label "Member of group"@en ;
   rdfs:range v-s:Group ;
 .
+v-s:ignoreExclusive
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Убрать ограничение прав"@ru ;
+  rdfs:label "Remove restriction of rightsp"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Membership ;
+.
+
+v-s:isExclusive
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Ограничить"@ru ;
+  rdfs:label "Limit"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Membership ;
+.
 
 # ------------------------------------------------------------
 
