@@ -1,7 +1,6 @@
+use crate::common::remove;
 use crate::CleanerContext;
-use chrono::NaiveDateTime;
 use v_api::app::{OptAuthorize, ResultCode};
-//use v_api::IndvOp;
 use v_module::info::ModuleInfo;
 use v_onto::individual::Individual;
 
@@ -26,7 +25,7 @@ pub fn clean_invalid_permissionstatement(ctx: &mut CleanerContext) {
                 if ctx.module.storage.get_individual(id, &mut indv) {
                     if !(indv.is_exists("v-s:canRead") || indv.is_exists("v-s:canCreate") || indv.is_exists("v-s:canUpdate") || indv.is_exists("v-s:canDelete")) {
                         info!("not found rights field");
-                        remove(id, &mut indv, ctx);
+                        remove(&mut indv, ctx);
                         continue;
                     }
 
@@ -34,7 +33,7 @@ pub fn clean_invalid_permissionstatement(ctx: &mut CleanerContext) {
                         let link_value = &indv.get_first_literal(p).unwrap_or_default();
                         if !ctx.module.get_individual(link_value, &mut Individual::default()).is_some() {
                             info!("{}->{}[{}] linked object not exist", id, p, link_value);
-                            remove(id, &mut indv, ctx);
+                            remove(&mut indv, ctx);
                             continue;
                         }
                     }
@@ -47,14 +46,4 @@ pub fn clean_invalid_permissionstatement(ctx: &mut CleanerContext) {
             }
         }
     }
-}
-
-fn remove(id: &str, indv: &mut Individual, _ctx: &mut CleanerContext) {
-    info!(
-        "remove {}, created = {}, id = {}",
-        indv.get_first_literal("rdf:type").unwrap_or_default(),
-        NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S"),
-        id,
-    );
-    //ctx.module.api.update(&ctx.systicket.id, IndvOp::Remove, &Individual::default().set_id(id));
 }

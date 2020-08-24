@@ -1,14 +1,21 @@
+use crate::common::remove;
+use crate::CleanerContext;
 use chrono::prelude::*;
+use std::collections::HashMap;
+use std::io::Write;
 use std::ops::Sub;
 use time::Duration;
 use v_api::app::{OptAuthorize, ResultCode};
-use crate::CleanerContext;
-use std::collections::HashMap;
-use std::io::Write;
 use v_module::info::ModuleInfo;
 use v_onto::individual::Individual;
 
 const MAX_SIZE_BATCH: i64 = 10000;
+
+struct ProcessElement {
+    name: String,
+    parent_id: String,
+    indv: Option<Individual>,
+}
 
 pub fn clean_process(ctx: &mut CleanerContext) {
     let module_info = ModuleInfo::new("./data", "clean_process", true);
@@ -27,19 +34,43 @@ pub fn clean_process(ctx: &mut CleanerContext) {
                 pos += 1;
                 if let Some(rindv) = ctx.module.get_individual(id, &mut Individual::default()) {
                     if let Some(process) = ctx.module.get_individual(&rindv.get_first_literal("v-wf:forProcess").unwrap_or_default(), &mut Individual::default()) {
+                        let mut process_elements = HashMap::new();
+
                         if !process.is_exists("v-wf:parentWorkOrder") {
                             if ctx.report_type == "processes" {
                                 if let Some(report) = &mut ctx.report {
                                     report.write((process.get_id().to_owned() + "\n").as_bytes()).unwrap_or_default();
                                 }
                             } else {
-                                let mut process_elements = HashMap::new();
                                 collect_process_elements("", process, &mut process_elements, ctx);
 
                                 if ctx.report_type == "ids" {
                                     if let Some(report) = &mut ctx.report {
                                         for el in process_elements.keys() {
                                             report.write((el.to_owned() + "\n").as_bytes()).unwrap_or_default();
+                                        }
+                                    }
+                                }
+                                if ctx.report_type == "full" {
+                                    if let Some(report) = &mut ctx.report {
+                                        report.write("\n".as_bytes()).unwrap_or_default();
+                                        for (id, el) in process_elements.iter() {
+                                            report.write(format!("{}; {}; {}\n", id, el.name, el.parent_id).as_bytes()).unwrap_or_default();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if ctx.report_type == "remove" {
+                            for (id, el) in process_elements {
+                                match el.indv {
+                                    Some(mut s) => {
+                                        remove(&mut s, ctx);
+                                    }
+                                    None => {
+                                        if let Some(indv) = ctx.module.get_individual(&id, &mut Individual::default()) {
+                                            remove(indv, ctx);
                                         }
                                     }
                                 }
@@ -85,18 +116,18 @@ fn get_query_for_work_item(ctx: &mut CleanerContext) -> String {
     )
 }
 
-fn collect_process_elements(parent_id: &str, process: &mut Individual, process_elements: &mut HashMap<String, (String, String)>, ctx: &mut CleanerContext) {
+fn collect_process_elements(parent_id: &str, process: &mut Individual, process_elements: &mut HashMap<String, ProcessElement>, ctx: &mut CleanerContext) {
     info!(
         "{}, created = {}, id = {}",
         process.get_first_literal("rdf:type").unwrap_or_default(),
         NaiveDateTime::from_timestamp(process.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S"),
         process.get_id()
     );
-    add_to_collect(process.get_id(), "Process", parent_id, process_elements);
+    add_to_collect(process.get_id(), "Process", parent_id, process_elements, Some(Individual::new_from_obj(process.get_obj())));
     collect_work_items(process, process_elements, ctx);
 }
 
-fn collect_work_items(process: &mut Individual, process_elements: &mut HashMap<String, (String, String)>, ctx: &mut CleanerContext) {
+fn collect_work_items(process: &mut Individual, process_elements: &mut HashMap<String, ProcessElement>, ctx: &mut CleanerContext) {
     for w_id in ctx
         .ch_client
         .select(
@@ -110,26 +141,25 @@ fn collect_work_items(process: &mut Individual, process_elements: &mut HashMap<S
         .result
         .iter()
     {
-        process_elements.insert(w_id.to_owned(), ("WorkItem".to_owned(), process.get_id().to_owned()));
-
+        add_to_collect(w_id, "WorkItem", process.get_id(), process_elements, Some(Individual::new_from_obj(process.get_obj())));
         collect_work_orders_and_vars(w_id, process_elements, ctx);
     }
 }
 
-fn collect_work_orders_and_vars(work_item_id: &str, process_elements: &mut HashMap<String, (String, String)>, ctx: &mut CleanerContext) {
+fn collect_work_orders_and_vars(work_item_id: &str, process_elements: &mut HashMap<String, ProcessElement>, ctx: &mut CleanerContext) {
     if let Some(work_item) = ctx.module.get_individual(work_item_id, &mut Individual::default()) {
         if let Some(v_ids) = work_item.get_literals("v-wf:inVars") {
             for v_id in v_ids.iter() {
-                add_to_collect(v_id, "InVar", work_item.get_id(), process_elements);
+                add_to_collect(v_id, "InVar", work_item.get_id(), process_elements, None);
             }
         }
         for work_order_id in work_item.get_literals("v-wf:workOrderList").unwrap_or_default().iter() {
-            add_to_collect(work_order_id, "WorkOrder", work_item.get_id(), process_elements);
+            add_to_collect(work_order_id, "WorkOrder", work_item.get_id(), process_elements, None);
 
             if let Some(work_order) = ctx.module.get_individual(&work_order_id, &mut Individual::default()) {
                 if let Some(v_ids) = work_order.get_literals("v-wf:outVars") {
                     for var_id in v_ids.iter() {
-                        add_to_collect(var_id, "OutVar", work_order.get_id(), process_elements);
+                        add_to_collect(var_id, "OutVar", work_order.get_id(), process_elements, None);
                     }
                 }
 
@@ -143,8 +173,15 @@ fn collect_work_orders_and_vars(work_item_id: &str, process_elements: &mut HashM
     }
 }
 
-fn add_to_collect(id: &str, name: &str, parent_id: &str, process_elements: &mut HashMap<String, (String, String)>) {
+fn add_to_collect(id: &str, name: &str, parent_id: &str, process_elements: &mut HashMap<String, ProcessElement>, indv: Option<Individual>) {
     if id.starts_with("d:") {
-        process_elements.insert(id.to_owned(), (name.to_owned(), parent_id.to_owned()));
+        process_elements.insert(
+            id.to_owned(),
+            ProcessElement {
+                name: name.to_owned(),
+                parent_id: parent_id.to_owned(),
+                indv,
+            },
+        );
     }
 }

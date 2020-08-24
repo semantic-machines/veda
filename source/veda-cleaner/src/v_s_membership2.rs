@@ -1,7 +1,6 @@
+use crate::common::remove;
 use crate::CleanerContext;
-use chrono::NaiveDateTime;
 use v_api::app::{OptAuthorize, ResultCode};
-use v_api::IndvOp;
 use v_module::info::ModuleInfo;
 use v_onto::individual::Individual;
 
@@ -43,7 +42,7 @@ pub fn remove_membership2(ctx: &mut CleanerContext) {
                                     "http://semantic-machines.com/veda/mondi-individual-GroupAccount",
                                 ],
                             ) {
-                                remove(id, &mut indv, ctx);
+                                remove(&mut indv, ctx);
                             }
                         }
                     }
@@ -56,15 +55,4 @@ pub fn remove_membership2(ctx: &mut CleanerContext) {
             }
         }
     }
-}
-
-fn remove(id: &str, indv: &mut Individual, ctx: &mut CleanerContext) {
-    let res = ctx.module.api.update(&ctx.systicket.id, IndvOp::Remove, &Individual::default().set_id(id));
-    info!(
-        "remove {}, created = {}, id = {}, result={:?}",
-        indv.get_first_literal("rdf:type").unwrap_or_default(),
-        NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S"),
-        id,
-        res
-    );
 }
