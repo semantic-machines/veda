@@ -314,11 +314,16 @@ veda.Module(function (veda) { "use strict";
       this.trigger("afterLoad", this);
       return Promise.resolve( this );
     } else if ( this.isLoaded() && veda.Backend.status === "limited" ) {
-      this.trigger("afterLoad", this);
-      this.is("v-s:UserThing").then(function (isUserThing) {
-        if (isUserThing) { self.reset(); }
+      return this.is("v-s:UserThing").then(function (isUserThing) {
+        if (isUserThing) {
+          return self.reset();
+        } else {
+          return self;
+        }
+      }).then(function (self) {
+        self.trigger("afterLoad", self);
+        return self;
       });
-      return Promise.resolve( this );
     }
     var uri = this._.uri ;
     if (typeof uri === "string") {
@@ -334,6 +339,7 @@ veda.Module(function (veda) { "use strict";
         }
         return self;
       }).catch(function (error) {
+        self.isLoading(false);
         console.log("load individual error", self.id, error);
         if (error.code === 422 || error.code === 404) {
           self.isNew(true);
@@ -444,6 +450,10 @@ veda.Module(function (veda) { "use strict";
       self.isLoaded(true);
       self.trigger("afterSave");
       return self;
+    }).catch(function (error) {
+      self.isSaving(false);
+      console.log("save individual error", self.id, error);
+      throw error;
     });
     return this.isSaving(promise);
   }
@@ -458,21 +468,17 @@ veda.Module(function (veda) { "use strict";
     }
     this.trigger("beforeReset");
     if (this.isNew()) {
-      return Promise.resolve(this).then(function (self) {
-        self.trigger("afterReset");
-        return self;
-      });
+      self.trigger("afterReset");
+      return Promise.resolve(this);
     }
     var self = this;
     self.filtered = {};
     var promise = (original ? Promise.resove(original) : veda.Backend.reset_individual(veda.ticket, self.id))
       .then(processOriginal)
       .catch(function (error) {
-        console.log("reset individual error", error);
-        if (error.code === 472) {
-          self.isResetting(false);
-        };
-        self.trigger("afterReset");
+        self.isResetting(false);
+        console.log("reset individual error", self.id, error);
+        throw error;
       });
     return self.isResetting(promise);
 
