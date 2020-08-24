@@ -34,10 +34,15 @@ pub fn remove_membership2(ctx: &mut CleanerContext) {
                     {
                         let resource_id = &indv.get_first_literal("v-s:resource").unwrap_or_default();
                         if let Some(r) = ctx.module.get_individual(resource_id, &mut Individual::default()) {
-                            if r.any_exists("rdfs:isDefinedBy", &["http://semantic-machines.com/veda/mondi-individual-ExternalUserAccount",
-                                "http://semantic-machines.com/veda/mondi-individual-ExternalUserAccount2",
-                                "http://semantic-machines.com/veda/mondi-individual-InternalUserAccount",
-                                "http://semantic-machines.com/veda/mondi-individual-GroupAccount"]) {
+                            if r.any_exists(
+                                "rdfs:isDefinedBy",
+                                &[
+                                    "http://semantic-machines.com/veda/mondi-individual-ExternalUserAccount",
+                                    "http://semantic-machines.com/veda/mondi-individual-ExternalUserAccount2",
+                                    "http://semantic-machines.com/veda/mondi-individual-InternalUserAccount",
+                                    "http://semantic-machines.com/veda/mondi-individual-GroupAccount",
+                                ],
+                            ) {
                                 remove(id, &mut indv, ctx);
                             }
                         }

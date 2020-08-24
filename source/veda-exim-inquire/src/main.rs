@@ -16,7 +16,7 @@ use v_storage::storage::StorageMode;
 fn main() -> std::io::Result<()> {
     init_log("EXIM_INQUIRE");
 
-    let mut module = Module::new(StorageMode::ReadOnly, true);
+    let mut module = Module::new(StorageMode::ReadOnly, false);
 
     let systicket;
     if let Ok(t) = module.get_sys_ticket_id() {
@@ -46,6 +46,8 @@ fn main() -> std::io::Result<()> {
 
     loop {
         for (remote_node_id, remote_node_addr) in &link_node_addresses {
+            info!("@A1");
+
             let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE EXTRACT");
 
             let mut soc = Socket::new(Protocol::Req0).unwrap();

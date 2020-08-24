@@ -2,7 +2,6 @@ use chrono::prelude::*;
 use std::ops::Sub;
 use time::Duration;
 use v_api::app::{OptAuthorize, ResultCode};
-//use v_api::IndvOp;
 use crate::CleanerContext;
 use std::collections::HashMap;
 use std::io::Write;
@@ -73,7 +72,7 @@ fn get_query_for_work_item(ctx: &mut CleanerContext) -> String {
         q0.push_str("'")
     }
 
-    let date_before = Utc::now().naive_utc().sub(Duration::days(30));
+    let date_before = Utc::now().naive_utc().sub(Duration::days(0));
 
     format!(
         "SELECT distinct id
@@ -93,7 +92,7 @@ fn collect_process_elements(parent_id: &str, process: &mut Individual, process_e
         NaiveDateTime::from_timestamp(process.get_first_datetime("v-s:created").unwrap_or_default(), 0).format("%d.%m.%Y %H:%M:%S"),
         process.get_id()
     );
-    process_elements.insert(process.get_id().to_owned(), ("Process".to_owned(), parent_id.to_owned()));
+    add_to_collect(process.get_id(), "Process", parent_id, process_elements);
     collect_work_items(process, process_elements, ctx);
 }
 
@@ -120,17 +119,17 @@ fn collect_work_items(process: &mut Individual, process_elements: &mut HashMap<S
 fn collect_work_orders_and_vars(work_item_id: &str, process_elements: &mut HashMap<String, (String, String)>, ctx: &mut CleanerContext) {
     if let Some(work_item) = ctx.module.get_individual(work_item_id, &mut Individual::default()) {
         if let Some(v_ids) = work_item.get_literals("v-wf:inVars") {
-            for v_id in v_ids {
-                process_elements.insert(v_id.to_owned(), ("InVar".to_owned(), work_item.get_id().to_owned()));
+            for v_id in v_ids.iter() {
+                add_to_collect(v_id, "InVar", work_item.get_id(), process_elements);
             }
         }
         for work_order_id in work_item.get_literals("v-wf:workOrderList").unwrap_or_default().iter() {
-            process_elements.insert(work_order_id.to_owned(), ("WorkOrder".to_owned(), work_item.get_id().to_owned()));
+            add_to_collect(work_order_id, "WorkOrder", work_item.get_id(), process_elements);
 
             if let Some(work_order) = ctx.module.get_individual(&work_order_id, &mut Individual::default()) {
                 if let Some(v_ids) = work_order.get_literals("v-wf:outVars") {
-                    for v_id in v_ids {
-                        process_elements.insert(v_id.to_owned(), ("OutVar".to_owned(), work_order.get_id().to_owned()));
+                    for var_id in v_ids.iter() {
+                        add_to_collect(var_id, "OutVar", work_order.get_id(), process_elements);
                     }
                 }
 
@@ -141,5 +140,11 @@ fn collect_work_orders_and_vars(work_item_id: &str, process_elements: &mut HashM
                 }
             }
         }
+    }
+}
+
+fn add_to_collect(id: &str, name: &str, parent_id: &str, process_elements: &mut HashMap<String, (String, String)>) {
+    if id.starts_with("d:") {
+        process_elements.insert(id.to_owned(), (name.to_owned(), parent_id.to_owned()));
     }
 }
