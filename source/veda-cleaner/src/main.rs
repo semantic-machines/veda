@@ -21,15 +21,19 @@ use std::fs::{File, OpenOptions};
 use std::time::*;
 use std::{env, thread};
 use v_module::module::{init_log, Module};
+use v_module::onto::load_onto;
 use v_module::ticket::Ticket;
+use v_onto::onto::Onto;
 use v_search::clickhouse_client::*;
 
 pub struct CleanerContext {
     module: Module,
+    onto: Onto,
     ch_client: CHClient,
-    systicket: Ticket,
+    sys_ticket: Ticket,
     report_type: String,
     report: Option<File>,
+    operations: HashSet<String>,
 }
 
 fn main() {
@@ -39,12 +43,19 @@ fn main() {
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
     let query_search_db = section.get("query_search_db").expect("param [query_search_db_url] not found in veda.properties");
 
+    let mut module = Module::default();
+
+    let mut onto = Onto::default();
+    load_onto(&mut module.storage, &mut onto);
+
     let mut ctx = CleanerContext {
-        module: Module::default(),
+        module,
+        onto,
         ch_client: CHClient::new(query_search_db.to_owned()),
-        systicket: Ticket::default(),
+        sys_ticket: Ticket::default(),
         report_type: "".to_owned(),
         report: None,
+        operations: Default::default(),
     };
 
     let mut cleaner_modules = HashSet::new();
@@ -61,6 +72,13 @@ fn main() {
             let p: Vec<&str> = el.split('=').collect();
             if p.len() == 2 {
                 ctx.report_type = p[1].to_owned();
+            }
+        } else if el.starts_with("--operation") {
+            let p: Vec<&str> = el.split('=').collect();
+            if p.len() == 2 {
+                for s in p[1].split(',') {
+                    ctx.operations.insert(s.to_string());
+                }
             }
         }
     }
@@ -86,7 +104,7 @@ fn main() {
     info!("cleaner started");
 
     if let Ok(t) = ctx.module.get_sys_ticket_id() {
-        ctx.systicket = ctx.module.get_ticket_from_db(&t);
+        ctx.sys_ticket = ctx.module.get_ticket_from_db(&t);
         {
             if cleaner_modules.contains("email") {
                 clean_email(&mut ctx);

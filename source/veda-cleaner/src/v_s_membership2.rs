@@ -17,7 +17,7 @@ pub fn remove_membership2(ctx: &mut CleanerContext) {
     if let Some((mut pos, _)) = module_info.read_info() {
         info!("start remove_membership2, pos={}", pos);
         let query = "SELECT id FROM veda_tt.`v-s:Membership` WHERE v_s_memberOf_str[1] = 'cfg:TTLResourcesGroup' AND rdfs_comment_str[1] = 'создано автоматически в обработчике cfg:Event_1' AND v_s_deleted_int[1] = 0";
-        let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos, OptAuthorize::NO);
+        let res = ctx.ch_client.select(&ctx.sys_ticket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos, OptAuthorize::NO);
 
         if res.result_code == ResultCode::Ok {
             for id in res.result.iter() {

@@ -16,7 +16,7 @@ pub fn clean_invalid_permissionstatement(ctx: &mut CleanerContext) {
 
     if let Some((mut pos, _)) = module_info.read_info() {
         let query = "SELECT DISTINCT id FROM veda_tt.`v-s:PermissionStatement` FINAL WHERE v_s_deleted_int[1] = 0";
-        let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos, OptAuthorize::NO);
+        let res = ctx.ch_client.select(&ctx.sys_ticket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos, OptAuthorize::NO);
 
         if res.result_code == ResultCode::Ok {
             for id in res.result.iter() {

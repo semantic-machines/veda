@@ -2,12 +2,14 @@ use crate::common::remove;
 use crate::CleanerContext;
 use chrono::prelude::*;
 use std::collections::HashMap;
+use std::fs::File;
 use std::io::Write;
 use std::ops::Sub;
 use time::Duration;
 use v_api::app::{OptAuthorize, ResultCode};
 use v_module::info::ModuleInfo;
 use v_onto::individual::Individual;
+use v_onto::individual2turtle::to_turtle;
 
 const MAX_SIZE_BATCH: i64 = 10000;
 
@@ -27,7 +29,7 @@ pub fn clean_process(ctx: &mut CleanerContext) {
 
     if let Some((mut pos, _)) = module_info.read_info() {
         let query = get_query_for_work_item(ctx);
-        let res = ctx.ch_client.select(&ctx.systicket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos, OptAuthorize::NO);
+        let res = ctx.ch_client.select(&ctx.sys_ticket.user_uri, &query, MAX_SIZE_BATCH, MAX_SIZE_BATCH, pos, OptAuthorize::NO);
 
         if res.result_code == ResultCode::Ok {
             for id in res.result.iter() {
@@ -43,14 +45,9 @@ pub fn clean_process(ctx: &mut CleanerContext) {
                                 }
                             } else {
                                 collect_process_elements("", process, &mut process_elements, ctx);
+                                collect_membership(&mut process_elements, ctx);
+                                collect_permission_statement(&mut process_elements, ctx);
 
-                                if ctx.report_type == "ids" {
-                                    if let Some(report) = &mut ctx.report {
-                                        for el in process_elements.keys() {
-                                            report.write((el.to_owned() + "\n").as_bytes()).unwrap_or_default();
-                                        }
-                                    }
-                                }
                                 if ctx.report_type == "full" {
                                     if let Some(report) = &mut ctx.report {
                                         report.write("\n".as_bytes()).unwrap_or_default();
@@ -59,18 +56,52 @@ pub fn clean_process(ctx: &mut CleanerContext) {
                                         }
                                     }
                                 }
-                            }
-                        }
 
-                        if ctx.report_type == "remove" {
-                            for (id, el) in process_elements {
-                                match el.indv {
-                                    Some(mut s) => {
-                                        remove(&mut s, ctx);
+                                let mut indvs = vec![];
+                                let mut indv_ids = vec![];
+                                for (id, el) in process_elements {
+                                    match el.indv {
+                                        Some(mut s) => {
+                                            s.parse_all();
+                                            indvs.push(s);
+                                        }
+                                        None => {
+                                            if let Some(mut s) = ctx.module.get_individual_h(&id) {
+                                                s.parse_all();
+                                                indv_ids.push(s.get_id().to_owned());
+                                                indvs.push(*s);
+                                            }
+                                        }
                                     }
-                                    None => {
-                                        if let Some(indv) = ctx.module.get_individual(&id, &mut Individual::default()) {
-                                            remove(indv, ctx);
+                                }
+                                let indvs_count = indvs.len();
+
+                                if ctx.report_type == "ids" {
+                                    if let Some(report) = &mut ctx.report {
+                                        for id in indv_ids.iter() {
+                                            report.write((id.to_string() + "\n").as_bytes()).unwrap_or_default();
+                                        }
+                                    }
+                                }
+
+                                if ctx.operations.contains("remove") {
+                                    for s in indvs.iter_mut() {
+                                        remove(s, ctx);
+                                    }
+                                }
+
+                                if ctx.operations.contains("to_ttl") {
+                                    if let Ok(buf) = to_turtle(indvs, &mut ctx.onto.prefixes) {
+                                        let file_path = format!("./out/{}.ttl", process.get_id());
+                                        if let Ok(mut file) = File::create(&(file_path)) {
+                                            file.write_all(format!("# count elements: {}\n", indvs_count).as_bytes()).unwrap_or_default();
+                                            if let Err(e) = file.write_all(buf.as_slice()) {
+                                                error!("fail write to file {:?}", e);
+                                            } else {
+                                                info!("stored: count:{}, bytes:{}", indvs_count, buf.len());
+                                            }
+                                        } else {
+                                            error!("fail create file {}", file_path);
                                         }
                                     }
                                 }
@@ -91,7 +122,7 @@ pub fn clean_process(ctx: &mut CleanerContext) {
 
 fn get_query_for_work_item(ctx: &mut CleanerContext) -> String {
     let output_conditions_list =
-        ctx.ch_client.select(&ctx.systicket.user_uri, "SELECT DISTINCT id FROM veda_tt.`v-wf:OutputCondition`", MAX_SIZE_BATCH, MAX_SIZE_BATCH, 0, OptAuthorize::NO);
+        ctx.ch_client.select(&ctx.sys_ticket.user_uri, "SELECT DISTINCT id FROM veda_tt.`v-wf:OutputCondition`", MAX_SIZE_BATCH, MAX_SIZE_BATCH, 0, OptAuthorize::NO);
 
     let mut q0 = String::default();
     for el in output_conditions_list.result.iter() {
@@ -116,6 +147,36 @@ fn get_query_for_work_item(ctx: &mut CleanerContext) -> String {
     )
 }
 
+fn collect_membership(process_elements: &mut HashMap<String, ProcessElement>, ctx: &mut CleanerContext) {
+    let mut where_ids = String::new();
+    for id in process_elements.keys() {
+        if !where_ids.is_empty() {
+            where_ids += " OR ";
+        }
+        where_ids += &format!("has(v_s_memberOf_str, '{}') = 1 OR has(v_s_resource_str, '{}') = 1", id, id);
+    }
+
+    let query = format!("SELECT DISTINCT id FROM veda_tt.`v-s:Membership` FINAL WHERE {}", where_ids);
+    for id in ctx.ch_client.select(&ctx.sys_ticket.user_uri, &query, 1000000, 1000000, 0, OptAuthorize::NO).result.iter() {
+        add_to_collect(id, "Membership", "", process_elements, None);
+    }
+}
+
+fn collect_permission_statement(process_elements: &mut HashMap<String, ProcessElement>, ctx: &mut CleanerContext) {
+    let mut where_ids = String::new();
+    for id in process_elements.keys() {
+        if !where_ids.is_empty() {
+            where_ids += " OR ";
+        }
+        where_ids += &format!("has(v_s_permissionSubject_str, '{}') = 1 OR has(v_s_permissionObject_str, '{}') = 1", id, id);
+    }
+
+    let query = format!("SELECT DISTINCT id FROM veda_tt.`v-s:PermissionStatement` FINAL WHERE {}", where_ids);
+    for id in ctx.ch_client.select(&ctx.sys_ticket.user_uri, &query, 1000000, 1000000, 0, OptAuthorize::NO).result.iter() {
+        add_to_collect(id, "PermissionStatement", "", process_elements, None);
+    }
+}
+
 fn collect_process_elements(parent_id: &str, process: &mut Individual, process_elements: &mut HashMap<String, ProcessElement>, ctx: &mut CleanerContext) {
     info!(
         "{}, created = {}, id = {}",
@@ -128,35 +189,21 @@ fn collect_process_elements(parent_id: &str, process: &mut Individual, process_e
 }
 
 fn collect_work_items(process: &mut Individual, process_elements: &mut HashMap<String, ProcessElement>, ctx: &mut CleanerContext) {
-    for w_id in ctx
-        .ch_client
-        .select(
-            &ctx.systicket.user_uri,
-            &format!("SELECT DISTINCT id FROM veda_tt.`v-wf:WorkItem` WHERE v_wf_forProcess_str[1] = '{}'", process.get_id()),
-            1000000,
-            1000000,
-            0,
-            OptAuthorize::NO,
-        )
-        .result
-        .iter()
-    {
-        add_to_collect(w_id, "WorkItem", process.get_id(), process_elements, Some(Individual::new_from_obj(process.get_obj())));
-        collect_work_orders_and_vars(w_id, process_elements, ctx);
+    let query = format!("SELECT DISTINCT id FROM veda_tt.`v-wf:WorkItem` WHERE v_wf_forProcess_str[1] = '{}'", process.get_id());
+    for w_id in ctx.ch_client.select(&ctx.sys_ticket.user_uri, &query, 1000000, 1000000, 0, OptAuthorize::NO).result.iter() {
+        collect_work_orders_and_vars(w_id, process_elements, process.get_id(), ctx);
     }
 }
 
-fn collect_work_orders_and_vars(work_item_id: &str, process_elements: &mut HashMap<String, ProcessElement>, ctx: &mut CleanerContext) {
-    if let Some(work_item) = ctx.module.get_individual(work_item_id, &mut Individual::default()) {
+fn collect_work_orders_and_vars(work_item_id: &str, process_elements: &mut HashMap<String, ProcessElement>, parent_id: &str, ctx: &mut CleanerContext) {
+    if let Some(mut work_item) = ctx.module.get_individual_h(work_item_id) {
         if let Some(v_ids) = work_item.get_literals("v-wf:inVars") {
             for v_id in v_ids.iter() {
                 add_to_collect(v_id, "InVar", work_item.get_id(), process_elements, None);
             }
         }
         for work_order_id in work_item.get_literals("v-wf:workOrderList").unwrap_or_default().iter() {
-            add_to_collect(work_order_id, "WorkOrder", work_item.get_id(), process_elements, None);
-
-            if let Some(work_order) = ctx.module.get_individual(&work_order_id, &mut Individual::default()) {
+            if let Some(mut work_order) = ctx.module.get_individual_h(&work_order_id) {
                 if let Some(v_ids) = work_order.get_literals("v-wf:outVars") {
                     for var_id in v_ids.iter() {
                         add_to_collect(var_id, "OutVar", work_order.get_id(), process_elements, None);
@@ -168,8 +215,10 @@ fn collect_work_orders_and_vars(work_item_id: &str, process_elements: &mut HashM
                         collect_process_elements(work_order.get_id(), process, process_elements, ctx);
                     }
                 }
+                add_to_collect(work_order_id, "WorkOrder", work_item.get_id(), process_elements, Some(*work_order));
             }
         }
+        add_to_collect(work_item_id, "WorkItem", parent_id, process_elements, Some(*work_item));
     }
 }
 
