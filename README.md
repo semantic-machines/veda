@@ -1,5 +1,5 @@
 # Veda - ontology driven application development platform 
-[![Build Status](https://travis-ci.org/semantic-machines/veda.svg?branch=master)](https://travis-ci.org/semantic-machines/veda)
+[![Build Status](https://travis-ci.com/semantic-machines/veda.svg?branch=master)](https://travis-ci.com/semantic-machines/veda)
 
 
 
