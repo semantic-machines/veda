@@ -13,7 +13,7 @@ pub enum RelType {
 #[derive(Debug)]
 pub struct Onto {
     pub relations: HashMap<String, HashMap<String, RelType>>,
-    prefixes: HashMap<String, String>,
+    pub prefixes: HashMap<String, String>,
 }
 
 impl fmt::Display for Onto {

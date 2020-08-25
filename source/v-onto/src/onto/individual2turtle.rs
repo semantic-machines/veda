@@ -191,7 +191,7 @@ pub fn get_prefix(v: &str) -> Option<&str> {
 fn collect_prefix(v: &str, all_prefixes: &HashMap<String, String>, used_prefixes: &mut HashMap<String, String>) {
     if let Some(p) = get_prefix(v) {
         if !used_prefixes.contains_key(p) {
-            if let Some(up) = all_prefixes.get(p) {
+            if let Some(up) = all_prefixes.get(&(p.to_owned() + ":")) {
                 used_prefixes.insert(p.to_owned(), up.to_owned());
             }
         }
