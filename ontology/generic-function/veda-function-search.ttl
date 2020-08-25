@@ -434,13 +434,13 @@ v-fs:RegistrySuccessfullyDeleted
   rdfs:label "Registry successfully deleted"@en ;
 .
 
-v-s:TS_AttributiveSearch 
+v-s:TS_AttributiveSearch
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-fs:AttributiveSearchManagementTemplate;
   v-ui:forClass v-fs:AttributiveSearch
 .
-v-s:TS_PersonalSearch 
+v-s:TS_PersonalSearch
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-fs:AttributiveSearchManagementTemplate;
@@ -1584,7 +1584,7 @@ v-fs:DocumentsSearchBlankTemplate
 v-fs:AdvancedSearch
   rdf:type v-fs:AttributiveSearch ;
   rdfs:label "Реестр"@ru ;
-  rdfs:label "Reestr"@en ;
+  rdfs:label "Registry"@en ;
   v-fs:searchBlank v-fs:AdvancedSearchBlank ;
   v-fs:searchBlankTemplate v-fs:AdvancedSearchTemplate ;
   v-fs:searchResultTemplate v-fs:FulltextResultTemplate ;
@@ -1885,7 +1885,7 @@ this.fn = function (task_uri) {
   """ ;
 .
 
-v-s:TS_SendToIntroductionOperation 
+v-s:TS_SendToIntroductionOperation
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ft:SendToIntroductionOperationTemplate;
