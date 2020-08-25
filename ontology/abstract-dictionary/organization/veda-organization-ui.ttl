@@ -688,36 +688,56 @@ v-s:OrganizationForAdminTemplate
   forAdmin();
 
   $("#add-OrgVedaAccount", template).click(function() {
-    var uri = "v-s:OrganizationsWithVedaAccount_membership";
-    var organization = new veda.IndividualModel(individual + "_group");
-    new veda.IndividualModel(uri).load().then(function(member) {
-      member["v-s:resource"] = member["v-s:resource"].concat(organization);
-      member.save();
-    })
+    var org = individual.id;
+    var org1 = org.slice(6);
+    var org_gr = new veda.IndividualModel(individual+"_group");
+
+    var _class = new veda.IndividualModel("v-s:Membership"),
+        OrgWithVedaAccount = new veda.IndividualModel();
+    OrgWithVedaAccount["rdf:type"]=[_class];
+    OrgWithVedaAccount["v-s:memberOf"] = [new veda.IndividualModel("v-s:OrganizationsWithVedaAccount")];
+    OrgWithVedaAccount["v-s:resource"] = [org_gr];
+    OrgWithVedaAccount.id = "v-s:OrganizationsWithVedaAccount" +"_"+org1;
+    OrgWithVedaAccount.save();
   });
   $("#add-OrgADAccount", template).click(function() {
-    var uri = "v-s:OrganizationsWithADAccount_membership";
-    var organization = new veda.IndividualModel(individual + "_group");
-    new veda.IndividualModel(uri).load().then(function(member) {
-      member["v-s:resource"] = member["v-s:resource"].concat(organization);
-      member.save();
-    })
+    var org = individual.id;
+    var org1 = org.slice(6);
+    var org_gr = new veda.IndividualModel(individual+"_group");
+
+    var _class = new veda.IndividualModel("v-s:Membership"),
+        OrgWithADAccount = new veda.IndividualModel();
+    OrgWithADAccount["rdf:type"]=[_class];
+    OrgWithADAccount["v-s:memberOf"] = [new veda.IndividualModel("v-s:OrganizationsWithADAccount")];
+    OrgWithADAccount["v-s:resource"] = [org_gr];
+    OrgWithADAccount.id = "v-s:OrganizationsWithADAccount" +"_"+org1;
+    OrgWithADAccount.save();
   });
   $("#add-OrgWithLimited", template).click(function() {
-    var uri = "v-s:OrganizationsWithLimitedClassTypes_membership";
-    var organization = new veda.IndividualModel(individual + "_group");
-    new veda.IndividualModel(uri).load().then(function(member) {
-      member["v-s:resource"] = member["v-s:resource"].concat(organization);
-      member.save();
-    })
+    var org = individual.id;
+    var org1 = org.slice(6);
+    var org_gr = new veda.IndividualModel(individual+"_group");
+
+    var _class = new veda.IndividualModel("v-s:Membership"),
+        OrgWithLimited = new veda.IndividualModel();
+    OrgWithLimited["rdf:type"]=[_class];
+    OrgWithLimited["v-s:memberOf"] = [new veda.IndividualModel("v-s:OrganizationsWithLimitedClassTypes")];
+    OrgWithLimited["v-s:resource"] = [org_gr];
+    OrgWithLimited.id = "v-s:OrganizationsWithLimitedClassTypes" +"_"+org1;
+    OrgWithLimited.save();
   });
   $("#add-OrgWithoutLimited", template).click(function() {
-    var uri = "v-s:OrganizationsWithoutLimitedClassTypes_membership";
-    var organization = new veda.IndividualModel(individual + "_group");
-    new veda.IndividualModel(uri).load().then(function(member) {
-      member["v-s:resource"] = member["v-s:resource"].concat(organization);
-      member.save();
-    })
+    var org = individual.id;
+    var org1 = org.slice(6);
+    var org_gr = new veda.IndividualModel(individual+"_group");
+
+    var _class = new veda.IndividualModel("v-s:Membership"),
+        OrgWithoutLimited = new veda.IndividualModel();
+    OrgWithoutLimited["rdf:type"]=[_class];
+    OrgWithoutLimited["v-s:memberOf"] = [new veda.IndividualModel("v-s:OrganizationsWithoutLimitedClassTypes")];
+    OrgWithoutLimited["v-s:resource"] = [org_gr];
+    OrgWithoutLimited.id = "v-s:OrganizationsWithoutLimitedClassTypes" +"_"+org1;
+    OrgWithoutLimited.save();
   });
 
   var membershipRegistry = new veda.IndividualModel("v-s:OrganizationMembershipRegistry", false);
@@ -2307,9 +2327,9 @@ v-s:PersonEmbeddedTemplate
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
-          $('#warningPersonFIO').addClass('hide'); 
+          $('#warningPersonFIO').addClass('hidden'); 
         } else {
-          $('#warningPersonFIO').removeClass('hide');
+          $('#warningPersonFIO').removeClass('hidden');
         }
       });
     }
@@ -2318,9 +2338,9 @@ v-s:PersonEmbeddedTemplate
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
-          $('#warningPersonID').addClass('hide'); 
+          $('#warningPersonID').addClass('hidden'); 
         } else {
-          $('#warningPersonID').removeClass('hide');
+          $('#warningPersonID').removeClass('hidden');
         }
       });
     }
@@ -2329,9 +2349,9 @@ v-s:PersonEmbeddedTemplate
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
         var tmp = queryResult.result;
         if (tmp.length == 0) {
-          $('#warningTN').addClass('hide'); 
+          $('#warningTN').addClass('hidden'); 
         } else {
-          $('#warningTN').removeClass('hide');
+          $('#warningTN').removeClass('hidden');
         }
       });
     }
@@ -2353,13 +2373,13 @@ v-s:PersonEmbeddedTemplate
 </script>
 <div class="container sheet">
   
-    <div id="warningPersonFIO" class="alert alert-warning hide">
+    <div id="warningPersonFIO" class="alert alert-warning hidden">
       <span>Внимание. Пользователь с такими ФИО уже существует в данной организации. Возможно Вам следует выбрать его.</span>
     </div>
-    <div id="warningPersonID" class="alert alert-danger hide">
+    <div id="warningPersonID" class="alert alert-danger hidden">
       <span>Внимание. Такой ID уже существует.</span>
     </div>
-    <div id="warningTN" class="alert alert-danger hide">
+    <div id="warningTN" class="alert alert-danger hidden">
       <span>Внимание. Такой табельный номер уже существует.</span>
     </div>
     <div class="row row-attribute">
@@ -2716,7 +2736,7 @@ v-s:PositionEmbeddedTemplate
       <span>Внимание. Должность с таким кодом уже существует в данной организации. </span>
     </div>
     <div id="warningID" class="alert alert-danger hide">
-      <span>Внимание. Должность с таким кодом уже существует в данной организации. </span>
+      <span>Внимание. Должность с таким ID уже существует в данной организации. </span>
     </div>
     <div class="row row-attribute">
       <div class="col-sm-3 col-xs-5">
