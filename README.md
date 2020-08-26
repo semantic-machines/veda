@@ -46,6 +46,7 @@
 
 
 **Installing a pre-built system**
+
 You can download pre-built platform release from GitHub. To install the latest version, follow the link https://github.com/semantic-machines/veda/releases and download the Veda-x86_64.AppImage file into a separate folder. This file contains the packed platform binaries and required dependencies.
 
 Make the file executable:
@@ -57,6 +58,7 @@ At the the first run, additional files will appear in the folder where the Veda-
 
 
 **Building from sources**
+
 The sources for the project can be downloaded from the GitHub. To do this, run the command:
 git clone https://github.com/semantic-machines/veda.git
 
@@ -75,6 +77,7 @@ $ ./build.sh
 
 
 **Setting up and running**
+
 Settings for configuring the server are in the ./veda.properties file.
 
 At the first, you may need to make changes to the tcp port settings. By default, the server will interact with the client using ports 8080 and 8088. If necessary, you can reconfigure them.
