@@ -28,14 +28,14 @@ jobs:
       script:
         - ./build.sh
       after_success:
-        - ./travis-tools/git-push.sh
+        - ./tools/travis-tools/git-push.sh
       after_failure:
         - ./tools/send-to-chunk-io.sh
 
     - stage: test-veda
       before_install:
-        - ./travis-tools/git-pull.sh
-        - ./travis-tools/install-veda.sh
+        - ./tools/travis-tools/git-pull.sh
+        - ./tools/travis-tools/install-veda.sh
         - sudo apt-get clean
         - sudo apt-get update
         - sudo apt-get install dpkg
@@ -80,9 +80,9 @@ jobs:
         - travis_wait 6 testcafe chrome qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.7
       after_success:
         - ./control-stop.sh
-        - ./travis-tools/git-clear-prev.sh
+        - ./tools/travis-tools/git-clear-prev.sh
       after_failure:
         - ./control-stop.sh
         - ./tools/send-to-chunk-io.sh
-        - ./travis-tools/git-clear.sh
+        - ./tools/travis-tools/git-clear.sh
 
