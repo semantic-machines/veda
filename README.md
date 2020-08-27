@@ -53,7 +53,7 @@ Make the file executable:
 chmod +x Veda-x86_64.AppImage
 and run it.
 
-At the the first run, additional files will appear in the folder where the Veda-x86_64.AppImage file is located for subsequent start and stop of the application. A folder for the database will be created and the ontology will be unpacked. The install-tarantool.sh file will also appear. If the Tarantool database has not been installed before, install it using install-tarantool.sh before the first start.
+At the the first run, additional files will appear in the folder where the Veda-x86_64.AppImage file is located for subsequent start and stop of the application. A folder for the database will be created and the ontology will be unpacked. The ./install-tools/install-tarantool.sh file will also appear. If the Tarantool database has not been installed before, install it using install-tarantool.sh before the first start.
 
 
 
