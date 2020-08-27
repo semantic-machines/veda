@@ -62,12 +62,17 @@ pub fn clean_process(ctx: &mut CleanerContext) {
                                 for (id, el) in process_elements {
                                     match el.indv {
                                         Some(mut s) => {
-                                            s.parse_all();
+                                            if ctx.operations.contains("to_ttl") {
+                                                s.parse_all();
+                                            }
+                                            indv_ids.push(s.get_id().to_owned());
                                             indvs.push(s);
                                         }
                                         None => {
                                             if let Some(mut s) = ctx.module.get_individual_h(&id) {
-                                                s.parse_all();
+                                                if ctx.operations.contains("to_ttl") {
+                                                    s.parse_all();
+                                                }
                                                 indv_ids.push(s.get_id().to_owned());
                                                 indvs.push(*s);
                                             }
