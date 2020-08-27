@@ -7,12 +7,12 @@ use chrono::NaiveDateTime;
 use regex::Regex;
 use std::collections::HashSet;
 use std::io::{Error, ErrorKind};
+use v_api::app::OptAuthorize;
 use v_api::app::ResultCode;
 use v_authorization::common::Access;
 use v_az_lmdb::_authorize;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use v_api::app::OptAuthorize;
 use xapian_rusty::{get_xapian_err_type, Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp};
 
 #[derive(Debug, PartialEq)]
@@ -93,6 +93,10 @@ fn exec<T>(
 
     while it.is_next()? {
         let subject_id = it.get_document_data()?;
+
+        if subject_id.is_empty() {
+            continue;
+        }
 
         processed += 1;
         let mut is_passed = true;
