@@ -8,7 +8,8 @@ edition = "2018"
 path = "src/lib.rs"
 
 [dependencies]
-clickhouse-rs = { version = "0.2.0-alpha.5", default-features = false, features = ["async_std"] }
+clickhouse-rs = {git = "https://github.com/xbinxu/clickhouse-rs", rev = "6950ce586050d97cb423c9d49f142e54416cd46f", default-features = false, features = ["async_std"] }
+
 futures = "0.3.5"
 log = "0.4"
 nng = "0.5.1"
