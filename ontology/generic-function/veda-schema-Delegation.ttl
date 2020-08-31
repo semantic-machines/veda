@@ -334,6 +334,7 @@ v-s:RequestDelegationTemplate
     if (values.length) {
       var delegator = values[0];
       var queryStr = "( 'rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "' )";
+      var delegatedPositions = [];
       veda.Backend.query(veda.ticket, queryStr)
         .then(function (queryResult) {
           return veda.Backend.get_individuals(veda.ticket, queryResult.result);
@@ -341,6 +342,9 @@ v-s:RequestDelegationTemplate
         .then(function (appointments) {
           var positions_ids = appointments.map(function (appointment_json) {
             var appointment = new veda.IndividualModel(appointment_json);
+            if (appointment.hasValue("v-s:dateFrom")) {
+              delegatedPositions.push(appointment["v-s:occupation"][0].id);
+            };
             return appointment["v-s:occupation"][0].id;
           });
           return positions_ids;
@@ -356,12 +360,19 @@ v-s:RequestDelegationTemplate
             var label = tmpl.find(".position-label");
             if ( individual.hasValue("v-s:delegatedPosition", position) ) {
               input.prop("checked", "checked");
-            }
+            };
+
             input.prop( "id", position.id );
+
+            if (delegatedPositions.indexOf(position.id) >= 0) {
+              label.text( position.toString() + " (делегировано)" );  
+            } else {
+              label.text( position.toString() );
+            };
             if (mode === "view") {
               input.prop("disabled", "disabled");
             }
-            label.text( position.toString() );
+            
             tmpl.appendTo( $("#positions", template) );
           });
         });
