@@ -209,6 +209,7 @@ fn prepare(
             if my_consumer.count_popped > main_cs_r.count_popped && main_cs_r.id == my_consumer.id || my_consumer.id > main_cs_r.id {
                 info!("sleep, scripts_main={}:{}, my={}:{}", main_cs_r.id, main_cs_r.count_popped, my_consumer.id, my_consumer.count_popped);
                 thread::sleep(time::Duration::from_millis(1000));
+                main_cs_r.open(false);
             }
         }
     }
@@ -395,7 +396,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
                 info!("{} end: {}", ctx.count_exec, script_id);
 
                 if res != ResultCode::Ok {
-                    info!("fail exec event script : {}", script_id);
+                    info!("fail exec event script : {}, result={:?}", script_id, res);
                     return Err(PrepareError::Fatal);
                 }
             }

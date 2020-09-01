@@ -188,6 +188,12 @@ pub(crate) fn commit(tnx: &Transaction, api_client: &mut APIClient) -> ResultCod
         if ti.rc != ResultCode::Ok {
             return ti.rc;
         }
+
+        if ti.indv.get_id().is_empty() || ti.indv.get_id().len() < 2 {
+            warn!("skip individual with invalid id: {}", ti.indv.to_string());
+            continue;
+        }
+
         debug!("commit {}", &ti.indv);
         let res = api_client.update_with_event(&ti.ticket_id, &tnx.event_id, &tnx.src, ti.cmd.clone(), &ti.indv);
         if res.result != ResultCode::Ok {
