@@ -1059,6 +1059,7 @@ veda.Module(function (veda) { "use strict";
     individual = individual.properties || individual;
     var cache = {};
     cache[ individual["@"] ] = individual;
+    var re_date = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*Z$/i;
     function get (uri) {
       return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
     }
@@ -1118,7 +1119,8 @@ veda.Module(function (veda) { "use strict";
               var part = item[property].reduce(function (acc, value) {
                 if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
                   var data = value.data;
-                  if (data instanceof Date) {
+                  if ( data instanceof Date || re_date.test(data) ) {
+                    data = new Date(data);
                     data = new Date(data.getTime() - (data.getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
                   }
                   return acc += data;
