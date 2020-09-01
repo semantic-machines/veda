@@ -155,7 +155,7 @@ v-s:SimpleNumerationYear
   (function (ticket, individual) {
     var year;
     if ( veda.Util.hasValue(individual, "v-s:registrationDate") ) {
-      year = (typeof window === "object" ? individual["v-s:registrationDate"][0] : individual["v-s:registrationDate"][0].data).getFullYear();
+      year = (typeof window === "object" ? individual["v-s:registrationDate"][0] : new Date(individual["v-s:registrationDate"][0].data)).getFullYear();
     } else {
       year = new Date().getFullYear();
     }
