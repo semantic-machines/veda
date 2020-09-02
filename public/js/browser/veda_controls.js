@@ -1370,6 +1370,7 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
+      sort = this.attr("data-sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       placeholder = this.attr("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:SelectValueBundle") ),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
@@ -1456,7 +1457,7 @@
       } else if (queryPrefix) {
         return interpolate(queryPrefix)
           .then(function (queryPrefix) {
-            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+            return ftQuery(queryPrefix, undefined, sort, withDeleted);
           })
           .then(renderOptions)
           .catch(function (error) {
@@ -1540,6 +1541,7 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
+      sort = this.attr("data-sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
@@ -1595,7 +1597,7 @@
       } else if (queryPrefix) {
         return interpolate(queryPrefix)
           .then(function (queryPrefix) {
-            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+            return ftQuery(queryPrefix, undefined, sort, withDeleted);
           })
           .then(renderOptions)
           .catch(function (error) {
@@ -1690,6 +1692,7 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
+      sort = this.attr("data-sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
@@ -1745,7 +1748,7 @@
       } else if (queryPrefix) {
         return interpolate(queryPrefix)
           .then(function (queryPrefix) {
-            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+            return ftQuery(queryPrefix, undefined, sort, withDeleted);
           })
           .then(renderOptions)
           .catch(function (error) {
