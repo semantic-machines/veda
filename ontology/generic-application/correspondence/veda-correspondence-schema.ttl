@@ -140,9 +140,6 @@ v-s:Delivery
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:subClassOf v-s:AutomaticallyVersioned ;
-  rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:UserSearchableDocument;
   rdfs:subClassOf v-s:Labeled ;
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:backwardTarget.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:backwardTarget.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:backwardTarget.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:backwardTarget.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:backwardTarget.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:backwardTarget.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:backwardTarget.v-s:description}" ;
