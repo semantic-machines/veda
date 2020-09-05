@@ -7,8 +7,32 @@ use app::*;
 use nng::{Message, Protocol, Socket};
 use serde_json::json;
 use serde_json::Value;
+use std::error::Error;
+use std::fmt;
 use v_onto::individual::Individual;
 
+#[derive(Debug)]
+pub struct ApiError {
+    result: ResultCode,
+    info: String,
+}
+
+impl fmt::Display for ApiError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "There is an error: {} {:?}", self.info, self.result)
+    }
+}
+
+impl Error for ApiError {}
+
+impl ApiError {
+    fn new() -> Self {
+        ApiError {
+            result: ResultCode::Zero,
+            info: Default::default(),
+        }
+    }
+}
 #[derive(PartialEq, Debug, Clone)]
 #[repr(u16)]
 pub enum IndvOp {
@@ -134,6 +158,15 @@ impl APIClient {
 
     pub fn update(&mut self, ticket: &str, cmd: IndvOp, indv: &Individual) -> OpResult {
         self.update_with_event(ticket, "", "", cmd, indv)
+    }
+
+    pub fn update_or_err(&mut self, ticket: &str, cmd: IndvOp, indv: &Individual) -> Result<OpResult, ApiError> {
+        let res = self.update_with_event(ticket, "", "", cmd, indv);
+        if res.result == ResultCode::Ok {
+            Ok(res)
+        } else {
+            Err(ApiError::new())
+        }
     }
 
     pub fn update_with_event(&mut self, ticket: &str, event_id: &str, src: &str, cmd: IndvOp, indv: &Individual) -> OpResult {
