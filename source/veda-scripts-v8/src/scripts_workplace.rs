@@ -1,5 +1,3 @@
-use crate::callback::init_context_with_callback;
-use crate::common::*;
 use crate::script_info::ScriptInfo;
 use rusty_v8 as v8;
 use rusty_v8::{Context, HandleScope, Isolate, Local};
@@ -14,6 +12,8 @@ use v_module::module::Module;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_search::common::FTQuery;
+use v_v8::callback::init_context_with_callback;
+use v_v8::common::*;
 
 const BEFORE_VARS: &str = "var document = get_individual (ticket, '$document'); if (document) {";
 const AFTER_VARS: &str = "};";

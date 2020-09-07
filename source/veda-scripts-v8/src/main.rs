@@ -3,9 +3,7 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
-use crate::callback::*;
 use crate::scripts_workplace::{is_filter_pass, ScriptsWorkPlace};
-use crate::session_cache::{commit, CallbackSharedData, Transaction};
 use rusty_v8 as v8;
 use rusty_v8::Isolate;
 use std::sync::Mutex;
@@ -21,12 +19,11 @@ use v_onto::onto::Onto;
 use v_queue::consumer::Consumer;
 use v_queue::record::Mode;
 use v_storage::remote_indv_r_storage::inproc_storage_manager;
+use v_v8::callback::*;
+use v_v8::session_cache::{commit, CallbackSharedData, Transaction};
 
-mod callback;
-mod common;
 mod script_info;
 mod scripts_workplace;
-mod session_cache;
 
 const MAX_COUNT_LOOPS: i32 = 100;
 const MAIN_QUEUE_CS: &str = "scripts_main0";

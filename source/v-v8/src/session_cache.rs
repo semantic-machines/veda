@@ -8,7 +8,7 @@ use v_onto::onto::Onto;
 use v_onto::parser::parse_raw;
 use v_storage::remote_indv_r_storage::get_individual;
 
-pub(crate) struct CallbackSharedData {
+pub struct CallbackSharedData {
     pub g_super_classes: String,
     pub g_parent_script_id: String,
     pub g_parent_document_id: String,
@@ -38,7 +38,7 @@ impl Default for CallbackSharedData {
 }
 
 impl CallbackSharedData {
-    pub(crate) fn set_g_parent_script_id_etc(&mut self, event_id: &str) {
+    pub fn set_g_parent_script_id_etc(&mut self, event_id: &str) {
         let mut event_id = event_id;
 
         if !event_id.is_empty() {
@@ -62,7 +62,7 @@ impl CallbackSharedData {
         }
     }
 
-    pub(crate) fn set_g_super_classes(&mut self, indv_types: &Vec<String>, onto: &Onto) {
+    pub fn set_g_super_classes(&mut self, indv_types: &Vec<String>, onto: &Onto) {
         let mut super_classes = HashSet::new();
 
         for indv_type in indv_types.iter() {
@@ -84,7 +84,7 @@ impl CallbackSharedData {
     }
 }
 
-pub(crate) struct TransactionItem {
+pub struct TransactionItem {
     uri: String,
     pub cmd: IndvOp,
     pub indv: Individual,
@@ -92,7 +92,7 @@ pub(crate) struct TransactionItem {
     pub rc: ResultCode,
 }
 
-pub(crate) struct Transaction {
+pub struct Transaction {
     pub sys_ticket: String,
     pub id: i64,
     pub event_id: String,
@@ -179,7 +179,7 @@ impl Transaction {
     }
 }
 
-pub(crate) fn commit(tnx: &Transaction, api_client: &mut APIClient) -> ResultCode {
+pub fn commit(tnx: &Transaction, api_client: &mut APIClient) -> ResultCode {
     for ti in tnx.queue.iter() {
         if ti.cmd == IndvOp::Remove && ti.indv.get_id().is_empty() {
             continue;
