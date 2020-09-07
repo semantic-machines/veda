@@ -28,7 +28,7 @@ impl Default for HashVec<String> {
 }
 
 impl HashVec<String> {
-    pub(crate) fn new(src: Vec<String>) -> Self {
+    pub fn new(src: Vec<String>) -> Self {
         Self {
             hash: src.iter().cloned().collect(),
             vec: src,
@@ -331,7 +331,7 @@ fn visit_dirs<T>(in_path: &Path, res: &mut Vec<T>, cb: &dyn Fn(&DirEntry, &mut V
     Ok(())
 }
 
-pub(crate) fn collect_module_dirs(in_path: &str, res: &mut Vec<String>) {
+pub fn collect_module_dirs(in_path: &str, res: &mut Vec<String>) {
     fn prepare_dir(d: &DirEntry, res: &mut Vec<String>) {
         let path = d.path().as_path().to_owned();
         if let Some(path_str) = path.as_os_str().to_str() {
@@ -345,7 +345,7 @@ pub(crate) fn collect_module_dirs(in_path: &str, res: &mut Vec<String>) {
     visit_dirs(Path::new(&in_path), res, &prepare_dir).unwrap_or_default();
 }
 
-pub(crate) fn collect_js_files(in_path: &str, res: &mut Vec<String>) {
+pub fn collect_js_files(in_path: &str, res: &mut Vec<String>) {
     fn prepare_dir(d: &DirEntry, res: &mut Vec<String>) {
         let path = d.path().as_path().to_owned();
         if let Some(ext) = path.extension() {
