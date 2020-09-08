@@ -9,28 +9,22 @@ use v_onto::parser::parse_raw;
 use v_storage::remote_indv_r_storage::get_individual;
 
 pub struct CallbackSharedData {
-    pub g_super_classes: String,
-    pub g_parent_script_id: String,
-    pub g_parent_document_id: String,
-    pub g_user: String,
-    pub g_event_id: String,
-    //_Buff   g_execute_script;
     pub g_key2indv: HashMap<String, Individual>,
-    pub g_uri: String,
-    pub g_ticket: String,
+    pub g_key2attr: HashMap<String, String>,
+    //pub g_super_classes: String,
+    //pub g_parent_script_id: String,
+    //pub g_parent_document_id: String,
+    //pub g_user: String,
+    //pub g_event_id: String,
+    //pub g_uri: String,
+    //pub g_ticket: String,
 }
 
 impl Default for CallbackSharedData {
     fn default() -> Self {
         Self {
-            g_super_classes: "".to_string(),
-            g_parent_script_id: "".to_string(),
-            g_parent_document_id: "".to_string(),
-            g_user: "".to_string(),
-            g_event_id: "".to_string(),
             g_key2indv: Default::default(),
-            g_uri: "".to_string(),
-            g_ticket: "".to_string(),
+            g_key2attr: Default::default(),
         }
     }
 }
@@ -48,15 +42,15 @@ impl CallbackSharedData {
             aa = event_id.split("+").collect();
 
             if aa.len() >= 2 {
-                self.g_parent_script_id = aa.get(1).unwrap().to_string();
-                self.g_parent_document_id = aa.get(0).unwrap().to_string();
+                self.g_key2attr.insert("$parent_script_id".to_owned(), aa.get(1).unwrap().to_string());
+                self.g_key2attr.insert("$parent_document_id".to_owned(), aa.get(0).unwrap().to_string());
             } else {
-                self.g_parent_script_id = String::default();
-                self.g_parent_document_id = String::default();
+                self.g_key2attr.insert("$parent_script_id".to_owned(), String::default());
+                self.g_key2attr.insert("$parent_document_id".to_owned(), String::default());
             }
         } else {
-            self.g_parent_script_id = String::default();
-            self.g_parent_document_id = String::default();
+            self.g_key2attr.insert("$parent_script_id".to_owned(), String::default());
+            self.g_key2attr.insert("$parent_document_id".to_owned(), String::default());
         }
     }
 
@@ -67,18 +61,20 @@ impl CallbackSharedData {
             onto.get_supers(indv_type, &mut super_classes);
         }
 
-        self.g_super_classes = String::new();
+        let mut g_super_classes = String::new();
 
-        self.g_super_classes.push('[');
+        g_super_classes.push('[');
         for s in super_classes.iter() {
-            if self.g_super_classes.len() > 2 {
-                self.g_super_classes.push(',');
+            if g_super_classes.len() > 2 {
+                g_super_classes.push(',');
             }
-            self.g_super_classes.push('"');
-            self.g_super_classes.push_str(s);
-            self.g_super_classes.push('"');
+            g_super_classes.push('"');
+            g_super_classes.push_str(s);
+            g_super_classes.push('"');
         }
-        self.g_super_classes.push(']');
+        g_super_classes.push(']');
+
+        self.g_key2attr.insert("$super_classes".to_owned(), g_super_classes);
     }
 }
 
