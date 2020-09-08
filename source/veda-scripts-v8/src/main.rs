@@ -3,7 +3,6 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
-use crate::scripts_workplace::{is_filter_pass, ScriptsWorkPlace};
 use rusty_v8 as v8;
 use rusty_v8::Isolate;
 use std::sync::Mutex;
@@ -18,12 +17,12 @@ use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_queue::consumer::Consumer;
 use v_queue::record::Mode;
+use v_search::common::FTQuery;
 use v_storage::remote_indv_r_storage::inproc_storage_manager;
 use v_v8::callback::*;
+use v_v8::common::HashVec;
+use v_v8::scripts_workplace::{ScriptInfoz, ScriptsWorkPlace};
 use v_v8::session_cache::{commit, CallbackSharedData, Transaction};
-
-mod script_info;
-mod scripts_workplace;
 
 const MAX_COUNT_LOOPS: i32 = 100;
 const MAIN_QUEUE_CS: &str = "scripts_main0";
@@ -65,11 +64,33 @@ fn get_storage_init_param() -> String {
     tarantool_addr
 }
 
+pub(crate) struct ScriptInfoContext {
+    pub trigger_by_type: HashVec<String>,
+    pub prevent_by_type: HashVec<String>,
+    pub trigger_by_uid: HashVec<String>,
+    pub run_at: String,
+    pub disallow_changing_source: bool,
+    pub is_unsafe: bool,
+}
+
+impl Default for ScriptInfoContext {
+    fn default() -> Self {
+        Self {
+            trigger_by_type: Default::default(),
+            prevent_by_type: Default::default(),
+            trigger_by_uid: Default::default(),
+            run_at: "".to_string(),
+            disallow_changing_source: false,
+            is_unsafe: false,
+        }
+    }
+}
+
 pub struct MyContext<'a> {
     api_client: APIClient,
     xr: XapianReader,
     onto: Onto,
-    workplace: ScriptsWorkPlace<'a>,
+    workplace: ScriptsWorkPlace<'a, ScriptInfoContext>,
     vm_id: String,
     sys_ticket: String,
     main_queue_cs: Option<Consumer>,
@@ -146,7 +167,7 @@ fn main0<'a>(isolate: &'a mut Isolate) -> Result<(), i32> {
         }
 
         ctx.workplace.load_ext_scripts();
-        ctx.workplace.load_event_scripts(&mut ctx.xr);
+        load_event_scripts(&mut ctx.workplace, &mut ctx.xr);
 
         let module_info = ModuleInfo::new("./data", &process_name, true);
         if module_info.is_err() {
@@ -276,7 +297,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
     }
 
     if prepare_if_is_script {
-        ctx.workplace.prepare_script(&mut new_state);
+        prepare_script(&mut ctx.workplace, &mut new_state);
     }
 
     let mut session_data = CallbackSharedData::default();
@@ -323,7 +344,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
                 if src == "?" {
                     if !run_at.is_empty() && run_at != ctx.vm_id {
                         continue;
-                    } else if run_at.is_empty() && script.run_at != ctx.vm_id {
+                    } else if run_at.is_empty() && script.context.run_at != ctx.vm_id {
                         continue;
                     }
                 }
@@ -333,7 +354,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
                     continue;
                 }
 
-                if script.is_unsafe {
+                if script.context.is_unsafe {
                     warn!("this script is UNSAFE!, {}", script.id);
                 } else {
                     if !event_id.is_empty() {
@@ -376,7 +397,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
                 sh_tnx = G_TRANSACTION.lock().unwrap();
                 let tnx = sh_tnx.get_mut();
 
-                if script.disallow_changing_source {
+                if script.context.disallow_changing_source {
                     tnx.src = src.to_owned();
                 } else {
                     tnx.src = ctx.queue_name.to_owned();
@@ -401,4 +422,126 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
     }
 
     Ok(op_id)
+}
+
+const BEFORE_VARS: &str = "var document = get_individual (ticket, '$document'); if (document) {";
+const AFTER_VARS: &str = "};";
+const VARS_FOR_EVENT_SCRIPT: &str = "\
+var user_uri = get_env_str_var ('$user');
+var parent_script_id = get_env_str_var ('$parent_script_id');
+var parent_document_id = get_env_str_var ('$parent_document_id');
+var prev_state = get_individual (ticket, '$prev_state');
+var super_classes = get_env_str_var ('$super_classes');
+var queue_elements_count = get_env_num_var ('$queue_elements_count');
+var queue_elements_processed = get_env_num_var ('$queue_elements_processed');
+var _event_id = '?';";
+
+pub(crate) fn load_event_scripts(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, xr: &mut XapianReader) {
+    let res = xr.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'v-s:Event'"), &mut wp.module.storage);
+    if res.result_code == ResultCode::Ok && res.count > 0 {
+        for id in &res.result {
+            if let Some(ev_indv) = wp.module.get_individual(id, &mut Individual::default()) {
+                prepare_script(wp, ev_indv);
+            }
+        }
+    }
+    info!("load scripts from db: {:?}", wp.scripts_order);
+}
+
+pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, ev_indv: &mut Individual) {
+    let first_section = "".to_owned();
+
+    if ev_indv.is_exists_bool("v-s:deleted", true) || ev_indv.is_exists_bool("v-s:disabled", true) {
+        info!("disable script {}", ev_indv.get_id());
+        if let Some(scr_inf) = wp.scripts.get_mut(ev_indv.get_id()) {
+            scr_inf.compiled_script = None;
+        }
+        return;
+    }
+
+    if let Some(script_text) = ev_indv.get_first_literal("v-s:script") {
+        let str_script = first_section
+            + "try { var ticket = get_env_str_var ('$ticket');"
+            + BEFORE_VARS
+            + "var _script_id = '"
+            + ev_indv.get_id()
+            + "';"
+            + VARS_FOR_EVENT_SCRIPT
+            + "script();"
+            + AFTER_VARS
+            + "function script() {"
+            + &script_text
+            + "}; } catch (e) { log_trace (e); }";
+
+        let mut scr_inf: ScriptInfoz<ScriptInfoContext> = ScriptInfoz::new_with_src(ev_indv.get_id(), &str_script);
+
+        if let Some(v) = ev_indv.get_first_bool("v-s:unsafe") {
+            scr_inf.context.is_unsafe = v;
+        }
+
+        if let Some(v) = ev_indv.get_first_literal("v-s:runAt") {
+            scr_inf.context.run_at = v;
+        }
+
+        if let Some(v) = ev_indv.get_first_bool("v-s:disallowChangingSource") {
+            scr_inf.context.disallow_changing_source = v;
+        }
+
+        if scr_inf.context.run_at.is_empty() {
+            scr_inf.context.run_at = "main".to_owned();
+        }
+
+        scr_inf.context.prevent_by_type = HashVec::new(ev_indv.get_literals("v-s:preventByType").unwrap_or_default());
+        scr_inf.context.trigger_by_uid = HashVec::new(ev_indv.get_literals("v-s:triggerByUid").unwrap_or_default());
+        scr_inf.context.trigger_by_type = HashVec::new(ev_indv.get_literals("v-s:triggerByType").unwrap_or_default());
+        scr_inf.dependency = HashVec::new(ev_indv.get_literals("v-s:dependency").unwrap_or_default());
+
+        wp.add_to_order(&scr_inf);
+
+        let scope = &mut v8::ContextScope::new(&mut wp.scope, wp.context);
+        scr_inf.compile_script(scope);
+        wp.scripts.insert(scr_inf.id.to_string(), scr_inf);
+    } else {
+        error!("v-s:script no found");
+    }
+}
+
+pub(crate) fn is_filter_pass(script: &ScriptInfoz<ScriptInfoContext>, individual_id: &str, indv_types: &Vec<String>, onto: &mut Onto) -> bool {
+    let mut is_pass = false;
+
+    if !script.context.prevent_by_type.vec.is_empty() {
+        for indv_type in indv_types.iter() {
+            if script.context.prevent_by_type.hash.contains(indv_type) {
+                return false;
+            }
+
+            if onto.is_some_entered_it(indv_type, script.context.prevent_by_type.vec.iter()) {
+                return false;
+            }
+        }
+    }
+
+    if script.context.trigger_by_uid.vec.is_empty() && script.context.trigger_by_type.vec.is_empty() {
+        return true;
+    }
+
+    if !script.context.trigger_by_uid.vec.is_empty() && script.context.trigger_by_uid.hash.contains(individual_id) {
+        is_pass = true;
+    }
+
+    if !is_pass && !script.context.trigger_by_type.vec.is_empty() {
+        for indv_type in indv_types.iter() {
+            if script.context.trigger_by_type.hash.contains(indv_type) {
+                is_pass = true;
+                break;
+            }
+
+            if onto.is_some_entered_it(indv_type, script.context.trigger_by_type.vec.iter()) {
+                is_pass = true;
+                break;
+            }
+        }
+    }
+
+    return is_pass;
 }
