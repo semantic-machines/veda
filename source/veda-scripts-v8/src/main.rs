@@ -309,7 +309,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
         session_data.g_key2indv.insert("$prev_state".to_owned(), prev_state);
     }
 
-    session_data.g_ticket = ctx.sys_ticket.to_owned();
+    session_data.g_key2attr.insert("$ticket".to_owned(), ctx.sys_ticket.to_owned());
 
     session_data.set_g_super_classes(&rdf_types, &ctx.onto);
 
@@ -324,9 +324,9 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
     session_data.g_key2indv.insert("$document".to_owned(), new_state);
 
     if !user_id.is_empty() {
-        session_data.g_user = user_id;
+        session_data.g_key2attr.insert("$user".to_owned(), user_id);
     } else {
-        session_data.g_user = "cfg:VedaSystem".to_owned();
+        session_data.g_key2attr.insert("$user".to_owned(), "cfg:VedaSystem".to_owned());
     }
 
     let mut sh_g_vars = G_VARS.lock().unwrap();

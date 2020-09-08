@@ -118,23 +118,8 @@ pub fn fn_callback_get_env_str_var(scope: &mut v8::HandleScope, args: v8::Functi
 
         debug!("fn_callback_get_env_str_var, var_name={:?}", var_name);
 
-        if var_name == "$parent_script_id" {
-            let j_res = str_2_v8(scope, &g_vars.g_parent_script_id);
-            rv.set(j_res.into());
-        } else if var_name == "$parent_document_id" {
-            let j_res = str_2_v8(scope, &g_vars.g_parent_document_id);
-            rv.set(j_res.into());
-        } else if var_name == "$user" {
-            let j_res = str_2_v8(scope, &g_vars.g_user);
-            rv.set(j_res.into());
-        } else if var_name == "$uri" {
-            let j_res = str_2_v8(scope, &g_vars.g_uri);
-            rv.set(j_res.into());
-        } else if var_name == "$ticket" {
-            let j_res = str_2_v8(scope, &g_vars.g_ticket);
-            rv.set(j_res.into());
-        } else if var_name == "$super_classes" {
-            let j_res = str_2_v8(scope, &g_vars.g_super_classes);
+        if let Some(v) = g_vars.g_key2attr.get(&var_name) {
+            let j_res = str_2_v8(scope, v);
             rv.set(j_res.into());
         }
 
