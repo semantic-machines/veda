@@ -24,29 +24,16 @@ pub fn fn_callback_get_individual(scope: &mut v8::HandleScope, args: v8::Functio
 
     if id == "undefined" {
         return;
-    } else if id == "$document" {
+    } else if id.starts_with("$") {
         let mut sh_g_vars = G_VARS.lock().unwrap();
         let g_vars = sh_g_vars.get_mut();
 
-        if let Some(indv) = &mut g_vars.g_document {
+        if let Some(indv) = &mut g_vars.g_key2indv.get_mut(id) {
             let j_indv = individual2v8obj(scope, indv.parse_all());
             rv.set(j_indv.into());
         }
         drop(sh_g_vars);
 
-        return;
-    } else if id == "$prev_state" {
-        let mut sh_g_vars = G_VARS.lock().unwrap();
-        let g_vars = sh_g_vars.get_mut();
-
-        if let Some(indv) = &mut g_vars.g_prev_state {
-            let j_indv = individual2v8obj(scope, indv.parse_all());
-            rv.set(j_indv.into());
-        }
-        drop(sh_g_vars);
-
-        return;
-    } else if id == "$execute_script" {
         return;
     } else {
         let mut sh_tnx = G_TRANSACTION.lock().unwrap();

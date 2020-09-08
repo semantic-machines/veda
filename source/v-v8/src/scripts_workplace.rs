@@ -9,7 +9,7 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use v_module::module::Module;
 
-pub struct ScriptInfoz<'a, T> {
+pub struct ScriptInfo<'a, T> {
     pub id: String,
     pub str_script: String,
     pub compiled_script: Option<v8::Local<'a, v8::Script>>,
@@ -17,7 +17,7 @@ pub struct ScriptInfoz<'a, T> {
     pub context: T,
 }
 
-impl<'a, T: Default> ScriptInfoz<'a, T> {
+impl<'a, T: Default> ScriptInfo<'a, T> {
     pub fn new_with_src(id: &str, src: &str) -> Self {
         Self {
             id: id.to_string(),
@@ -44,7 +44,7 @@ impl<'a, T: Default> ScriptInfoz<'a, T> {
 }
 
 pub struct ScriptsWorkPlace<'a, T> {
-    pub scripts: HashMap<String, ScriptInfoz<'a, T>>,
+    pub scripts: HashMap<String, ScriptInfo<'a, T>>,
     pub scripts_order: Vec<String>,
     pub module: Module,
     pub scope: HandleScope<'a, ()>,
@@ -91,7 +91,7 @@ impl<'a, T: Default> ScriptsWorkPlace<'a, T> {
             match fs::read_to_string(x) {
                 Ok(f) => {
                     info!("{}", x);
-                    let mut scr_inf: ScriptInfoz<T> = ScriptInfoz::new_with_src(x, &f);
+                    let mut scr_inf: ScriptInfo<T> = ScriptInfo::new_with_src(x, &f);
 
                     let scope = &mut v8::ContextScope::new(&mut self.scope, self.context);
                     scr_inf.compile_script(scope);
@@ -120,7 +120,7 @@ impl<'a, T: Default> ScriptsWorkPlace<'a, T> {
         }
     }
 
-    pub fn add_to_order(&mut self, scr_inf: &ScriptInfoz<T>) {
+    pub fn add_to_order(&mut self, scr_inf: &ScriptInfo<T>) {
         let mut count_find_dependency = 0;
         let mut inserted = false;
 
