@@ -12,11 +12,10 @@ pub struct CallbackSharedData {
     pub g_super_classes: String,
     pub g_parent_script_id: String,
     pub g_parent_document_id: String,
-    pub g_prev_state: Option<Individual>,
     pub g_user: String,
     pub g_event_id: String,
     //_Buff   g_execute_script;
-    pub g_document: Option<Individual>,
+    pub g_key2indv: HashMap<String, Individual>,
     pub g_uri: String,
     pub g_ticket: String,
 }
@@ -27,10 +26,9 @@ impl Default for CallbackSharedData {
             g_super_classes: "".to_string(),
             g_parent_script_id: "".to_string(),
             g_parent_document_id: "".to_string(),
-            g_prev_state: None,
             g_user: "".to_string(),
             g_event_id: "".to_string(),
-            g_document: None,
+            g_key2indv: Default::default(),
             g_uri: "".to_string(),
             g_ticket: "".to_string(),
         }

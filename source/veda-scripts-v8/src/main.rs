@@ -21,7 +21,7 @@ use v_search::common::FTQuery;
 use v_storage::remote_indv_r_storage::inproc_storage_manager;
 use v_v8::callback::*;
 use v_v8::common::HashVec;
-use v_v8::scripts_workplace::{ScriptInfoz, ScriptsWorkPlace};
+use v_v8::scripts_workplace::{ScriptInfo, ScriptsWorkPlace};
 use v_v8::session_cache::{commit, CallbackSharedData, Transaction};
 
 const MAX_COUNT_LOOPS: i32 = 100;
@@ -306,7 +306,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
 
     let mut prev_state = Individual::default();
     if get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state) {
-        session_data.g_prev_state = Some(prev_state);
+        session_data.g_key2indv.insert("$prev_state".to_owned(), prev_state);
     }
 
     session_data.g_ticket = ctx.sys_ticket.to_owned();
@@ -321,7 +321,7 @@ fn prepare_for_js(ctx: &mut MyContext, queue_element: &mut Individual) -> Result
         last_part_event_id = s;
     }
 
-    session_data.g_document = Some(new_state);
+    session_data.g_key2indv.insert("$document".to_owned(), new_state);
 
     if !user_id.is_empty() {
         session_data.g_user = user_id;
@@ -473,7 +473,7 @@ pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, ev_in
             + &script_text
             + "}; } catch (e) { log_trace (e); }";
 
-        let mut scr_inf: ScriptInfoz<ScriptInfoContext> = ScriptInfoz::new_with_src(ev_indv.get_id(), &str_script);
+        let mut scr_inf: ScriptInfo<ScriptInfoContext> = ScriptInfo::new_with_src(ev_indv.get_id(), &str_script);
 
         if let Some(v) = ev_indv.get_first_bool("v-s:unsafe") {
             scr_inf.context.is_unsafe = v;
@@ -506,7 +506,7 @@ pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, ev_in
     }
 }
 
-pub(crate) fn is_filter_pass(script: &ScriptInfoz<ScriptInfoContext>, individual_id: &str, indv_types: &Vec<String>, onto: &mut Onto) -> bool {
+pub(crate) fn is_filter_pass(script: &ScriptInfo<ScriptInfoContext>, individual_id: &str, indv_types: &Vec<String>, onto: &mut Onto) -> bool {
     let mut is_pass = false;
 
     if !script.context.prevent_by_type.vec.is_empty() {
