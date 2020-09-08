@@ -28,7 +28,7 @@ pub fn fn_callback_get_individual(scope: &mut v8::HandleScope, args: v8::Functio
         let mut sh_g_vars = G_VARS.lock().unwrap();
         let g_vars = sh_g_vars.get_mut();
 
-        if let Some(indv) = &mut g_vars.g_key2indv.get_mut(id) {
+        if let Some(indv) = &mut g_vars.g_key2indv.get_mut(&id) {
             let j_indv = individual2v8obj(scope, indv.parse_all());
             rv.set(j_indv.into());
         }
