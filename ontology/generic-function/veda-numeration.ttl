@@ -134,6 +134,11 @@ v-s:RegistrationNumberSimpleNumerationYear
   v-s:enumeratedProperty v-s:registrationNumber ;
   v-s:hasNumerationRule v-s:SimpleNumerationYear ;
 .
+v-s:RegistrationNumberSimpleNumerationYearOrganization
+  rdf:type v-s:Numeration ;
+  v-s:enumeratedProperty v-s:registrationNumber ;
+  v-s:hasNumerationRule v-s:SimpleNumerationYearOrganization ;
+.
 v-s:RegistrationNumberYearNumeration2_4
   rdf:type v-s:Numeration ;
   v-s:enumeratedProperty v-s:registrationNumber ;
@@ -161,6 +166,30 @@ v-s:SimpleNumerationYear
     }
     var type = (typeof window === "object" ? individual['rdf:type'][0].id : individual['rdf:type'][0].data).replace(':','_');
     return ["numeration-scope", type, year].join("_");
+  });
+""" ;
+  v-s:numerationGetNextValue """
+(function getNextValue(ticket, scope) {
+  return veda.Numerator.getNextValueSimple(ticket, scope, 1);
+})
+""" ;
+.
+v-s:SimpleNumerationYearOrganization
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумерация в пределах класса в пределах года и организации"@ru ;
+  rdfs:label "Numeration with class year and organization as scope"@en ;
+  v-s:numerationScope """
+  (function (ticket, individual) {
+    var year;
+    if ( veda.Util.hasValue(individual, "v-s:registrationDate") ) {
+      year = (typeof window === "object" ? individual["v-s:registrationDate"][0] : new Date(individual["v-s:registrationDate"][0].data)).getFullYear();
+    } else {
+      year = new Date().getFullYear();
+    }
+    var type = (typeof window === "object" ? individual['rdf:type'][0].id : individual['rdf:type'][0].data).replace(':','_');
+    var org = (typeof window === "object" ? individual['v-s:correspondentOrganization'][0].id : individual['v-s:correspondentOrganization'][0].data).replace(':','_');
+    return ["numeration-scope", type, year, org].join("_");
   });
 """ ;
   v-s:numerationGetNextValue """
