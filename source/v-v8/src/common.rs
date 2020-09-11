@@ -1,4 +1,3 @@
-use chrono::{TimeZone, Utc};
 use rust_decimal::prelude::ToPrimitive;
 use rust_decimal::Decimal;
 use rusty_v8 as v8;
@@ -267,7 +266,7 @@ pub fn individual2v8obj<'a>(scope: &mut HandleScope<'a>, src: &mut Individual) -
                 }
                 Value::Datetime(i) => {
                     let dt = *i;
-                    set_key_str_value(scope, &mut v8_value, "data", &format!("{:?}", &Utc.timestamp(dt, 0)));
+                    set_key_date_value(scope, &mut v8_value, "data", dt);
                     set_key_str_value(scope, &mut v8_value, "type", "Datetime");
                 }
                 Value::Bool(b) => {
@@ -318,6 +317,13 @@ fn set_key_f64_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>
     let v8_key = str_2_v8(scope, key).into();
     let v8_val = v8::Number::new(scope, val).into();
     v8_obj.set(scope, v8_key, v8_val);
+}
+
+fn set_key_date_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>, key: &str, val: i64) {
+    let v8_key = str_2_v8(scope, key).into();
+    if let Some(v8_val) = v8::Date::new(scope, val as f64) {
+        v8_obj.set(scope, v8_key, v8_val.into());
+    }
 }
 
 fn visit_dirs<T>(in_path: &Path, res: &mut Vec<T>, cb: &dyn Fn(&DirEntry, &mut Vec<T>)) -> io::Result<()> {
