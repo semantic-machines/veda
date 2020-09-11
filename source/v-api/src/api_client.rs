@@ -160,8 +160,8 @@ impl APIClient {
         self.update_with_event(ticket, "", "", cmd, indv)
     }
 
-    pub fn update_or_err(&mut self, ticket: &str, cmd: IndvOp, indv: &Individual) -> Result<OpResult, ApiError> {
-        let res = self.update_with_event(ticket, "", "", cmd, indv);
+    pub fn update_or_err(&mut self, ticket: &str, event_id: &str, src: &str, cmd: IndvOp, indv: &Individual) -> Result<OpResult, ApiError> {
+        let res = self.update_with_event(ticket, event_id, src, cmd, indv);
         if res.result == ResultCode::Ok {
             Ok(res)
         } else {

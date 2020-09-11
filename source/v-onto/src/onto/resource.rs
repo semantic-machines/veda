@@ -2,7 +2,7 @@ use crate::datatype::{DataType, Lang};
 use derivative::Derivative;
 
 #[derive(Debug, PartialEq, Clone)]
-// TODO: Add Uri value to enum
+
 pub enum Value {
     Int(i64),
     Str(String, Lang),
