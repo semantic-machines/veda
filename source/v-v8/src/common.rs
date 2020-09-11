@@ -51,6 +51,13 @@ pub fn v8_2_str<'sc>(scope: &mut HandleScope<'sc>, s: &v8::Local<'sc, v8::Value>
 pub fn v8obj2individual<'a>(scope: &mut HandleScope<'a>, v8_obj: v8::Local<'a, v8::Object>) -> Individual {
     let mut res = Individual::default();
 
+    v8obj_into_individual(scope, v8_obj, &mut res);
+
+    debug!("res={}", res.to_string());
+    res
+}
+
+pub fn v8obj_into_individual<'a>(scope: &mut HandleScope<'a>, v8_obj: v8::Local<'a, v8::Object>, mut res: &mut Individual) {
     let data_key = str_2_v8(scope, "data");
     let type_key = str_2_v8(scope, "type");
     let lang_key = str_2_v8(scope, "lang");
@@ -95,9 +102,6 @@ pub fn v8obj2individual<'a>(scope: &mut HandleScope<'a>, v8_obj: v8::Local<'a, v
             }
         }
     }
-
-    debug!("res={}", res.to_string());
-    res
 }
 
 fn add_v8_value_obj_to_individual<'a>(
