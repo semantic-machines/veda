@@ -1,5 +1,5 @@
 use crate::process_source::IndexedNodeTree;
-use crate::token::create_token;
+use crate::token::create_token_and_store;
 use crate::Context;
 use std::error::Error;
 use std::str;
@@ -7,7 +7,6 @@ use v_api::app::generate_unique_uri;
 use v_api::IndvOp;
 use v_module::module::Module;
 use v_onto::individual::Individual;
-use v_onto::onto::Onto;
 
 pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
     info!("START PROCESS {}", route.id);
@@ -35,20 +34,8 @@ pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &C
     for el in start_events_idx {
         let activity_id = route.get_id_of_idx(el)?;
         info!("FOUND START EVENT {}", activity_id);
-        create_token(None, &route.id, activity_id, ctx, module)?;
+        create_token_and_store(None, &route.id, activity_id, ctx, module)?;
     }
 
     Ok(())
-}
-
-pub(crate) fn is_start_form(rdf_types: &[String], onto: &mut Onto) -> bool {
-    for itype in rdf_types {
-        if itype == "bpmn:StartForm" {
-            return true;
-        }
-        if onto.is_some_entered(&itype, &["bpmn:StartForm"]) {
-            return true;
-        }
-    }
-    return false;
 }

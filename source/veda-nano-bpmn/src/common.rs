@@ -5,6 +5,7 @@ use v_api::app::generate_unique_uri;
 use v_api::IndvOp;
 use v_module::module::Module;
 use v_onto::individual::Individual;
+use v_onto::onto::Onto;
 
 #[derive(Debug)]
 pub struct MyError(pub String);
@@ -20,7 +21,7 @@ impl Error for MyError {}
 pub fn store_work_order_into(uri: &str, work_order_uri: &str, systicket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let indv = &mut Individual::default();
     indv.set_id(uri);
-    indv.add_uri("bpmn:work_order", work_order_uri);
+    indv.add_uri("bpmn:hasWorkOrder", work_order_uri);
 
     module.api.update_or_err(systicket, "", "", IndvOp::SetIn, indv)?;
     info!("success update, uri={}", indv.get_id());
@@ -54,4 +55,16 @@ pub fn add_right(subj_uri: &str, obj_uri: &str, ctx: &mut Context, module: &mut 
     info!("success update, uri={}", right.get_id());
 
     Ok(())
+}
+
+pub(crate) fn is_start_form(rdf_types: &[String], onto: &mut Onto) -> bool {
+    for itype in rdf_types {
+        if itype == "bpmn:StartForm" {
+            return true;
+        }
+        if onto.is_some_entered(&itype, &["bpmn:StartForm"]) {
+            return true;
+        }
+    }
+    return false;
 }

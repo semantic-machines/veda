@@ -7,13 +7,17 @@ extern crate nanoid;
 extern crate serde;
 extern crate serde_derive;
 
+mod activity;
 mod common;
+mod decision_form;
 mod process;
 mod process_source;
 mod script;
 mod token;
 mod work_order;
 
+use crate::common::is_start_form;
+use crate::decision_form::{is_decision_form, prepare_decision_form};
 use crate::process::*;
 use crate::process_source::get_process_source;
 use crate::script::ScriptInfoContext;
@@ -184,6 +188,10 @@ fn prepare_and_err(
 
     if is_token(&rdf_types) {
         prepare_token(&mut new_state, ctx, module, &signal)?;
+    }
+
+    if is_decision_form(&rdf_types) {
+        prepare_decision_form(&mut new_state, ctx, module, &signal)?;
     }
 
     return Ok(true);
