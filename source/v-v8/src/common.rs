@@ -321,7 +321,7 @@ fn set_key_f64_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>
 
 fn set_key_date_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>, key: &str, val: i64) {
     let v8_key = str_2_v8(scope, key).into();
-    if let Some(v8_val) = v8::Date::new(scope, val as f64) {
+    if let Some(v8_val) = v8::Date::new(scope, (val*1000) as f64) {
         v8_obj.set(scope, v8_key, v8_val.into());
     }
 }
