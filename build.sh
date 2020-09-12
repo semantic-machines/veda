@@ -245,6 +245,14 @@ if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-scripts-v8 $PWD
 fi
 
+if [ -z $1 ] || [ $1 == "nano-bpmn" ] || [ $1 == "veda-nano-bpmn" ] || [ $1 == "all" ]; then
+    echo BUILD nano-bpmn
+    cd source/veda-nano-bpmn
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-nano-bpmn $PWD
+fi
+
 if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "basic" ] || [ $1 == "all" ]; then
     echo BUILD FT-INDEXER
     cd source/veda-ft-indexer
