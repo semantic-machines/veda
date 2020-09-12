@@ -32,7 +32,7 @@ pub fn store_work_order_into(uri: &str, work_order_uri: &str, systicket: &str, m
 pub fn store_is_completed_into(uri: &str, value: bool, systicket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let indv = &mut Individual::default();
     indv.set_id(uri);
-    indv.set_bool("bpmn:is_completed", value);
+    indv.set_bool("bpmn:isCompleted", value);
 
     module.api.update_or_err(systicket, "", "go-prepare", IndvOp::SetIn, indv)?;
     info!("success update, uri={}", indv.get_id());

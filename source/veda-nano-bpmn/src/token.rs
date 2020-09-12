@@ -46,7 +46,7 @@ pub fn prepare_token(token: &mut Individual, ctx: &mut Context, module: &mut Mod
 
     info!("PREPARE TOKEN {}", token.get_id());
 
-    if token.is_exists_bool("bpmn:is_completed", true) {
+    if token.is_exists_bool("bpmn:isCompleted", true) {
         forward_token(token, ctx, module)?;
     } else {
         prepare_activity(token, ctx, module)?;
