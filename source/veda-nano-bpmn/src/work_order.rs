@@ -1,3 +1,4 @@
+use crate::Context;
 use std::error::Error;
 use v_api::app::generate_unique_uri;
 use v_api::IndvOp;
@@ -11,7 +12,7 @@ pub fn create_work_order(
     activity_id: &str,
     executor_uri: Option<&str>,
     decision_form_uri: Option<&str>,
-    sys_ticket: &str,
+    ctx: &Context,
     module: &mut Module,
 ) -> Result<String, Box<dyn Error>> {
     info!("CREATE WORK ORDER {} ON {}", token_uri, process_uri);
@@ -33,7 +34,7 @@ pub fn create_work_order(
         work_order.add_uri("bpmn:hasWorkOrder", r);
     }
 
-    module.api.update_or_err(sys_ticket, "", "", IndvOp::Put, work_order)?;
+    module.api.update_or_err(&ctx.sys_ticket, "", "", IndvOp::Put, work_order)?;
     info!("success update, uri={}", work_order.get_id());
 
     Ok(work_order.get_id().to_owned())
