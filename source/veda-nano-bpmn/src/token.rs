@@ -1,4 +1,5 @@
 use crate::activity::prepare_activity;
+use crate::common::get_individual;
 use crate::process_source::get_process_source;
 use crate::script::{execute_js, OutValue};
 use crate::Context;
@@ -36,7 +37,7 @@ pub(crate) fn is_token(rdf_types: &[String]) -> bool {
             return true;
         }
     }
-    return false;
+    false
 }
 
 pub fn prepare_token(token: &mut Individual, ctx: &mut Context, module: &mut Module, signal: &str) -> Result<(), Box<dyn Error>> {
@@ -56,7 +57,8 @@ pub fn prepare_token(token: &mut Individual, ctx: &mut Context, module: &mut Mod
 
 fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let process_uri = token.get_first_literal("bpmn:hasProcess").unwrap_or_default();
-    let nt = get_process_source(&process_uri, module)?;
+    let process = &mut get_individual(module, &process_uri)?;
+    let nt = get_process_source(process)?;
 
     if let Some(activity_id) = token.get_first_literal("bpmn:activityId") {
         let mut prev_token_uri = Some(token.get_id().to_owned());
@@ -66,7 +68,7 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
 
             let mut is_forward = true;
             let res: bool = false;
-            if execute_js(token, &script_id, "bpmn:conditionExpression", &activity_idx, &process_uri, None, &nt, ctx, &mut OutValue::Bool(res)) {
+            if execute_js(token, process, &script_id, "bpmn:conditionExpression", &activity_idx, None, &nt, ctx, &mut OutValue::Bool(res)) {
                 is_forward = res;
             }
 

@@ -5,7 +5,6 @@ use quick_xml::Reader;
 use std::collections::HashMap;
 use std::error::Error;
 use std::{fs, io, str};
-use v_module::module::Module;
 use v_onto::individual::Individual;
 
 #[derive(Default, Debug)]
@@ -107,12 +106,10 @@ impl IndexedNodeTree {
     }
 }
 
-pub(crate) fn get_process_source(process_id: &str, module: &mut Module) -> Result<IndexedNodeTree, Box<dyn Error>> {
-    if let Some(process) = module.get_individual(&process_id, &mut Individual::default()) {
-        if let Some(bpmn_xml) = process.get_first_literal("bpmn:processDefinition") {
-            //info!("{}", bpmn_xml);
-            return parse_bpmn(&process_id, &bpmn_xml);
-        }
+pub(crate) fn get_process_source(process: &mut Individual) -> Result<IndexedNodeTree, Box<dyn Error>> {
+    if let Some(bpmn_xml) = process.get_first_literal("bpmn:processDefinition") {
+        //info!("{}", bpmn_xml);
+        return parse_bpmn(&process.get_id(), &bpmn_xml);
     }
     Err(Box::new(MyError("Not found".into())))
 }

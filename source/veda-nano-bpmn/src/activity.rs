@@ -1,4 +1,4 @@
-use crate::common::{add_right, store_is_completed_into, store_work_order_into, MyError};
+use crate::common::{add_right, get_individual, store_is_completed_into, store_work_order_into, MyError};
 use crate::process_source::get_process_source;
 use crate::script::{execute_js, OutValue};
 use crate::work_order::create_work_order;
@@ -12,7 +12,8 @@ use v_onto::individual::Individual;
 
 pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let process_uri = token.get_first_literal("bpmn:hasProcess").unwrap_or_default();
-    let nt = get_process_source(&process_uri, module)?;
+    let process = &mut get_individual(module, &process_uri)?;
+    let nt = get_process_source(process)?;
 
     if let Some(activity_id) = token.get_first_literal("bpmn:activityId") {
         info!("PREPARE ACTIVITY TOKEN={} ACTIVITY={}", token.get_id(), activity_id);
@@ -23,11 +24,11 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                 store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
             "bpmn:scriptTask" => {
-                let work_order_uri = create_work_order(&process_uri, token.get_id(), &activity_id, None, None, ctx, module)?;
-                store_work_order_into(token.get_id(), &work_order_uri, &ctx.sys_ticket, module)?;
+                let work_order = create_work_order(&process_uri, token.get_id(), &activity_id, None, None, ctx, module)?;
+                store_work_order_into(token.get_id(), work_order.get_id(), &ctx.sys_ticket, module)?;
 
                 let script_id = format!("{}+{}", process_uri, activity_id);
-                execute_js(token, &script_id, "bpmn:script", &activity_idx, &process_uri, Some(&work_order_uri), &nt, ctx, &mut OutValue::None);
+                execute_js(token, process, &script_id, "bpmn:script", &activity_idx, Some(&work_order.get_id()), &nt, ctx, &mut OutValue::None);
                 store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
             "bpmn:userTask" => {
@@ -42,7 +43,7 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                             // calculate executors
                             let script_id = format!("{}+{}+assigment", process_uri, activity_id);
                             let mut res = OutValue::List(vec![]);
-                            &mut execute_js(token, &script_id, "camunda:script", &el, &process_uri, None, &nt, ctx, &mut res);
+                            execute_js(token, process, &script_id, "camunda:script", &el, None, &nt, ctx, &mut res);
                             if let OutValue::List(l) = res.borrow_mut() {
                                 executors.append(l);
                             }
@@ -55,21 +56,21 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                     if let Some(el) = gen_decision_form_script_id {
                         let script_id = format!("{}+{}+create", process_uri, activity_id);
                         let mut res = OutValue::Individual(Individual::default());
-                        if execute_js(token, &script_id, "camunda:script", &el, &process_uri, None, &nt, ctx, &mut res) {
+                        if execute_js(token, process, &script_id, "camunda:script", &el, None, &nt, ctx, &mut res) {
                             if let OutValue::Individual(form) = res.borrow_mut() {
                                 if form.get_id().is_empty() {
                                     form.set_id(&generate_unique_uri("wd:f_", ""));
                                 }
                                 form.set_bool("v-wf:isCompleted", false);
-                                let work_order_uri = create_work_order(&process_uri, token.get_id(), &activity_id, Some(&executor), Some(form.get_id()), ctx, module)?;
+                                let work_order = create_work_order(&process_uri, token.get_id(), &activity_id, Some(&executor), Some(form.get_id()), ctx, module)?;
                                 form.set_uri("v-wf:to", &executor);
-                                form.set_uri("bpmn:hasWorkOrder", &work_order_uri);
+                                form.set_uri("bpmn:hasWorkOrder", work_order.get_id());
 
                                 module.api.update_or_err(&ctx.sys_ticket, "", "no-prepare", IndvOp::Put, form)?;
                                 info!("success update, uri={}", form.get_id());
                                 add_right(&executor, form.get_id(), ctx, module)?;
 
-                                store_work_order_into(token.get_id(), &work_order_uri, &ctx.sys_ticket, module)?;
+                                store_work_order_into(token.get_id(), work_order.get_id(), &ctx.sys_ticket, module)?;
                             } else {
                                 return Err(Box::new(MyError(format!("the script [{}] returned an empty result", script_id))));
                             }
