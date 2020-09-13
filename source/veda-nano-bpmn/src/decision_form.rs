@@ -27,8 +27,8 @@ pub fn prepare_decision_form(decision_form: &mut Individual, ctx: &mut Context, 
     info!("PREPARE DECISION FORM {}", decision_form.get_id());
 
     if let Some(wo_uri) = decision_form.get_first_literal("bpmn:hasWorkOrder") {
-        store_is_completed_into(decision_form.get_id(), true, &ctx.sys_ticket, module)?;
-        store_is_completed_into(&wo_uri, true, &ctx.sys_ticket, module)?;
+        store_is_completed_into(decision_form.get_id(), true, "prepare_decision_form", &ctx.sys_ticket, module)?;
+        store_is_completed_into(&wo_uri, true, "prepare_decision_form", &ctx.sys_ticket, module)?;
     }
 
     Ok(())
@@ -36,27 +36,9 @@ pub fn prepare_decision_form(decision_form: &mut Individual, ctx: &mut Context, 
 
 pub(crate) fn is_decision_form(rdf_types: &[String]) -> bool {
     for i_type in rdf_types {
-        if i_type == "v-wf:DecisionForm" {
+        if i_type == "bpmn:DecisionForm" {
             return true;
         }
     }
     return false;
 }
-
-/*
-// check if all tasks are completed
-let mut work_order_form = Individual::default();
-if let Some (token_uri) = module.get_literal_of_link(decision_form, "bpmn:hasWorkOrder", "bpmn:hasToken", &mut work_order_form) {
-if let Some (token) = module.get_individual(&token_uri, &mut Individual::default()) {
-for wo_uri in token.get_literals("bpmn:hasWorkOrder").unwrap_or_default() {
-let mut cur_work_order;
-if wo_uri == work_order_form.id {
-cur_work_order = &work_order_form;
-//v-wf:takenDecision
-} else {
-cur_work_order = module.
-}
-}
-}
-}
-*/

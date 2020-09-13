@@ -15,12 +15,12 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
     let nt = get_process_source(&process_uri, module)?;
 
     if let Some(activity_id) = token.get_first_literal("bpmn:activityId") {
-        info!("PREPARE ACTIVITY {} {}", token.get_id(), activity_id);
+        info!("PREPARE ACTIVITY TOKEN={} ACTIVITY={}", token.get_id(), activity_id);
         let activity_idx = nt.get_idx_of_id(&activity_id)?;
         let type_ = nt.get_type_of_idx(activity_idx)?;
         match type_ {
             "bpmn:startEvent" | "bpmn:endEvent" => {
-                store_is_completed_into(token.get_id(), true, &ctx.sys_ticket, module)?;
+                store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
             "bpmn:scriptTask" => {
                 let work_order_uri = create_work_order(&process_uri, token.get_id(), &activity_id, None, None, ctx, module)?;
@@ -28,7 +28,7 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
 
                 let script_id = format!("{}+{}", process_uri, activity_id);
                 execute_js(token, &script_id, "bpmn:script", &activity_idx, &process_uri, Some(&work_order_uri), &nt, ctx, &mut OutValue::None);
-                store_is_completed_into(token.get_id(), true, &ctx.sys_ticket, module)?;
+                store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
             "bpmn:userTask" => {
                 let mut gen_decision_form_script_id = None;
@@ -60,9 +60,10 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                                 if form.get_id().is_empty() {
                                     form.set_id(&generate_unique_uri("wd:f_", ""));
                                 }
-                                form.add_bool("v-wf:isCompleted", false);
+                                form.set_bool("v-wf:isCompleted", false);
                                 let work_order_uri = create_work_order(&process_uri, token.get_id(), &activity_id, Some(&executor), Some(form.get_id()), ctx, module)?;
                                 form.set_uri("v-wf:to", &executor);
+                                form.set_uri("bpmn:hasWorkOrder", &work_order_uri);
 
                                 module.api.update_or_err(&ctx.sys_ticket, "", "no-prepare", IndvOp::Put, form)?;
                                 info!("success update, uri={}", form.get_id());
@@ -79,8 +80,6 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                         return Err(Box::new(MyError(format!("script create not found for activity [{}]", activity_id))));
                     }
                 }
-
-                store_is_completed_into(token.get_id(), true, &ctx.sys_ticket, module)?;
             }
             "bpmn:exclusiveGateway" => {}
             _ => {

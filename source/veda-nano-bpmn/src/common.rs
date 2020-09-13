@@ -18,23 +18,23 @@ impl fmt::Display for MyError {
 
 impl Error for MyError {}
 
-pub fn store_work_order_into(uri: &str, work_order_uri: &str, systicket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
+pub fn store_work_order_into(uri: &str, work_order_uri: &str, sys_ticket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let indv = &mut Individual::default();
     indv.set_id(uri);
     indv.add_uri("bpmn:hasWorkOrder", work_order_uri);
 
-    module.api.update_or_err(systicket, "", "", IndvOp::SetIn, indv)?;
+    module.api.update_or_err(sys_ticket, "", "", IndvOp::SetIn, indv)?;
     info!("success update, uri={}", indv.get_id());
 
     Ok(())
 }
 
-pub fn store_is_completed_into(uri: &str, value: bool, systicket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
+pub fn store_is_completed_into(uri: &str, value: bool, src: &str, sys_ticket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let indv = &mut Individual::default();
     indv.set_id(uri);
     indv.set_bool("bpmn:isCompleted", value);
 
-    module.api.update_or_err(systicket, "", "go-prepare", IndvOp::SetIn, indv)?;
+    module.api.update_or_err(sys_ticket, "", src, IndvOp::SetIn, indv)?;
     info!("success update, uri={}", indv.get_id());
 
     Ok(())

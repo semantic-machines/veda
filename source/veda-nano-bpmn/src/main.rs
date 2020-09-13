@@ -22,6 +22,7 @@ use crate::process::*;
 use crate::process_source::get_process_source;
 use crate::script::ScriptInfoContext;
 use crate::token::{is_token, prepare_token};
+use crate::work_order::{is_work_order, prepare_work_order};
 use rusty_v8 as v8;
 use rusty_v8::Isolate;
 use std::error::Error;
@@ -188,10 +189,17 @@ fn prepare_and_err(
 
     if is_token(&rdf_types) {
         prepare_token(&mut new_state, ctx, module, &signal)?;
+        return Ok(true);
     }
 
     if is_decision_form(&rdf_types) {
         prepare_decision_form(&mut new_state, ctx, module, &signal)?;
+        return Ok(true);
+    }
+
+    if is_work_order(&rdf_types) {
+        prepare_work_order(&mut new_state, ctx, module, &signal)?;
+        return Ok(true);
     }
 
     return Ok(true);
