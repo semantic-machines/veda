@@ -201,12 +201,10 @@ pub fn query_result2v8obj<'a>(scope: &mut HandleScope<'a>, src: &QueryResult) ->
     v8_obj.set(scope, k1, v1);
 
     let js_resources = v8::Array::new(scope, src.result.len() as i32);
-    let mut idx = 0;
-    for el in src.result.iter() {
-        let k1 = v8::Integer::new(scope, idx).into();
+    for (idx, el) in src.result.iter().enumerate() {
+        let k1 = v8::Integer::new(scope, idx as i32).into();
         let v1 = str_2_v8(scope, el).into();
         js_resources.set(scope, k1, v1);
-        idx += 1;
     }
 
     let key = str_2_v8(scope, "result").into();
@@ -229,12 +227,10 @@ pub fn individual2v8obj<'a>(scope: &mut HandleScope<'a>, src: &mut Individual) -
     for (predicate, resources) in map_resources {
         let js_resources = v8::Array::new(scope, resources.len() as i32);
 
-        let mut idx = 0;
-        for resource in resources {
+        for (idx, resource) in resources.iter().enumerate() {
             let mut v8_value = v8::Object::new(scope);
-            let key = v8::Integer::new(scope, idx).into();
+            let key = v8::Integer::new(scope, idx as i32).into();
             js_resources.set(scope, key, v8_value.into());
-            idx += 1;
 
             match &resource.value {
                 Value::Num(m, e) => {
@@ -321,7 +317,7 @@ fn set_key_f64_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>
 
 fn set_key_date_value(scope: &mut HandleScope, v8_obj: &mut v8::Local<v8::Object>, key: &str, val: i64) {
     let v8_key = str_2_v8(scope, key).into();
-    if let Some(v8_val) = v8::Date::new(scope, (val*1000) as f64) {
+    if let Some(v8_val) = v8::Date::new(scope, (val * 1000) as f64) {
         v8_obj.set(scope, v8_key, v8_val.into());
     }
 }
@@ -348,8 +344,6 @@ pub fn collect_module_dirs(in_path: &str, res: &mut Vec<String>) {
             if path_str.contains("/server/") || path_str.contains("/common/") {
                 res.push(path.to_str().unwrap().to_owned());
             }
-        } else {
-            return;
         }
     }
     visit_dirs(Path::new(&in_path), res, &prepare_dir).unwrap_or_default();

@@ -34,12 +34,12 @@ impl CallbackSharedData {
         let mut event_id = event_id;
 
         if !event_id.is_empty() {
-            let mut aa: Vec<&str> = event_id.split(";").collect();
-            if aa.len() > 0 {
+            let mut aa: Vec<&str> = event_id.split(';').collect();
+            if !aa.is_empty() {
                 event_id = aa.get(0).unwrap();
             }
 
-            aa = event_id.split("+").collect();
+            aa = event_id.split('+').collect();
 
             if aa.len() >= 2 {
                 self.g_key2attr.insert("$parent_script_id".to_owned(), aa.get(1).unwrap().to_string());
@@ -54,7 +54,7 @@ impl CallbackSharedData {
         }
     }
 
-    pub fn set_g_super_classes(&mut self, indv_types: &Vec<String>, onto: &Onto) {
+    pub fn set_g_super_classes(&mut self, indv_types: &[String], onto: &Onto) {
         let mut super_classes = HashSet::new();
 
         for indv_type in indv_types.iter() {

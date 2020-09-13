@@ -23,8 +23,7 @@ pub fn fn_callback_get_individual(scope: &mut v8::HandleScope, args: v8::Functio
     let id = get_string_arg(scope, &args, 1, "callback_get_individual: id not found or invalid").unwrap_or_default();
 
     if id == "undefined" {
-        return;
-    } else if id.starts_with("$") {
+    } else if id.starts_with('$') {
         let mut sh_g_vars = G_VARS.lock().unwrap();
         let g_vars = sh_g_vars.get_mut();
 
@@ -33,8 +32,6 @@ pub fn fn_callback_get_individual(scope: &mut v8::HandleScope, args: v8::Functio
             rv.set(j_indv.into());
         }
         drop(sh_g_vars);
-
-        return;
     } else {
         let mut sh_tnx = G_TRANSACTION.lock().unwrap();
         let tnx = sh_tnx.get_mut();
@@ -240,7 +237,7 @@ fn fn_callback_update(opt: IndvOp, scope: &mut v8::HandleScope, args: v8::Functi
         }
 
         debug!("ADD TO TRANSACTION {:?} {}", &opt, indv.get_id());
-        let res = tnx.add_to_transaction(opt.clone(), indv, ticket, "".to_string());
+        let res = tnx.add_to_transaction(opt, indv, ticket, "".to_string());
         debug!("res={:?}", res);
 
         rv.set(v8::Integer::new(scope, res as i32).into());
