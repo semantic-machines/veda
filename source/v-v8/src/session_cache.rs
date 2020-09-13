@@ -144,22 +144,21 @@ impl Transaction {
                     indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
                     debug!("{:?} AFTER: {}", ti.cmd, &prev_indv);
                     ti.indv = Individual::new_from_obj(prev_indv.get_obj());
-                } else {
-                    if let Some(mut prev_indv) = get_individual(ti.indv.get_id()) {
-                        if parse_raw(&mut prev_indv).is_ok() {
-                            prev_indv.parse_all();
-                            debug!("{:?} BEFORE: {}", ti.cmd, &prev_indv);
-                            debug!("{:?} APPLY: {}", ti.cmd, &ti.indv);
-                            indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
-                            debug!("{:?} AFTER: {}", ti.cmd, &prev_indv);
-                            ti.indv = prev_indv;
-                        } else {
-                            ti.rc = ResultCode::UnprocessableEntity;
-                        }
+                } else if let Some(mut prev_indv) = get_individual(ti.indv.get_id()) {
+                    if parse_raw(&mut prev_indv).is_ok() {
+                        prev_indv.parse_all();
+                        debug!("{:?} BEFORE: {}", ti.cmd, &prev_indv);
+                        debug!("{:?} APPLY: {}", ti.cmd, &ti.indv);
+                        indv_apply_cmd(&ti.cmd, &mut prev_indv, &mut ti.indv);
+                        debug!("{:?} AFTER: {}", ti.cmd, &prev_indv);
+                        ti.indv = prev_indv;
                     } else {
                         ti.rc = ResultCode::UnprocessableEntity;
                     }
+                } else {
+                    ti.rc = ResultCode::UnprocessableEntity;
                 }
+
                 ti.cmd = IndvOp::Put;
             }
         }
