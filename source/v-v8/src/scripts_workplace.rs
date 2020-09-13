@@ -137,7 +137,7 @@ impl<'a, T: Default> ScriptsWorkPlace<'a, T> {
                 }
             }
 
-            if inserted == false && count_find_dependency >= scr_inf.dependency.vec.len() {
+            if !inserted && count_find_dependency >= scr_inf.dependency.vec.len() {
                 new_scripts_order.push(scr_inf.id.to_owned());
                 inserted = true;
             }
@@ -146,7 +146,7 @@ impl<'a, T: Default> ScriptsWorkPlace<'a, T> {
                 new_scripts_order.push(oo.to_owned());
             }
         }
-        if inserted == false {
+        if !inserted {
             new_scripts_order.push(scr_inf.id.to_owned());
         }
 
