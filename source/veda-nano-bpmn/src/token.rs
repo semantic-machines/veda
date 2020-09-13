@@ -10,7 +10,7 @@ use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
 
 pub fn create_token_and_store(new_token_uri: Option<String>, process_uri: &str, activity_id: &str, ctx: &Context, module: &mut Module) -> Result<String, Box<dyn Error>> {
-    info!("CREATE TOKEN {} ON {}", activity_id, process_uri);
+    info!("CREATE TOKEN, ACTIVITY={} PROCESS={}", activity_id, process_uri);
 
     // generate token instance
     let token = &mut Individual::default();
