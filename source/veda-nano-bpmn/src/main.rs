@@ -16,7 +16,7 @@ mod script;
 mod token;
 mod work_order;
 
-use crate::common::is_start_form;
+use crate::common::{get_individual, is_start_form};
 use crate::decision_form::{is_decision_form, prepare_decision_form};
 use crate::process::*;
 use crate::process_source::get_process_source;
@@ -68,7 +68,7 @@ fn setup() -> SetupGuard {
 
 fn get_storage_init_param() -> String {
     let tarantool_addr = if let Some(p) = Module::get_property("tarantool_url") {
-        p.to_owned()
+        p
     } else {
         warn!("param [tarantool_url] not found in veda.properties");
         "".to_owned()
@@ -149,10 +149,10 @@ fn after_batch(_module: &mut Module, _module_info: &mut ModuleInfo, _ctx: &mut C
 
 fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
     match prepare_and_err(module, _module_info, ctx, queue_element, _my_consumer) {
-        Ok(r) => return Ok(r),
+        Ok(r) => Ok(r),
         Err(e) => {
             error!("prepare err={:?}", e);
-            return Err(PrepareError::Recoverable);
+            Err(PrepareError::Recoverable)
         }
     }
 }
@@ -178,8 +178,9 @@ fn prepare_and_err(
 
     if is_start_form(&rdf_types, &mut ctx.onto) {
         if new_state.any_exists("bpmn:hasStatusWorkflow", &["bpmn:ToBeStarted"]) {
-            if let Some(process_id) = new_state.get_first_literal("bpmn:instanceOf") {
-                let nt = get_process_source(&process_id, module)?;
+            if let Some(process_uri) = new_state.get_first_literal("bpmn:instanceOf") {
+                let mut process = get_individual(module, &process_uri)?;
+                let nt = get_process_source(&mut process)?;
                 let start_form_id = new_state.get_id();
                 start_process(start_form_id, nt, ctx, module)?;
             }
@@ -202,5 +203,5 @@ fn prepare_and_err(
         return Ok(true);
     }
 
-    return Ok(true);
+    Ok(true)
 }
