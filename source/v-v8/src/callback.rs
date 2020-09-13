@@ -39,14 +39,12 @@ pub fn fn_callback_get_individual(scope: &mut v8::HandleScope, args: v8::Functio
         if let Some(indv) = tnx.get_indv(&id) {
             let j_indv = individual2v8obj(scope, indv);
             rv.set(j_indv.into());
-        } else {
-            if let Some(mut indv) = get_individual(&id) {
-                if parse_raw(&mut indv).is_ok() {
-                    let j_indv = individual2v8obj(scope, &mut indv.parse_all());
-                    rv.set(j_indv.into());
-                } else {
-                    error!("callback_get_individual: fail parse binobj, id={}", id);
-                }
+        } else if let Some(mut indv) = get_individual(&id) {
+            if parse_raw(&mut indv).is_ok() {
+                let j_indv = individual2v8obj(scope, &mut indv.parse_all());
+                rv.set(j_indv.into());
+            } else {
+                error!("callback_get_individual: fail parse binobj, id={}", id);
             }
         }
 
@@ -72,14 +70,12 @@ pub fn fn_callback_get_individuals(scope: &mut v8::HandleScope, args: v8::Functi
                     if let Some(indv) = tnx.get_indv(&id) {
                         let j_indv = individual2v8obj(scope, indv);
                         j_res.set(scope, j_idx.into(), j_indv.into());
-                    } else {
-                        if let Some(mut indv) = get_individual(&id) {
-                            if parse_raw(&mut indv).is_ok() {
-                                let j_indv = individual2v8obj(scope, &mut indv.parse_all());
-                                j_res.set(scope, j_idx.into(), j_indv.into());
-                            } else {
-                                error!("callback_get_individual: fail parse binobj, id={}", id);
-                            }
+                    } else if let Some(mut indv) = get_individual(&id) {
+                        if parse_raw(&mut indv).is_ok() {
+                            let j_indv = individual2v8obj(scope, &mut indv.parse_all());
+                            j_res.set(scope, j_idx.into(), j_indv.into());
+                        } else {
+                            error!("callback_get_individual: fail parse binobj, id={}", id);
                         }
                     }
                 }
@@ -130,9 +126,7 @@ pub fn fn_callback_get_env_num_var(scope: &mut v8::HandleScope, args: v8::Functi
 
         debug!("fn_callback_get_env_num_var, var_name={:?}", var_name);
 
-        if var_name == "$queue_elements_count" {
-            return;
-        } else if var_name == "$queue_elements_processed" {
+        if var_name == "$queue_elements_count" || var_name == "$queue_elements_processed" {
             return;
         }
     }
@@ -218,14 +212,12 @@ fn fn_callback_update(opt: IndvOp, scope: &mut v8::HandleScope, args: v8::Functi
         } else {
             error!("callback {:?}, argument is not string", opt);
         }
+    } else if arg1.is_object() {
+        let js_obj = arg1.to_object(scope).unwrap();
+        indv = v8obj2individual(scope, js_obj);
     } else {
-        if arg1.is_object() {
-            let js_obj = arg1.to_object(scope).unwrap();
-            indv = v8obj2individual(scope, js_obj);
-        } else {
-            indv = Individual::default();
-            error!("callback {:?}, argument is not object", opt);
-        }
+        indv = Individual::default();
+        error!("callback {:?}, argument is not object", opt);
     }
 
     if !indv.get_id().is_empty() {
