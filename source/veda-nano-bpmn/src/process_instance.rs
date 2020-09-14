@@ -9,17 +9,17 @@ use v_module::module::Module;
 use v_onto::individual::Individual;
 
 pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
-    info!("START PROCESS {}", route.id);
+    info!("START PROCESS, ROUTE={}, START_FROM={}", route.id, start_form_id);
 
     // generate process instance
-    let process = &mut Individual::default();
-    process.set_id(&generate_unique_uri("wd:pr_", ""));
-    process.add_uri("rdf:type", "bpmn:ProcessInstance");
-    process.add_uri("bpmn:hasStartForm", start_form_id);
-    process.add_uri("bpmn:instanceOf", &route.id);
+    let process_instance = &mut Individual::default();
+    process_instance.set_id(&generate_unique_uri("wd:pr_", ""));
+    process_instance.add_uri("rdf:type", "bpmn:ProcessInstance");
+    process_instance.add_uri("bpmn:hasStartForm", start_form_id);
+    process_instance.add_uri("bpmn:instanceOf", &route.id);
 
-    module.api.update_or_err(&ctx.sys_ticket, "", "", IndvOp::Put, process)?;
-    info!("success update, uri={}", process.get_id());
+    module.api.update_or_err(&ctx.sys_ticket, "", "", IndvOp::Put, process_instance)?;
+    info!("success update, uri={}", process_instance.get_id());
 
     // set status [STARTED] into start form
     let mut updated_start_form = Individual::default();
@@ -34,7 +34,7 @@ pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &C
     for el in start_events_idx {
         let activity_id = route.get_id_of_idx(el)?;
         info!("FOUND START EVENT {}", activity_id);
-        create_token_and_store(None, &route.id, activity_id, ctx, module)?;
+        create_token_and_store(None, &route.id, process_instance.get_id(), activity_id, ctx, module)?;
     }
 
     Ok(())

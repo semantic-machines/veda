@@ -24,8 +24,8 @@ pub enum OutValue {
 }
 
 pub fn execute_js(
-    process: &mut Individual,
     token: &mut Individual,
+    process_instance: &mut Individual,
     script_id: &str,
     tag_with_js: &str,
     js_idx: &NodeId,
@@ -57,11 +57,11 @@ pub fn execute_js(
     if let Some(c) = compiled_script {
         let mut session_data = CallbackSharedData::default();
         session_data.g_key2attr.insert("$ticket".to_owned(), ctx.sys_ticket.to_owned());
-        session_data.g_key2indv.insert("$process".to_owned(), Individual::new_from_obj(process.get_obj()));
-        session_data.g_key2indv.insert("$token".to_owned(), Individual::new_from_obj(token.get_obj()));
         if let Some(w) = work_order_uri {
             session_data.g_key2attr.insert("$work_order".to_owned(), w.to_owned());
         }
+        session_data.g_key2indv.insert("$process".to_owned(), Individual::new_from_obj(process_instance.parse_all().get_obj()));
+        session_data.g_key2indv.insert("$token".to_owned(), Individual::new_from_obj(token.parse_all().get_obj()));
 
         let mut sh_g_vars = G_VARS.lock().unwrap();
         let g_vars = sh_g_vars.get_mut();
