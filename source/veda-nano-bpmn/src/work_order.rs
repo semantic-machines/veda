@@ -8,7 +8,7 @@ use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
 
 pub fn create_work_order(
-    process_uri: &str,
+    process_instance_uri: &str,
     token_uri: &str,
     activity_id: &str,
     executor_uri: Option<&str>,
@@ -16,14 +16,14 @@ pub fn create_work_order(
     ctx: &Context,
     module: &mut Module,
 ) -> Result<Individual, Box<dyn Error>> {
-    info!("CREATE WORK ORDER, TOKEN={}, PROCESS={}", token_uri, process_uri);
+    info!("CREATE WORK ORDER, TOKEN={}, PROCESS_INSTANCE={}", token_uri, process_instance_uri);
 
     // generate work order instance
     let mut work_order = Individual::default();
     work_order.set_id(&generate_unique_uri("wd:wo_", ""));
 
     work_order.add_uri("rdf:type", "bpmn:WorkOrder");
-    work_order.add_uri("bpmn:hasProcess", process_uri);
+    work_order.add_uri("bpmn:hasProcessInstance", process_instance_uri);
     work_order.add_uri("bpmn:hasToken", token_uri);
     work_order.add_string("bpmn:activityId", activity_id, Lang::NONE);
 

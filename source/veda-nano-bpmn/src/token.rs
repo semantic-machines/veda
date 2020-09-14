@@ -10,7 +10,14 @@ use v_module::module::Module;
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
 
-pub fn create_token_and_store(new_token_uri: Option<String>, process_uri: &str, activity_id: &str, ctx: &Context, module: &mut Module) -> Result<String, Box<dyn Error>> {
+pub fn create_token_and_store(
+    new_token_uri: Option<String>,
+    process_uri: &str,
+    process_instance_uri: &str,
+    activity_id: &str,
+    ctx: &Context,
+    module: &mut Module,
+) -> Result<String, Box<dyn Error>> {
     info!("CREATE TOKEN, ACTIVITY={} PROCESS={}", activity_id, process_uri);
 
     // generate token instance
@@ -23,6 +30,7 @@ pub fn create_token_and_store(new_token_uri: Option<String>, process_uri: &str, 
 
     token.add_uri("rdf:type", "bpmn:Token");
     token.add_uri("bpmn:hasProcess", process_uri);
+    token.add_uri("bpmn:hasProcessInstance", process_instance_uri);
     token.add_string("bpmn:activityId", activity_id, Lang::NONE);
 
     module.api.update_or_err(&ctx.sys_ticket, "", "go-prepare", IndvOp::Put, token)?;
@@ -57,6 +65,7 @@ pub fn prepare_token(token: &mut Individual, ctx: &mut Context, module: &mut Mod
 
 fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let process_uri = token.get_first_literal("bpmn:hasProcess").unwrap_or_default();
+    let process_instance_uri = token.get_first_literal("bpmn:hasProcessInstance").unwrap_or_default();
     let process = &mut get_individual(module, &process_uri)?;
     let nt = get_process_source(process)?;
 
@@ -74,7 +83,7 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
 
             if is_forward {
                 if let Ok(target_ref) = nt.get_attribute_of_idx(nt.get_idx_of_id(&outgoing_id)?, "targetRef") {
-                    let forwarder_token_id = create_token_and_store(prev_token_uri, &process_uri, target_ref, ctx, module)?;
+                    let forwarder_token_id = create_token_and_store(prev_token_uri, &process_uri, &process_instance_uri, target_ref, ctx, module)?;
                     info!("FORWARD TOKEN {} FROM {} TO {}->{}", forwarder_token_id, activity_id, outgoing_id, target_ref);
                     prev_token_uri = None;
                 }

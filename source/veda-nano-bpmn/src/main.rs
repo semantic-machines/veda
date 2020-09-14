@@ -10,7 +10,7 @@ extern crate serde_derive;
 mod activity;
 mod common;
 mod decision_form;
-mod process;
+mod process_instance;
 mod process_source;
 mod script;
 mod token;
@@ -18,7 +18,7 @@ mod work_order;
 
 use crate::common::{get_individual, is_start_form};
 use crate::decision_form::{is_decision_form, prepare_decision_form};
-use crate::process::*;
+use crate::process_instance::start_process;
 use crate::process_source::get_process_source;
 use crate::script::ScriptInfoContext;
 use crate::token::{is_token, prepare_token};

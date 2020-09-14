@@ -32,7 +32,18 @@ veda.Module(function (veda) { "use strict";
       };
 
     veda.bpmn.get_current_executor_or_from_start_form = function () {
-	print ("get_current_executor_or_from_start_form");
+
+        var process = get_individual(ticket, '$process');
+	if (process['v-wf:to'] == undefined) {
+	    var start_form = get_individual(ticket, veda.Util.getUri(process['bpmn:hasStartForm']));
+	    if (start_form != undefined) {
+		var to = start_form['v-wf:to'];
+		if (to != undefined) {
+		    return [veda.Util.getUri(to)];
+		}
+	    }
+	}    
+
 	return [];
     };
 

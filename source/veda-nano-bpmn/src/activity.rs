@@ -13,6 +13,7 @@ use v_onto::individual::Individual;
 pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let process_uri = token.get_first_literal("bpmn:hasProcess").unwrap_or_default();
     let process = &mut get_individual(module, &process_uri)?;
+    let process_instance = &mut get_individual(module, &token.get_first_literal("bpmn:hasProcessInstance").unwrap_or_default())?;
     let nt = get_process_source(process)?;
 
     if let Some(activity_id) = token.get_first_literal("bpmn:activityId") {
@@ -28,7 +29,7 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                 store_work_order_into(token.get_id(), work_order.get_id(), &ctx.sys_ticket, module)?;
 
                 let script_id = format!("{}+{}", process_uri, activity_id);
-                execute_js(token, process, &script_id, "bpmn:script", &activity_idx, Some(&work_order.get_id()), &nt, ctx, &mut OutValue::None);
+                execute_js(token, process_instance, &script_id, "bpmn:script", &activity_idx, Some(&work_order.get_id()), &nt, ctx, &mut OutValue::None);
                 store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
             "bpmn:userTask" => {
@@ -43,7 +44,7 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                             // calculate executors
                             let script_id = format!("{}+{}+assigment", process_uri, activity_id);
                             let mut res = OutValue::List(vec![]);
-                            execute_js(token, process, &script_id, "camunda:script", &el, None, &nt, ctx, &mut res);
+                            execute_js(token, process_instance, &script_id, "camunda:script", &el, None, &nt, ctx, &mut res);
                             if let OutValue::List(l) = res.borrow_mut() {
                                 executors.append(l);
                             }
@@ -56,7 +57,7 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                     if let Some(el) = gen_decision_form_script_id {
                         let script_id = format!("{}+{}+create", process_uri, activity_id);
                         let mut res = OutValue::Individual(Individual::default());
-                        if execute_js(token, process, &script_id, "camunda:script", &el, None, &nt, ctx, &mut res) {
+                        if execute_js(token, process_instance, &script_id, "camunda:script", &el, None, &nt, ctx, &mut res) {
                             if let OutValue::Individual(form) = res.borrow_mut() {
                                 if form.get_id().is_empty() {
                                     form.set_id(&generate_unique_uri("wd:f_", ""));
