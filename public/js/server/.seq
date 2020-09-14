@@ -2,4 +2,5 @@ lib/mustache.js
 lib/synchronous-promise.js
 util.js
 veda_init.js
+nano_bpmn.js
 $modules
