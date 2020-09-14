@@ -1,0 +1,65 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix bpmn: <http://semantic-machines.com/veda/veda-bpmn/> .
+
+<http://semantic-machines.com/veda/veda-bpmn>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda"@ru ;
+  rdfs:label "Veda system ontology"@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# ------------------------------------------------------------
+
+
+bpmn:Process
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Процесс"@ru ;
+  rdfs:label "Process"@en ;
+.
+bpmn:ProcessInstance
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Экземпляр процесса"@ru ;
+  rdfs:label "Process instance"@en ;
+  v-ui:hasTemplate bpmn:ProcessTemplate ;
+.
+bpmn:processDefinition
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain bpmn:Process ;
+  rdfs:label "Определение процесса"@ru ;
+  rdfs:label "Process definition"@en ;
+  rdfs:range xsd:string ;
+.
+bpmn:ProcessTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса bpmn:Process"@ru ;
+  rdfs:label "bpmn:Process class template"@en ;
+  v-ui:forClass bpmn:Process ;
+  v-ui:template """
+<script>
+
+//# sourceURL=bpmn:ProcessTemplate_pre
+</script>
+<div class="container-fluid sheet">
+
+</div>
+<script>
+
+//# sourceURL=bpmn:ProcessTemplate_post
+</script>
+  """ ;
+.
+
+bpmn:DecisionForm
+  rdf:type rdfs:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Форма решения"@ru ;
+  rdfs:label "Decision form"@en ;
+.

@@ -9,6 +9,7 @@
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix bpmn: <http://semantic-machines.com/veda/veda-bpmn/> .
 
 @prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
 <http://semantic-machines.com/veda/veda-function-tasks>
@@ -290,7 +291,7 @@ v-ft:FunctionTasksIndicatorTemplate
   """ ;
 .
 
-v-s:TS_TaskCounter 
+v-s:TS_TaskCounter
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ft:TaskCounterTemplate;
@@ -383,6 +384,7 @@ v-ft:InboxBlank
   rdfs:label "Бланк входящих задач"@ru ;
   rdfs:label "Blank inbox task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
+  v-fc:targetType bpmn:DecisionForm ;
   v-wf:onDocument v-ft:InboxDocumentBlank ;
   v-wf:takenDecision v-ft:InboxDecisionBlank ;
   v-wf:isCompleted false ;
@@ -415,6 +417,7 @@ v-ft:OutboxBlank
   rdfs:label "Бланк исходящих задач"@ru ;
   rdfs:label "Blank outbox task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
+  v-fc:targetType bpmn:DecisionForm ;
   v-wf:onDocument v-ft:OutboxDocumentBlank ;
   v-wf:takenDecision v-ft:OutboxDecisionBlank ;
   v-wf:isCompleted false ;
@@ -447,6 +450,7 @@ v-ft:CompletedBlank
   rdfs:label "Бланк выполненных задач"@ru ;
   rdfs:label "Blank completed task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
+  v-fc:targetType bpmn:DecisionForm ;
   v-wf:onDocument v-ft:CompletedDocumentBlank ;
   v-wf:takenDecision v-ft:CompletedDecisionBlank ;
   v-wf:isCompleted true ;
@@ -479,6 +483,7 @@ v-ft:OutboxCompletedBlank
   rdfs:label "Бланк выполненных задач"@ru ;
   rdfs:label "Blank completed task"@en ;
   v-fc:targetType v-wf:DecisionForm ;
+  v-fc:targetType bpmn:DecisionForm ;
   v-wf:onDocument v-ft:OutboxCompletedDocumentBlank ;
   v-wf:takenDecision v-ft:OutboxCompletedDecisionBlank ;
   v-wf:isCompleted true ;
@@ -678,10 +683,10 @@ v-ft:ActorFilterTemplate
       if ( veda.appointment && veda.appointment.id && appointment["@"] === veda.appointment.id ) {
         return;
       } else if ( appointment["v-s:occupation"] && appointment["v-s:occupation"].length ) {
-        var delegationPurpose = (appointment["v-s:hasDelegationPurpose"] && appointment["v-s:hasDelegationPurpose"].length) ? 
+        var delegationPurpose = (appointment["v-s:hasDelegationPurpose"] && appointment["v-s:hasDelegationPurpose"].length) ?
             appointment["v-s:hasDelegationPurpose"][0].data : "";
 
-        var isControlAppointment = delegationPurpose === "d:delegate_Control"; 
+        var isControlAppointment = delegationPurpose === "d:delegate_Control";
         actors_uris.push( {uri: appointment["v-s:occupation"][0].data, official: !isControlAppointment} );
       }
     });
@@ -855,9 +860,9 @@ v-ft:CompletedResultTemplate
           riot.route("#/" + journalUri);
         });
         new veda.IndividualModel("v-ft:ToJournalBundle").load().then(function(bundle) {
-          $(".to-journal", template).prop("title", bundle.toString());  
+          $(".to-journal", template).prop("title", bundle.toString());
         });
-        
+
         // Child task indicator
         if ( individual.hasValue("v-wf:hasChildTask") ) {
           template.find(".child-task")
@@ -949,7 +954,7 @@ v-ft:TaskResultTemplate
           riot.route("#/" + journalUri);
         });
         new veda.IndividualModel("v-ft:ToJournalBundle").load().then(function(bundle) {
-          $(".to-journal", template).prop("title", bundle.toString());  
+          $(".to-journal", template).prop("title", bundle.toString());
         });
 
         // Toggle read/unread
@@ -1113,7 +1118,7 @@ v-ft:InboxResultTemplate
           riot.route("#/" + journalUri);
         });
         new veda.IndividualModel("v-ft:ToJournalBundle").load().then(function(bundle) {
-          $(".to-journal", template).prop("title", bundle.toString());  
+          $(".to-journal", template).prop("title", bundle.toString());
         });
 
         // Toggle read/unread
@@ -1287,7 +1292,7 @@ this.fn = function (task_uri) {
   """ ;
 .
 
-v-s:TS_MakeDecisionOperation 
+v-s:TS_MakeDecisionOperation
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-ft:MakeDecisionOperationTemplate;
