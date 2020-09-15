@@ -54,13 +54,20 @@
     <link href="/css/veda.css?v=6" rel="stylesheet"/>
     <link href="/css/font-awesome.min.css?v=6" rel="stylesheet"/>
     <link href="/css/cropper.min.css?v=6" rel="stylesheet"/>
+
     <link rel="shortcut icon" href="/favicon.ico"/>
 
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, private" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src https://www.google.com:443 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src https://www.google.com:443 https://www.gstatic.com:443 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:;" />
+    <!--meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src https://www.google.com:443 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src https://www.google.com:443 https://www.gstatic.com:443 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:;" /-->
+
+    <!-- BPMN -->
+    <link href="/js/bpmn/diagram-js.css" rel="stylesheet"/>
+    <link href="/js/bpmn/bpmn-font/css/bpmn-embedded.css" rel="stylesheet"/>
+    <script src="/js/bpmn/veda-bpmn.bundle.js"></script>
   </head>
   <body>
+
     <!-- Load indicator -->
     <div id="load-indicator">
       <span class="loader"></span>
@@ -166,6 +173,7 @@
 
     <!-- Notification alerts -->
     <div id="notification-container"></div>
+
 
     <!-- TEMPLATES -->
 
