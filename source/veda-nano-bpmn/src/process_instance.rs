@@ -18,15 +18,14 @@ pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &C
     process_instance.add_uri("bpmn:hasStartForm", start_form_id);
     process_instance.add_uri("bpmn:instanceOf", &route.id);
 
-    module.api.update_or_err(&ctx.sys_ticket, "", "", IndvOp::Put, process_instance)?;
-    info!("success update, uri={}", process_instance.get_id());
-
     // set status [STARTED] into start form
     let mut updated_start_form = Individual::default();
     updated_start_form.set_id(start_form_id);
-    updated_start_form.set_uri("bpmn:hasStatusWorkflow", "bpmn:Started");
+    updated_start_form.set_uri("bpmn:status", "bpmn:Started");
+    updated_start_form.set_uri("bpmn:startProcess", &route.id);
+    updated_start_form.set_uri("bpmn:startedProcessInstance", process_instance.get_id());
 
-    module.api.update_or_err(&ctx.sys_ticket, "", "", IndvOp::SetIn, &updated_start_form)?;
+    module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::SetIn, &updated_start_form)?;
     info!("success update, uri={}", updated_start_form.get_id());
 
     let start_events_idx = route.get_idx_of_type("bpmn:startEvent");
@@ -34,8 +33,12 @@ pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &C
     for el in start_events_idx {
         let activity_id = route.get_id_of_idx(el)?;
         info!("FOUND START EVENT {}", activity_id);
-        create_token_and_store(None, &route.id, process_instance.get_id(), activity_id, ctx, module)?;
+        let token_uri = create_token_and_store(None, &route.id, process_instance.get_id(), activity_id, ctx, module)?;
+        process_instance.add_uri("bpmn:hasToken", &token_uri);
     }
+
+    module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::Put, process_instance)?;
+    info!("success update, uri={}", process_instance.get_id());
 
     Ok(())
 }
