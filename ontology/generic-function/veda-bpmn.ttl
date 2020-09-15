@@ -51,7 +51,6 @@ bpmn:ProcessTemplate
 <div class="container-fluid sheet">
   <div id="veda-bpmn"></div>
   <button class="btn btn-success" id="save" about="v-s:Save" property="rdfs:label"></button>
-  <div id="veda-bpmn2"></div>
 </div>
 <script>
   var modeler = new VedaBpmn("veda-bpmn");
