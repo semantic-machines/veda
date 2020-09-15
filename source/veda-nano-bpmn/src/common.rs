@@ -18,12 +18,12 @@ impl fmt::Display for MyError {
 
 impl Error for MyError {}
 
-pub fn store_work_order_into(uri: &str, work_order_uri: &str, sys_ticket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
+pub fn store_work_order_into(dest_uri: &str, work_order_uri: &str, sys_ticket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let indv = &mut Individual::default();
-    indv.set_id(uri);
+    indv.set_id(dest_uri);
     indv.add_uri("bpmn:hasWorkOrder", work_order_uri);
 
-    module.api.update_or_err(sys_ticket, "", "", IndvOp::SetIn, indv)?;
+    module.api.update_or_err(sys_ticket, "", "store-wo-into", IndvOp::SetIn, indv)?;
     info!("success update, uri={}", indv.get_id());
 
     Ok(())
@@ -51,7 +51,7 @@ pub fn add_right(subj_uri: &str, obj_uri: &str, ctx: &mut Context, module: &mut 
     right.add_uri("v-s:permissionObject", subj_uri);
     right.add_uri("v-s:permissionSubject", obj_uri);
 
-    module.api.update_or_err(&ctx.sys_ticket, "", "", IndvOp::Put, &right)?;
+    module.api.update_or_err(&ctx.sys_ticket, "", "add-right", IndvOp::Put, &right)?;
     info!("success update, uri={}", right.get_id());
 
     Ok(())
@@ -66,7 +66,7 @@ pub(crate) fn is_start_form(rdf_types: &[String], onto: &mut Onto) -> bool {
             return true;
         }
     }
-    return false;
+    false
 }
 
 pub fn get_individual(module: &mut Module, uri: &str) -> Result<Individual, Box<dyn Error>> {

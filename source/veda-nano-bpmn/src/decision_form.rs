@@ -27,8 +27,8 @@ pub fn prepare_decision_form(decision_form: &mut Individual, ctx: &mut Context, 
     info!("PREPARE DECISION FORM {}", decision_form.get_id());
 
     if let Some(wo_uri) = decision_form.get_first_literal("bpmn:hasWorkOrder") {
-        store_is_completed_into(decision_form.get_id(), true, "prepare_decision_form", &ctx.sys_ticket, module)?;
-        store_is_completed_into(&wo_uri, true, "prepare_decision_form", &ctx.sys_ticket, module)?;
+        store_is_completed_into(decision_form.get_id(), true, "prepare-decision-form", &ctx.sys_ticket, module)?;
+        store_is_completed_into(&wo_uri, true, "prepare-decision-form", &ctx.sys_ticket, module)?;
     }
 
     Ok(())
@@ -40,5 +40,5 @@ pub(crate) fn is_decision_form(rdf_types: &[String]) -> bool {
             return true;
         }
     }
-    return false;
+    false
 }

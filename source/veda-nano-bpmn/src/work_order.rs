@@ -16,7 +16,14 @@ pub fn create_work_order(
     ctx: &Context,
     module: &mut Module,
 ) -> Result<Individual, Box<dyn Error>> {
-    info!("CREATE WORK ORDER, TOKEN={}, PROCESS_INSTANCE={}", token_uri, process_instance_uri);
+    info!(
+        "CREATE WORK ORDER, ACTIVITY={}, TOKEN={}, EXEC.={}, FORM={}, PROC.INST.={}",
+        activity_id,
+        token_uri,
+        executor_uri.unwrap_or_default(),
+        decision_form_uri.unwrap_or_default(),
+        process_instance_uri
+    );
 
     // generate work order instance
     let mut work_order = Individual::default();
@@ -35,7 +42,7 @@ pub fn create_work_order(
         work_order.add_uri("bpmn:hasDecisionForm", r);
     }
 
-    module.api.update_or_err(&ctx.sys_ticket, "", "", IndvOp::Put, &work_order)?;
+    module.api.update_or_err(&ctx.sys_ticket, "", "create-wo", IndvOp::Put, &work_order)?;
     info!("success update, uri={}", work_order.get_id());
 
     Ok(work_order)

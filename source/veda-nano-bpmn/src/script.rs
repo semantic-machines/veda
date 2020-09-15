@@ -36,22 +36,20 @@ pub fn execute_js(
 ) -> bool {
     let compiled_script = if let Some(script) = ctx.workplace.scripts.get(script_id) {
         script.compiled_script
-    } else {
-        if let Some(script_text) = nt.get_values_of_tag(js_idx, tag_with_js).get(0) {
-            if let OutValue::None = out {
-                prepare_script(&mut ctx.workplace, &script_id, script_text);
-            } else {
-                prepare_eval_script(&mut ctx.workplace, &script_id, script_text);
-            }
+    } else if let Some(script_text) = nt.get_values_of_tag(js_idx, tag_with_js).get(0) {
+        if let OutValue::None = out {
+            prepare_script(&mut ctx.workplace, &script_id, script_text);
+        } else {
+            prepare_eval_script(&mut ctx.workplace, &script_id, script_text);
+        }
 
-            if let Some(s) = ctx.workplace.scripts.get(script_id) {
-                s.compiled_script
-            } else {
-                None
-            }
+        if let Some(s) = ctx.workplace.scripts.get(script_id) {
+            s.compiled_script
         } else {
             None
         }
+    } else {
+        None
     };
 
     if let Some(c) = compiled_script {
