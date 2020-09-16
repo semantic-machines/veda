@@ -1240,19 +1240,33 @@ v-ui:ResourceTemplate
   var propСontainer = $(".properties-container", template);
   var tmpl = propСontainer.html();
   propСontainer.empty();
-  Object.keys(this.properties).forEach(function (property_uri) {
+  var promises = Object.keys(this.properties).map(function (property_uri) {
     if (property_uri === "@" || property_uri === "rdf:type" || property_uri === "rdfs:label") { return; }
     var propRow = $(tmpl);
     propRow.find(".prop-name").attr({
       "about": property_uri,
       "property": "rdfs:label"
     });
-    propRow.find(".prop-value").attr({
-      "about": "@",
-      "property": property_uri
-    });
-    propСontainer.append(propRow);
+    var property = new veda.IndividualModel(property_uri);
+    return property.load().then(function (property) {
+      var literalAttrs = {
+        "about": "@",
+        "property": property_uri
+      }
+      var objectAttrs = {
+        "about": "@",
+        "rel": property_uri,
+        "data-template": "v-ui:LabelLinkTemplate"
+      }
+      if ( ["xsd:string", "xsd:integer", "xsd:decimal", "xsd:boolean", "xsd:Literal", "xsd:dateTime"].indexOf(property["rdfs:range"][0].id) >= 0  ) {
+        propRow.find(".prop-value").attr(literalAttrs);
+      } else {
+        propRow.find(".prop-value").attr(objectAttrs);
+      }
+      propСontainer.append(propRow);
+    })
   });
+  return Promise.all(promises);
   //# sourceURL=v-ui:ResourceTemplate_pre
 </script>
 <div class="container sheet">
