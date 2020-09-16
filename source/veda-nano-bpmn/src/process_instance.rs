@@ -21,8 +21,7 @@ pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &C
     // set status [STARTED] into start form
     let mut updated_start_form = Individual::default();
     updated_start_form.set_id(start_form_id);
-    updated_start_form.set_uri("bpmn:status", "bpmn:Started");
-    updated_start_form.set_uri("bpmn:startProcess", &route.id);
+    updated_start_form.set_uri("bpmn:hasStatus", "bpmn:Started");
     updated_start_form.set_uri("bpmn:startedProcessInstance", process_instance.get_id());
 
     module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::SetIn, &updated_start_form)?;

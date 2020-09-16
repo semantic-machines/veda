@@ -177,8 +177,8 @@ fn prepare_and_err(
     let rdf_types = new_state.get_literals("rdf:type").unwrap_or_default();
 
     if is_start_form(&rdf_types, &mut ctx.onto) && signal == "?" {
-        if new_state.any_exists("bpmn:hasStatusWorkflow", &["bpmn:ToBeStarted"]) {
-            if let Some(process_uri) = new_state.get_first_literal("bpmn:instanceOf") {
+        if new_state.any_exists("bpmn:hasStatus", &["bpmn:ToBeStarted"]) {
+            if let Some(process_uri) = new_state.get_first_literal("bpmn:startProcess") {
                 let mut process = get_individual(module, &process_uri)?;
                 let nt = get_process_source(&mut process)?;
                 let start_form_id = new_state.get_id();
