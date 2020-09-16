@@ -7,9 +7,6 @@
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix bpmn: <http://semantic-machines.com/veda/veda-bpmn/> .
 
-@prefix d: <http://semantic-machines.com/veda/veda-data/> .
-@prefix td: <http://semantic-machines.com/veda/test-data/> .
-
 <http://semantic-machines.com/veda/veda-bpmn>
   rdf:type owl:Ontology ;
   rdfs:label "Онтология системы Veda"@ru ;
@@ -20,7 +17,6 @@
 
 # ------------------------------------------------------------
 
-
 bpmn:Process
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
@@ -28,20 +24,176 @@ bpmn:Process
   rdfs:label "Process"@en ;
   v-ui:hasTemplate bpmn:ProcessTemplate ;
 .
+bpmn:processDefinition
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Определение процесса"@ru ;
+  rdfs:label "Process definition"@en ;
+  rdfs:domain bpmn:Process ;
+  rdfs:range xsd:string ;
+.
+
+# ------------------------------------------------------------
+
+bpmn:StartForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Стартовая форма"@ru ;
+  rdfs:label "Start form"@en ;
+.
+bpmn:startProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Запустить процесс"@ru ;
+  rdfs:label "Start process"@en ;
+  rdfs:domain bpmn:StartForm ;
+  rdfs:range bpmn:Process ;
+.
+bpmn:startedProcessInstance
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Запустить процесс"@ru ;
+  rdfs:label "Start process"@en ;
+  rdfs:domain bpmn:StartForm ;
+  rdfs:range bpmn:ProcessInstance ;
+.
+bpmn:hasStatus
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Статус"@ru ;
+  rdfs:label "Status"@en ;
+  rdfs:domain bpmn:StartForm ;
+  rdfs:range bpmn:Status ;
+.
+
+# ------------------------------------------------------------
+
+bpmn:Status
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Статус"@ru ;
+  rdfs:label "Status"@en ;
+.
+
+bpmn:ToBeStarted
+  rdf:type bpmn:Status ;
+  rdfs:label "Ожидает запуска"@ru ;
+  rdfs:label "To be started"@en ;
+.
+
+bpmn:Started
+  rdf:type bpmn:Status ;
+  rdfs:label "Запущен"@ru ;
+  rdfs:label "Started"@en ;
+.
+
+# ------------------------------------------------------------
+
 bpmn:ProcessInstance
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Экземпляр процесса"@ru ;
   rdfs:label "Process instance"@en ;
-  v-ui:hasTemplate bpmn:ProcessTemplate ;
+  v-ui:hasTemplate bpmn:ProcessInstanceTemplate ;
 .
-bpmn:processDefinition
+bpmn:hasStartForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Стартовая форма"@ru ;
+  rdfs:label "Start form"@en ;
+  rdfs:domain bpmn:ProcessInstance ;
+  rdfs:range bpmn:StartForm ;
+.
+bpmn:instanceOf
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Экземпляр процесса"@ru ;
+  rdfs:label "Instance of"@en ;
+  rdfs:domain bpmn:ProcessInstance ;
+  rdfs:range bpmn:Process ;
+.
+bpmn:hasToken
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Токен"@ru ;
+  rdfs:label "Token"@en ;
+  rdfs:domain bpmn:ProcessInstance ;
+  rdfs:domain bpmn:WorkOrder ;
+  rdfs:range bpmn:Token ;
+.
+
+# ------------------------------------------------------------
+
+bpmn:Token
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Токен"@ru ;
+  rdfs:label "Token"@en ;
+  v-ui:hasTemplate v-ui:ResourceTemplate ;
+.
+bpmn:activityId
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain bpmn:Process ;
-  rdfs:label "Определение процесса"@ru ;
-  rdfs:label "Process definition"@en ;
+  rdfs:label "Id действия"@ru ;
+  rdfs:label "Activity Id"@en ;
+  rdfs:domain bpmn:Token ;
+  rdfs:domain bpmn:WorkOrder ;
   rdfs:range xsd:string ;
 .
+bpmn:hasProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Процесс"@ru ;
+  rdfs:label "Process"@en ;
+  rdfs:domain bpmn:Token ;
+  rdfs:range  bpmn:Process;
+.
+bpmn:hasProcessInstance
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Экземпляр процесса"@ru ;
+  rdfs:label "Process instance"@en ;
+  rdfs:domain bpmn:Token ;
+  rdfs:domain bpmn:WorkOrder ;
+  rdfs:range  bpmn:ProcessInstance ;
+.
+bpmn:hasWorkOrder
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Рабочее задание"@ru ;
+  rdfs:label "Work оrder"@en ;
+  rdfs:domain bpmn:Token ;
+  rdfs:domain bpmn:DecisionForm ;
+  rdfs:range  bpmn:WorkOrder ;
+.
+
+# ------------------------------------------------------------
+
+bpmn:WorkOrder
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Рабочее задание"@ru ;
+  rdfs:label "Work оrder"@en ;
+  v-ui:hasTemplate v-ui:ResourceTemplate ;
+.
+
+bpmn:hasDecisionForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Форма решения"@ru ;
+  rdfs:label "Decision form"@en ;
+  rdfs:domain bpmn:WorkOrder ;
+  rdfs:range  bpmn:DecisionForm ;
+.
+
+bpmn:hasExecutor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Исполнитель"@ru ;
+  rdfs:label "Executor"@en ;
+  rdfs:domain bpmn:WorkOrder ;
+  rdfs:range  rdfs:Resource ;
+.
+
+# ------------------------------------------------------------
+
+bpmn:DecisionForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Рабочее задание"@ru ;
+  rdfs:label "Work оrder"@en ;
+  v-ui:hasTemplate v-ui:ResourceTemplate ;
+.
+
+######################## Templates
+
 bpmn:ProcessTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса bpmn:Process"@ru ;
@@ -54,7 +206,7 @@ bpmn:ProcessTemplate
 </div>
 <script>
   var emptyDefinition = '<?xml version="1.0" encoding="UTF-8"?><bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn"><bpmn2:process id="Process_1" isExecutable="false"><bpmn2:startEvent id="StartEvent_1"/></bpmn2:process><bpmndi:BPMNDiagram id="BPMNDiagram_1"><bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1"><bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1"><dc:Bounds height="36.0" width="36.0" x="412.0" y="240.0"/></bpmndi:BPMNShape></bpmndi:BPMNPlane></bpmndi:BPMNDiagram></bpmn2:definitions>';
-  var modeler = new VedaBpmn("veda-bpmn");
+  var modeler = new VedaBpmn("veda-bpmn", true);
   var definition = individual.hasValue("bpmn:processDefinition") ? individual["bpmn:processDefinition"][0].toString() : emptyDefinition;
   modeler.importXML(definition);
   var notify = veda.Notify ? new veda.Notify() : console.log;
@@ -82,244 +234,99 @@ bpmn:ProcessTemplate
   """ ;
 .
 
-bpmn:DecisionForm
-  rdf:type rdfs:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Форма решения"@ru ;
-  rdfs:label "Decision form"@en ;
+bpmn:ProcessInstanceTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса bpmn:ProcessInstance"@ru ;
+  rdfs:label "bpmn:ProcessInstance class template"@en ;
+  v-ui:forClass bpmn:Process ;
+  v-ui:template """
+<div class="container-fluid sheet">
+  <div id="veda-bpmn"></div>
+</div>
+<script>
+  var viewer = new VedaBpmn("veda-bpmn");
+  var overlays = viewer.get("overlays");
+
+  var process = individual["bpmn:instanceOf"][0];
+  process.load()
+    .then(function (process) {
+       var definition = process["bpmn:processDefinition"][0].toString();
+       viewer.importXML(definition);
+    });
+
+  individual.on("bpmn:hasToken", presentTokens);
+  template.one("remove", function () {
+    individual.off("bpmn:hasToken", presentTokens);
+  });
+  presentTokens.call(this);
+
+  function presentTokens() {
+    var tokens = this["bpmn:hasToken"];
+
+    overlays.remove({type: "token"});
+
+    var tokensPromises = tokens.map(function (token) {
+      return token.load();
+    });
+    Promise.all(tokensPromises)
+      .then(function (tokens) {
+        tokens.forEach(presentToken);
+      });
+  }
+
+  function presentToken (token) {
+
+    var elementId = token["bpmn:activityId"][0].toString();
+
+    var tokenTemplate = '<a href="#" style="display:block; border: 2px solid gray; border-radius: 20px; opacity:0.5; width: 20px; height: 20px; background: red; color: white;"></a>';
+
+    var tokenRendered = $(tokenTemplate);
+
+    tokenRendered.on("click", function (e) {
+      e.preventDefault();
+      veda.Util.showModal(token, "v-ui:ResourceTemplate");
+    });
+
+    overlays.add(elementId, "token", {
+      position: {
+        top: -18,
+        left: -18
+      },
+      html: tokenRendered
+    });
+  }
+
+//# sourceURL=bpmn:ProcessInstanceTemplate_post
+</script>
+  """ ;
 .
 
-bpmn:StartForm
-  rdf:type rdfs:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Стартовая форма"@ru ;
-  rdfs:label "Start form"@en ;
+bpmn:TokenTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса bpmn:Token"@ru ;
+  rdfs:label "bpmn:TokenTemplate class template"@en ;
+  v-ui:forClass bpmn:Token ;
+  v-ui:template """
+<div class="container sheet">
+</div>
+<script>
+
+//# sourceURL=bpmn:TokenTemplate_post
+</script>
+  """ ;
 .
 
-bpmn:instanceOf
-  rdf:type rdf:Property ;
-  rdfs:label "Экземпляр процесса..."@ru ;
-  rdfs:label "Instance of..."@en ;
-  rdfs:domain bpmn:StartForm ;
-  rdfs:range bpmn:Process ;
-.
+bpmn:WorkOrderTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса bpmn:WorkOrderTemplate"@ru ;
+  rdfs:label "bpmn:WorkOrderTemplate class template"@en ;
+  v-ui:forClass bpmn:Token ;
+  v-ui:template """
+<div class="container sheet">
+</div>
+<script>
 
-############# Test data
-
-td:bpnm-start-form1
-  a bpmn:StartForm;
-  bpmn:instanceOf td:bpmn-process1;
-  bpmn:hasStatusWorkflow bpmn:ToBeStarted;
-  v-wf:from td:AndreyBychin-Analyst2 ;
-  v-wf:to td:ValeriyBushenev-Programmer1;
-  v-wf:onDocument td:AleksandraKhvostikova;
-  rdfs:label "Тест стартовой формы bpmn процесса1"@ru;
-.
-
-td:bpmn-process1
-  a bpmn:Process;
-  rdfs:label "Тест bpmn процесса 1"@ru;
-  bpmn:processDefinition """
-<?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0ydxadt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
-  <bpmn:process id="Process_1" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1">
-      <bpmn:outgoing>Flow_1</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_1" />
-    <bpmn:endEvent id="Event_10">
-      <bpmn:incoming>Flow_1t7qapc</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1t7qapc" sourceRef="Activity_4" targetRef="Event_10" />
-    <bpmn:sequenceFlow id="Flow_4" sourceRef="Activity_3" targetRef="Activity_4">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="js">veda.bpmn.is_all_executors_taken_decision ('v-wf:DecisionRevokeTask') == true || veda.bpmn.is_all_executors_taken_decision ('v-wf:DecisionDeclined') == true</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_1tjb4lf" sourceRef="Activity_3" targetRef="Activity_5">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="js">false</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_12w54ci" sourceRef="Activity_5" targetRef="Activity_7" />
-    <bpmn:sequenceFlow id="Flow_14hytnx" sourceRef="Activity_7" targetRef="Activity_6" />
-    <bpmn:sequenceFlow id="Flow_0qta3vr" sourceRef="Activity_6" targetRef="Activity_5" />
-    <bpmn:sequenceFlow id="Flow_0rq59x8" sourceRef="Activity_7" targetRef="Activity_4" />
-    <bpmn:sequenceFlow id="Flow_0f7bfc6" sourceRef="Activity_7" targetRef="Activity_9" />
-    <bpmn:sequenceFlow id="Flow_1ms0qrx" sourceRef="Activity_8" targetRef="Activity_9" />
-    <bpmn:sequenceFlow id="Flow_2" sourceRef="Activity_1" targetRef="Activity_2" />
-    <bpmn:scriptTask id="Activity_1" name="установить статус - исполнение" scriptFormat="js">
-      <bpmn:incoming>Flow_1</bpmn:incoming>
-      <bpmn:outgoing>Flow_2</bpmn:outgoing>
-      <bpmn:script>print('Установить статус');</bpmn:script>
-    </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="Flow_03zzmuh" sourceRef="Activity_9" targetRef="Activity_3" />
-    <bpmn:userTask id="Activity_3" name="выдача задачи" camunda:asyncAfter="true">
-      <bpmn:extensionElements>
-        <camunda:taskListener event="create">
-          <camunda:script scriptFormat="js">
-var a = {
- '@': veda.Util.genUri() + "-frm",
- 'rdf:type': veda.Util.newUri('bpmn:DecisionForm'),
- 'v-wf:possibleDecisionClass': veda.Util.newUri('v-wf:DecisionAchieved'),
- 'v-wf:isCompleted' :  veda.Util.newBool (false),
- 'v-wf:onDocument' : ['v-wf:onDocument']
- };
-a
-          </camunda:script>
-        </camunda:taskListener>
-        <camunda:taskListener event="assignment">
-          <camunda:script scriptFormat="js">veda.bpmn.get_current_executor_or_from_start_form ()</camunda:script>
-        </camunda:taskListener>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_3</bpmn:incoming>
-      <bpmn:incoming>Flow_03zzmuh</bpmn:incoming>
-      <bpmn:outgoing>Flow_4</bpmn:outgoing>
-      <bpmn:outgoing>Flow_1tjb4lf</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:userTask id="Activity_7" name="создать польз форму">
-      <bpmn:incoming>Flow_12w54ci</bpmn:incoming>
-      <bpmn:outgoing>Flow_14hytnx</bpmn:outgoing>
-      <bpmn:outgoing>Flow_0f7bfc6</bpmn:outgoing>
-      <bpmn:outgoing>Flow_0rq59x8</bpmn:outgoing>
-      <bpmn:outgoing>Flow_0ofjers</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:scriptTask id="Activity_6" name="редирект">
-      <bpmn:incoming>Flow_14hytnx</bpmn:incoming>
-      <bpmn:outgoing>Flow_0qta3vr</bpmn:outgoing>
-    </bpmn:scriptTask>
-    <bpmn:scriptTask id="Activity_5" name="установить права">
-      <bpmn:incoming>Flow_1tjb4lf</bpmn:incoming>
-      <bpmn:incoming>Flow_0qta3vr</bpmn:incoming>
-      <bpmn:outgoing>Flow_12w54ci</bpmn:outgoing>
-    </bpmn:scriptTask>
-    <bpmn:scriptTask id="Activity_8" name="замена ответственного">
-      <bpmn:incoming>Flow_0ofjers</bpmn:incoming>
-      <bpmn:outgoing>Flow_1ms0qrx</bpmn:outgoing>
-    </bpmn:scriptTask>
-    <bpmn:scriptTask id="Activity_9" name="замена срока">
-      <bpmn:incoming>Flow_0f7bfc6</bpmn:incoming>
-      <bpmn:incoming>Flow_1ms0qrx</bpmn:incoming>
-      <bpmn:outgoing>Flow_03zzmuh</bpmn:outgoing>
-    </bpmn:scriptTask>
-    <bpmn:scriptTask id="Activity_4" name="установить статус - исполнено">
-      <bpmn:incoming>Flow_0rq59x8</bpmn:incoming>
-      <bpmn:incoming>Flow_4</bpmn:incoming>
-      <bpmn:outgoing>Flow_1t7qapc</bpmn:outgoing>
-    </bpmn:scriptTask>
-    <bpmn:scriptTask id="Activity_2" name="понизить права на документ" scriptFormat="js">
-      <bpmn:incoming>Flow_2</bpmn:incoming>
-      <bpmn:outgoing>Flow_3</bpmn:outgoing>
-      <bpmn:script>print('Установить права');</bpmn:script>
-    </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="Flow_3" sourceRef="Activity_2" targetRef="Activity_3">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="js">true</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0ofjers" sourceRef="Activity_7" targetRef="Activity_8" />
-  </bpmn:process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
-      <bpmndi:BPMNEdge id="Flow_0qiaznt_di" bpmnElement="Flow_3">
-        <di:waypoint x="550" y="87" />
-        <di:waypoint x="650" y="87" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_03zzmuh_di" bpmnElement="Flow_03zzmuh">
-        <di:waypoint x="700" y="410" />
-        <di:waypoint x="700" y="127" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1rfxfqp_di" bpmnElement="Flow_2">
-        <di:waypoint x="340" y="87" />
-        <di:waypoint x="450" y="87" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1ms0qrx_di" bpmnElement="Flow_1ms0qrx">
-        <di:waypoint x="1260" y="560" />
-        <di:waypoint x="690" y="560" />
-        <di:waypoint x="690" y="490" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0f7bfc6_di" bpmnElement="Flow_0f7bfc6">
-        <di:waypoint x="1130" y="350" />
-        <di:waypoint x="1210" y="390" />
-        <di:waypoint x="1210" y="450" />
-        <di:waypoint x="740" y="450" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0rq59x8_di" bpmnElement="Flow_0rq59x8">
-        <di:waypoint x="1130" y="320" />
-        <di:waypoint x="1370" y="320" />
-        <di:waypoint x="1370" y="127" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1tjb4lf_di" bpmnElement="Flow_1tjb4lf">
-        <di:waypoint x="750" y="110" />
-        <di:waypoint x="790" y="130" />
-        <di:waypoint x="790" y="270" />
-        <di:waypoint x="830" y="270" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1grpw1c_di" bpmnElement="Flow_4">
-        <di:waypoint x="750" y="87" />
-        <di:waypoint x="1320" y="87" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1t7qapc_di" bpmnElement="Flow_1t7qapc">
-        <di:waypoint x="1420" y="87" />
-        <di:waypoint x="1502" y="87" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1i0yh4h_di" bpmnElement="Flow_1">
-        <di:waypoint x="168" y="87" />
-        <di:waypoint x="240" y="87" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ofjers_di" bpmnElement="Flow_0ofjers">
-        <di:waypoint x="1130" y="328" />
-        <di:waypoint x="1270" y="350" />
-        <di:waypoint x="1310" y="390" />
-        <di:waypoint x="1310" y="520" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_12w54ci_di" bpmnElement="Flow_12w54ci">
-        <di:waypoint x="930" y="270" />
-        <di:waypoint x="990" y="270" />
-        <di:waypoint x="990" y="320" />
-        <di:waypoint x="1030" y="320" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_14hytnx_di" bpmnElement="Flow_14hytnx">
-        <di:waypoint x="1130" y="300" />
-        <di:waypoint x="1204" y="260" />
-        <di:waypoint x="1204" y="170" />
-        <di:waypoint x="1130" y="170" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0qta3vr_di" bpmnElement="Flow_0qta3vr">
-        <di:waypoint x="1030" y="170" />
-        <di:waypoint x="980" y="170" />
-        <di:waypoint x="980" y="240" />
-        <di:waypoint x="930" y="240" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Activity_1lhdbvt_di" bpmnElement="Activity_3">
-        <dc:Bounds x="650" y="47" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0lc07ib_di" bpmnElement="Activity_2">
-        <dc:Bounds x="450" y="47" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1gjyqy5_di" bpmnElement="Activity_7">
-        <dc:Bounds x="1030" y="280" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0gs58sp_di" bpmnElement="Activity_5">
-        <dc:Bounds x="830" y="230" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1r7f23q_di" bpmnElement="Activity_6">
-        <dc:Bounds x="1030" y="130" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_17rw89e_di" bpmnElement="Activity_4">
-        <dc:Bounds x="1320" y="47" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1st7261_di" bpmnElement="Event_10">
-        <dc:Bounds x="1502" y="69" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0e3xo53_di" bpmnElement="Activity_8">
-        <dc:Bounds x="1260" y="520" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0wox5fx_di" bpmnElement="Activity_1">
-        <dc:Bounds x="240" y="47" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="132" y="69" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0mxr35w_di" bpmnElement="Activity_9">
-        <dc:Bounds x="640" y="410" width="100" height="80" />
-      </bpmndi:BPMNShape>
-    </bpmndi:BPMNPlane>
-  </bpmndi:BPMNDiagram>
-</bpmn:definitions>
-  """;
+//# sourceURL=bpmn:WorkOrderTemplate_post
+</script>
+  """ ;
 .
