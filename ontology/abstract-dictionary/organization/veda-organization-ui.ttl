@@ -52,6 +52,11 @@ v-s:AddInGroupOrgWithoutLimitedClassTypes
   rdfs:label "Потенциальный доступ ко всему"@ru ;
   rdfs:label "Group with an AD account"@en ;
 .
+v-s:EmployeeValidationBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "В организацию уже введен сотрудик с данными ФИО и датой рождения"@ru ;
+  rdfs:label "The organization has already entered an employee with this full name and date of birth"@en ;
+.
 
 
 # ------------------------------------------------------------ МОДЕЛИ --
@@ -1290,6 +1295,30 @@ v-s:EmployeeEmbeddedTemplate
         }
       });
     }
+    if ( individual.hasValue('v-s:lastName') && individual.hasValue('v-s:firstName') && individual.hasValue('v-s:middleName') && individual.hasValue('v-s:birthday')) {
+      var queryString = "'rdf:type'==='v-s:Person' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'v-s:lastName'=='" + individual['v-s:lastName'][0] + "' && 'v-s:firstName'=='" + individual['v-s:firstName'][0] + "' && 'v-s:middleName'=='" + individual['v-s:middleName'][0] + "' && 'v-s:birthday'=='" + individual['v-s:birthday'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length > 0) {
+          result["v-s:lastName"] = {
+            state: false,
+            cause: ["v-s:EmployeeValidationBundle"]
+          };
+          result["v-s:firstName"] = {
+            state: false,
+            cause: ["v-s:EmployeeValidationBundle"]
+          };
+          result["v-s:middleName"] = {
+            state: false,
+            cause: ["v-s:EmployeeValidationBundle"]
+          };
+          result["v-s:birthday"] = {
+            state: false,
+            cause: ["v-s:EmployeeValidationBundle"]
+          };
+        }
+      });
+    }    
     if (!individual.hasValue('v-s:lastName')) {
       result["v-s:lastName"] = {
         state: false,
