@@ -134,13 +134,13 @@ v-s:subjectGroupGeneratorValue
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
-v-s:TS_GroupGenerator 
+v-s:TS_GroupGenerator
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:GroupGeneratorTemplate;
   v-ui:forClass v-s:GroupGenerator
 .
-v-s:TS_PermissionGenerator 
+v-s:TS_PermissionGenerator
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:PermissionGeneratorTemplate;
@@ -652,8 +652,16 @@ var isDeleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "
 if (isDeleted) {
   var groupsToDeleteFrom = generateGroups(prev_state);
   console.log("document deleted, groups to delete from =", Object.keys(groupsToDeleteFrom));
+
+  var keep, group_label;
   for(var group_uri in groupsToDeleteFrom) {
-    removeMembership(group_uri, groupsToDeleteFrom);
+    keep = groupsToDeleteFrom[group_uri].keep;
+    group_label = groupsToDeleteFrom[group_uri].label;
+    if (keep) {
+      console.log("keep membership in", group_uri, group_label);
+    } else {
+      removeMembership(group_uri, groupsToDeleteFrom);
+    }
   }
   return;
 }
@@ -727,12 +735,7 @@ function addMembership(group_uri, groups) {
 }
 
 function removeMembership(group_uri, groups) {
-  var keep = groups[group_uri].keep;
   var group_label = groups[group_uri].label;
-  if (keep) {
-    console.log("keep membership in", group_uri, group_label);
-    return;
-  }
   var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
   remove_individual(veda.ticket, mem_uri);
   console.log("removed from", group_uri, group_label);
