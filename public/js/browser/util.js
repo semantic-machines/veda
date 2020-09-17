@@ -279,6 +279,9 @@ veda.Module(function (veda) { "use strict";
     modal.modal();
     $("body").append(modal);
     var container = $(".modal-body", modal);
+    if (typeof individual === "string") {
+      individual = new veda.IndividualModel(individual);
+    }
     individual.present(container, template, mode);
     modal.find("#follow").click( function () {
       var resourceTemplate = modal.find("[resource]").first();

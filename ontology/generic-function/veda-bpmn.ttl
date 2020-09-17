@@ -201,7 +201,9 @@ bpmn:ProcessTemplate
   v-ui:forClass bpmn:Process ;
   v-ui:template """
 <div class="container-fluid sheet">
-  <div id="veda-bpmn"></div>
+  <div id="veda-bpmn">
+    <h4 about="@" property="rdfs:label" class="text-center" style="width:100%; position:absolute;z-index:100;top:-0.7em;"></h4>
+  </div>
   <button class="btn btn-success" id="save" about="v-s:Save" property="rdfs:label"></button>
 </div>
 <script>
@@ -241,10 +243,31 @@ bpmn:ProcessInstanceTemplate
   v-ui:forClass bpmn:Process ;
   v-ui:template """
 <div class="container-fluid sheet">
-  <div id="veda-bpmn"></div>
+  <style scoped>
+    .token-chip {
+      display:block;
+      border: 2px solid gray;
+      border-radius: 20px;
+      opacity:0.5;
+      width: 20px;
+      height: 20px;
+      background: red;
+      color: white;
+    }
+  </style>
+  <div id="veda-bpmn">
+    <h4 class="text-center" style="width:100%; position:absolute;z-index:100;top:-0.7em;">
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <span about="@" rel="bpmn:instanceOf" data-template="v-ui:LabelLinkTemplate"></span>
+    </h4>
+  </div>
 </div>
 <script>
   var viewer = new VedaBpmn("veda-bpmn");
+  template.one("remove", function () {
+    viewer.destroy();
+  });
+
   var overlays = viewer.get("overlays");
 
   var process = individual["bpmn:instanceOf"][0];
@@ -258,10 +281,10 @@ bpmn:ProcessInstanceTemplate
   template.one("remove", function () {
     individual.off("bpmn:hasToken", presentTokens);
   });
-  presentTokens.call(this);
+  presentTokens();
 
   function presentTokens() {
-    var tokens = this["bpmn:hasToken"];
+    var tokens = individual["bpmn:hasToken"];
 
     overlays.remove({type: "token"});
 
@@ -274,27 +297,33 @@ bpmn:ProcessInstanceTemplate
       });
   }
 
-  function presentToken (token) {
+  function presentToken (token, index) {
 
     var elementId = token["bpmn:activityId"][0].toString();
 
-    var tokenTemplate = '<a href="#" style="display:block; border: 2px solid gray; border-radius: 20px; opacity:0.5; width: 20px; height: 20px; background: red; color: white;"></a>';
+    var tokenTemplate = '<a href="#" class="token-chip" resource="' + token.id + '"></a>';
 
     var tokenRendered = $(tokenTemplate);
 
-    tokenRendered.on("click", function (e) {
-      e.preventDefault();
-      veda.Util.showModal(token, "v-ui:ResourceTemplate");
-    });
-
     overlays.add(elementId, "token", {
       position: {
-        top: -18,
-        left: -18
+        top: -25,
+        left: 25 * index
       },
       html: tokenRendered
     });
+
+    token.one("propertyModified", presentTokens);
+    template.one("remove", function () {
+      token.off("propertyModified", presentTokens);
+    });
   }
+
+  template.on("click", "a.token-chip", function (e) {
+    e.preventDefault();
+    var token_uri = $(this).attr("resource");
+    veda.Util.showModal(token_uri, "v-ui:ResourceTemplate");
+  });
 
 //# sourceURL=bpmn:ProcessInstanceTemplate_post
 </script>
