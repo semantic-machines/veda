@@ -64,7 +64,19 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                                 }
                                 form.set_bool("v-wf:isCompleted", false);
                                 let work_order = create_work_order(&process_uri, token.get_id(), &activity_id, Some(&executor), Some(form.get_id()), ctx, module)?;
-                                form.set_uri("v-wf:to", &executor);
+
+                                // extract person and occupation
+                                let mut appointment = get_individual(module, &executor)?;
+
+                                form.clear("v-wf:to");
+                                //form.set_uri("v-wf:to", &executor);
+                                if let Some(p) = appointment.get_first_literal("v-s:employee") {
+                                    form.add_uri("v-wf:to", &p);
+                                }
+                                if let Some(p) = appointment.get_first_literal("v-s:occupation") {
+                                    form.add_uri("v-wf:to", &p);
+                                }
+
                                 form.set_uri("bpmn:hasWorkOrder", work_order.get_id());
 
                                 module.api.update_or_err(&ctx.sys_ticket, "", "no-prepare", IndvOp::Put, form)?;
