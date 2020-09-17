@@ -202,7 +202,7 @@ bpmn:ProcessTemplate
   v-ui:template """
 <div class="container-fluid sheet">
   <div id="veda-bpmn">
-    <h4 about="@" property="rdfs:label" class="text-center" style="width:100%; position:absolute;z-index:100;top:-0.7em;"></h4>
+    <h4 about="@" property="rdfs:label" class="text-center" style="width:100%; position:absolute;z-index:1;top:-0.7em;"></h4>
   </div>
   <button class="btn btn-success" id="save" about="v-s:Save" property="rdfs:label"></button>
 </div>
@@ -256,7 +256,7 @@ bpmn:ProcessInstanceTemplate
     }
   </style>
   <div id="veda-bpmn">
-    <h4 class="text-center" style="width:100%; position:absolute;z-index:100;top:-0.7em;">
+    <h4 class="text-center" style="width:100%; position:absolute;z-index:1;top:-0.7em;">
       <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
       <span about="@" rel="bpmn:instanceOf" data-template="v-ui:LabelLinkTemplate"></span>
     </h4>
@@ -297,13 +297,17 @@ bpmn:ProcessInstanceTemplate
       });
   }
 
-  function presentToken (token, index) {
+  function presentToken (token) {
 
     var elementId = token["bpmn:activityId"][0].toString();
 
     var tokenTemplate = '<a href="#" class="token-chip" resource="' + token.id + '"></a>';
 
     var tokenRendered = $(tokenTemplate);
+
+    var elementTokens = overlays.get({ element: elementId, type: 'token' });
+
+    var index = elementTokens.length;
 
     overlays.add(elementId, "token", {
       position: {
