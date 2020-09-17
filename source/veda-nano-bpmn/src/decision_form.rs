@@ -1,4 +1,4 @@
-use crate::common::store_is_completed_into;
+use crate::common::{get_individual, store_is_completed_into};
 use crate::Context;
 use std::error::Error;
 use v_module::module::Module;
@@ -9,17 +9,26 @@ pub fn prepare_decision_form(decision_form: &mut Individual, ctx: &mut Context, 
         return Ok(());
     }
 
-    let taken_decision = decision_form.get_first_literal("v-wf:takenDecision");
-    if taken_decision.is_none() {
+    let taken_decision_uri = decision_form.get_first_literal("v-wf:takenDecision");
+    if taken_decision_uri.is_none() {
         return Ok(());
     }
+    let taken_decision_uri = taken_decision_uri.unwrap();
 
     let possible_decisions = decision_form.get_literals("v-wf:possibleDecisionClass");
     if possible_decisions.is_none() {
         return Ok(());
     }
 
-    if !possible_decisions.unwrap().contains(&taken_decision.unwrap()) {
+    let mut taken_decision = get_individual(module, &taken_decision_uri)?;
+
+    let tdt = taken_decision.get_first_literal("rdf:type");
+    if tdt.is_none() {
+        error!("individual {} not content type", taken_decision_uri);
+        return Ok(());
+    }
+
+    if !possible_decisions.unwrap().contains(&tdt.unwrap()) {
         error!("v-wf:takenDecision not content variant of v-wf:possibleDecisionClass");
         return Ok(());
     }
