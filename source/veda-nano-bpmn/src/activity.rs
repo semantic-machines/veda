@@ -25,7 +25,7 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                 store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
             "bpmn:scriptTask" => {
-                let work_order = create_work_order(&process_uri, token.get_id(), &activity_id, None, None, ctx, module)?;
+                let work_order = create_work_order(&process_instance.get_id(), token.get_id(), &activity_id, None, None, ctx, module)?;
                 store_work_order_into(token.get_id(), work_order.get_id(), &ctx.sys_ticket, module)?;
 
                 let script_id = format!("{}+{}", process_uri, activity_id);
@@ -63,7 +63,8 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                                     form.set_id(&generate_unique_uri("wd:f_", ""));
                                 }
                                 form.set_bool("v-wf:isCompleted", false);
-                                let work_order = create_work_order(&process_uri, token.get_id(), &activity_id, Some(&executor), Some(form.get_id()), ctx, module)?;
+                                let work_order =
+                                    create_work_order(&process_instance.get_id(), token.get_id(), &activity_id, Some(&executor), Some(form.get_id()), ctx, module)?;
 
                                 // extract person and occupation
                                 let mut appointment = get_individual(module, &executor)?;

@@ -49,7 +49,7 @@ pub fn create_work_order(
 }
 
 pub fn prepare_work_order(work_order: &mut Individual, ctx: &mut Context, module: &mut Module, signal: &str) -> Result<(), Box<dyn Error>> {
-    if signal != "prepare_decision_form" {
+    if signal != "prepare-decision-form" {
         return Ok(());
     }
 
