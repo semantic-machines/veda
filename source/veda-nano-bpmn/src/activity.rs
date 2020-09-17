@@ -72,16 +72,17 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                                 //form.set_uri("v-wf:to", &executor);
                                 if let Some(p) = appointment.get_first_literal("v-s:employee") {
                                     form.add_uri("v-wf:to", &p);
+                                    add_right(&p, form.get_id(), ctx, module)?;
                                 }
                                 if let Some(p) = appointment.get_first_literal("v-s:occupation") {
                                     form.add_uri("v-wf:to", &p);
+                                    add_right(&p, form.get_id(), ctx, module)?;
                                 }
 
                                 form.set_uri("bpmn:hasWorkOrder", work_order.get_id());
 
                                 module.api.update_or_err(&ctx.sys_ticket, "", "no-prepare", IndvOp::Put, form)?;
                                 info!("success update, uri={}", form.get_id());
-                                add_right(&executor, form.get_id(), ctx, module)?;
 
                                 store_work_order_into(token.get_id(), work_order.get_id(), &ctx.sys_ticket, module)?;
                             } else {

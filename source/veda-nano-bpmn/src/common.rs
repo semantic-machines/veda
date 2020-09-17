@@ -48,8 +48,9 @@ pub fn add_right(subj_uri: &str, obj_uri: &str, ctx: &mut Context, module: &mut 
     let mut right = Individual::default();
     right.set_id(&generate_unique_uri("wd:r_", ""));
     right.add_uri("rdf:type", "v-s:PermissionStatement");
-    right.add_uri("v-s:permissionObject", subj_uri);
-    right.add_uri("v-s:permissionSubject", obj_uri);
+    right.add_uri("v-s:permissionObject", obj_uri);
+    right.add_uri("v-s:permissionSubject", subj_uri);
+    right.add_bool("v-s:canRead", true);
 
     module.api.update_or_err(&ctx.sys_ticket, "", "add-right", IndvOp::Put, &right)?;
     info!("success update, uri={}", right.get_id());
