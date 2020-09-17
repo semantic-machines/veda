@@ -271,11 +271,11 @@ bpmn:ProcessInstanceTemplate
       padding-left: 1em;
     }
     .token-chip ~ .popover ol li {
-      border-bottom: 1px solid gray;
+      margin-bottom: 5px;
       font-size: 0.9em;
     }
-    .token-chip ~ .popover ol li:only-child {
-      border-bottom: none;
+    .token-chip ~ .popover ol li:only-child, .token-chip ~ .popover ol li:last-child {
+      margin-bottom: 0;
     }
     .token-chip ~ .popover ol li::before {
       font-weight: bold;
