@@ -260,6 +260,25 @@ bpmn:ProcessInstanceTemplate
     .token-chip:hover {
       color: white;
       text-decoration:none;
+      cursor: pointer;
+    }
+    .token-chip ~ .popover {
+      min-width: 250px;
+    }
+    .token-chip ~ .popover ol {
+      list-style-position: outside;
+      margin: 0;
+      padding-left: 1em;
+    }
+    .token-chip ~ .popover ol li {
+      border-bottom: 1px solid gray;
+      font-size: 0.9em;
+    }
+    .token-chip ~ .popover ol li:only-child {
+      border-bottom: none;
+    }
+    .token-chip ~ .popover ol li::before {
+      font-weight: bold;
     }
   </style>
   <div id="veda-bpmn">
@@ -312,12 +331,26 @@ bpmn:ProcessInstanceTemplate
 
     var i = elementTokens.length;
 
+    var token_chip = $('<div class="token-chip" resource="' + token.id + '">' + (index + 1) + '</div>');
+
     overlays.add(elementId, "token", {
       position: {
         top: -25,
         left: 25 * i
       },
-      html: '<a href="#" class="token-chip" resource="' + token.id + '">' + (index + 1) + '</a>'
+      html: token_chip
+    });
+
+    var cntr = $("<ol></ol>");
+    var tmpl = "bpmn:TokenPopoverTemplate";
+    token.present(cntr, tmpl).then(function () {
+        token_chip.popover({
+        trigger: "click",
+        placement: "top",
+        html: true,
+        container: this,
+        content: cntr
+      });
     });
 
     token.one("propertyModified", presentTokens);
@@ -326,29 +359,25 @@ bpmn:ProcessInstanceTemplate
     });
   }
 
-  template.on("click", "a.token-chip", function (e) {
-    e.preventDefault();
-    var token_uri = $(this).attr("resource");
-    veda.Util.showModal(token_uri, "v-ui:ResourceTemplate");
-  });
-
 //# sourceURL=bpmn:ProcessInstanceTemplate_post
 </script>
   """ ;
 .
 
-bpmn:TokenTemplate
+bpmn:TokenPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса bpmn:Token"@ru ;
   rdfs:label "bpmn:TokenTemplate class template"@en ;
   v-ui:forClass bpmn:Token ;
   v-ui:template """
-<div class="container sheet">
-</div>
-<script>
-
-//# sourceURL=bpmn:TokenTemplate_post
-</script>
+<li about="@" rel="bpmn:hasWorkOrder">
+  <div about="@" rel="bpmn:hasExecutor">
+    <div><strong about="bpmn:hasExecutor" property="rdfs:label"></strong> <span about="@" data-template="v-ui:LabelLinkTemplate"></span></div>
+  </div>
+  <div about="@" rel="bpmn:hasDecisionForm">
+    <div><strong about="bpmn:hasDecisionForm" property="rdfs:label"></strong><span about="@" data-template="v-ui:LabelLinkTemplate"></span></div>
+  </div>
+</li>
   """ ;
 .
 
