@@ -245,14 +245,19 @@ bpmn:ProcessInstanceTemplate
 <div class="container-fluid sheet">
   <style scoped>
     .token-chip {
-      display:block;
-      border: 2px solid gray;
-      border-radius: 20px;
-      opacity:0.5;
-      width: 20px;
       height: 20px;
-      background: red;
+      min-width: 20px;
+      display: block;
+      text-align: center;
+      vertical-align: middle;
+      border-radius: 50%;
+      background: orangered;
       color: white;
+      font-weight: bold;
+    }
+    .token-chip:hover {
+      color: white;
+      text-decoration:none;
     }
   </style>
   <div id="veda-bpmn">
@@ -297,24 +302,20 @@ bpmn:ProcessInstanceTemplate
       });
   }
 
-  function presentToken (token) {
+  function presentToken (token, index) {
 
     var elementId = token["bpmn:activityId"][0].toString();
 
-    var tokenTemplate = '<a href="#" class="token-chip" resource="' + token.id + '"></a>';
-
-    var tokenRendered = $(tokenTemplate);
-
     var elementTokens = overlays.get({ element: elementId, type: 'token' });
 
-    var index = elementTokens.length;
+    var i = elementTokens.length;
 
     overlays.add(elementId, "token", {
       position: {
         top: -25,
-        left: 25 * index
+        left: 25 * i
       },
-      html: tokenRendered
+      html: '<a href="#" class="token-chip" resource="' + token.id + '">' + (index + 1) + '</a>'
     });
 
     token.one("propertyModified", presentTokens);
