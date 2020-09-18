@@ -71,8 +71,20 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
 
     if let Some(activity_id) = token.get_first_literal("bpmn:activityId") {
         let mut prev_token_uri = Some(token.get_id().to_owned());
-        let activity_idx = &nt.get_idx_of_id(&activity_id)?;
-        for outgoing_id in nt.get_values_of_tag(activity_idx, "bpmn:outgoing") {
+        let activity_idx = nt.get_idx_of_id(&activity_id)?;
+        let default_flow = nt.get_attribute_of_idx(activity_idx, "default").unwrap_or_default();
+
+        let mut out_ids = vec![];
+        for outgoing_id in nt.get_values_of_tag(&activity_idx, "bpmn:outgoing") {
+            if outgoing_id != default_flow {
+                out_ids.push(outgoing_id.to_owned());
+            }
+        }
+        if !default_flow.is_empty() {
+            out_ids.push(default_flow.to_string());
+        }
+
+        for outgoing_id in out_ids {
             let outgoing_idx = nt.get_idx_of_id(&outgoing_id)?;
             let script_id = format!("{}+{}+{}", process_uri, activity_id, outgoing_id);
 
