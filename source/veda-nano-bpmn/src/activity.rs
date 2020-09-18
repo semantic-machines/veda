@@ -97,7 +97,20 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                     }
                 }
             }
-            "bpmn:exclusiveGateway" => {}
+            "bpmn:exclusiveGateway" => {
+                for el in nt.get_idxs_of_path(&activity_idx, &["bpmn:extensionElements", "camunda:executionListener"]) {
+                    let event_id = nt.get_attribute_of_idx(el, "event")?;
+                    match event_id {
+                        "start" | "end" => {
+                            // calculate listener
+                            let script_id = format!("{}+{}+{}", process_uri, activity_id, event_id);
+                            execute_js(token, process_instance, &script_id, "camunda:script", &el, None, &nt, ctx, &mut OutValue::List(vec![]));
+                        }
+                        _ => {}
+                    }
+                }
+                store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
+            }
             _ => {
                 return Err(Box::new(MyError(format!("unknown activity type [{}]", type_))));
             }

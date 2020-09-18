@@ -73,16 +73,21 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
         let mut prev_token_uri = Some(token.get_id().to_owned());
         let activity_idx = &nt.get_idx_of_id(&activity_id)?;
         for outgoing_id in nt.get_values_of_tag(activity_idx, "bpmn:outgoing") {
-            let script_id = format!("{}+{}", process_uri, activity_id);
+            let outgoing_idx = nt.get_idx_of_id(&outgoing_id)?;
+            let script_id = format!("{}+{}+{}", process_uri, activity_id, outgoing_id);
 
             let mut is_forward = true;
-            let res: bool = false;
-            if execute_js(token, process, &script_id, "bpmn:conditionExpression", &activity_idx, None, &nt, ctx, &mut OutValue::Bool(res)) {
-                is_forward = res;
+            let mut res = OutValue::Bool(false);
+            if execute_js(token, process, &script_id, "bpmn:conditionExpression", &outgoing_idx, None, &nt, ctx, &mut res) {
+                if let OutValue::Bool(true) = res {
+                    is_forward = true;
+                } else {
+                    is_forward = false;
+                }
             }
 
             if is_forward {
-                if let Ok(target_ref) = nt.get_attribute_of_idx(nt.get_idx_of_id(&outgoing_id)?, "targetRef") {
+                if let Ok(target_ref) = nt.get_attribute_of_idx(outgoing_idx, "targetRef") {
                     let forwarder_token_id = create_token_and_store(prev_token_uri, &process_uri, &process_instance_uri, target_ref, ctx, module)?;
                     info!("FORWARD TOKEN {} FROM {} TO {}->{}", forwarder_token_id, activity_id, outgoing_id, target_ref);
                     prev_token_uri = None;
