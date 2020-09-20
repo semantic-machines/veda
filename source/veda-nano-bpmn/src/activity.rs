@@ -111,6 +111,9 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                 }
                 store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
+            "bpmn:parallelGateway" => {
+                store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
+            }
             _ => {
                 return Err(Box::new(MyError(format!("unknown activity type [{}]", type_))));
             }

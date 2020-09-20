@@ -18,6 +18,17 @@ impl fmt::Display for MyError {
 
 impl Error for MyError {}
 
+pub fn store_token_into(dest_uri: &str, token_uri: &str, sys_ticket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
+    let indv = &mut Individual::default();
+    indv.set_id(dest_uri);
+    indv.add_uri("bpmn:hasToken", token_uri);
+
+    module.api.update_or_err(sys_ticket, "", "store-token-into", IndvOp::AddTo, indv)?;
+    info!("success update, uri={}", indv.get_id());
+
+    Ok(())
+}
+
 pub fn store_work_order_into(dest_uri: &str, work_order_uri: &str, sys_ticket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let indv = &mut Individual::default();
     indv.set_id(dest_uri);
