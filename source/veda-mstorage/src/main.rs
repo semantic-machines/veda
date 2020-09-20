@@ -229,7 +229,7 @@ fn request_prepare(
             cmd = IndvOp::Remove;
         }
         "add_to" => {
-            cmd = IndvOp::AddIn;
+            cmd = IndvOp::AddTo;
         }
         "set_in" => {
             cmd = IndvOp::SetIn;
@@ -316,7 +316,7 @@ fn operation_prepare(
         }
     }
 
-    if prev_indv.is_empty() && (cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom) {
+    if prev_indv.is_empty() && (cmd == IndvOp::AddTo || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom) {
         error!("fail update, cmd={:?}: not read prev_state uri={}", cmd, new_indv.get_id());
         return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
     }
@@ -399,7 +399,7 @@ fn operation_prepare(
         new_indv.set_bool("v-s:deleted", true);
     }
 
-    if cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
+    if cmd == IndvOp::AddTo || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
         indv_apply_cmd(&cmd, &mut prev_indv, new_indv);
 
         if !to_storage_and_queue(

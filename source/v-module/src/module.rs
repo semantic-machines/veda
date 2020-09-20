@@ -525,7 +525,7 @@ pub fn indv_apply_cmd(cmd: &IndvOp, prev_indv: &mut Individual, indv: &mut Indiv
 
         for predicate in list_predicates {
             if predicate != "v-s:updateCounter" {
-                if cmd == &IndvOp::AddIn {
+                if cmd == &IndvOp::AddTo {
                     // add value to set or ignore if exists
                     prev_indv.apply_predicate_as_add_unique(&predicate, indv);
                 } else if cmd == &IndvOp::SetIn {

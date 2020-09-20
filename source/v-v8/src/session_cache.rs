@@ -137,7 +137,7 @@ impl Transaction {
         } else {
             ti.uri = ti.indv.get_id().to_string();
 
-            if ti.cmd == IndvOp::AddIn || ti.cmd == IndvOp::SetIn || ti.cmd == IndvOp::RemoveFrom {
+            if ti.cmd == IndvOp::AddTo || ti.cmd == IndvOp::SetIn || ti.cmd == IndvOp::RemoveFrom {
                 if let Some(mut prev_indv) = self.get_indv(ti.indv.get_id()) {
                     debug!("{:?} BEFORE: {}", ti.cmd, &prev_indv);
                     debug!("{:?} APPLY: {}", ti.cmd, &ti.indv);
