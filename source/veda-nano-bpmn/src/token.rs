@@ -72,7 +72,7 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
     if let Some(activity_id) = token.get_first_literal("bpmn:activityId") {
         let mut prev_token_uri = Some(token.get_id().to_owned());
         let activity_idx = nt.get_idx_of_id(&activity_id)?;
-        //let type_ = nt.get_type_of_idx(activity_idx)?;
+        let type_ = nt.get_type_of_idx(activity_idx)?;
         let default_flow = nt.get_attribute_of_idx(activity_idx, "default").unwrap_or_default();
 
         let mut out_ids = vec![];
@@ -107,6 +107,10 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
                     }
                     info!("FORWARD TOKEN {} FROM {} TO {}->{}", forwarder_token_id, activity_id, outgoing_id, target_ref);
                     prev_token_uri = None;
+                }
+
+                if type_ == "bpmn:exclusiveGateway" {
+                    break;
                 }
             }
         }

@@ -97,7 +97,7 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                     }
                 }
             }
-            "bpmn:exclusiveGateway" => {
+            "bpmn:exclusiveGateway" | "bpmn:inclusiveGateway" | "bpmn:parallelGateway" => {
                 for el in nt.get_idxs_of_path(&activity_idx, &["bpmn:extensionElements", "camunda:executionListener"]) {
                     let event_id = nt.get_attribute_of_idx(el, "event")?;
                     match event_id {
@@ -109,9 +109,6 @@ pub fn prepare_activity(token: &mut Individual, ctx: &mut Context, module: &mut 
                         _ => {}
                     }
                 }
-                store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
-            }
-            "bpmn:parallelGateway" => {
                 store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
             _ => {
