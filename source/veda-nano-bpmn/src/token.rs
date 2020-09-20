@@ -1,4 +1,4 @@
-use crate::activity::prepare_activity;
+use crate::element::prepare_element;
 use crate::common::{get_individual, store_token_into};
 use crate::process_source::get_process_source;
 use crate::script::{execute_js, OutValue};
@@ -14,11 +14,12 @@ pub fn create_token_and_store(
     new_token_uri: Option<String>,
     process_uri: &str,
     process_instance_uri: &str,
-    activity_id: &str,
+    incoming_element_id: &str,
+    element_id: &str,
     ctx: &Context,
     module: &mut Module,
 ) -> Result<String, Box<dyn Error>> {
-    info!("CREATE TOKEN, ACTIVITY={} PROCESS={}", activity_id, process_uri);
+    info!("CREATE TOKEN, ELEMENT={} PROCESS={}", element_id, process_uri);
 
     // generate token instance
     let token = &mut Individual::default();
@@ -31,7 +32,8 @@ pub fn create_token_and_store(
     token.add_uri("rdf:type", "bpmn:Token");
     token.add_uri("bpmn:hasProcess", process_uri);
     token.add_uri("bpmn:hasProcessInstance", process_instance_uri);
-    token.add_string("bpmn:activityId", activity_id, Lang::NONE);
+    token.add_string("bpmn:inElementId", incoming_element_id, Lang::NONE);
+    token.add_string("bpmn:elementId", element_id, Lang::NONE);
 
     module.api.update_or_err(&ctx.sys_ticket, "", "go-prepare", IndvOp::Put, token)?;
     info!("success update, uri={}", token.get_id());
@@ -58,7 +60,7 @@ pub fn prepare_token(token: &mut Individual, ctx: &mut Context, module: &mut Mod
     if token.is_exists_bool("bpmn:isCompleted", true) {
         forward_token(token, ctx, module)?;
     } else {
-        prepare_activity(token, ctx, module)?;
+        prepare_element(token, ctx, module)?;
     }
     Ok(())
 }
@@ -69,14 +71,14 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
     let process = &mut get_individual(module, &process_uri)?;
     let nt = get_process_source(process)?;
 
-    if let Some(activity_id) = token.get_first_literal("bpmn:activityId") {
+    if let Some(element_id) = token.get_first_literal("bpmn:elementId") {
         let mut prev_token_uri = Some(token.get_id().to_owned());
-        let activity_idx = nt.get_idx_of_id(&activity_id)?;
-        let type_ = nt.get_type_of_idx(activity_idx)?;
-        let default_flow = nt.get_attribute_of_idx(activity_idx, "default").unwrap_or_default();
+        let element_idx = nt.get_idx_of_id(&element_id)?;
+        let type_ = nt.get_type_of_idx(element_idx)?;
+        let default_flow = nt.get_attribute_of_idx(element_idx, "default").unwrap_or_default();
 
         let mut out_ids = vec![];
-        for outgoing_id in nt.get_values_of_tag(&activity_idx, "bpmn:outgoing") {
+        for outgoing_id in nt.get_values_of_tag(&element_idx, "bpmn:outgoing") {
             if outgoing_id != default_flow {
                 out_ids.push(outgoing_id.to_owned());
             }
@@ -87,7 +89,7 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
 
         for outgoing_id in out_ids {
             let outgoing_idx = nt.get_idx_of_id(&outgoing_id)?;
-            let script_id = format!("{}+{}+{}", process_uri, activity_id, outgoing_id);
+            let script_id = format!("{}+{}+{}", process_uri, element_id, outgoing_id);
 
             let mut is_forward = true;
             let mut res = OutValue::Bool(false);
@@ -101,11 +103,11 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
 
             if is_forward {
                 if let Ok(target_ref) = nt.get_attribute_of_idx(outgoing_idx, "targetRef") {
-                    let forwarder_token_id = create_token_and_store(prev_token_uri.clone(), &process_uri, &process_instance_uri, target_ref, ctx, module)?;
+                    let forwarder_token_id = create_token_and_store(prev_token_uri.clone(), &process_uri, &process_instance_uri, &element_id, target_ref, ctx, module)?;
                     if prev_token_uri.is_none() {
                         store_token_into(&process_instance_uri, &forwarder_token_id, &ctx.sys_ticket, module)?;
                     }
-                    info!("FORWARD TOKEN {} FROM {} TO {}->{}", forwarder_token_id, activity_id, outgoing_id, target_ref);
+                    info!("FORWARD TOKEN {} FROM {} TO {}->{}", forwarder_token_id, element_id, outgoing_id, target_ref);
                     prev_token_uri = None;
                 }
 

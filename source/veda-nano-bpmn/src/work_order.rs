@@ -10,15 +10,15 @@ use v_onto::individual::Individual;
 pub fn create_work_order(
     process_instance_uri: &str,
     token_uri: &str,
-    activity_id: &str,
+    element_id: &str,
     executor_uri: Option<&str>,
     decision_form_uri: Option<&str>,
     ctx: &Context,
     module: &mut Module,
 ) -> Result<Individual, Box<dyn Error>> {
     info!(
-        "CREATE WORK ORDER, ACTIVITY={}, TOKEN={}, EXEC.={}, FORM={}, PROC.INST.={}",
-        activity_id,
+        "CREATE WORK ORDER, ELEMENT={}, TOKEN={}, EXEC.={}, FORM={}, PROC.INST.={}",
+        element_id,
         token_uri,
         executor_uri.unwrap_or_default(),
         decision_form_uri.unwrap_or_default(),
@@ -32,7 +32,7 @@ pub fn create_work_order(
     work_order.add_uri("rdf:type", "bpmn:WorkOrder");
     work_order.add_uri("bpmn:hasProcessInstance", process_instance_uri);
     work_order.add_uri("bpmn:hasToken", token_uri);
-    work_order.add_string("bpmn:activityId", activity_id, Lang::NONE);
+    work_order.add_string("bpmn:elementId", element_id, Lang::NONE);
 
     if let Some(r) = executor_uri {
         work_order.add_uri("bpmn:hasExecutor", r);

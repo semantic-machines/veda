@@ -32,7 +32,7 @@ pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &C
     for el in start_events_idx {
         let activity_id = route.get_id_of_idx(el)?;
         info!("FOUND START EVENT {}", activity_id);
-        let token_uri = create_token_and_store(None, &route.id, process_instance.get_id(), activity_id, ctx, module)?;
+        let token_uri = create_token_and_store(None, &route.id, process_instance.get_id(), activity_id, activity_id, ctx, module)?;
         process_instance.add_uri("bpmn:hasToken", &token_uri);
     }
 
