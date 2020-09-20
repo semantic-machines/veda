@@ -25,8 +25,8 @@ impl fmt::Display for ApiError {
 
 impl Error for ApiError {}
 
-impl ApiError {
-    fn new() -> Self {
+impl Default for ApiError {
+    fn default() -> Self {
         ApiError {
             result: ResultCode::Zero,
             info: Default::default(),
@@ -52,7 +52,7 @@ pub enum IndvOp {
     SetIn = 45,
 
     /// Добавить в
-    AddIn = 47,
+    AddTo = 47,
 
     /// Убрать из
     RemoveFrom = 48,
@@ -69,7 +69,7 @@ impl IndvOp {
             1 => IndvOp::Put,
             2 => IndvOp::Get,
             51 => IndvOp::Remove,
-            47 => IndvOp::AddIn,
+            47 => IndvOp::AddTo,
             45 => IndvOp::SetIn,
             48 => IndvOp::RemoveFrom,
             8 => IndvOp::Authorize,
@@ -84,7 +84,7 @@ impl IndvOp {
             IndvOp::Put => 1,
             IndvOp::Get => 2,
             IndvOp::Remove => 51,
-            IndvOp::AddIn => 47,
+            IndvOp::AddTo => 47,
             IndvOp::SetIn => 45,
             IndvOp::RemoveFrom => 48,
             IndvOp::Authorize => 8,
@@ -99,7 +99,7 @@ impl IndvOp {
             IndvOp::Get => "get",
             IndvOp::Put => "put",
             IndvOp::Remove => "remove",
-            IndvOp::AddIn => "add_in",
+            IndvOp::AddTo => "add_to",
             IndvOp::SetIn => "set_in",
             IndvOp::RemoveFrom => "remove_from",
             IndvOp::Authorize => "authorize",
@@ -165,7 +165,10 @@ impl APIClient {
         if res.result == ResultCode::Ok {
             Ok(res)
         } else {
-            Err(ApiError::new())
+            Err(ApiError {
+                result: res.result,
+                info: "update_or_err".to_owned(),
+            })
         }
     }
 

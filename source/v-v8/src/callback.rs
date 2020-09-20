@@ -246,7 +246,7 @@ pub fn fn_callback_remove_individual(scope: &mut v8::HandleScope, args: v8::Func
     fn_callback_update(IndvOp::Remove, scope, args, rv);
 }
 pub fn fn_callback_add_to_individual(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
-    fn_callback_update(IndvOp::AddIn, scope, args, rv);
+    fn_callback_update(IndvOp::AddTo, scope, args, rv);
 }
 pub fn fn_callback_set_in_individual(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, rv: v8::ReturnValue) {
     fn_callback_update(IndvOp::SetIn, scope, args, rv);
