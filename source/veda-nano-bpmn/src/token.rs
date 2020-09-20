@@ -1,5 +1,5 @@
 use crate::activity::prepare_activity;
-use crate::common::get_individual;
+use crate::common::{get_individual, store_token_into};
 use crate::process_source::get_process_source;
 use crate::script::{execute_js, OutValue};
 use crate::Context;
@@ -72,6 +72,7 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
     if let Some(activity_id) = token.get_first_literal("bpmn:activityId") {
         let mut prev_token_uri = Some(token.get_id().to_owned());
         let activity_idx = nt.get_idx_of_id(&activity_id)?;
+        //let type_ = nt.get_type_of_idx(activity_idx)?;
         let default_flow = nt.get_attribute_of_idx(activity_idx, "default").unwrap_or_default();
 
         let mut out_ids = vec![];
@@ -100,7 +101,10 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
 
             if is_forward {
                 if let Ok(target_ref) = nt.get_attribute_of_idx(outgoing_idx, "targetRef") {
-                    let forwarder_token_id = create_token_and_store(prev_token_uri, &process_uri, &process_instance_uri, target_ref, ctx, module)?;
+                    let forwarder_token_id = create_token_and_store(prev_token_uri.clone(), &process_uri, &process_instance_uri, target_ref, ctx, module)?;
+                    if prev_token_uri.is_none() {
+                        store_token_into(&process_instance_uri, &forwarder_token_id, &ctx.sys_ticket, module)?;
+                    }
                     info!("FORWARD TOKEN {} FROM {} TO {}->{}", forwarder_token_id, activity_id, outgoing_id, target_ref);
                     prev_token_uri = None;
                 }
