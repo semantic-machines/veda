@@ -15,7 +15,7 @@ pub fn prepare_element(token: &mut Individual, ctx: &mut Context, module: &mut M
     let nt = get_process_source(process)?;
 
     if let Some(element_id) = token.get_first_literal("bpmn:elementId") {
-        info!("PREPARE ELEMENT TOKEN={} ELEMENT={}", token.get_id(), element_id);
+        info!("TOKEN={} INGOING TO [{}]", token.get_id(), element_id);
         let element_idx = nt.get_idx_of_id(&element_id)?;
         let type_ = nt.get_type_of_idx(element_idx)?;
         match type_ {
@@ -29,7 +29,35 @@ pub fn prepare_element(token: &mut Individual, ctx: &mut Context, module: &mut M
                 token_ingoing_to_user_task(token, &element_id, &process_uri, process_instance, &nt, ctx, module)?;
             }
             "bpmn:parallelGateway" => {
-                //let mut in_ids = nt.get_values_of_tag(&element_idx, "bpmn:ingoing");
+                let in_ids = nt.get_values_of_tag(&element_idx, "bpmn:ingoing");
+                let mut count_full_ingoing = 0;
+
+                if in_ids.len() > 1 {
+                    if let Some(token_ids) = process_instance.get_literals("bpmn:hasToken") {
+                        for t_id in token_ids {
+                            if t_id == token.get_id() {
+                                continue;
+                            }
+                            let mut t = get_individual(module, &t_id)?;
+                            if let Some(el_id) = &t.get_first_literal("bpmn:elementId") {
+                                for ingoing_id in in_ids.iter() {
+                                    if el_id == ingoing_id {
+                                        count_full_ingoing += 1;
+                                    }
+                                }
+                            }
+                            if count_full_ingoing + 1 >= in_ids.len() {
+                                break;
+                            }
+                        }
+
+                        if count_full_ingoing + 1 >= in_ids.len() {
+                            store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
+                        }
+                    }
+                } else {
+                    store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
+                }
             }
             "bpmn:exclusiveGateway" | "bpmn:inclusiveGateway" => {
                 for el in nt.get_idxs_of_path(&element_idx, &["bpmn:extensionElements", "camunda:executionListener"]) {

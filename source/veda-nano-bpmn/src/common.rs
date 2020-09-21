@@ -89,3 +89,12 @@ pub fn get_individual(module: &mut Module, uri: &str) -> Result<Individual, Box<
     }
     Ok(indv)
 }
+/*
+pub fn get_tokens_from_process_instance(process_instance: &mut Individual, module: &mut Module) -> Result<Vec<Individual>, Box<dyn Error>> {
+    let res
+    if let Some (t) = process_instance.get_literals("bpmn:hasToken") {
+
+    }
+    Ok (())
+}
+*/
