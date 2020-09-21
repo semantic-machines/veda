@@ -126,10 +126,10 @@ bpmn:Token
   rdfs:label "Token"@en ;
   v-ui:hasTemplate v-ui:ResourceTemplate ;
 .
-bpmn:activityId
+bpmn:elementId
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Id действия"@ru ;
-  rdfs:label "Activity Id"@en ;
+  rdfs:label "Id элемента"@ru ;
+  rdfs:label "Element Id"@en ;
   rdfs:domain bpmn:Token ;
   rdfs:domain bpmn:WorkOrder ;
   rdfs:range xsd:string ;
@@ -344,7 +344,7 @@ bpmn:ProcessInstanceTemplate
 
   function presentToken (token, index) {
 
-    var elementId = token["bpmn:activityId"][0].toString();
+    var elementId = token["bpmn:elementId"][0].toString();
 
     var elementTokens = overlays.get({ element: elementId, type: 'token' });
 
