@@ -7,13 +7,15 @@ extern crate nanoid;
 extern crate serde;
 extern crate serde_derive;
 
-mod element;
 mod common;
 mod decision_form;
+mod element;
 mod process_instance;
 mod process_source;
 mod script;
+mod script_task;
 mod token;
+mod user_task;
 mod work_order;
 
 use crate::common::{get_individual, is_start_form};
