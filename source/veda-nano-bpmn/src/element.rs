@@ -1,10 +1,11 @@
-use crate::common::{get_individual, store_is_completed_into, MyError};
+use crate::common::{get_individual, set_and_store_token_into, store_is_completed_into, MyError};
 use crate::process_source::get_process_source;
 use crate::script::{execute_js, OutValue};
 use crate::script_task::token_ingoing_to_script_task;
 use crate::user_task::token_ingoing_to_user_task;
 use crate::Context;
 use std::error::Error;
+use v_api::IndvOp;
 use v_module::module::Module;
 use v_onto::individual::Individual;
 
@@ -29,28 +30,38 @@ pub fn prepare_element(token: &mut Individual, ctx: &mut Context, module: &mut M
                 token_ingoing_to_user_task(token, &element_id, &process_uri, process_instance, &nt, ctx, module)?;
             }
             "bpmn:parallelGateway" => {
-                let mut count_full_ingoing = 0;
-
                 if let Some(token_ids) = process_instance.get_literals("bpmn:hasToken") {
+                    let incoming = nt.get_values_of_tag(&element_idx, "bpmn:incoming");
+                    let mut incoming_tokens = vec![];
+                    let mut other_token_uris = vec![];
+                    other_token_uris.push(token.get_id());
+
+                    // check all tokens
                     for t_id in token_ids.iter() {
-                        if t_id == token.get_id() {
-                            count_full_ingoing += 1;
-                            continue;
-                        }
-                        let mut t = get_individual(module, &t_id)?;
-                        if let Some(el_id) = &t.get_first_literal("bpmn:elementId") {
-                            warn!("el_id={}", el_id);
-                            if *el_id == element_id {
-                                count_full_ingoing += 1;
+                        if t_id != token.get_id() {
+                            let mut t = get_individual(module, &t_id)?;
+                            if let Some(el_id) = &t.get_first_literal("bpmn:elementId") {
+                                if *el_id == element_id {
+                                    warn!("found token={} el_id={}", t_id, el_id);
+                                    incoming_tokens.push(t);
+                                } else {
+                                    other_token_uris.push(t_id.as_str());
+                                }
                             }
-                        }
-                        if count_full_ingoing + 1 >= token_ids.len() {
-                            break;
                         }
                     }
 
-                    if count_full_ingoing + 1 >= token_ids.len() {
+                    if incoming_tokens.len() + 1 >= incoming.len() {
+                        // forward first token
                         store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
+
+                        // remove other incoming tokens
+                        for t in incoming_tokens {
+                            module.api.update_or_err(&ctx.sys_ticket, "", "", IndvOp::Remove, &t)?;
+                        }
+
+                        // remove other incoming tokens from process instance
+                        set_and_store_token_into(process_instance.get_id(), &other_token_uris, &ctx.sys_ticket, module)?;
                     }
                 }
             }
