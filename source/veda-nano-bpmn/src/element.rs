@@ -1,4 +1,5 @@
 use crate::common::{get_individual, set_and_store_token_into, store_is_completed_into, MyError};
+use crate::process_instance::start_process;
 use crate::process_source::get_process_source;
 use crate::script::{execute_js, OutValue};
 use crate::script_task::token_ingoing_to_script_task;
@@ -20,6 +21,15 @@ pub fn prepare_element(token: &mut Individual, ctx: &mut Context, module: &mut M
         let element_idx = nt.get_idx_of_id(&element_id)?;
         let type_ = nt.get_type_of_idx(element_idx)?;
         match type_ {
+            "bpmn:callActivity" => {
+                if let Ok(called_element) = nt.get_attribute_of_idx(element_idx, "calledElement") {
+                    warn!("bpmn:callActivity, calledElement={}", called_element);
+                    let mut process = get_individual(module, &called_element)?;
+                    let nt = get_process_source(&mut process)?;
+                    let start_form_id = process_instance.get_id();
+                    start_process(start_form_id, nt, ctx, module)?;
+                }
+            }
             "bpmn:startEvent" | "bpmn:endEvent" => {
                 store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
             }
