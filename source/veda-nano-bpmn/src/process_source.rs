@@ -190,7 +190,7 @@ fn end_create_node(arena: &mut Arena<XNode>, cur_node: &mut NodeId) -> Result<()
     Ok(())
 }
 
-fn start_create_node(ref e: &BytesStart, arena: &mut Arena<XNode>, cur_node: &mut NodeId) -> Result<(String, NodeId), Box<dyn Error>> {
+fn start_create_node(e: &BytesStart, arena: &mut Arena<XNode>, cur_node: &mut NodeId) -> Result<(String, NodeId), Box<dyn Error>> {
     let tag = str::from_utf8(e.name()).unwrap();
 
     let node_id = arena.new_node(XNode {
