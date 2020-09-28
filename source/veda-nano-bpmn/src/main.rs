@@ -14,15 +14,15 @@ mod process_instance;
 mod process_source;
 mod script;
 mod script_task;
+mod start_form;
 mod token;
 mod user_task;
 mod work_order;
 
-use crate::common::{get_individual, is_start_form};
+use crate::common::is_start_form;
 use crate::decision_form::{is_decision_form, prepare_decision_form};
-use crate::process_instance::start_process;
-use crate::process_source::get_process_source;
 use crate::script::ScriptInfoContext;
+use crate::start_form::prepare_start_form;
 use crate::token::{is_token, prepare_token};
 use crate::work_order::{is_work_order, prepare_work_order};
 use rusty_v8 as v8;
@@ -179,14 +179,7 @@ fn prepare_and_err(
     let rdf_types = new_state.get_literals("rdf:type").unwrap_or_default();
 
     if is_start_form(&rdf_types, &mut ctx.onto) && signal == "?" {
-        if new_state.any_exists("bpmn:hasStatus", &["bpmn:ToBeStarted"]) {
-            if let Some(process_uri) = new_state.get_first_literal("bpmn:startProcess") {
-                let mut process = get_individual(module, &process_uri)?;
-                let nt = get_process_source(&mut process)?;
-                let start_form_id = new_state.get_id();
-                start_process(start_form_id, nt, ctx, module)?;
-            }
-        }
+        prepare_start_form(&mut new_state, ctx, module, &signal)?;
         return Ok(true);
     }
 
