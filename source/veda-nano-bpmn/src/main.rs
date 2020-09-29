@@ -21,14 +21,13 @@ mod work_order;
 
 use crate::common::is_start_form;
 use crate::decision_form::{is_decision_form, prepare_decision_form};
-use crate::script::ScriptInfoContext;
+use crate::script::{setup, ScriptInfoContext};
 use crate::start_form::prepare_start_form;
 use crate::token::{is_token, prepare_token};
 use crate::work_order::{is_work_order, prepare_work_order};
 use rusty_v8 as v8;
 use rusty_v8::Isolate;
 use std::error::Error;
-use std::sync::Mutex;
 use std::thread;
 use v_module::info::ModuleInfo;
 use v_module::module::{get_cmd, get_inner_binobj_as_individual, init_log, Module, PrepareError};
@@ -43,29 +42,6 @@ pub struct Context<'a> {
     sys_ticket: String,
     onto: Onto,
     workplace: ScriptsWorkPlace<'a, ScriptInfoContext>,
-}
-
-lazy_static! {
-    static ref INIT_LOCK: Mutex<u32> = Mutex::new(0);
-}
-
-#[must_use]
-struct SetupGuard {}
-
-impl Drop for SetupGuard {
-    fn drop(&mut self) {
-        // TODO shutdown process cleanly.
-    }
-}
-
-fn setup() -> SetupGuard {
-    let mut g = INIT_LOCK.lock().unwrap();
-    *g += 1;
-    if *g == 1 {
-        v8::V8::initialize_platform(v8::new_default_platform().unwrap());
-        v8::V8::initialize();
-    }
-    SetupGuard {}
 }
 
 fn get_storage_init_param() -> String {
@@ -87,13 +63,12 @@ fn main() -> Result<(), i32> {
     thread::spawn(move || inproc_storage_manager(get_storage_init_param()));
 
     let _setup_guard = setup();
-
     let isolate = &mut v8::Isolate::new(Default::default());
 
-    main0(isolate)
+    listen_queue(isolate)
 }
 
-fn main0<'a>(isolate: &'a mut Isolate) -> Result<(), i32> {
+fn listen_queue<'a>(isolate: &'a mut Isolate) -> Result<(), i32> {
     let mut module = Module::default();
     let systicket;
     if let Ok(t) = module.get_sys_ticket_id() {
