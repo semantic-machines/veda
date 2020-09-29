@@ -1,12 +1,37 @@
 use crate::process_source::IndexedNodeTree;
 use crate::Context;
 use indextree::NodeId;
+use rusty_v8 as v8;
 use rusty_v8::{ContextScope, Integer};
+use std::sync::Mutex;
 use v_onto::individual::Individual;
 use v_v8::callback::*;
 use v_v8::common::v8obj_into_individual;
 use v_v8::scripts_workplace::{ScriptInfo, ScriptsWorkPlace};
 use v_v8::session_cache::CallbackSharedData;
+
+lazy_static! {
+    static ref INIT_LOCK: Mutex<u32> = Mutex::new(0);
+}
+
+#[must_use]
+pub struct SetupGuard {}
+
+impl Drop for SetupGuard {
+    fn drop(&mut self) {
+        // TODO shutdown process cleanly.
+    }
+}
+
+pub fn setup() -> SetupGuard {
+    let mut g = INIT_LOCK.lock().unwrap();
+    *g += 1;
+    if *g == 1 {
+        v8::V8::initialize_platform(v8::new_default_platform().unwrap());
+        v8::V8::initialize();
+    }
+    SetupGuard {}
+}
 
 pub(crate) struct ScriptInfoContext {}
 
