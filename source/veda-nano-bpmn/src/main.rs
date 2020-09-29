@@ -12,18 +12,18 @@ mod decision_form;
 mod element;
 mod process_instance;
 mod process_source;
-mod script;
 mod script_task;
 mod start_form;
 mod token;
 mod user_task;
+mod v8_script;
 mod work_order;
 
-use crate::common::is_start_form;
+use crate::common::{get_storage_init_param, is_start_form};
 use crate::decision_form::{is_decision_form, prepare_decision_form};
-use crate::script::{setup, ScriptInfoContext};
 use crate::start_form::prepare_start_form;
 use crate::token::{is_token, prepare_token};
+use crate::v8_script::{setup, ScriptInfoContext};
 use crate::work_order::{is_work_order, prepare_work_order};
 use rusty_v8 as v8;
 use rusty_v8::Isolate;
@@ -42,20 +42,6 @@ pub struct Context<'a> {
     sys_ticket: String,
     onto: Onto,
     workplace: ScriptsWorkPlace<'a, ScriptInfoContext>,
-}
-
-fn get_storage_init_param() -> String {
-    let tarantool_addr = if let Some(p) = Module::get_property("tarantool_url") {
-        p
-    } else {
-        warn!("param [tarantool_url] not found in veda.properties");
-        "".to_owned()
-    };
-
-    if !tarantool_addr.is_empty() {
-        info!("tarantool addr={}", &tarantool_addr);
-    }
-    tarantool_addr
 }
 
 fn main() -> Result<(), i32> {

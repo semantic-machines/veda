@@ -1,7 +1,7 @@
 use crate::common::{add_and_store_token_into, get_individual};
 use crate::element::prepare_element;
 use crate::process_source::get_process_source;
-use crate::script::{execute_js, OutValue};
+use crate::v8_script::{execute_js, OutValue};
 use crate::Context;
 use std::error::Error;
 use v_api::app::generate_unique_uri;
