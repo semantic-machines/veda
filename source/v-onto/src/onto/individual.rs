@@ -170,6 +170,23 @@ impl Individual {
         self.obj.add_integer(predicate, i)
     }
 
+    pub fn set_resources(&mut self, predicate: &str, v: Vec<Resource>) {
+        for el in v.iter() {
+            match el.rtype {
+                DataType::String => self.set_string(predicate, el.get_str(), el.get_lang()),
+                DataType::Uri => self.set_uri(predicate, el.get_uri()),
+                DataType::Datetime => self.set_datetime(predicate, el.get_datetime()),
+                DataType::Integer => self.set_integer(predicate, el.get_int()),
+                DataType::Decimal => {
+                    let d = el.get_num();
+                    self.set_decimal_d(predicate, d.0, d.1);
+                }
+                DataType::Boolean => self.set_bool(predicate, el.get_bool()),
+                DataType::Binary => {}
+            }
+        }
+    }
+
     pub fn set_integer(&mut self, predicate: &str, i: i64) {
         self.obj.set_integer(predicate, i)
     }
