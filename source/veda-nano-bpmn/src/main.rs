@@ -10,6 +10,7 @@ extern crate serde_derive;
 mod common;
 mod decision_form;
 mod element;
+mod gateway;
 mod process_instance;
 mod process_source;
 mod script_task;
