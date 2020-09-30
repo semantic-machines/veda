@@ -20,7 +20,7 @@ pub(crate) fn start_process(
     // generate process instance
     let process_instance = input_variables;
     process_instance.set_id(&generate_unique_uri("wd:pr_", ""));
-    process_instance.add_uri("rdf:type", "bpmn:ProcessInstance");
+    process_instance.set_uri("rdf:type", "bpmn:ProcessInstance");
     process_instance.add_uri("bpmn:hasStartForm", start_form_id);
     process_instance.add_uri("bpmn:instanceOf", &route.id);
 
