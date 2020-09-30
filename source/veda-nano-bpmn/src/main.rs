@@ -7,6 +7,7 @@ extern crate nanoid;
 extern crate serde;
 extern crate serde_derive;
 
+mod call_activity;
 mod common;
 mod decision_form;
 mod element;
