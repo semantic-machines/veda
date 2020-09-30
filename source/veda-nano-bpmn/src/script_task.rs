@@ -22,7 +22,7 @@ pub fn token_ingoing_to_script_task(
     store_work_order_into(token.get_id(), work_order.get_id(), &ctx.sys_ticket, module)?;
 
     let script_id = format!("{}+{}", process_uri, element_id);
-    execute_js(token, process_instance, &script_id, "bpmn:script", &element_idx, Some(&work_order.get_id()), &nt, ctx, &mut OutValue::None);
+    execute_js(token, process_instance, &script_id, Some(&work_order.get_id()), nt.get_values_of_tag(&element_idx, "bpmn:script").get(0), ctx, &mut OutValue::None);
     store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
 
     Ok(())

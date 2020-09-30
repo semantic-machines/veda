@@ -12,7 +12,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
             let mut process = get_individual(module, &process_uri)?;
             let nt = get_process_source(&mut process)?;
             let start_form_id = start_form.get_id();
-            start_process(start_form_id, nt, ctx, module)?;
+            start_process(start_form_id, &mut Individual::default(), nt, ctx, module)?;
         }
     }
 
