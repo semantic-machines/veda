@@ -11,8 +11,13 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
         if let Some(process_uri) = start_form.get_first_literal("bpmn:startProcess") {
             let mut process = get_individual(module, &process_uri)?;
             let nt = get_process_source(&mut process)?;
-            let start_form_id = start_form.get_id();
-            start_process(start_form_id, &mut Individual::default(), nt, ctx, module)?;
+            let start_form_id = start_form.get_id().to_owned();
+
+            start_form.remove("bpmn:startProcess");
+            start_form.remove("rdfs:isDefinedBy");
+            start_form.remove("bpmn:hasStatus");
+
+            start_process(&start_form_id, start_form, nt, ctx, module)?;
         }
     }
 
