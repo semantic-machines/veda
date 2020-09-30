@@ -8,11 +8,17 @@ use v_api::IndvOp;
 use v_module::module::Module;
 use v_onto::individual::Individual;
 
-pub(crate) fn start_process(start_form_id: &str, route: IndexedNodeTree, ctx: &Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
+pub(crate) fn start_process(
+    start_form_id: &str,
+    input_variables: &mut Individual,
+    route: IndexedNodeTree,
+    ctx: &Context,
+    module: &mut Module,
+) -> Result<(), Box<dyn Error>> {
     info!("START PROCESS, ROUTE={}, START_FROM={}", route.id, start_form_id);
 
     // generate process instance
-    let process_instance = &mut Individual::default();
+    let process_instance = input_variables;
     process_instance.set_id(&generate_unique_uri("wd:pr_", ""));
     process_instance.add_uri("rdf:type", "bpmn:ProcessInstance");
     process_instance.add_uri("bpmn:hasStartForm", start_form_id);

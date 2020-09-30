@@ -1,6 +1,4 @@
-use crate::process_source::IndexedNodeTree;
 use crate::Context;
-use indextree::NodeId;
 use rusty_v8 as v8;
 use rusty_v8::{ContextScope, Integer};
 use std::sync::Mutex;
@@ -52,16 +50,14 @@ pub fn execute_js(
     token: &mut Individual,
     process_instance: &mut Individual,
     script_id: &str,
-    tag_with_js: &str,
-    js_idx: &NodeId,
     work_order_uri: Option<&str>,
-    nt: &IndexedNodeTree,
+    script_text: Option<&String>,
     ctx: &mut Context,
     out: &mut OutValue,
 ) -> bool {
     let compiled_script = if let Some(script) = ctx.workplace.scripts.get(script_id) {
         script.compiled_script
-    } else if let Some(script_text) = nt.get_values_of_tag(js_idx, tag_with_js).get(0) {
+    } else if let Some(script_text) = script_text {
         if let OutValue::None = out {
             prepare_script(&mut ctx.workplace, &script_id, script_text);
         } else {

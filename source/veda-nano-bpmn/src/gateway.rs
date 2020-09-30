@@ -72,7 +72,7 @@ pub fn token_ingoing_to_xxclusive_gateway(
             "start" | "end" => {
                 // calculate listener
                 let script_id = format!("{}+{}+{}", process_uri, element_id, event_id);
-                execute_js(token, process_instance, &script_id, "camunda:script", &el, None, &nt, ctx, &mut OutValue::List(vec![]));
+                execute_js(token, process_instance, &script_id, None, nt.get_values_of_tag(&el, "camunda:script").get(0), ctx, &mut OutValue::List(vec![]));
             }
             _ => {}
         }

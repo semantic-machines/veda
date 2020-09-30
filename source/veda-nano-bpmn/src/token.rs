@@ -93,7 +93,7 @@ fn forward_token(token: &mut Individual, ctx: &mut Context, module: &mut Module)
 
             let mut is_forward = true;
             let mut res = OutValue::Bool(false);
-            if execute_js(token, process, &script_id, "bpmn:conditionExpression", &outgoing_idx, None, &nt, ctx, &mut res) {
+            if execute_js(token, process, &script_id, None, nt.get_values_of_tag(&outgoing_idx, "bpmn:conditionExpression").get(0), ctx, &mut res) {
                 if let OutValue::Bool(true) = res {
                     is_forward = true;
                 } else {

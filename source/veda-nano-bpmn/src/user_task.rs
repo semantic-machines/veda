@@ -31,7 +31,7 @@ pub fn token_ingoing_to_user_task(
                 // calculate executors
                 let script_id = format!("{}+{}+assigment", process_uri, element_id);
                 let mut res = OutValue::List(vec![]);
-                execute_js(token, process_instance, &script_id, "camunda:script", &el, None, &nt, ctx, &mut res);
+                execute_js(token, process_instance, &script_id, None, nt.get_values_of_tag(&el, "camunda:script").get(0), ctx, &mut res);
                 if let OutValue::List(l) = res.borrow_mut() {
                     executors.append(l);
                 }
@@ -44,7 +44,7 @@ pub fn token_ingoing_to_user_task(
         if let Some(el) = gen_decision_form_script_id {
             let script_id = format!("{}+{}+create", process_uri, element_id);
             let mut res = OutValue::Individual(Individual::default());
-            if execute_js(token, process_instance, &script_id, "camunda:script", &el, None, &nt, ctx, &mut res) {
+            if execute_js(token, process_instance, &script_id, None, nt.get_values_of_tag(&el, "camunda:script").get(0), ctx, &mut res) {
                 if let OutValue::Individual(form) = res.borrow_mut() {
                     if form.get_id().is_empty() {
                         form.set_id(&generate_unique_uri("wd:f_", ""));
