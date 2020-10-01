@@ -11,6 +11,7 @@ mod call_activity;
 mod common;
 mod decision_form;
 mod element;
+mod event;
 mod gateway;
 mod process_instance;
 mod process_source;
