@@ -10,6 +10,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::ops::Sub;
 use std::str::FromStr;
+use std::io::{Error, ErrorKind};
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum IndividualError {
@@ -450,6 +451,14 @@ impl Individual {
                     .collect::<Vec<String>>(),
             ),
             None => None,
+        }
+    }
+
+    pub fn get_first_literal_or_err (&mut self, predicate: &str) -> Result<String, std::io::Error> {
+        if let Some (v) = self.get_first_literal(predicate) {
+            Ok(v)
+        } else {
+            Err(Error::new(ErrorKind::NotFound, predicate))
         }
     }
 
