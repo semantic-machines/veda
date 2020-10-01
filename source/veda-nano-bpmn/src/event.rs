@@ -25,7 +25,7 @@ pub fn token_ingoing_to_end_event(
     element_id: &str,
     process_uri: &str,
     process_instance: &mut Individual,
-    nt: &IndexedNodeTree,
+    _nt: &IndexedNodeTree,
     ctx: &mut Context,
     module: &mut Module,
 ) -> Result<(), Box<dyn Error>> {
@@ -45,7 +45,7 @@ pub fn token_ingoing_to_end_event(
         }
 
         // all tokens going into END EVENT
-        end_process(&element_id, &process_uri, process_instance, &nt, ctx, module)?;
+        end_process(process_uri, process_instance, ctx, module)?;
     }
 
     Ok(())

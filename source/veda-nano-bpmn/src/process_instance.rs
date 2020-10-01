@@ -1,6 +1,6 @@
-use crate::call_activity::get_variables;
+use crate::call_activity::set_vars;
 use crate::common::get_individual;
-use crate::process_source::IndexedNodeTree;
+use crate::process_source::{get_process_source, IndexedNodeTree};
 use crate::token::create_token_and_store;
 use crate::Context;
 use std::error::Error;
@@ -56,26 +56,23 @@ pub fn start_process(
     Ok(())
 }
 
-pub fn end_process(
-    element_id: &str,
-    process_uri: &str,
-    process_instance: &mut Individual,
-    _nt: &IndexedNodeTree,
-    _ctx: &mut Context,
-    module: &mut Module,
-) -> Result<(), Box<dyn Error>> {
+pub fn end_process(process_uri: &str, process_instance: &mut Individual, ctx: &mut Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
     info!("END PROCESS {}, PROCESS INSTANCE {}", process_uri, process_instance.get_id());
 
     if let Some(id) = process_instance.get_first_literal("bpmn:parentProcessInstance") {
         // is sub process
 
-        //let element_idx = nt.get_idx_of_id(&element_id)?;
-        //if let Ok(called_element) = nt.get_attribute_of_idx(element_idx, "calledElement") {
-        //    warn!("bpmn:callActivity, calledElement={}", called_element);
-        //}
+        let mut parent_proc_inst = get_individual(module, &id)?;
+        let parent_proc_id = parent_proc_inst.get_first_literal_or_err("bpmn:instanceOf")?;
 
-        let mut parent_process = get_individual(module, &id)?;
-        //let mut output_variables = get_variables("camunda:out", "", element_id, element_idx, process_instance, process_uri, nt, ctx)?;
+        let mut parent_proc = get_individual(module, &parent_proc_id)?;
+        let nt = get_process_source(&mut parent_proc)?;
+        let parent_proc_el_id = parent_proc_inst.get_first_literal_or_err("bpmn:parentProcessElementId")?;
+        let parent_proc_el_idx = nt.get_idx_of_id(&parent_proc_el_id)?;
+        if let Ok(called_element) = nt.get_attribute_of_idx(parent_proc_el_idx, "calledElement") {
+            warn!("bpmn:callActivity, calledElement={}", called_element);
+            set_vars("camunda:out", &mut Individual::default(), &parent_proc_el_id, parent_proc_el_idx, process_instance, process_uri, &mut parent_proc_inst, &nt, ctx)?;
+        }
     }
 
     Ok(())
