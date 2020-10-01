@@ -36,8 +36,6 @@ pub fn create_token_and_store(
     token.add_string("bpmn:elementId", element_id, Lang::NONE);
 
     module.api.update_or_err(&ctx.sys_ticket, "", "go-prepare", IndvOp::Put, token)?;
-    info!("success update, uri={}", token.get_id());
-
     Ok(token.get_id().to_owned())
 }
 

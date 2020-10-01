@@ -3,6 +3,7 @@ use crate::process_instance::start_process;
 use crate::process_source::{get_process_source, IndexedNodeTree};
 use crate::v8_script::{execute_js, OutValue};
 use crate::Context;
+use indextree::NodeId;
 use std::borrow::BorrowMut;
 use std::error::Error;
 use v_module::module::Module;
@@ -21,30 +22,43 @@ pub fn token_ingoing_to_call_activity(
     if let Ok(called_element) = nt.get_attribute_of_idx(element_idx, "calledElement") {
         warn!("bpmn:callActivity, calledElement={}", called_element);
 
-        let mut input_variables = Individual::default();
-        for in_var_idx in nt.get_idxs_of_path(&element_idx, &["bpmn:extensionElements", "camunda:in"]) {
-            let source_expression = nt.get_attribute_of_idx(in_var_idx, "sourceExpression")?.replace("&#39;", "'");
-            let target = nt.get_attribute_of_idx(in_var_idx, "target")?;
-
-            warn!("source_expression={} target={}", source_expression, target);
-
-            let script_id = format!("{}+{}+call_in", process_uri, element_id);
-            let mut res = OutValue::Individual(Individual::default());
-
-            execute_js(token, process_instance, &script_id, None, Some(&source_expression.to_owned()), ctx, &mut res);
-            if let OutValue::Individual(l) = res.borrow_mut() {
-                debug!("in var mapping={}", l.to_string());
-                if let Some(resources_to_set_in) = l.get_resources("set_in") {
-                    input_variables.set_resources(target, resources_to_set_in);
-                }
-            }
-        }
+        let mut input_variables = get_variables("camunda:in", token, element_id, element_idx, process_instance, process_uri, nt, ctx)?;
 
         let mut process = get_individual(module, &called_element)?;
         let nt = get_process_source(&mut process)?;
-        let start_form_id = process_instance.get_id();
-        start_process(start_form_id, &mut input_variables, nt, ctx, module)?;
+        start_process(None, Some((element_id, process_instance.get_id())), &mut input_variables, nt, ctx, module)?;
     }
 
     Ok(())
+}
+
+pub fn get_variables(
+    var_tag: &str,
+    token: &mut Individual,
+    element_id: &str,
+    element_idx: NodeId,
+    process_instance: &mut Individual,
+    process_uri: &str,
+    nt: &IndexedNodeTree,
+    ctx: &mut Context,
+) -> Result<Individual, Box<dyn Error>> {
+    let mut input_variables = Individual::default();
+    for in_var_idx in nt.get_idxs_of_path(&element_idx, &["bpmn:extensionElements", var_tag]) {
+        let source_expression = nt.get_attribute_of_idx(in_var_idx, "sourceExpression")?.replace("&#39;", "'");
+        let target = nt.get_attribute_of_idx(in_var_idx, "target")?;
+
+        warn!("source_expression={} target={}", source_expression, target);
+
+        let script_id = format!("{}+{}+call_in", process_uri, element_id);
+        let mut res = OutValue::Individual(Individual::default());
+
+        execute_js(token, process_instance, &script_id, None, Some(&source_expression.to_owned()), ctx, &mut res);
+        if let OutValue::Individual(l) = res.borrow_mut() {
+            debug!("var mapping={}", l.to_string());
+            if let Some(resources_to_set_in) = l.get_resources("set_in") {
+                input_variables.set_resources(target, resources_to_set_in);
+            }
+        }
+    }
+    Ok(input_variables)
 }

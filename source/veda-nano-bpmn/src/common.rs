@@ -42,8 +42,6 @@ pub fn set_and_store_token_into(dest_uri: &str, token_uri: &[&str], sys_ticket: 
     }
 
     module.api.update_or_err(sys_ticket, "", "store-token-into", IndvOp::SetIn, indv)?;
-    info!("success update, uri={}", indv.get_id());
-
     Ok(())
 }
 
@@ -53,8 +51,6 @@ pub fn add_and_store_token_into(dest_uri: &str, token_uri: &str, sys_ticket: &st
     indv.add_uri("bpmn:hasToken", token_uri);
 
     module.api.update_or_err(sys_ticket, "", "store-token-into", IndvOp::AddTo, indv)?;
-    info!("success update, uri={}", indv.get_id());
-
     Ok(())
 }
 
@@ -64,8 +60,6 @@ pub fn store_work_order_into(dest_uri: &str, work_order_uri: &str, sys_ticket: &
     indv.add_uri("bpmn:hasWorkOrder", work_order_uri);
 
     module.api.update_or_err(sys_ticket, "", "store-wo-into", IndvOp::SetIn, indv)?;
-    info!("success update, uri={}", indv.get_id());
-
     Ok(())
 }
 
@@ -75,8 +69,6 @@ pub fn store_is_completed_into(uri: &str, value: bool, src: &str, sys_ticket: &s
     indv.set_bool("bpmn:isCompleted", value);
 
     module.api.update_or_err(sys_ticket, "", src, IndvOp::SetIn, indv)?;
-    info!("success update, uri={}", indv.get_id());
-
     Ok(())
 }
 
@@ -94,8 +86,6 @@ pub fn add_right(subj_uri: &str, obj_uri: &str, ctx: &mut Context, module: &mut 
     right.add_bool("v-s:canUpdate", true);
 
     module.api.update_or_err(&ctx.sys_ticket, "", "add-right", IndvOp::Put, &right)?;
-    info!("success update, uri={}", right.get_id());
-
     Ok(())
 }
 
