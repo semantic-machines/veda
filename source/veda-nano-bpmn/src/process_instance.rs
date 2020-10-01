@@ -8,13 +8,7 @@ use v_api::IndvOp;
 use v_module::module::Module;
 use v_onto::individual::Individual;
 
-pub(crate) fn start_process(
-    start_form_id: &str,
-    input_variables: &mut Individual,
-    route: IndexedNodeTree,
-    ctx: &Context,
-    module: &mut Module,
-) -> Result<(), Box<dyn Error>> {
+pub fn start_process(start_form_id: &str, input_variables: &mut Individual, route: IndexedNodeTree, ctx: &Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
     info!("START PROCESS, ROUTE={}, START_FROM={}", route.id, start_form_id);
 
     // generate process instance
@@ -44,6 +38,19 @@ pub(crate) fn start_process(
 
     module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::Put, process_instance)?;
     info!("success update, uri={}", process_instance.get_id());
+
+    Ok(())
+}
+
+pub fn end_process(
+    _element_id: &str,
+    _process_uri: &str,
+    process_instance: &mut Individual,
+    _nt: &IndexedNodeTree,
+    _ctx: &mut Context,
+    _module: &mut Module,
+) -> Result<(), Box<dyn Error>> {
+    info!("END PROCESS, ROUTE={}", process_instance.get_id());
 
     Ok(())
 }

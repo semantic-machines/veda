@@ -1,5 +1,6 @@
 use crate::call_activity::token_ingoing_to_call_activity;
-use crate::common::{get_individual, store_is_completed_into, MyError};
+use crate::common::{get_individual, MyError};
+use crate::event::{token_ingoing_to_end_event, token_ingoing_to_start_event};
 use crate::gateway::{token_ingoing_to_parallel_gateway, token_ingoing_to_xxclusive_gateway};
 use crate::process_source::get_process_source;
 use crate::script_task::token_ingoing_to_script_task;
@@ -23,8 +24,11 @@ pub fn prepare_element(token: &mut Individual, ctx: &mut Context, module: &mut M
             "bpmn:callActivity" => {
                 token_ingoing_to_call_activity(token, &element_id, &process_uri, process_instance, &nt, ctx, module)?;
             }
-            "bpmn:startEvent" | "bpmn:endEvent" => {
-                store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
+            "bpmn:startEvent" => {
+                token_ingoing_to_start_event(token, &element_id, &process_uri, process_instance, &nt, ctx, module)?;
+            }
+            "bpmn:endEvent" => {
+                token_ingoing_to_end_event(token, &element_id, &process_uri, process_instance, &nt, ctx, module)?;
             }
             "bpmn:scriptTask" => {
                 token_ingoing_to_script_task(token, &element_id, &process_uri, process_instance, &nt, ctx, module)?;
