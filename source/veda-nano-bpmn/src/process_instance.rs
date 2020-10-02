@@ -1,5 +1,5 @@
 use crate::call_activity::set_vars;
-use crate::common::get_individual;
+use crate::common::{get_individual, store_is_completed_into};
 use crate::process_source::{get_process_source, IndexedNodeTree};
 use crate::token::create_token_and_store;
 use crate::Context;
@@ -12,7 +12,7 @@ use v_onto::individual::Individual;
 
 pub fn start_process(
     start_form_uri: Option<&str>,
-    parent_process_info: Option<(&str, &str)>,
+    parent_token: Option<&mut Individual>,
     input_variables: &mut Individual,
     process_src: IndexedNodeTree,
     ctx: &Context,
@@ -26,9 +26,8 @@ pub fn start_process(
     process_instance.set_uri("rdf:type", "bpmn:ProcessInstance");
     process_instance.add_uri("bpmn:instanceOf", &process_src.id);
 
-    if let Some((element_id, proc_inst_uri)) = parent_process_info {
-        process_instance.add_uri("bpmn:parentProcessInstance", proc_inst_uri);
-        process_instance.add_uri("bpmn:parentProcessElementId", element_id);
+    if let Some(t) = parent_token {
+        process_instance.add_uri("bpmn:parentToken", t.get_id());
     }
 
     if let Some(s) = start_form_uri {
@@ -59,20 +58,28 @@ pub fn start_process(
 pub fn end_process(process_uri: &str, process_instance: &mut Individual, ctx: &mut Context, module: &mut Module) -> Result<(), Box<dyn Error>> {
     info!("END PROCESS {}, PROCESS INSTANCE {}", process_uri, process_instance.get_id());
 
-    if let Some(id) = process_instance.get_first_literal("bpmn:parentProcessInstance") {
+    if let Some(parent_token_id) = process_instance.get_first_literal("bpmn:parentToken") {
         // is sub process
+        let mut parent_token = get_individual(module, &parent_token_id)?;
 
-        let mut parent_proc_inst = get_individual(module, &id)?;
+        let mut parent_proc_inst = get_individual(module, &parent_token.get_first_literal_or_err("bpmn:hasProcessInstance")?)?;
         let parent_proc_id = parent_proc_inst.get_first_literal_or_err("bpmn:instanceOf")?;
 
         let mut parent_proc = get_individual(module, &parent_proc_id)?;
         let nt = get_process_source(&mut parent_proc)?;
-        let parent_proc_el_id = parent_proc_inst.get_first_literal_or_err("bpmn:parentProcessElementId")?;
+        let parent_proc_el_id = parent_token.get_first_literal_or_err("bpmn:ElementId")?;
         let parent_proc_el_idx = nt.get_idx_of_id(&parent_proc_el_id)?;
+
         if let Ok(called_element) = nt.get_attribute_of_idx(parent_proc_el_idx, "calledElement") {
             warn!("bpmn:callActivity, calledElement={}", called_element);
+            let mut out_vars = Individual::default();
+            out_vars.set_id(parent_proc_inst.get_id());
             set_vars("camunda:out", &mut Individual::default(), &parent_proc_el_id, parent_proc_el_idx, process_instance, process_uri, &mut parent_proc_inst, &nt, ctx)?;
+            // set out variables into parent process instance
+            module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::SetIn, &mut out_vars)?;
         }
+
+        store_is_completed_into(&parent_token_id, true, "go-prepare", &ctx.sys_ticket, module)?;
     }
 
     Ok(())
