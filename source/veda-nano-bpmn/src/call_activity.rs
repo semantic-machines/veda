@@ -27,7 +27,7 @@ pub fn token_ingoing_to_call_activity(
 
         let mut process = get_individual(module, &called_element)?;
         let nt = get_process_source(&mut process)?;
-        start_process(None, Some((element_id, process_instance.get_id())), &mut input_variables, nt, ctx, module)?;
+        start_process(None, Some(token), &mut input_variables, nt, ctx, module)?;
     }
 
     Ok(())
