@@ -266,10 +266,10 @@ veda.Module(function (veda) { "use strict";
                 </div>\
               </div>'
             );
-            template.prepend(deletedAlert);
             $(".recover", deletedAlert).click(function () {
               template.trigger("recover");
             });
+            template.prepend(deletedAlert);
           });
         }
         template.addClass("deleted");
