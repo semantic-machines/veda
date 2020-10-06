@@ -17,7 +17,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
             start_form.remove("rdfs:isDefinedBy");
             start_form.remove("bpmn:hasStatus");
 
-            start_process(&start_form_id, start_form, nt, ctx, module)?;
+            start_process(Some(&start_form_id), None, start_form, nt, ctx, module)?;
         }
     }
 

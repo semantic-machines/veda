@@ -33,12 +33,20 @@ veda.Module(function (veda) { "use strict";
       return self.aspect.load();
     } else {
       var aspect_id = self.id + "_aspect";
-      self.aspect = new veda.IndividualModel(aspect_id);
-      self.aspect["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalAspect") ];
-      self.aspect["v-s:owner"] = [ self ];
-      self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
-      self["v-s:hasAspect"] = [ self.aspect ];
-      return self.aspect.save();
+      return new veda.IndividualModel(aspect_id).load().then(function(loadedAspect) {
+        if (loadedAspect.hasValue("rdf:type", "rdfs:Resource")) {
+          self.aspect = new veda.IndividualModel(aspect_id);
+          self.aspect["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalAspect") ];
+          self.aspect["v-s:owner"] = [ self ];
+          self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
+          self["v-s:hasAspect"] = [ self.aspect ];
+          return self.aspect.save();
+        } else {
+          self.aspect = loadedAspect;
+          self["v-s:hasAspect"] = [ self.aspect ];
+          return self.aspect;
+        }
+      });
     }
   };
 

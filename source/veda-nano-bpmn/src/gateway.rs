@@ -29,7 +29,7 @@ pub fn token_ingoing_to_parallel_gateway(
                 let mut t = get_individual(module, &t_id)?;
                 if let Some(el_id) = &t.get_first_literal("bpmn:elementId") {
                     if *el_id == element_id {
-                        warn!("found token={} el_id={}", t_id, el_id);
+                        warn!("found token={} in el_id={}", t_id, el_id);
                         incoming_tokens.push(t);
                     } else {
                         other_token_uris.push(t_id.as_str());

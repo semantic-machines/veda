@@ -69,7 +69,6 @@ pub fn token_ingoing_to_user_task(
                     form.set_uri("bpmn:hasWorkOrder", work_order.get_id());
 
                     module.api.update_or_err(&ctx.sys_ticket, "", "no-prepare", IndvOp::Put, form)?;
-                    info!("success update, uri={}", form.get_id());
 
                     store_work_order_into(token.get_id(), work_order.get_id(), &ctx.sys_ticket, module)?;
                 } else {
