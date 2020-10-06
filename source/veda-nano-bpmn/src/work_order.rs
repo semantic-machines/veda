@@ -43,8 +43,6 @@ pub fn create_work_order(
     }
 
     module.api.update_or_err(&ctx.sys_ticket, "", "create-wo", IndvOp::Put, &work_order)?;
-    info!("success update, uri={}", work_order.get_id());
-
     Ok(work_order)
 }
 
