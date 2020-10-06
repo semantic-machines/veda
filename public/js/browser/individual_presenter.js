@@ -43,6 +43,9 @@ veda.Module(function (veda) { "use strict";
         if ( individual.hasValue("v-ui:hasTemplate") && !isClass ) {
           template = individual["v-ui:hasTemplate"][0];
           templatePromise = template.load().then(function (template) {
+            if ( !template.hasValue("rdf:type", "v-ui:ClassTemplate") ) {
+              throw new Error("Template type violation!");
+            }
             template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
             return renderTemplate(individual, container, template, mode, extra, toAppend);
           });
