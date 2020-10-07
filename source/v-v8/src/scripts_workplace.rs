@@ -1,5 +1,7 @@
 use crate::callback::init_context_with_callback;
+use crate::callback::G_VARS;
 use crate::common::{collect_js_files, collect_module_dirs, str_2_v8, HashVec};
+use crate::session_cache::CallbackSharedData;
 use rusty_v8 as v8;
 use rusty_v8::{Context, HandleScope, Isolate, Local};
 use std::collections::HashMap;
@@ -52,7 +54,7 @@ pub struct ScriptsWorkPlace<'a, T> {
 }
 
 impl<'a, T: Default> ScriptsWorkPlace<'a, T> {
-    pub fn load_ext_scripts(&mut self) {
+    pub fn load_ext_scripts(&mut self, sys_ticket: &str) {
         let mut modules_de = vec![];
         let mut o_files = vec![];
 
@@ -86,6 +88,13 @@ impl<'a, T: Default> ScriptsWorkPlace<'a, T> {
                 collect_js_files(&path, &mut o_files);
             }
         }
+
+        let mut session_data = CallbackSharedData::default();
+        session_data.g_key2attr.insert("$ticket".to_owned(), sys_ticket.to_owned());
+        let mut sh_g_vars = G_VARS.lock().unwrap();
+        let g_vars = sh_g_vars.get_mut();
+        *g_vars = session_data;
+        drop(sh_g_vars);
 
         for x in o_files.iter() {
             match fs::read_to_string(x) {

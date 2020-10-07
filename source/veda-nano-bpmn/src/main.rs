@@ -88,7 +88,7 @@ fn listen_queue<'a>(isolate: &'a mut Isolate) -> Result<(), i32> {
         workplace: ScriptsWorkPlace::new(isolate),
     };
 
-    ctx.workplace.load_ext_scripts();
+    ctx.workplace.load_ext_scripts(&ctx.sys_ticket);
 
     module.listen_queue(
         &mut queue_consumer,

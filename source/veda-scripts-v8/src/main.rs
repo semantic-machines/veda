@@ -166,7 +166,7 @@ fn main0<'a>(isolate: &'a mut Isolate) -> Result<(), i32> {
             ctx.vm_id = "main".to_owned();
         }
 
-        ctx.workplace.load_ext_scripts();
+        ctx.workplace.load_ext_scripts(&ctx.sys_ticket);
         load_event_scripts(&mut ctx.workplace, &mut ctx.xr);
 
         let module_info = ModuleInfo::new("./data", &process_name, true);
@@ -438,8 +438,9 @@ var _event_id = '?';";
 
 pub(crate) fn load_event_scripts(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, xr: &mut XapianReader) {
     let res = xr.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'v-s:Event'"), &mut wp.module.storage);
+
     if res.result_code == ResultCode::Ok && res.count > 0 {
-        for id in &res.result {
+            for id in &res.result {
             if let Some(ev_indv) = wp.module.get_individual(id, &mut Individual::default()) {
                 prepare_script(wp, ev_indv);
             }
