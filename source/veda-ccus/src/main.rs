@@ -24,7 +24,7 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 
 /////////////////////////////////////////////
 
-fn ccus_route(req: HttpRequest, stream: web::Payload, srv: web::Data<Addr<server::CCUSServer>>) -> Result<HttpResponse, Error> {
+async fn ccus_route(req: HttpRequest, stream: web::Payload, srv: web::Data<Addr<server::CCUSServer>>) -> Result<HttpResponse, Error> {
     ws::start(
         WsCCUSSession {
             id: 0,
@@ -78,18 +78,12 @@ impl Actor for WsCCUSSession {
             .then(|res, act, ctx| {
                 match res {
                     Ok(res) => act.id = res,
-                    // something is wrong with ccus server
+                    // something is wrong with chat server
                     _ => ctx.stop(),
                 }
-                fut::ok(())
+                actix::fut::ready(())
             })
             .wait(ctx);
-    }
-
-    fn stopped(&mut self, _: &mut Self::Context) {
-        self.addr.do_send(server::Disconnect {
-            id: self.id,
-        });
     }
 
     fn stopping(&mut self, _: &mut Self::Context) -> Running {
@@ -98,6 +92,12 @@ impl Actor for WsCCUSSession {
             id: self.id,
         });
         Running::Stop
+    }
+
+    fn stopped(&mut self, _: &mut Self::Context) {
+        self.addr.do_send(server::Disconnect {
+            id: self.id,
+        });
     }
 }
 
@@ -111,18 +111,18 @@ impl Handler<server::Msg> for WsCCUSSession {
 }
 
 /// WebSocket message handler
-impl StreamHandler<ws::Message, ws::ProtocolError> for WsCCUSSession {
-    fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
+impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsCCUSSession {
+    fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         debug!("WEBSOCKET MESSAGE: {:?}", msg);
         match msg {
-            ws::Message::Ping(msg) => {
+            Ok(ws::Message::Ping(msg)) => {
                 self.hb = Instant::now();
                 ctx.pong(&msg);
             }
-            ws::Message::Pong(_) => {
+            Ok(ws::Message::Pong(_)) => {
                 self.hb = Instant::now();
             }
-            ws::Message::Text(text) => {
+            Ok(ws::Message::Text(text)) => {
                 let m = text.trim();
 
                 self.addr.do_send(server::ClientMessage {
@@ -130,11 +130,12 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for WsCCUSSession {
                     msg: m.to_owned(),
                 });
             }
-            ws::Message::Binary(_) => println!("Unexpected binary"),
-            ws::Message::Close(_) => {
+            Ok(ws::Message::Binary(_)) => println!("Unexpected binary"),
+            Ok(ws::Message::Close(_)) => {
                 ctx.stop();
             }
-            ws::Message::Nop => (),
+            Ok(ws::Message::Nop) => (),
+            _ => {}
         }
     }
 
@@ -164,7 +165,7 @@ impl WsCCUSSession {
                 // don't try to send a ping
                 return;
             }
-            ctx.ping("");
+            ctx.ping(b"");
             ctx.text("");
         });
     }
@@ -197,7 +198,8 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
     }
 }
 
-fn main() -> std::io::Result<()> {
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
     match std::env::var_os(env_var) {
         Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
@@ -226,8 +228,6 @@ fn main() -> std::io::Result<()> {
     let (sbscr_tx, sbscr_rx): (Sender<CMessage>, Receiver<CMessage>) = mpsc::channel();
     thread::spawn(move || storage_manager(tarantool_addr.clone(), sbscr_rx));
 
-    let sys = System::new("ws-ccus");
-
     // Start ccus server actor
     let server = server::CCUSServer::new(sbscr_tx.clone()).start();
 
@@ -240,7 +240,6 @@ fn main() -> std::io::Result<()> {
     })
     .bind("[::]:".to_owned() + &ccus_port)?
     //.keep_alive(75)
-    .start();
-
-    sys.run()
+    .run()
+    .await
 }
