@@ -9,15 +9,16 @@ name = "veda-ccus"
 path = "src/main.rs"
 
 [dependencies]
-actix = "0.8.3"
-actix-web = "1.0.9"
-actix-web-actors = "1.0.3"
+actix = "0.10.0"
+actix-web = "3.1.0"
+actix-web-actors = "3.0.0"
 chrono = "0.4"
 env_logger = "0.6"
 log = "0.4"
 rust-ini = "0.15"
 rand = "0.7"
-tokio = "0.1.22"
+tokio = "0.2.4"
+futures = "0.3.1"
 
 v_module = { path = "../v-module" }
 v_queue = { path = "../v-queue" }

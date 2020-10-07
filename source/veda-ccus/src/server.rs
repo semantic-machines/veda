@@ -20,6 +20,7 @@ pub type CMessage = (String, u64, Sender<RData>);
 
 /// CCUS server sends this messages to session
 #[derive(Message)]
+#[rtype(result = "()")]
 pub struct Msg(pub String);
 
 #[derive(Message)]
@@ -30,11 +31,13 @@ pub struct Connect {
 
 /// Session is disconnected
 #[derive(Message)]
+#[rtype(result = "()")]
 pub struct Disconnect {
     pub id: usize,
 }
 
 #[derive(Message)]
+#[rtype(result = "()")]
 pub struct ClientMessage {
     /// Id of the client session
     pub id: usize,
@@ -72,8 +75,7 @@ pub struct CCUSServer {
 
 impl CCUSServer {
     pub fn new(tx: Sender<CMessage>) -> CCUSServer {
-
-	wait_load_ontology();
+        wait_load_ontology();
 
         let _consumer = Consumer::new("./data/queue", "CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
         let ch = mpsc::channel();
