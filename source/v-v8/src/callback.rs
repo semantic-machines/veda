@@ -55,7 +55,7 @@ pub fn fn_callback_get_individual(scope: &mut v8::HandleScope, args: v8::Functio
 pub fn fn_callback_get_individuals(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, mut rv: v8::ReturnValue) {
     let j_res = v8::Array::new(scope, 0);
 
-    let arg1 = args.get(0);
+    let arg1 = args.get(1);
     if arg1.is_array() {
         if let Some(r) = arg1.to_object(scope) {
             if let Some(arr_keys) = r.get_property_names(scope) {
