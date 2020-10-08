@@ -26,7 +26,8 @@ veda.Module(function (veda) { "use strict";
 
   proto.init = function () {
     var self = this;
-    return veda.Backend.loadFile("/ontology.json")
+    if (typeof window !== "undefined") {
+      return veda.Backend.loadFile("/ontology.json")
       .then(function (ontologyJSON) {
         self.ontology = JSON.parse(ontologyJSON);
         return self.processOntology();
@@ -36,6 +37,14 @@ veda.Module(function (veda) { "use strict";
         notify("danger", {code: "Ontology load error.", name: error});
         return error;
       });
+    } else {
+      var queryResult = query(veda.ticket, "'rdf:type' == 'owl:Ontology' || 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'v-ui:PropertySpecification' || 'rdf:type' == 'v-ui:ClassModel'");
+      var ontology_uris = queryResult.result;
+      var ontology = get_individuals(ontology_uris);
+      self.ontology = ontology;
+      console.log("Ontology length:", ontology.length);
+      return self.processOntology();
+    }
   };
 
   proto.getClassProperties = function (_class_uri) {

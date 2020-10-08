@@ -305,7 +305,7 @@ veda.Module(function (veda) { "use strict";
    * @param {String} uri individual uri
    */
   proto.load = function () {
-    if ( this.isLoading() ) {
+    if ( this.isLoading() && typeof window !== "undefined" ) {
       return this.isLoading();
     }
     var self = this;
@@ -423,7 +423,7 @@ veda.Module(function (veda) { "use strict";
   proto.save = function() {
     // Do not save individual to server if nothing changed
     if (this.isSync()) { return Promise.resolve(this); }
-    if ( this.isSaving() && this.isSync() ) {
+    if ( this.isSaving() && this.isSync() && typeof window !== "undefined" ) {
       return this.isSaving();
     }
     // Do not save rdfs:Resource
@@ -463,18 +463,26 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to  database
    */
   proto.reset = function (original) {
-    if ( this.isResetting() ) {
+    var self = this;
+    if ( this.isResetting() && typeof window !== "undefined" ) {
       return this.isResetting();
     }
     this.trigger("beforeReset");
     if (this.isNew()) {
-      self.trigger("afterReset");
+      this.trigger("afterReset");
       return Promise.resolve(this);
     }
-    var self = this;
-    self.filtered = {};
+    this.filtered = {};
     var promise = (original ? Promise.resove(original) : veda.Backend.reset_individual(veda.ticket, self.id))
       .then(processOriginal)
+      .then(function () {
+        self.isResetting(false);
+        self.isNew(false);
+        self.isSync(true);
+        self.isLoaded(true);
+        self.trigger("afterReset");
+        return self;
+      })
       .catch(function (error) {
         self.isResetting(false);
         console.log("reset individual error", self.id, error);
@@ -508,12 +516,6 @@ veda.Module(function (veda) { "use strict";
           self.trigger(property_uri, self.get(property_uri));
         }
       });
-      self.isResetting(false);
-      self.isNew(false);
-      self.isSync(true);
-      self.isLoaded(true);
-      self.trigger("afterReset");
-      return self;
     }
   };
 

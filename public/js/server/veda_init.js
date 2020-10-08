@@ -14,15 +14,12 @@
   };
   this.console = console;
 
-  veda.ticket = get_env_str_var('$ticket');
-
   veda.Module({/* configuration object */});
 
-  var ontology = new veda.OntologyModel();
-  ontology.then(function (ontology) {
-    veda.ontology = ontology;
-  });
+  veda.ticket = get_env_str_var('$ticket');
 
-  veda.user = new veda.UserModel("cfg:Administrator");
+  veda.init("cfg:VedaSystem");
+
+  console.log("user:", veda.user.id, "| ticket:", veda.ticket);
 
 })(veda);
