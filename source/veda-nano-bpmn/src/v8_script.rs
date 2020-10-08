@@ -135,7 +135,17 @@ pub fn execute_js(
 }
 
 pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, script_id: &str, script_text: &str) {
-    let str_script = "try { var ticket = get_env_str_var ('$ticket'); script(); function script() {".to_owned() + script_text + "}; } catch (e) { log_trace (e); }";
+    let str_script = "\
+      (function () { \
+        try { \
+          var ticket = get_env_str_var ('$ticket'); \
+          var token = get_individual (ticket, '$token'); \
+          var process = get_individual (ticket, '$process'); \
+          \
+          ".to_owned() + script_text + " \
+          \
+        } catch (e) { log_trace (e); } \
+      })();";
 
     let mut scr_inf: ScriptInfo<ScriptInfoContext> = ScriptInfo::new_with_src(script_id, &str_script);
 
