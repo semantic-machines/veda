@@ -474,18 +474,40 @@ v-s:RequestDelegationRegistryBlank
 
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
 
+#C
+v-s:Perm_DelegationUser_AllUsersGroup_C
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:RequestDelegation ;
+  v-s:permissionObject v-s:RequestDelegation_group ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "Все пользователи имеют право создавать Заявку на делегирование" ;
+.
+#RUD
+v-s:Perm_DelegationUser_AllUsersGroup_RUD
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:RequestDelegation_group ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:canUpdate "true"^^xsd:boolean ;
+  v-s:canDelete "true"^^xsd:boolean ;
+  rdfs:label "Все пользователи имеют право создавать Заявку на делегирование" ;
+.
+
+#------Старая нотификация - УДАЛЕННОЕ ----------
+
 v-s:RequestDelegation_BaseUser
   rdf:type v-s:Group ;
   rdfs:label "Основные пользователи RequestDelegation"@ru ;
   rdfs:label "Users RequestDelegation"@en ;
+  v-s:deleted "true"^^xsd:boolean;
 .
-
 v-s:RequestDelegation_Admin
   rdf:type v-s:Group ;
   rdfs:label "Администраторы RequestDelegation"@ru ;
   rdfs:label "Administrators RequestDelegation"@en ;
+  v-s:deleted "true"^^xsd:boolean;
 .
-
 v-s:RequestDelegation_permission1
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:RequestDelegation ;
@@ -496,16 +518,16 @@ v-s:RequestDelegation_permission1
   v-s:permissionSubject v-s:RequestDelegation_BaseUser ;
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "R. Все пользователи. Индивиды v-s:RequestDelegation" ;
+  v-s:deleted "true"^^xsd:boolean;
 .
-
 v-s:RequestDelegation_permission2
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:RequestDelegationUser ;
   v-s:permissionSubject v-s:RequestDelegation_BaseUser ;
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "C. Админы. Класс RequestDelegation" ;
+  v-s:deleted "true"^^xsd:boolean;
 .
-
 v-s:RequestDelegation_permission3
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:RequestDelegation ;
@@ -522,14 +544,15 @@ v-s:RequestDelegation_permission3
   v-s:canUpdate "true"^^xsd:boolean ;
   v-s:canDelete "true"^^xsd:boolean ;
   rdfs:label "CRUD. Админы. Индивиды v-s:RequestDelegation" ;
+  v-s:deleted "true"^^xsd:boolean;
 .
-
 v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
   rdf:type v-s:Membership ;
   v-s:memberOf v-s:RequestDelegation_BaseUser ;
   v-s:resource cfg:AllUsersGroup ;
   v-s:resource v-s:RequestDelegation_Admin ;
   rdfs:label "Все пользователи входят в группу Основные пользователи RequestDelegation" ;
+  v-s:deleted "true"^^xsd:boolean;
 .
 
 # ------------------------------------------------------------ СЕРВЕРНЫЕ СКРИПТЫ --
