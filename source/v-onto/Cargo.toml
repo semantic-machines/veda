@@ -10,7 +10,7 @@ path = "src/onto/lib.rs"
 [dependencies]
 num = "0.2.1"
 num-traits = "0.2.11"
-chrono = "0.4.9"
+chrono = "0.4"
 cbor-codec = { git = "https://github.com/itiu/cbor-codec.git", rev="8830b95e8060972786537911f03d4e823182a1ed" }
 rmp = "^0.8"
 rmp-serialize = "0.8.0"

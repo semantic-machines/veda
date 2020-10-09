@@ -5,7 +5,7 @@ authors = ["Itiua <ValeriyBushenev@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-chrono = "0.4.9"
+chrono = "0.4"
 time = "0.1.42"
 log = "0.4"
 rust-ini = "0.15"
