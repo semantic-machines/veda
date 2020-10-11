@@ -19,6 +19,28 @@ pub struct ScriptInfo<'a, T> {
     pub context: T,
 }
 
+pub fn script_origin<'a>(s: &mut v8::HandleScope<'a>, resource_name: v8::Local<'a, v8::String>) -> v8::ScriptOrigin<'a> {
+    let resource_line_offset = v8::Integer::new(s, 0);
+    let resource_column_offset = v8::Integer::new(s, 0);
+    let resource_is_shared_cross_origin = v8::Boolean::new(s, false);
+    let script_id = v8::Integer::new(s, 123);
+    let source_map_url = v8::String::new(s, "").unwrap();
+    let resource_is_opaque = v8::Boolean::new(s, true);
+    let is_wasm = v8::Boolean::new(s, false);
+    let is_module = v8::Boolean::new(s, false);
+    v8::ScriptOrigin::new(
+        resource_name.into(),
+        resource_line_offset,
+        resource_column_offset,
+        resource_is_shared_cross_origin,
+        script_id,
+        source_map_url.into(),
+        resource_is_opaque,
+        is_wasm,
+        is_module,
+    )
+}
+
 impl<'a, T: Default> ScriptInfo<'a, T> {
     pub fn new_with_src(id: &str, src: &str) -> Self {
         Self {
@@ -30,10 +52,12 @@ impl<'a, T: Default> ScriptInfo<'a, T> {
         }
     }
 
-    pub fn compile_script(&mut self, parent_scope: &mut HandleScope<'a>) {
+    pub fn compile_script(&mut self, js_name: &str, parent_scope: &mut HandleScope<'a>) {
         let source = str_2_v8(parent_scope, &self.str_script);
+        let name = v8::String::new(parent_scope, js_name).unwrap();
+        let origin = script_origin(parent_scope, name);
 
-        match v8::Script::compile(parent_scope, source, None) {
+        match v8::Script::compile(parent_scope, source, Some(&origin)) {
             Some(script) => {
                 self.compiled_script = Some(script);
             }
@@ -103,7 +127,7 @@ impl<'a, T: Default> ScriptsWorkPlace<'a, T> {
                     let mut scr_inf: ScriptInfo<T> = ScriptInfo::new_with_src(x, &f);
 
                     let scope = &mut v8::ContextScope::new(&mut self.scope, self.context);
-                    scr_inf.compile_script(scope);
+                    scr_inf.compile_script(x, scope);
 
                     if let Some(i_script) = scr_inf.compiled_script {
                         i_script.run(scope);
