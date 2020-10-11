@@ -141,9 +141,10 @@ pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, scrip
           var ticket = get_env_str_var ('$ticket'); \
           var token = get_individual (ticket, '$token'); \
           var process = get_individual (ticket, '$process'); \
-          \
-          ".to_owned() + script_text + " \
-          \
+          "
+    .to_owned()
+        + script_text
+        + " \
         } catch (e) { log_trace (e); } \
       })();";
 
@@ -152,7 +153,7 @@ pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, scrip
     wp.add_to_order(&scr_inf);
 
     let scope = &mut ContextScope::new(&mut wp.scope, wp.context);
-    scr_inf.compile_script(scope);
+    scr_inf.compile_script(script_id, scope);
     wp.scripts.insert(scr_inf.id.to_string(), scr_inf);
 }
 
@@ -164,6 +165,6 @@ pub(crate) fn prepare_eval_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, 
     wp.add_to_order(&scr_inf);
 
     let scope = &mut ContextScope::new(&mut wp.scope, wp.context);
-    scr_inf.compile_script(scope);
+    scr_inf.compile_script(script_id, scope);
     wp.scripts.insert(scr_inf.id.to_string(), scr_inf);
 }
