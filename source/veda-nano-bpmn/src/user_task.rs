@@ -1,4 +1,4 @@
-use crate::common::{add_right, get_individual, store_work_order_into, MyError};
+use crate::common::{add_right, get_individual, store_work_order_into, MyError, store_is_completed_into};
 use crate::process_source::IndexedNodeTree;
 use crate::v8_script::{execute_js, OutValue};
 use crate::work_order::create_work_order;
@@ -9,6 +9,20 @@ use v_api::app::generate_unique_uri;
 use v_api::IndvOp;
 use v_module::module::Module;
 use v_onto::individual::Individual;
+
+pub fn token_ingoing_to_task(
+    token: &mut Individual,
+    _element_id: &str,
+    _process_uri: &str,
+    _process_instance: &mut Individual,
+    _nt: &IndexedNodeTree,
+    ctx: &mut Context,
+    module: &mut Module,
+) -> Result<(), Box<dyn Error>> {
+    store_is_completed_into(token.get_id(), true, "go-prepare", &ctx.sys_ticket, module)?;
+
+    Ok(())
+}
 
 pub fn token_ingoing_to_user_task(
     token: &mut Individual,
