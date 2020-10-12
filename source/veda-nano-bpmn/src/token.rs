@@ -148,7 +148,7 @@ fn token_ingoing_to(token: &mut Individual, ctx: &mut Context, module: &mut Modu
             "bpmn:userTask" => {
                 token_ingoing_to_user_task(token, &element_id, &process_uri, process_instance, &nt, ctx, module)?;
             }
-            "bpmn:Task" => {
+            "bpmn:task" => {
                 token_ingoing_to_task(token, &element_id, &process_uri, process_instance, &nt, ctx, module)?;
             }
             "bpmn:parallelGateway" => {
