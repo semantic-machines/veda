@@ -252,6 +252,19 @@ bpmn:ProcessTemplate
     });
   });
 
+  $(document).on("keydown", undo_redo);
+
+  function undo_redo (e) {
+    if (e.keyCode === 90 && e.ctrlKey) {
+      modeler.get("commandStack").undo();
+    } else if (e.keyCode === 89 && e.ctrlKey) {
+      modeler.get("commandStack").redo();
+    }
+  }
+  template.one("remove", function () {
+    $(document).off("keydown", undo_redo);
+  });
+
 //# sourceURL=bpmn:ProcessTemplate_post
 </script>
   """ ;
