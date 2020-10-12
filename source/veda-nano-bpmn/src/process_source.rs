@@ -49,7 +49,7 @@ impl IndexedNodeTree {
                 return Ok(&*v);
             }
         }
-        Err(Box::new(MyError(format! ("[{}] not found", key).into())))
+        Err(Box::new(MyError(format!("[{}] not found", key).into())))
     }
 
     pub(crate) fn get_idx_of_type(&self, type_: &str) -> Vec<NodeId> {

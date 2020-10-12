@@ -45,8 +45,8 @@ pub fn set_vars(
     ctx: &mut Context,
 ) -> Result<(), Box<dyn Error>> {
     for in_var_idx in nt.get_idxs_of_path(&element_idx, &["bpmn:extensionElements", var_tag]) {
-        if let Ok (source_expression) = nt.get_attribute_of_idx(in_var_idx, "sourceExpression") {
-            let source_expression= source_expression.replace("&#39;", "'");
+        if let Ok(source_expression) = nt.get_attribute_of_idx(in_var_idx, "sourceExpression") {
+            let source_expression = source_expression.replace("&#39;", "'");
             let target = nt.get_attribute_of_idx(in_var_idx, "target")?;
 
             warn!("source_expression={} target={}", source_expression, target);

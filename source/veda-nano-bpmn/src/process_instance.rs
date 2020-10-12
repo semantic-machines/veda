@@ -18,13 +18,13 @@ pub fn start_process(
     ctx: &Context,
     module: &mut Module,
 ) -> Result<(), Box<dyn Error>> {
-    info!("START PROCESS {}, START_FROM={:?}", process_src.id, start_form_uri);
-
     // generate process instance
     let process_instance = input_variables;
     process_instance.set_id(&generate_unique_uri("wd:pr_", ""));
     process_instance.set_uri("rdf:type", "bpmn:ProcessInstance");
     process_instance.add_uri("bpmn:instanceOf", &process_src.id);
+
+    info!("START PROCESS {}, START_FROM={:?}, ID={}", process_src.id, start_form_uri, process_instance.get_id());
 
     if let Some(t) = parent_token {
         process_instance.add_uri("bpmn:parentToken", t.get_id());
@@ -67,7 +67,7 @@ pub fn end_process(process_uri: &str, process_instance: &mut Individual, ctx: &m
 
         let mut parent_proc = get_individual(module, &parent_proc_id)?;
         let nt = get_process_source(&mut parent_proc)?;
-        let parent_proc_el_id = parent_token.get_first_literal_or_err("bpmn:ElementId")?;
+        let parent_proc_el_id = parent_token.get_first_literal_or_err("bpmn:elementId")?;
         let parent_proc_el_idx = nt.get_idx_of_id(&parent_proc_el_id)?;
 
         if let Ok(called_element) = nt.get_attribute_of_idx(parent_proc_el_idx, "calledElement") {
@@ -75,8 +75,11 @@ pub fn end_process(process_uri: &str, process_instance: &mut Individual, ctx: &m
             let mut out_vars = Individual::default();
             out_vars.set_id(parent_proc_inst.get_id());
             set_vars("camunda:out", &mut Individual::default(), &parent_proc_el_id, parent_proc_el_idx, process_instance, process_uri, &mut parent_proc_inst, &nt, ctx)?;
-            // set out variables into parent process instance
-            module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::SetIn, &mut out_vars)?;
+
+            if !out_vars.is_empty() {
+                // set out variables into parent process instance
+                module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::SetIn, &mut out_vars)?;
+            }
         }
 
         store_is_completed_into(&parent_token_id, true, "go-prepare", &ctx.sys_ticket, module)?;
