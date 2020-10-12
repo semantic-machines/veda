@@ -1,4 +1,4 @@
-use crate::common::{add_right, get_individual, store_work_order_into, MyError, store_is_completed_into};
+use crate::common::{add_right, get_individual, store_is_completed_into, store_work_order_into, MyError};
 use crate::process_source::IndexedNodeTree;
 use crate::v8_script::{execute_js, OutValue};
 use crate::work_order::create_work_order;
