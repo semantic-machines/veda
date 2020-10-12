@@ -357,7 +357,7 @@ impl DenoInspector {
         let (canary_tx, canary_rx) = oneshot::channel::<Never>();
 
         // Create DenoInspector instance.
-        let mut self_ = new_box_with(|self_ptr| {
+        let self_ = new_box_with(|self_ptr| {
             let v8_inspector_client = v8::inspector::V8InspectorClientBase::new::<Self>();
             let v8_inspector = v8::inspector::V8Inspector::create(scope, unsafe { &mut *self_ptr });
 

@@ -27,13 +27,13 @@ impl JsRuntime {
         });
 
         //let global_context;
-        let mut isolate = {
-            let mut params = v8::Isolate::create_params();
+        let isolate = {
+            let params = v8::Isolate::create_params();
 
             //params = params.heap_limits(heap_limits.initial, heap_limits.max)
 
             let isolate = v8::Isolate::new(params);
-            let mut isolate = JsRuntime::setup_isolate(isolate);
+            let isolate = JsRuntime::setup_isolate(isolate);
             {
                 //let scope = &mut v8::HandleScope::new(&mut isolate);
                 //let context = bindings::initialize_context(scope);
