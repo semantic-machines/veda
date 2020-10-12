@@ -45,19 +45,21 @@ pub fn set_vars(
     ctx: &mut Context,
 ) -> Result<(), Box<dyn Error>> {
     for in_var_idx in nt.get_idxs_of_path(&element_idx, &["bpmn:extensionElements", var_tag]) {
-        let source_expression = nt.get_attribute_of_idx(in_var_idx, "sourceExpression")?.replace("&#39;", "'");
-        let target = nt.get_attribute_of_idx(in_var_idx, "target")?;
+        if let Ok (source_expression) = nt.get_attribute_of_idx(in_var_idx, "sourceExpression") {
+            let source_expression= source_expression.replace("&#39;", "'");
+            let target = nt.get_attribute_of_idx(in_var_idx, "target")?;
 
-        warn!("source_expression={} target={}", source_expression, target);
+            warn!("source_expression={} target={}", source_expression, target);
 
-        let script_id = format!("{}+{}+{}", process_uri, element_id, var_tag);
-        let mut res = OutValue::Individual(Individual::default());
+            let script_id = format!("{}+{}+{}", process_uri, element_id, var_tag);
+            let mut res = OutValue::Individual(Individual::default());
 
-        execute_js(token, process_instance, &script_id, None, Some(&source_expression.to_owned()), ctx, &mut res);
-        if let OutValue::Individual(l) = res.borrow_mut() {
-            debug!("var mapping={}", l.to_string());
-            if let Some(resources_to_set_in) = l.get_resources("set_in") {
-                variables.set_resources(target, resources_to_set_in);
+            execute_js(token, process_instance, &script_id, None, Some(&source_expression.to_owned()), ctx, &mut res);
+            if let OutValue::Individual(l) = res.borrow_mut() {
+                debug!("var mapping={}", l.to_string());
+                if let Some(resources_to_set_in) = l.get_resources("set_in") {
+                    variables.set_resources(target, resources_to_set_in);
+                }
             }
         }
     }
