@@ -25,11 +25,12 @@ use crate::common::{get_storage_init_param, is_start_form};
 use crate::decision_form::{is_decision_form, prepare_decision_form};
 use crate::start_form::prepare_start_form;
 use crate::token::{is_token, prepare_token};
-use crate::v8_script::{setup, ScriptInfoContext};
+use crate::v8_script::ScriptInfoContext;
 use crate::work_order::{is_work_order, prepare_work_order};
-use rusty_v8 as v8;
-use rusty_v8::Isolate;
 use std::error::Error;
+use std::net::{IpAddr, SocketAddr};
+use std::str::FromStr;
+use std::sync::Arc;
 use std::thread;
 use v_module::info::ModuleInfo;
 use v_module::module::{get_cmd, get_inner_binobj_as_individual, init_log, Module, PrepareError};
@@ -38,6 +39,8 @@ use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_queue::consumer::Consumer;
 use v_storage::remote_indv_r_storage::inproc_storage_manager;
+use v_v8::inspector::{DenoInspector, InspectorServer};
+use v_v8::jsruntime::JsRuntime;
 use v_v8::scripts_workplace::ScriptsWorkPlace;
 
 pub struct Context<'a> {
@@ -50,13 +53,16 @@ fn main() -> Result<(), i32> {
     init_log("BPMN-NANO-ENGINE");
     thread::spawn(move || inproc_storage_manager(get_storage_init_param()));
 
-    let _setup_guard = setup();
-    let isolate = &mut v8::Isolate::new(Default::default());
+    let mut js_runtime = JsRuntime::new();
 
-    listen_queue(isolate)
+    let maybe_inspector_server = Some(Arc::new(InspectorServer::new(SocketAddr::new(IpAddr::from_str("127.0.0.1").unwrap(), 20000))));
+
+    let _inspector = DenoInspector::new(&mut js_runtime, maybe_inspector_server);
+
+    listen_queue(&mut js_runtime)
 }
 
-fn listen_queue<'a>(isolate: &'a mut Isolate) -> Result<(), i32> {
+fn listen_queue<'a>(js_runtime: &'a mut JsRuntime) -> Result<(), i32> {
     let mut module = Module::default();
     let systicket;
     if let Ok(t) = module.get_sys_ticket_id() {
@@ -85,7 +91,7 @@ fn listen_queue<'a>(isolate: &'a mut Isolate) -> Result<(), i32> {
     let mut ctx = Context {
         sys_ticket: systicket,
         onto,
-        workplace: ScriptsWorkPlace::new(isolate),
+        workplace: ScriptsWorkPlace::new(js_runtime.v8_isolate()),
     };
 
     ctx.workplace.load_ext_scripts(&ctx.sys_ticket);

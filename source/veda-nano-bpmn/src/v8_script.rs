@@ -1,5 +1,4 @@
 use crate::Context;
-use rusty_v8 as v8;
 use rusty_v8::{ContextScope, Integer};
 use std::sync::Mutex;
 use v_onto::individual::Individual;
@@ -19,16 +18,6 @@ impl Drop for SetupGuard {
     fn drop(&mut self) {
         // TODO shutdown process cleanly.
     }
-}
-
-pub fn setup() -> SetupGuard {
-    let mut g = INIT_LOCK.lock().unwrap();
-    *g += 1;
-    if *g == 1 {
-        v8::V8::initialize_platform(v8::new_default_platform().unwrap());
-        v8::V8::initialize();
-    }
-    SetupGuard {}
 }
 
 pub(crate) struct ScriptInfoContext {}
@@ -158,7 +147,18 @@ pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, scrip
 }
 
 pub(crate) fn prepare_eval_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, script_id: &str, script_text: &str) {
-    let str_script = &script_text;
+    let str_script = "\
+      (function () { \
+        try { \
+          var ticket = get_env_str_var ('$ticket'); \
+          var token = get_individual (ticket, '$token'); \
+          var process = get_individual (ticket, '$process'); \
+          return "
+        .to_owned()
+        + script_text
+        + " \
+        ; } catch (e) { log_trace (e); } \
+      })();";
 
     let mut scr_inf: ScriptInfo<ScriptInfoContext> = ScriptInfo::new_with_src(script_id, &str_script);
 
