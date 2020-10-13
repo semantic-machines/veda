@@ -49,16 +49,15 @@ pub fn set_vars(
             let source_expression = source_expression.replace("&#39;", "'");
             let target = nt.get_attribute_of_idx(in_var_idx, "target")?;
 
-            warn!("source_expression={} target={}", source_expression, target);
-
             let script_id = format!("{}+{}+{}", process_uri, element_id, var_tag);
             let mut res = OutValue::Individual(Individual::default());
 
             execute_js(token, process_instance, &script_id, None, Some(&source_expression.to_owned()), ctx, &mut res);
             if let OutValue::Individual(l) = res.borrow_mut() {
                 debug!("var mapping={}", l.to_string());
-                if let Some(resources_to_set_in) = l.get_resources("set_in") {
-                    variables.set_resources(target, resources_to_set_in);
+                if let Some(resources_to_set) = l.get_resources("0") {
+                    warn!("SET VARIABLE {}, VALUE={:?}, source_expression={}", target, resources_to_set, source_expression);
+                    variables.set_resources(target, resources_to_set);
                 }
             }
         }
