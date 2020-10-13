@@ -40,7 +40,7 @@ veda.Module(function (veda) { "use strict";
     } else {
       var queryResult = query(veda.ticket, "'rdf:type' == 'owl:Ontology' || 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'v-ui:PropertySpecification' || 'rdf:type' == 'v-ui:ClassModel'");
       var ontology_uris = queryResult.result;
-      var ontology = get_individuals(ontology_uris);
+      var ontology = get_individuals(veda.ticket, ontology_uris);
       self.ontology = ontology;
       console.log("Ontology length:", ontology.length);
       return self.processOntology();
