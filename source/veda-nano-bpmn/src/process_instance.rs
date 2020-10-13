@@ -74,7 +74,7 @@ pub fn end_process(process_uri: &str, process_instance: &mut Individual, ctx: &m
             warn!("bpmn:callActivity, calledElement={}", called_element);
             let mut out_vars = Individual::default();
             out_vars.set_id(parent_proc_inst.get_id());
-            set_vars("camunda:out", &mut Individual::default(), &parent_proc_el_id, parent_proc_el_idx, process_instance, process_uri, &mut parent_proc_inst, &nt, ctx)?;
+            set_vars("camunda:out", &mut Individual::default(), &parent_proc_el_id, parent_proc_el_idx, process_instance, process_uri, &mut out_vars, &nt, ctx)?;
 
             if !out_vars.is_empty() {
                 // set out variables into parent process instance
