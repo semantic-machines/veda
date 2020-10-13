@@ -1,5 +1,7 @@
 use crate::common::{get_individual, set_and_store_token_into, store_is_completed_into};
+use crate::process_instance::end_process;
 use crate::process_source::IndexedNodeTree;
+use crate::token::check_tokens_of_activity;
 use crate::v8_script::{execute_js, OutValue};
 use crate::Context;
 use std::error::Error;
@@ -10,7 +12,7 @@ use v_onto::individual::Individual;
 pub fn token_ingoing_to_parallel_gateway(
     token: &mut Individual,
     element_id: &str,
-    _process_uri: &str,
+    process_uri: &str,
     process_instance: &mut Individual,
     nt: &IndexedNodeTree,
     ctx: &mut Context,
@@ -21,7 +23,7 @@ pub fn token_ingoing_to_parallel_gateway(
         let incoming = nt.get_values_of_tag(&element_idx, "bpmn:incoming");
         let mut incoming_tokens = vec![];
         let mut other_token_uris = vec![];
-        other_token_uris.push(token.get_id());
+        other_token_uris.push(token.get_id().to_owned());
 
         // check all tokens
         for t_id in token_ids.iter() {
@@ -32,7 +34,7 @@ pub fn token_ingoing_to_parallel_gateway(
                         warn!("found token={} in el_id={}", t_id, el_id);
                         incoming_tokens.push(t);
                     } else {
-                        other_token_uris.push(t_id.as_str());
+                        other_token_uris.push(t_id.to_owned());
                     }
                 }
             }
@@ -49,6 +51,11 @@ pub fn token_ingoing_to_parallel_gateway(
 
             // remove other incoming tokens from process instance
             set_and_store_token_into(process_instance.get_id(), &other_token_uris, &ctx.sys_ticket, module)?;
+
+            if check_tokens_of_activity("bpmn:endEvent", other_token_uris, module, None)? {
+                // all tokens going into END EVENT
+                end_process(process_uri, process_instance, ctx, module)?;
+            }
         }
     }
 

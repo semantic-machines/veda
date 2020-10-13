@@ -32,7 +32,7 @@ pub fn get_storage_init_param() -> String {
     tarantool_addr
 }
 
-pub fn set_and_store_token_into(dest_uri: &str, token_uri: &[&str], sys_ticket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
+pub fn set_and_store_token_into(dest_uri: &str, token_uri: &[String], sys_ticket: &str, module: &mut Module) -> Result<(), Box<dyn Error>> {
     let indv = &mut Individual::default();
     indv.set_id(dest_uri);
 
