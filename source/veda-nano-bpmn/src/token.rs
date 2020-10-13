@@ -165,3 +165,20 @@ fn token_ingoing_to(token: &mut Individual, ctx: &mut Context, module: &mut Modu
 
     Ok(())
 }
+
+pub fn check_tokens_of_activity(activity_id: &str, token_ids: Vec<String>, module: &mut Module, skipped_id: Option<&str>) -> Result<bool, Box<dyn Error>> {
+    for t_id in token_ids.iter() {
+        if let Some(s) = skipped_id {
+            if t_id == s {
+                continue;
+            }
+        }
+        let mut t = get_individual(module, &t_id)?;
+        if let Some(el_id) = &t.get_first_literal("bpmn:elementId") {
+            if *el_id != activity_id {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
+}
