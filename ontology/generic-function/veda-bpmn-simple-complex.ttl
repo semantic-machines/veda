@@ -86,7 +86,7 @@ td:bpmn-complex-route1
 <bpmn:callActivity id="Activity_16dni3u" name="Согласование 1" calledElement="td:bpmn-simple-route1">
 <bpmn:extensionElements>
 <camunda:in sourceExpression="process['v-wf:to']" target="bpmn:subProcessVar"/>
-<camunda:out source="true" target="bpmn:coordinationResult"/>
+<camunda:out sourceExpression="veda.Util.newBool(true)" target="bpmn:coordinationResult"/>
 </bpmn:extensionElements>
 <bpmn:incoming>Flow_0mbcnry</bpmn:incoming>
 <bpmn:incoming>Flow_1x2fn17</bpmn:incoming>
