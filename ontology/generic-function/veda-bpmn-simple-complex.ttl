@@ -85,8 +85,8 @@ td:bpmn-complex-route1
 </bpmn:scriptTask>
 <bpmn:callActivity id="Activity_16dni3u" name="Согласование 1" calledElement="td:bpmn-simple-route1">
 <bpmn:extensionElements>
-<camunda:in source=""/>
-<camunda:out source=""/>
+<camunda:in sourceExpression="process['v-wf:to']" target="bpmn:subProcessVar"/>
+<camunda:out source="true" target="bpmn:coordinationResult"/>
 </bpmn:extensionElements>
 <bpmn:incoming>Flow_0mbcnry</bpmn:incoming>
 <bpmn:incoming>Flow_1x2fn17</bpmn:incoming>
@@ -217,8 +217,8 @@ td:bpnm-start-complex-form1
   a bpmn:StartForm;
   bpmn:startProcess td:bpmn-complex-route1;
   bpmn:hasStatus bpmn:ToBeStarted;
-  v-wf:from td:AndreyBychin-Analyst2 ;
   v-wf:to td:ValeriyBushenev-Programmer1;
   v-wf:onDocument td:AleksandraKhvostikova;
-  rdfs:label "Тест стартовой формы комплексного процесса"@ru;
+  rdfs:label "Тест стартовой формы комплексного процесса "@ru;
 .
+
