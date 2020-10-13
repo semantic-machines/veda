@@ -23,9 +23,11 @@ veda.Module(function (veda) { "use strict";
 
   function submitLoginPassword(e) {
     e.preventDefault();
+    var passwordInput = $("#password", loginForm);
     var login = $("#login", loginForm).val(),
-      password = $("#password", loginForm).val(),
+      password = passwordInput.val(),
       hash = Sha256.hash(password);
+      passwordInput.val("");
 
     var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
     return ntlmProvider.load().then(function (ntlmProvider) {
@@ -283,7 +285,7 @@ veda.Module(function (veda) { "use strict";
   }
 
   function handleLoginSuccess(authResult) {
-    var enterLoginPassword = $("#enter-login-password", loginForm).hide();
+    var enterLoginPassword = $("#enter-login-password", loginForm).show();
     var enterNewPassword = $("#enter-new-password", loginForm).hide();
 
     var invalidSecretWarning = $("#invalid-secret-warning", loginForm).hide();

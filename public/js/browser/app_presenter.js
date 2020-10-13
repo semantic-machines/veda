@@ -110,6 +110,70 @@ veda.Module(function (veda) { "use strict";
     }
   });
 
+  var routerInstalled;
+
+  function installRouter (main) {
+
+    if (routerInstalled) { return; }
+
+    routerInstalled = true;
+
+    // Router function
+    riot.route( function (hash) {
+      $("#load-indicator").show();
+      if (typeof hash === "string") {
+        var hash_index = hash.indexOf("#");
+        if (hash_index >= 0) {
+          hash = hash.substring(hash_index);
+        } else {
+          $("#main").empty();
+          return main.present("#main").then(function () {
+            $("#load-indicator").hide();
+          });
+        }
+      } else {
+        $("#main").empty();
+        return main.present("#main").then(function () {
+          $("#load-indicator").hide();
+        });
+      }
+      var tokens = decodeURI(hash).slice(2).split("/"),
+          uri = tokens[0],
+          container = tokens[1] || "#main",
+          template = tokens[2],
+          mode = tokens[3],
+          extra = tokens[4];
+      if (extra) {
+        extra = extra.split("&").reduce(function (acc, pair) {
+          var split = pair.split("="),
+              name  = split[0] || "",
+              values = split[1].split("|") || "";
+          acc[name] = acc[name] || [];
+          values.forEach(function (value) {
+            acc[name].push( parse(value) );
+          });
+          return acc;
+        }, {});
+      }
+
+      if (uri) {
+        var individual = new veda.IndividualModel(uri);
+        $(container).empty();
+        individual.present(container, template, mode, extra).then(function () {
+          $("#load-indicator").hide();
+          if ( !individual.scroll ) {
+            window.scrollTo(0, 0);
+          }
+        });
+      } else {
+        $("#main").empty();
+        main.present("#main").then(function () {
+          $("#load-indicator").hide();
+        });
+      }
+    });
+  }
+
   // Triggered in auth
   veda.on("started", function () {
     $("#load-indicator").show();
@@ -173,62 +237,6 @@ veda.Module(function (veda) { "use strict";
     return value || null;
   }
 
-  function installRouter (main) {
-    // Router function
-    riot.route( function (hash) {
-      $("#load-indicator").show();
-      if (typeof hash === "string") {
-        var hash_index = hash.indexOf("#");
-        if (hash_index >= 0) {
-          hash = hash.substring(hash_index);
-        } else {
-          $("#main").empty();
-          return main.present("#main").then(function () {
-            $("#load-indicator").hide();
-          });
-        }
-      } else {
-        $("#main").empty();
-        return main.present("#main").then(function () {
-          $("#load-indicator").hide();
-        });
-      }
-      var tokens = decodeURI(hash).slice(2).split("/"),
-          uri = tokens[0],
-          container = tokens[1] || "#main",
-          template = tokens[2],
-          mode = tokens[3],
-          extra = tokens[4];
-      if (extra) {
-        extra = extra.split("&").reduce(function (acc, pair) {
-          var split = pair.split("="),
-              name  = split[0] || "",
-              values = split[1].split("|") || "";
-          acc[name] = acc[name] || [];
-          values.forEach(function (value) {
-            acc[name].push( parse(value) );
-          });
-          return acc;
-        }, {});
-      }
-
-      if (uri) {
-        var individual = new veda.IndividualModel(uri);
-        $(container).empty();
-        individual.present(container, template, mode, extra).then(function () {
-          $("#load-indicator").hide();
-          if ( !individual.scroll ) {
-            window.scrollTo(0, 0);
-          }
-        });
-      } else {
-        $("#main").empty();
-        main.present("#main").then(function () {
-          $("#load-indicator").hide();
-        });
-      }
-    });
-  }
 
   if (typeof localStorage !== "undefined" && localStorage !== null) {
     // Listen to client notifications
