@@ -215,7 +215,9 @@ bpmn:ProcessTemplate
   var definition = individual.hasValue("bpmn:processDefinition") ? individual["bpmn:processDefinition"][0].toString() : emptyDefinition;
   modeler.importXML(definition);
   var notify = veda.Notify ? new veda.Notify() : console.log;
-  $("#save", template).click(function () {
+
+  $("#save", template).click(saveProcess);
+  function saveProcess() {
     modeler.saveXML()
     .then(function (updatedDefinition) {
       individual["bpmn:processDefinition"] = [ updatedDefinition.xml ];
@@ -233,7 +235,7 @@ bpmn:ProcessTemplate
         notify("danger", {name: errorMsg.toString()});
       });
     });
-  });
+  }
 
   $("#download-xml", template).click(function () {
     modeler.saveXML()
@@ -252,17 +254,25 @@ bpmn:ProcessTemplate
     });
   });
 
-  $(document).on("keydown", undo_redo);
+  $(document).on("keydown", shortcuts);
 
-  function undo_redo (e) {
+  function shortcuts (e) {
+    // Ctrl + z
     if (e.keyCode === 90 && e.ctrlKey) {
       modeler.get("commandStack").undo();
-    } else if (e.keyCode === 89 && e.ctrlKey) {
+    }
+    // Ctrl + y
+    else if (e.keyCode === 89 && e.ctrlKey) {
       modeler.get("commandStack").redo();
+    }
+    // Ctrl + s
+    else if (e.keyCode === 83 && e.ctrlKey) {
+      e.preventDefault();
+      saveProcess();
     }
   }
   template.one("remove", function () {
-    $(document).off("keydown", undo_redo);
+    $(document).off("keydown", shortcuts);
   });
 
 //# sourceURL=bpmn:ProcessTemplate_post
