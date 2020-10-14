@@ -174,11 +174,18 @@ veda.Module(function (veda) { "use strict";
       case value instanceof Number || typeof value === "number":
         formatted = formatNumber(value);
         break;
+      case value instanceof String || typeof value === "string":
+        formatted = formatString(value);
+        break;
       default:
         formatted = typeof value !== "undefined" ? value.toString() : value;
     }
     return formatted;
   };
+  function formatString (value) {
+    var condition = !value.language || value.language === "NONE" || ( veda.user && veda.user.preferences && veda.user.preferences.language && value.language in veda.user.preferences.language ) ;
+    return condition ? value : undefined;
+  }
   function formatDate (date) {
     var day = date.getDate(),
       month = date.getMonth() + 1,
