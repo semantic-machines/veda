@@ -30,7 +30,6 @@ veda.Module(function (veda) { "use strict";
       uri: uri
     };
     this.properties = typeof uri === "object" ? uri : {};
-    this.filtered = {};
 
     if (this._.cache) {
       var cached;
@@ -85,22 +84,16 @@ veda.Module(function (veda) { "use strict";
   proto.get = function (property_uri) {
     var self = this;
     if (!self.properties[property_uri]) return [];
-    self.filtered[property_uri] = [];
-    return self.properties[property_uri]
-      .filter(function (value) {
-        var condition = !value.lang || value.lang === "NONE" || ( veda.user && veda.user.preferences && veda.user.preferences.language && value.lang in veda.user.preferences.language ) ;
-        return condition ? condition : ( self.filtered[property_uri].push(value), condition );
-      })
-      .map( parser );
+    return self.properties[property_uri].map( parser );
   };
 
   proto.set = function (property_uri, values, silently) {
     this.isSync(false);
-    values = values.filter(function (i) { return i != undefined; });
-    var serialized = values.map( serializer );
-    if (this.filtered[property_uri] && this.filtered[property_uri].length) {
-      serialized = serialized.concat( this.filtered[property_uri] );
+    if ( !Array.isArray(values) ) {
+      values = [values];
     }
+    values = values.filter(function (i) { return i !== undefined && i !== null && i !== ""; });
+    var serialized = values.map(serializer).filter(Boolean);
     var uniq = unique(serialized);
     if ( JSON.stringify(uniq) !== JSON.stringify(this.properties[property_uri] || []) ) {
       if (uniq.length) {
@@ -158,6 +151,10 @@ veda.Module(function (veda) { "use strict";
     }
   }
 
+  var reg_uri = /^[a-z-0-9]+:([a-z-A-Z0-9])*$/;
+  var reg_date = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+  var reg_ml_string = /^(.*)@([a-z]{2})$/i;
+
   function serializer (value) {
     if (typeof value === "number" ) {
       return {
@@ -169,12 +166,6 @@ veda.Module(function (veda) { "use strict";
         type: "Boolean",
         data: value
       };
-    } else if (typeof value === "string" || value instanceof String) {
-      return {
-        type: "String",
-        data: value.valueOf(),
-        lang: value.language || "NONE"
-      };
     } else if (value instanceof Date) {
       return {
         type: "Datetime",
@@ -185,8 +176,30 @@ veda.Module(function (veda) { "use strict";
         type: "Uri",
         data: value.id
       };
-    } else {
-      return value;
+    } else if (typeof value === "string" || value instanceof String) {
+      if ( reg_uri.test(value) ) {
+        return {
+          type: "Uri",
+          data: value.valueOf()
+        };
+      } else if ( reg_date.test(value) ) {
+        return {
+          type: "Datetime",
+          data: value.valueOf()
+        };
+      } else if ( reg_ml_string.test(value) ) {
+        return {
+          type: "String",
+          data: value.replace(reg_ml_string, "$1"),
+          lang: value.replace(reg_ml_string, "$2").toUpperCase()
+        };
+      } else {
+        return {
+          type: "String",
+          data: value.valueOf(),
+          lang: value.language || "NONE"
+        };
+      }
     }
   }
 
@@ -472,7 +485,6 @@ veda.Module(function (veda) { "use strict";
       this.trigger("afterReset");
       return Promise.resolve(this);
     }
-    this.filtered = {};
     var promise = (original ? Promise.resove(original) : veda.Backend.reset_individual(veda.ticket, self.id))
       .then(processOriginal)
       .then(function () {
@@ -867,8 +879,7 @@ veda.Module(function (veda) { "use strict";
    * @return {String} String representation of individual.
    */
   proto.toString = function () {
-    //return this["rdf:type"][0]["rdfs:label"].join(", ") + ": " + ( this["rdfs:label"] ? this["rdfs:label"].join(", ") : this.id );
-    return this.hasValue("rdfs:label") ? this.get("rdfs:label").join(" ") : this.hasValue("rdf:type") ? this.get("rdf:type")[0].toString() + ": " + this.id : this.id ;
+    return this.hasValue("rdfs:label") ? this.get("rdfs:label").map(veda.Util.formatValue).join(" ") : this.hasValue("rdf:type") ? this.get("rdf:type")[0].toString() + ": " + this.id : this.id ;
   };
 
   /**
