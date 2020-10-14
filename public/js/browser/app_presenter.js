@@ -87,29 +87,6 @@ veda.Module(function (veda) { "use strict";
     return ( hash === location.hash ? false : riot.route(hash) );
   });
 
-  // Triggered in veda.start()
-  veda.on("language:changed", function () {
-    var uris = [];
-    $("#app [resource], #app [about]").each(function () {
-      var $this = $(this);
-      var uri = $this.attr("resource") || $this.attr("about");
-      uris.push(uri);
-    });
-    var unique = veda.Util.unique(uris);
-    unique.forEach(localize);
-
-    function localize (uri) {
-      var individual = new veda.IndividualModel(uri);
-      for (var property_uri in individual.properties) {
-        if (property_uri === "@") { continue; }
-        if ( individual.hasValue(property_uri) && individual.properties[property_uri][0].type === "String" ) {
-          individual.trigger("propertyModified", property_uri, individual.get(property_uri));
-          individual.trigger(property_uri, individual.get(property_uri));
-        }
-      }
-    }
-  });
-
   var routerInstalled;
 
   function installRouter (main) {
