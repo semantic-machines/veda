@@ -173,31 +173,31 @@ td:bpmn-simple-route1
   rdfs:label "Простой процесс BPMN"@ru;
   bpmn:processDefinition """
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0ydxadt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0ydxadt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
 <bpmn:process id="Simple_route" isExecutable="true">
 <bpmn:startEvent id="StartEvent_1">
 <bpmn:outgoing>Flow_0qjd1os</bpmn:outgoing>
 </bpmn:startEvent>
-<bpmn:sequenceFlow id="Flow_0qjd1os" sourceRef="StartEvent_1" targetRef="Activity_0nlauc1"/>
 <bpmn:endEvent id="Event_04ge4a1">
 <bpmn:incoming>Flow_1tboqbf</bpmn:incoming>
 </bpmn:endEvent>
 <bpmn:sequenceFlow id="Flow_1tboqbf" sourceRef="Activity_0nlauc1" targetRef="Event_04ge4a1"/>
-<bpmn:scriptTask id="Activity_0nlauc1" name="Задача">
+<bpmn:sequenceFlow id="Flow_0qjd1os" sourceRef="StartEvent_1" targetRef="Activity_0nlauc1"/>
+<bpmn:userTask id="Activity_0nlauc1" name="Задача">
 <bpmn:incoming>Flow_0qjd1os</bpmn:incoming>
 <bpmn:outgoing>Flow_1tboqbf</bpmn:outgoing>
-<bpmn:script>print('Params', JSON.stringify(process['bpmn:params']))</bpmn:script>
-</bpmn:scriptTask>
+<bpmn:multiInstanceLoopCharacteristics camunda:collection="process['bpmn:params'][0]['s-wf:SimpleRouteStartForm_participant']" camunda:elementVariable="bpmn:participant"/>
+</bpmn:userTask>
 </bpmn:process>
 <bpmndi:BPMNDiagram id="BPMNDiagram_1">
 <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Simple_route">
-<bpmndi:BPMNEdge id="Flow_1tboqbf_di" bpmnElement="Flow_1tboqbf">
-<di:waypoint x="600" y="258"/>
-<di:waypoint x="652" y="258"/>
-</bpmndi:BPMNEdge>
 <bpmndi:BPMNEdge id="Flow_0qjd1os_di" bpmnElement="Flow_0qjd1os">
 <di:waypoint x="448" y="258"/>
 <di:waypoint x="500" y="258"/>
+</bpmndi:BPMNEdge>
+<bpmndi:BPMNEdge id="Flow_1tboqbf_di" bpmnElement="Flow_1tboqbf">
+<di:waypoint x="600" y="258"/>
+<di:waypoint x="652" y="258"/>
 </bpmndi:BPMNEdge>
 <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
 <dc:Bounds x="412" y="240" width="36" height="36"/>
@@ -205,7 +205,7 @@ td:bpmn-simple-route1
 <bpmndi:BPMNShape id="Event_04ge4a1_di" bpmnElement="Event_04ge4a1">
 <dc:Bounds x="652" y="240" width="36" height="36"/>
 </bpmndi:BPMNShape>
-<bpmndi:BPMNShape id="Activity_0x5nl2p_di" bpmnElement="Activity_0nlauc1">
+<bpmndi:BPMNShape id="Activity_10mt4h0_di" bpmnElement="Activity_0nlauc1">
 <dc:Bounds x="500" y="218" width="100" height="80"/>
 </bpmndi:BPMNShape>
 </bpmndi:BPMNPlane>
