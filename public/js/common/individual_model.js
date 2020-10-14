@@ -152,7 +152,7 @@ veda.Module(function (veda) { "use strict";
     }
   }
 
-  var reg_uri = /^[a-z-0-9]+:([a-z-A-Z0-9])*$/;
+  var reg_uri = /^[a-z-0-9]+:([a-zA-Z0-9-_])*$/;
   var reg_date = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
   var reg_ml_string = /^(.*)@([a-z]{2})$/i;
 
