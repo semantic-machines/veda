@@ -38,12 +38,16 @@ veda.Module(function (veda) { "use strict";
         return error;
       });
     } else {
-      var queryResult = query(veda.ticket, "'rdf:type' == 'owl:Ontology' || 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'v-ui:PropertySpecification' || 'rdf:type' == 'v-ui:ClassModel'");
-      var ontology_uris = queryResult.result;
-      var ontology = get_individuals(veda.ticket, ontology_uris);
-      self.ontology = ontology;
-      console.log("Ontology length:", ontology.length);
-      return self.processOntology();
+      return veda.Backend.query(veda.ticket, "'rdf:type' == 'owl:Ontology' || 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'v-ui:PropertySpecification' || 'rdf:type' == 'v-ui:ClassModel'")
+      .then(function (queryResult) {
+        var ontology_uris = queryResult.result;
+        return veda.Backend.get_individuals(veda.ticket, ontology_uris);
+      })
+      .then(function (ontology) {
+        self.ontology = ontology;
+        console.log("Ontology length:", ontology.length);
+        return self.processOntology();
+      });
     }
   };
 
