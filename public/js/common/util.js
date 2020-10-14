@@ -1404,13 +1404,17 @@ veda.Module(function (veda) { "use strict";
     for (i = 1; i < argsLength; i++) {
       property_uri = arguments[i];
       if ( veda.Util.hasValue(value, property_uri) ) {
-        type = value[property_uri][0].type;
-        value = value[property_uri][0].data;
         if (i === (argsLength - 1) ) {
-          return value;
-        } else if (type === "Uri") {
-          value = get_individual(veda.ticket, value);
-          continue;
+          return value[property_uri].map(function (el) {
+            return el.data;
+          });
+        } else {
+          type = value[property_uri][0].type;
+          value = value[property_uri][0].data;
+          if (type === "Uri") {
+            value = get_individual(veda.ticket, value);
+            continue;
+          }
         }
       }
       return;
