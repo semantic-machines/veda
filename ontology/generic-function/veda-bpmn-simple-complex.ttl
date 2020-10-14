@@ -214,23 +214,25 @@ td:bpmn-simple-route1
 """;
 .
 
-td:bpnm-start-complex-form1
+td:bpmn-start-complex-form1
   a bpmn:StartForm;
   bpmn:startProcess td:bpmn-complex-route1;
   bpmn:hasStatus bpmn:ToBeStarted;
   v-wf:onDocument td:AleksandraKhvostikova;
-  s-wf:ComplexRouteStartForm_coordination1 td:bpnm-start-complex-form1-coordination1;
+  s-wf:ComplexRouteStartForm_coordination1 td:bpmn-start-complex-form1-coordination1;
   rdfs:label "Тест стартовой формы комплексного процесса "@ru;
 .
 
-td:bpnm-start-complex-form1-coordination1 rdf:type s-wf:SimpleRouteStartForm;
+
+td:bpmn-start-complex-form1-coordination1
+  a s-wf:SimpleRouteStartForm;
   s-wf:SimpleRouteStartForm_editable true;
-  s-wf:SimpleRouteStartForm_participant cfg:AdministratorAppointment;
-  s-wf:SimpleRouteStartForm_participant td:ValeriyBushenev-Programmer1;;
+  s-wf:SimpleRouteStartForm_participant td:RomanKarpov-Analyst1;
+  s-wf:SimpleRouteStartForm_participant td:ValeriyBushenev-Programmer1;
   s-wf:SimpleRouteStartForm_possible_decisions v-wf:DecisionAgreed, v-wf:DecisionDeclined, v-wf:DecisionNoAgreed, v-wf:DecisionNotForMe;
   s-wf:SimpleRouteStartForm_task_label "Согласовать"@ru, "Coordinate"@en;
   s-wf:SimpleRouteStartForm_visible true;
-  v-s:parent td:bpnm-start-complex-form1;
+  v-s:parent td:bpmn-start-complex-form1;
   v-wf:StartForm_canEdit "false"^^xsd:boolean;
 .
 
