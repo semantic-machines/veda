@@ -186,7 +186,7 @@ td:bpmn-simple-route1
 <bpmn:userTask id="Activity_0nlauc1" name="Задача">
 <bpmn:incoming>Flow_0qjd1os</bpmn:incoming>
 <bpmn:outgoing>Flow_1tboqbf</bpmn:outgoing>
-<bpmn:multiInstanceLoopCharacteristics camunda:collection="process['bpmn:params'][0]['s-wf:SimpleRouteStartForm_participant']" camunda:elementVariable="bpmn:participant"/>
+<bpmn:multiInstanceLoopCharacteristics camunda:collection="veda.Util.getPropertyChain(process, 'bpmn:params', 's-wf:SimpleRouteStartForm_participant')" camunda:elementVariable="bpmn:participant"/>
 </bpmn:userTask>
 </bpmn:process>
 <bpmndi:BPMNDiagram id="BPMNDiagram_1">
