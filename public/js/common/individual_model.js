@@ -102,6 +102,7 @@ veda.Module(function (veda) { "use strict";
         delete this.properties[property_uri];
       }
       if ( !silently ) {
+        values = this.get(property_uri);
         this.trigger("propertyModified", property_uri, values);
         this.trigger(property_uri, values);
       }
