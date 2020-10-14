@@ -183,7 +183,7 @@ td:bpmn-simple-route1
 </bpmn:endEvent>
 <bpmn:sequenceFlow id="Flow_1tboqbf" sourceRef="Activity_0nlauc1" targetRef="Event_04ge4a1"/>
 <bpmn:sequenceFlow id="Flow_0qjd1os" sourceRef="StartEvent_1" targetRef="Activity_0nlauc1"/>
-<bpmn:userTask id="Activity_0nlauc1" name="Задача">
+<bpmn:userTask id="Activity_0nlauc1" name="Задача" camunda:assignee="workOrder['bpmn:participant']">
 <bpmn:incoming>Flow_0qjd1os</bpmn:incoming>
 <bpmn:outgoing>Flow_1tboqbf</bpmn:outgoing>
 <bpmn:multiInstanceLoopCharacteristics camunda:collection="veda.Util.getPropertyChain(process, 'bpmn:params', 's-wf:SimpleRouteStartForm_participant')" camunda:elementVariable="bpmn:participant"/>
@@ -223,7 +223,6 @@ td:bpmn-start-complex-form1
   rdfs:label "Тест стартовой формы комплексного процесса "@ru;
 .
 
-
 td:bpmn-start-complex-form1-coordination1
   a s-wf:SimpleRouteStartForm;
   s-wf:SimpleRouteStartForm_editable true;
@@ -235,4 +234,3 @@ td:bpmn-start-complex-form1-coordination1
   v-s:parent td:bpmn-start-complex-form1;
   v-wf:StartForm_canEdit "false"^^xsd:boolean;
 .
-
