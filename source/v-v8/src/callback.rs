@@ -274,12 +274,16 @@ pub fn init_context_with_callback<'a>(scope: &mut HandleScope<'a, ()>) -> Local<
 }
 
 fn get_string_arg(scope: &mut v8::HandleScope, args: &v8::FunctionCallbackArguments, idx: i32, err_msg: &str) -> Option<String> {
-    let arg = args.get(idx).to_string(scope);
-    if arg.is_none() {
-        error!("{}", err_msg);
-        return None;
+    let arg = args.get(idx);
+
+    if !arg.is_null_or_undefined() {
+        if let Some(arg) = arg.to_string(scope) {
+            return Some(arg.to_rust_string_lossy(scope));
+        }
     }
-    Some(arg.unwrap().to_rust_string_lossy(scope))
+
+    error!("{}", err_msg);
+    return None;
 }
 
 fn get_string_i32(scope: &mut v8::HandleScope, args: &v8::FunctionCallbackArguments, idx: i32, err_msg: &str) -> Option<i32> {
