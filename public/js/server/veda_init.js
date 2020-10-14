@@ -22,8 +22,4 @@
 
   console.log("user:", veda.user.id, "| ticket:", veda.ticket);
 
-  console.log("query with 2 params:", JSON.stringify(query(veda.ticket, "'rdf:type' == 'owl:Ontology'")));
-
-  console.log("query with 7 params:", JSON.stringify(query(veda.ticket, "'rdf:type' == 'owl:Ontology'", undefined, undefined, undefined, undefined, undefined)));
-
 })(veda);

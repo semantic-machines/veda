@@ -328,16 +328,24 @@ veda.Module(function (veda) { "use strict";
       this.trigger("afterLoad", this);
       return Promise.resolve( this );
     } else if ( this.isLoaded() && veda.Backend.status === "limited" ) {
-      return this.is("v-s:UserThing").then(function (isUserThing) {
-        if (isUserThing) {
-          return self.reset();
-        } else {
+      if (typeof window !== "undefined") {
+        return this.is("v-s:UserThing").then(function (isUserThing) {
+          if (isUserThing) {
+            return self.reset();
+          } else {
+            return self;
+          }
+        }).then(function (self) {
+          self.trigger("afterLoad", self);
           return self;
-        }
-      }).then(function (self) {
-        self.trigger("afterLoad", self);
-        return self;
-      });
+        });
+      } else {
+        return self.reset()
+        .then(function (self) {
+          self.trigger("afterLoad", self);
+          return self;
+        });
+      }
     }
     var uri = this._.uri ;
     if (typeof uri === "string") {

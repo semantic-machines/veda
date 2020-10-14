@@ -3,7 +3,7 @@ veda.Module(function Backend(veda) { "use strict";
 
   veda.Backend = {};
 
-  veda.Backend.status = "online";
+  veda.Backend.status = "limited";
 
   veda.Backend.query = function (ticket, queryStr, sort, databases, top, limit, from) {
     var arg = arguments[0];
