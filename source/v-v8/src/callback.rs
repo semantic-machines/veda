@@ -159,19 +159,19 @@ pub fn fn_callback_query(scope: &mut v8::HandleScope, args: v8::FunctionCallback
 
     let mut query = FTQuery::new_with_ticket(&ticket, &query.unwrap());
     if args.length() > 2 {
-        sort = get_string_arg(scope, &args, 2, "callback_get_individual: arg2 [sort] not found or invalid");
+        sort = get_string_arg(scope, &args, 2, "callback_query: arg2 [sort] not found or invalid");
         query.sort = sort.unwrap_or_default();
         if args.length() > 3 {
-            databases = get_string_arg(scope, &args, 3, "callback_get_individual: arg3 [databases] not found or invalid");
+            databases = get_string_arg(scope, &args, 3, "callback_query: arg3 [databases] not found or invalid");
             query.databases = databases.unwrap_or_default();
             if args.length() > 4 {
-                top = get_string_i32(scope, &args, 4, "callback_get_individual: arg4 [top] not found or invalid");
+                top = get_string_i32(scope, &args, 4, "callback_query: arg4 [top] not found or invalid");
                 query.top = top.unwrap_or(100000);
                 if args.length() > 5 {
-                    limit = get_string_i32(scope, &args, 5, "callback_get_individual: arg5 [limit] not found or invalid");
+                    limit = get_string_i32(scope, &args, 5, "callback_query: arg5 [limit] not found or invalid");
                     query.limit = limit.unwrap_or(100000);
                     if args.length() > 6 {
-                        from = get_string_i32(scope, &args, 6, "callback_get_individual: arg6 [from] not found or invalid");
+                        from = get_string_i32(scope, &args, 6, "callback_query: arg6 [from] not found or invalid");
                         query.from = from.unwrap_or_default();
                     }
                 }
@@ -273,7 +273,7 @@ pub fn init_context_with_callback<'a>(scope: &mut HandleScope<'a, ()>) -> Local<
     v8::Context::new_from_template(scope, object_templ)
 }
 
-fn get_string_arg(scope: &mut v8::HandleScope, args: &v8::FunctionCallbackArguments, idx: i32, err_msg: &str) -> Option<String> {
+fn get_string_arg(scope: &mut v8::HandleScope, args: &v8::FunctionCallbackArguments, idx: i32, warn_msg: &str) -> Option<String> {
     let arg = args.get(idx);
 
     if !arg.is_null_or_undefined() {
@@ -282,7 +282,7 @@ fn get_string_arg(scope: &mut v8::HandleScope, args: &v8::FunctionCallbackArgume
         }
     }
 
-    error!("{}", err_msg);
+    warn!("{}", warn_msg);
     return None;
 }
 
