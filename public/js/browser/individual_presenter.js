@@ -12,6 +12,8 @@ veda.Module(function (veda) { "use strict";
       container = $(container);
     }
 
+    var reg_uri = /^[a-z-0-9]+:([a-zA-Z0-9-_])*$/;
+
     return this.load().then(function (individual) {
 
       var offlineTemplate = "<h5 class='container sheet text-center text-muted'>Нет связи с сервером. Этот объект сейчас недоступен / Server disconnected. This object is not available now</h5>";
@@ -19,7 +21,7 @@ veda.Module(function (veda) { "use strict";
       if (template) {
         if (template instanceof veda.IndividualModel) {
         // if template is uri
-        } else if (typeof template === "string" && (/^(\w|-)+:.*?$/).test(template) ) {
+        } else if (typeof template === "string" && reg_uri.test(template) ) {
           template = new veda.IndividualModel(template);
         } else {
           if (typeof template === "string") {
