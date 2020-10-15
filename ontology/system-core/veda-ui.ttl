@@ -354,8 +354,6 @@ v-ui:Preferences
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:Labeled ;
-  v-s:labelPattern "{@.v-s:owner.rdfs:label}" ;
   rdfs:label "Предпочтения"@ru ;
   rdfs:label "Preferences"@en ;
 .
@@ -758,7 +756,7 @@ v-ui:StandardButtonsTemplate
     enabledButtons.forEach(function (id) {
       if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
       if ( !canDelete && (id === "delete" || id === "destroy") ) { return; }
-      $("#" + id, template).removeClass("rm");
+      $("#" + id, template).removeClass("rm hidden");
     });
     $(".rm", template).remove();
   });
@@ -829,16 +827,16 @@ v-ui:StandardButtonsTemplate
 </script>
 <span>
   <button type="refresh" class="btn btn-success view -edit -search hidden" id="refresh"><span class="glyphicon glyphicon-refresh"></span></button>
-  <button type="submit" class="rm action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
-  <button type="button" class="rm action btn btn-primary view -edit -search" id="edit"><span about="v-s:Edit" property="rdfs:label"></span></button>
-  <button type="submit" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
-  <button type="button" class="rm action btn btn-default -view edit -search" id="cancel"><span about="v-s:Cancel" property="rdfs:label"></span></button>
-  <button type="button" class="rm action btn btn-link view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-  <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"></button>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"></button>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"></button>
-  <div class="rm action btn-group dropup view -edit -search" id="task">
+  <button type="submit" class="rm hidden action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-primary view -edit -search" id="edit"><span about="v-s:Edit" property="rdfs:label"></span></button>
+  <button type="submit" class="rm hidden action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-default -view edit -search" id="cancel"><span about="v-s:Cancel" property="rdfs:label"></span></button>
+  <button type="button" class="rm hidden action btn btn-link view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-default view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"></button>
+  <div class="rm hidden action btn-group dropup view -edit -search" id="task">
     <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
       <span about="v-s:SendTask" property="rdfs:label"> </span>
       <span class="caret"></span>
