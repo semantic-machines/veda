@@ -383,7 +383,7 @@ bpmn:ProcessInstanceTemplate
       html: token_chip
     });
 
-    var cntr = $("<ol></ol>");
+    var cntr = $("<div></div>");
     var tmpl = "bpmn:TokenPopoverTemplate";
     token.present(cntr, tmpl).then(function () {
         token_chip.popover({
@@ -412,14 +412,19 @@ bpmn:TokenPopoverTemplate
   rdfs:label "bpmn:TokenTemplate class template"@en ;
   v-ui:forClass bpmn:Token ;
   v-ui:template """
-<li about="@" rel="bpmn:hasWorkOrder">
-  <div about="@" rel="bpmn:hasExecutor">
-    <div><strong about="bpmn:hasExecutor" property="rdfs:label"></strong> <span about="@" data-template="v-ui:LabelLinkTemplate"></span></div>
-  </div>
-  <div about="@" rel="bpmn:hasDecisionForm">
-    <div><strong about="bpmn:hasDecisionForm" property="rdfs:label"></strong><span about="@" data-template="v-ui:LabelLinkTemplate"></span></div>
-  </div>
-</li>
+<div>
+  <span about="@" data-template="v-ui:LabelLinkTemplate"></span>
+  <ol rel="bpmn:hasWorkOrder">
+    <li>
+      <div about="@" rel="bpmn:hasExecutor">
+        <div><strong about="bpmn:hasExecutor" property="rdfs:label"></strong> <span about="@" data-template="v-ui:LabelLinkTemplate"></span></div>
+      </div>
+      <div about="@" rel="bpmn:hasDecisionForm">
+        <div><strong about="bpmn:hasDecisionForm" property="rdfs:label"></strong><span about="@" data-template="v-ui:LabelLinkTemplate"></span></div>
+      </div>
+    </li>
+  </ol>
+</div>
   """ ;
 .
 

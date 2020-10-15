@@ -29,7 +29,13 @@ veda.Module(function (veda) { "use strict";
       pending: {},
       uri: uri
     };
-    this.properties = typeof uri === "object" ? uri : {};
+
+    if (typeof uri === "object") {
+      this.properties = uri;
+      this.original = JSON.stringify(uri);
+    } else {
+      this.properties = {};
+    }
 
     if (this._.cache) {
       var cached;
@@ -355,6 +361,7 @@ veda.Module(function (veda) { "use strict";
         self.isSync(true);
         self.isLoaded(true);
         self.properties = individualJson;
+        self.original = JSON.stringify(individualJson);
         self.trigger("afterLoad", self);
         if (self._.init) {
           return self.init();
@@ -371,8 +378,8 @@ veda.Module(function (veda) { "use strict";
             "@": uri,
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
             "rdfs:label": [
-              {type: "String", data: "Объект не существует", lang: "RU"},
-              {type: "String", data: "Object does not exist", lang: "EN"}
+              {type: "String", data: "Объект не существует [" + uri + "]", lang: "RU"},
+              {type: "String", data: "Object does not exist [" + uri + "]", lang: "EN"}
             ]
           };
         } else if (error.code === 472) {
@@ -459,13 +466,24 @@ veda.Module(function (veda) { "use strict";
     Object.keys(this.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
       acc[property_uri] = acc[property_uri].filter(function (item) {
-        return item && item.data !== "";
+        return item && item.data !== "" && item.data !== undefined && item.data !== null;
       });
       if (!acc[property_uri].length) delete acc[property_uri];
       return acc;
     }, this.properties);
 
-    var promise = veda.Backend.put_individual(veda.ticket, this.properties).then(function () {
+    var original = this.original ? JSON.parse(this.original, veda.Util.decimalDatetimeReviver) : {"@": this.id};
+    var delta = veda.Util.diff(this.properties, original);
+
+    var promise = (this.isNew() ?
+      veda.Backend.put_individual(veda.ticket, this.properties) :
+      Promise.all([
+        delta.added && Object.keys(delta.added).length ? (delta.added["@"] = this.id, veda.Backend.add_to_individual(veda.ticket, delta.added)) : undefined,
+        delta.differ && Object.keys(delta.differ).length ? (delta.differ["@"] = this.id, veda.Backend.set_in_individual(veda.ticket, delta.differ)) : undefined,
+        delta.missing && Object.keys(delta.missing).length? (delta.missing["@"] = this.id, veda.Backend.remove_from_individual(veda.ticket, delta.missing)) : undefined
+      ])
+    ).then(function () {
+      self.original = JSON.stringify(self.properties);
       self.isSaving(false);
       self.isNew(false);
       self.isSync(true);
@@ -477,6 +495,7 @@ veda.Module(function (veda) { "use strict";
       console.log("save individual error", self.id, error);
       throw error;
     });
+
     return this.isSaving(promise);
   }
 
@@ -512,6 +531,7 @@ veda.Module(function (veda) { "use strict";
     return self.isResetting(promise);
 
     function processOriginal(original) {
+      self.original = JSON.stringify(original);
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);
       var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
@@ -533,8 +553,9 @@ veda.Module(function (veda) { "use strict";
           }
         }
         if (modified) {
-          self.trigger("propertyModified", property_uri, self.get(property_uri));
-          self.trigger(property_uri, self.get(property_uri));
+          var values = self.get(property_uri);
+          self.trigger("propertyModified", property_uri, values);
+          self.trigger(property_uri, values);
         }
       });
     }
