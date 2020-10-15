@@ -31,6 +31,14 @@ impl Resource {
         }
     }
 
+    pub fn new_uri(data: &str) -> Self {
+        Resource {
+            rtype: DataType::Uri,
+            order: 0,
+            value: Value::Uri(data.to_owned()),
+        }
+    }
+
     pub fn get_copy(&self) -> Self {
         Resource {
             rtype: self.rtype.clone(),
