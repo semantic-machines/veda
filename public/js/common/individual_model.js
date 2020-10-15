@@ -371,8 +371,8 @@ veda.Module(function (veda) { "use strict";
             "@": uri,
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
             "rdfs:label": [
-              {type: "String", data: "Объект не существует", lang: "RU"},
-              {type: "String", data: "Object does not exist", lang: "EN"}
+              {type: "String", data: "Объект не существует [" + uri + "]", lang: "RU"},
+              {type: "String", data: "Object does not exist [" + uri + "]", lang: "EN"}
             ]
           };
         } else if (error.code === 472) {
