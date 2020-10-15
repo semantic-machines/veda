@@ -1258,10 +1258,14 @@ v-ui:ResourceTemplate
         "rel": property_uri,
         "data-template": "v-ui:LabelLinkTemplate"
       }
-      if ( ["xsd:string", "xsd:integer", "xsd:decimal", "xsd:boolean", "xsd:Literal", "xsd:dateTime"].indexOf(property["rdfs:range"][0].id) >= 0  ) {
-        propRow.find(".prop-value").attr(literalAttrs);
+      if ( property.hasValue("rdfs:range") ) {
+        if ( ["xsd:string", "xsd:integer", "xsd:decimal", "xsd:boolean", "xsd:Literal", "xsd:dateTime"].indexOf(property["rdfs:range"][0].id) >= 0  ) {
+          propRow.find(".prop-value").attr(literalAttrs);
+        } else {
+          propRow.find(".prop-value").attr(objectAttrs);
+        }
       } else {
-        propRow.find(".prop-value").attr(objectAttrs);
+        propRow.find(".prop-value").attr(literalAttrs);
       }
       propСontainer.append(propRow);
     })
