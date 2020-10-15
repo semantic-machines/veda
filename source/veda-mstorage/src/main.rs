@@ -13,7 +13,7 @@ use v_api::IndvOp;
 use v_authorization::common::{Access, Trace};
 use v_az_lmdb::_authorize;
 use v_module::info::ModuleInfo;
-use v_module::module::{create_sys_ticket, init_log, Module, indv_apply_cmd};
+use v_module::module::{create_sys_ticket, indv_apply_cmd, init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::{Individual, RawObj};
@@ -301,7 +301,7 @@ fn operation_prepare(
         return Response::new(new_indv.get_id(), ResultCode::NoContent, -1, -1);
     }
 
-    debug! ("cmd={:?}, new_indv.id={}", cmd, new_indv.get_id());
+    debug!("cmd={:?}, new_indv.id={}", cmd, new_indv.get_id());
 
     let mut prev_indv = Individual::default();
     let prev_state = primary_storage.get_raw_value(StorageId::Individuals, new_indv.get_id());
@@ -389,7 +389,6 @@ fn operation_prepare(
     }
 
     let upd_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
-    new_indv.set_integer("v-s:updateCounter", upd_counter);
 
     if cmd == IndvOp::Put && !new_indv.is_exists("v-s:created") {
         new_indv.add_datetime("v-s:created", Utc::now().naive_utc().timestamp());
@@ -401,6 +400,7 @@ fn operation_prepare(
 
     if cmd == IndvOp::AddTo || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
         indv_apply_cmd(&cmd, &mut prev_indv, new_indv);
+        prev_indv.set_integer("v-s:updateCounter", upd_counter);
 
         if !to_storage_and_queue(
             IndvOp::Put,
@@ -422,6 +422,7 @@ fn operation_prepare(
             return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
         }
     } else {
+        new_indv.set_integer("v-s:updateCounter", upd_counter);
         if !to_storage_and_queue(
             IndvOp::Put,
             op_id,
@@ -444,6 +445,7 @@ fn operation_prepare(
     }
 
     if cmd == IndvOp::Remove {
+        new_indv.set_integer("v-s:updateCounter", upd_counter);
         if !to_storage_and_queue(
             cmd,
             op_id,
