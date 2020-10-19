@@ -1,9 +1,9 @@
 use crate::index_workplace::IndexDocWorkplace;
 //use crate::XAPIAN_DB_TYPE;
 use std::collections::HashMap;
-use std::fs;
 use std::process::exit;
 use std::time::Instant;
+use std::{fmt, fs};
 use v_api::IndvOp;
 use v_ft_xapian::index_schema::IndexerSchema;
 use v_ft_xapian::key2slot::{Key2Slot, XAPIAN_INFO_PATH};
@@ -32,6 +32,12 @@ pub(crate) struct Indexer {
     pub prepared_op_id: i64,
     pub committed_time: Instant,
     pub xr: XapianReader,
+}
+
+impl fmt::Debug for Indexer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "use_db={}", self.use_db)
+    }
 }
 
 impl Indexer {
@@ -95,7 +101,7 @@ impl Indexer {
 
         if !new_indv.is_empty() {
             let is_draft_of = new_indv.get_first_literal("v-s:is_draft_of");
-            let actual_version = new_indv.get_first_literal("v-s:actual_version").unwrap_or_default();
+            let actual_version = new_indv.get_first_literal("v-s:actualVersion").unwrap_or_default();
             //let previousVersion_prev = prev_indv.get_first_literal("v-s:previousVersion");
             //let previousVersion_new = new_indv.get_first_literal("v-s:previousVersion");
 
@@ -103,14 +109,14 @@ impl Indexer {
                 info!("new_indv [{}] is draft, ignore", new_indv.get_id());
                 return Ok(());
             }
-
-            if !is_deleted && !actual_version.is_empty() && actual_version != new_indv.get_id() {
-                if actual_version != new_indv.get_id() {
-                    info!("new[{}].v-s:actual_version[{}] != [{}], ignore", new_indv.get_id(), actual_version, new_indv.get_id());
-                }
-                return Ok(());
-            }
-
+            /*
+                        if !is_deleted && !actual_version.is_empty() && actual_version != new_indv.get_id() {
+                            if actual_version != new_indv.get_id() {
+                                info!("new[{}].v-s:actualVersion[{}] != [{}], ignore", new_indv.get_id(), actual_version, new_indv.get_id());
+                            }
+                            return Ok(());
+                        }
+            */
             let types = new_indv.get_literals("rdf:type").unwrap_or_default();
             let prev_types = prev_indv.get_literals("rdf:type").unwrap_or_default();
 
@@ -135,6 +141,20 @@ impl Indexer {
                 if dbname != "base" {
                     break;
                 }
+            }
+
+            if !is_deleted && !actual_version.is_empty() && actual_version != new_indv.get_id() {
+                if self.index_dbs.contains_key(&dbname) {
+                    if let Some(db) = self.index_dbs.get_mut(&dbname) {
+                        if db.delete_document(&uuid).is_ok() {
+                            info!("new[{}].v-s:actualVersion[{}] != [{}], remove", new_indv.get_id(), actual_version, new_indv.get_id());
+                        } else {
+                            info!("new[{}].v-s:actualVersion[{}] != [{}], ignore", new_indv.get_id(), actual_version, new_indv.get_id());
+                        }
+                    }
+                }
+
+                return Ok(());
             }
 
             if prev_dbname != dbname && !prev_indv.is_empty() && self.use_db.is_empty() {
@@ -252,8 +272,13 @@ impl Indexer {
 
             if self.index_dbs.contains_key(&dbname) {
                 if let Some(db) = self.index_dbs.get_mut(&dbname) {
-                    info!("index to [{}], uri=[{}]", dbname, new_indv.get_id());
-                    db.replace_document(&uuid, &mut iwp.doc)?;
+                    if is_deleted {
+                        info!("delete from [{}], uri=[{}]", dbname, new_indv.get_id());
+                        db.delete_document(&uuid)?;
+                    } else {
+                        info!("index to [{}], uri=[{}]", dbname, new_indv.get_id());
+                        db.replace_document(&uuid, &mut iwp.doc)?;
+                    }
                 }
             }
 

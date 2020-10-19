@@ -18,11 +18,13 @@ pub enum IndividualError {
     ParseError,
 }
 
+#[derive(Debug)]
 pub struct IndividualObj {
     pub(crate) uri: String,
     pub(crate) resources: HashMap<String, Vec<Resource>>,
 }
 
+#[derive(Debug)]
 pub struct RawObj {
     pub data: Vec<u8>,
     pub cur: u64,
@@ -53,6 +55,7 @@ impl RawObj {
     }
 }
 
+#[derive(Debug)]
 pub struct Individual {
     pub(crate) obj: IndividualObj,
     pub(crate) raw: RawObj,
