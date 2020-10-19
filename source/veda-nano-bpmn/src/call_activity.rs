@@ -57,7 +57,7 @@ pub fn set_vars(
                 debug!("var mapping={}", l.to_string());
                 if let Some(resources_to_set) = l.get_resources("0") {
                     warn!("SET VARIABLE {}, VALUE={:?}, source_expression={}", target, resources_to_set, source_expression);
-                    variables.set_resources(target, resources_to_set);
+                    variables.set_resources(target, &resources_to_set);
                 }
             }
         }
