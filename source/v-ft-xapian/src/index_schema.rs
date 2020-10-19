@@ -7,6 +7,7 @@ use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_search::common::FTQuery;
 
+#[derive(Debug)]
 pub struct IndexerSchema {
     class_property_2_id: HashMap<String, String>,
     class_2_database: HashMap<String, String>,

@@ -119,7 +119,7 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
     }
 
     let is_draft_of = prepared_indv.get_first_literal("v-s:is_draft_of");
-    let actual_version = prepared_indv.get_first_literal("v-s:actual_version").unwrap_or_default();
+    let actual_version = prepared_indv.get_first_literal("v-s:actualVersion").unwrap_or_default();
 
     if is_draft_of.is_some() {
         info!("new_indv {} is draft, ignore it", prepared_indv.get_id());
@@ -127,7 +127,7 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
     }
 
     if !actual_version.is_empty() && actual_version != prepared_indv.get_id() {
-        info!("new {}.v-s:actual_version {} != {}, ignore", prepared_indv.get_id(), &actual_version, prepared_indv.get_id());
+        info!("new {}.v-s:actualVersion {} != {}, ignore", prepared_indv.get_id(), &actual_version, prepared_indv.get_id());
         return ResultCode::Ok;
     }
 
