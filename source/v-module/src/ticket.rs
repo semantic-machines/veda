@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Utc};
 use v_api::app::ResultCode;
 use v_onto::individual::Individual;
 
@@ -57,5 +57,23 @@ impl Ticket {
             error!("fail parse field [ticket:when] = {}", when);
             self.user_uri = String::default();
         }
+    }
+
+    pub fn is_ticket_valid(&mut self) -> bool {
+        if self.result != ResultCode::Ok {
+            return false;
+        }
+
+        if Utc::now().timestamp() > self.end_time {
+            self.result = ResultCode::TicketExpired;
+            return false;
+        }
+
+        if self.user_uri.is_empty() {
+            self.result = ResultCode::NotReady;
+            return false;
+        }
+
+        true
     }
 }
