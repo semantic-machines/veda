@@ -211,7 +211,7 @@ fn request_prepare(
         tickets_cache.insert(ticket_id.to_string(), ticket.clone());
     }
 
-    if !is_ticket_valid(&mut ticket) {
+    if !ticket.is_ticket_valid() {
         error!("ticket [{}] not valid", ticket.id);
         return Err(ResultCode::TicketExpired);
     }
@@ -591,22 +591,4 @@ fn get_ticket_from_db(id: &str, dest: &mut Ticket, storage: &mut VStorage) {
         dest.update_from_individual(&mut indv);
         dest.result = ResultCode::Ok;
     }
-}
-
-fn is_ticket_valid(ticket: &mut Ticket) -> bool {
-    if ticket.result != ResultCode::Ok {
-        return false;
-    }
-
-    if Utc::now().timestamp() > ticket.end_time {
-        ticket.result = ResultCode::TicketExpired;
-        return false;
-    }
-
-    if ticket.user_uri.is_empty() {
-        ticket.result = ResultCode::NotReady;
-        return false;
-    }
-
-    true
 }
