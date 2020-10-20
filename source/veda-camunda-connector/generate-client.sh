@@ -1,0 +1,1 @@
+openapi-generator-cli generate -g rust -c config.json -i camunda-openapi.json -o generated-client
