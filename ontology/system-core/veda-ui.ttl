@@ -3062,9 +3062,24 @@ v-ui:ttl
   var list = [individual];
   veda.Util.toTTL(list, function (error, ttl) {
     var pre = $("pre", template),
-        anchored = ttl.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
+        sanitized = sanitize(ttl),
+        anchored = sanitized.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
     pre.html(anchored);
   });
+
+  function sanitize(value) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        "/": '&#x2F;',
+    };
+    var reg = /[&<>"'/]/ig;
+    return value.replace(reg, function (match) { return map[match]; });
+  }
+
   //# sourceURL=v-ui:ttl
 </script>
   """ ;
@@ -3148,8 +3163,25 @@ v-ui:json
     Object.keys(json).sort().forEach(function(key) {
       ordered[key] = json[key];
     });
-    return JSON.stringify(ordered, null, 2);
+    return JSON.stringify(ordered, sanitize, 2);
   };
+
+  function sanitize(key, value) {
+    if (typeof value === "string") {
+      var map = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#x27;',
+          "/": '&#x2F;',
+      };
+      var reg = /[&<>"'/]/ig;
+      return value.replace(reg, function (match) { return map[match]; });
+    }
+    return value;
+  }
+
   function anchorize (string) {
     return string.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:json'>$1</a>");
   };
