@@ -223,7 +223,7 @@ td:bpmn-process1
 """;
 .
 
-td:bpnm-start-form1
+td:bpnm-start-form0
   a bpmn:StartForm;
   bpmn:startProcess td:bpmn-process1;
   bpmn:hasStatus bpmn:ToBeStarted;
