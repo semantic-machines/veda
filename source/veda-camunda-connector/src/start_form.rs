@@ -33,7 +33,8 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
             for p in start_form.get_predicates_of_type(DataType::Uri) {
                 if let Some(rs) = start_form.get_resources(&p) {
                     for r in rs {
-                        if let Ok(indv) = get_individual(module, r.get_uri()) {
+                        if let Ok(mut indv) = get_individual(module, r.get_uri()) {
+                            indv.parse_all();
                             let mut var = VariableValueDto::new();
                             var.value = Some(json!(indv.get_obj().as_json().to_string().to_owned()));
                             var._type = Some("json".to_owned());
