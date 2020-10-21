@@ -25,7 +25,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
 
             let mut vars = HashMap::new();
             let mut var = VariableValueDto::new();
-            var.value = Some(json!(start_form.get_obj().as_json().as_str()));
+            var.value = Some(json!(start_form.get_obj().as_json().as_str().unwrap_or_default()));
             var._type = Some("json".to_owned());
             vars.insert("startForm".to_owned(), var);
 
@@ -34,7 +34,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
                     for r in rs {
                         if let Ok(indv) = get_individual(module, r.get_uri()) {
                             let mut var = VariableValueDto::new();
-                            var.value = Some(json!(indv.get_obj().as_json().as_str()));
+                            var.value = Some(json!(indv.get_obj().as_json().as_str().unwrap_or_default()));
                             var._type = Some("json".to_owned());
                             vars.insert(indv.get_id().to_owned(), var);
                         }
