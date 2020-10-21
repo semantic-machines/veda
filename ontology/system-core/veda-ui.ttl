@@ -1210,12 +1210,21 @@ v-ui:PositionPopoverTemplate
     });
     return Promise.all(promises);
   }).then(function(appointments) {
-    var mBody = $("div.media-body", template);
-    mBody.append('<hr class="no-margin">');
-    appointments.forEach(function(appointment) {
-      mBody.append("<small>"+appointment["rdfs:label"][0]+"</small><br>");
-    })
+    var personsPromises = appointments.map(function(appointment) {
+      return appointment["v-s:employee"].length > 0 ? appointment["v-s:employee"][0].load() : Promise.resolve(false);
+    });
+    return Promise.all(personsPromises).then(function(persons) {
+      var mBody = $("div.media-body", template);
+      mBody.append('<hr class="no-margin">');
+      appointments.forEach(function(appointment, i) {
+        if (persons[i] && !persons[i].hasValue("v-s:deleted", true)) {
+          mBody.append("<small>"+appointment["rdfs:label"][0]+"</small><br>");
+        }
+      });
+      return true;
+    });0
   })
+  //# sourceURL=v-ui:PositionPopoverTemplate_pre
 </script>
 <div class="media" style="margin-top:0px;">
   <span class="close">&nbsp;&times;</span>
