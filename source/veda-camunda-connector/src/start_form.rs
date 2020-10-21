@@ -1,5 +1,6 @@
 use crate::common::get_individual;
 use crate::Context;
+use serde_json::json;
 
 use camunda_client::apis::client::APIClient;
 use camunda_client::apis::Error as CamundaError;
@@ -24,7 +25,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
 
             let mut vars = HashMap::new();
             let mut var = VariableValueDto::new();
-            var.value = Some(start_form.get_obj().as_json());
+            var.value = Some(json!(start_form.get_obj().as_json().as_str()));
             var._type = Some("json".to_owned());
             vars.insert("startForm".to_owned(), var);
 
@@ -33,7 +34,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
                     for r in rs {
                         if let Ok(indv) = get_individual(module, r.get_uri()) {
                             let mut var = VariableValueDto::new();
-                            var.value = Some(indv.get_obj().as_json());
+                            var.value = Some(json!(indv.get_obj().as_json().as_str()));
                             var._type = Some("json".to_owned());
                             vars.insert(indv.get_id().to_owned(), var);
                         }

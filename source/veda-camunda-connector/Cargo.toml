@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 log = "0.4"
+serde_json = "^1.0"
 
 camunda_client = { path = "../camunda-client" }
 v_api = { path = "../v-api" }
