@@ -7,6 +7,7 @@ use camunda_client::apis::Error as CamundaError;
 use camunda_client::models::{ProcessInstanceWithVariablesDto, StartProcessInstanceDto, VariableValueDto};
 use std::collections::HashMap;
 use std::error::Error;
+use v_api::IndvOp;
 use v_module::module::Module;
 use v_onto::datatype::DataType;
 use v_onto::individual::Individual;
@@ -46,7 +47,16 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
 
             params.variables = Some(vars);
             match ctx.api_client.process_definition_api().start_process_instance_by_key(&process_id, Some(params)) {
-                Ok(res) => info!("res={:?}", res),
+                Ok(res) => {
+                    info!("res={:?}", res);
+
+                    // set status [STARTED] into start form
+                    let mut updated_start_form = Individual::default();
+                    updated_start_form.set_id(start_form.get_id());
+                    updated_start_form.set_uri("bpmn:hasStatus", "bpmn:Started");
+                    updated_start_form.set_uri("bpmn:startedProcessInstanceId", &res.id.unwrap_or_default());
+                    module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::SetIn, &updated_start_form)?;
+                }
                 Err(e) => {
                     error!("fail execute process instance, err={:?}", e);
                 }
