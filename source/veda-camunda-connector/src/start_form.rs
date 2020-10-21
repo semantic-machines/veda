@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use v_api::IndvOp;
 use v_module::module::Module;
-use v_onto::datatype::DataType;
+use v_onto::datatype::{DataType, Lang};
 use v_onto::individual::Individual;
 use v_onto::parser::RawType::JSON;
 
@@ -54,7 +54,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
                     let mut updated_start_form = Individual::default();
                     updated_start_form.set_id(start_form.get_id());
                     updated_start_form.set_uri("bpmn:hasStatus", "bpmn:Started");
-                    updated_start_form.set_uri("bpmn:startedProcessInstanceId", &res.id.unwrap_or_default());
+                    updated_start_form.set_string("bpmn:startedProcessInstanceId", &res.id.unwrap_or_default(), Lang::NONE);
                     module.api.update_or_err(&ctx.sys_ticket, "", "start-process", IndvOp::SetIn, &updated_start_form)?;
                 }
                 Err(e) => {
