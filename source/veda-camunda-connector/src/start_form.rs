@@ -10,6 +10,7 @@ use std::error::Error;
 use v_module::module::Module;
 use v_onto::datatype::DataType;
 use v_onto::individual::Individual;
+use v_onto::parser::RawType::JSON;
 
 pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module: &mut Module, _signal: &str) -> Result<(), Box<dyn Error>> {
     if start_form.any_exists("bpmn:hasStatus", &["bpmn:ToBeStarted"]) {
@@ -25,7 +26,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
 
             let mut vars = HashMap::new();
             let mut var = VariableValueDto::new();
-            var.value = Some(json!(start_form.get_obj().as_json().as_str().unwrap_or_default()));
+            var.value = Some(json!(start_form.get_obj().as_json().to_string().to_owned()));
             var._type = Some("json".to_owned());
             vars.insert("startForm".to_owned(), var);
 
@@ -34,7 +35,7 @@ pub fn prepare_start_form(start_form: &mut Individual, ctx: &mut Context, module
                     for r in rs {
                         if let Ok(indv) = get_individual(module, r.get_uri()) {
                             let mut var = VariableValueDto::new();
-                            var.value = Some(json!(indv.get_obj().as_json().as_str().unwrap_or_default()));
+                            var.value = Some(json!(indv.get_obj().as_json().to_string().to_owned()));
                             var._type = Some("json".to_owned());
                             vars.insert(indv.get_id().to_owned(), var);
                         }
