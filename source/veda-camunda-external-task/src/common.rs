@@ -24,13 +24,24 @@ pub fn out_value_2_complete_external_task(worker_id: &str, res: OutValue) -> Com
     if let OutValue::Json(j) = res {
         if let Some(mj) = j.as_object() {
             for (n, v) in mj {
-                let mut out_el = VariableValueDto::new();
-                out_el.value = Some(v.to_owned());
-                out_el._type = Some("json".to_owned());
-                vars.insert(n.to_owned(), out_el);
+                if let Some(ij) = v.as_object() {
+                    let mut out_el = VariableValueDto::new();
+                    if let Some(value) = ij.get("value") {
+                        out_el.value = Some(value.to_owned());
+                    }
+                    if let Some(_type) = ij.get("type") {
+                        if let Some(t) = _type.as_str() {
+                            out_el._type = Some(t.to_owned());
+                        }
+                    }
+                    vars.insert(n.to_owned(), out_el);
+                }
+
+                info!("out var [{}] = {:?}", n, v);
             }
             out_data.variables = Some(vars);
         }
     }
+    //info!("@out_data={:?}", out_data);
     out_data
 }
