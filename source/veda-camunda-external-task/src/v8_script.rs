@@ -82,6 +82,7 @@ pub fn execute_js(session_data: CallbackSharedData, script_id: &str, ctx: &mut C
                         let js_str = jo.to_rust_string_lossy(&mut local_scope);
                         if let Ok(v) = serde_json::from_str(&js_str) {
                             *ov = v;
+                            return true;
                         }
                     }
                 }

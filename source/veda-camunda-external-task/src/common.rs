@@ -17,9 +17,9 @@ pub fn get_storage_init_param() -> String {
     tarantool_addr
 }
 
-pub fn out_value_2_complete_external_task(res: OutValue) -> CompleteExternalTaskDto {
+pub fn out_value_2_complete_external_task(worker_id: &str, res: OutValue) -> CompleteExternalTaskDto {
     let mut out_data = CompleteExternalTaskDto::new();
-    //out_data.worker_id = Some (worker_id.to_owned());
+    out_data.worker_id = Some(worker_id.to_owned());
     let mut vars = HashMap::new();
     if let OutValue::Json(j) = res {
         if let Some(mj) = j.as_object() {
