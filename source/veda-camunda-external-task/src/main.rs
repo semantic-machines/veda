@@ -83,7 +83,7 @@ fn main() -> Result<(), i32> {
                         match ctx.api_client.external_task_api().fetch_and_lock(Some(fetch_task_arg)) {
                             Ok(locked_tasks) => {
                                 for i_task in locked_tasks.iter() {
-                                    let execution_id = i_task.execution_id.as_deref().unwrap_or_default();
+                                    let execution_id = i_task.id.as_deref().unwrap_or_default();
                                     let mut res = OutValue::Json(Value::default());
                                     if execute_external_js_task(i_task, i_task.topic_name.as_deref().unwrap_or_default(), &mut ctx, &mut res) {
                                         let out_data = out_value_2_complete_external_task(worker_id, res);
