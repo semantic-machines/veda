@@ -23,7 +23,7 @@
 
 td:test-process-start-form1
   a bpmn:StartForm ;
-  bpmn:startProcessId "test-process" ;
+  bpmn:startProcessId "TestProcess" ;
   bpmn:hasStatus bpmn:ToBeStarted ;
   v-wf:onDocument td:AleksandraKhvostikova ;
   s-wf:ComplexRouteStartForm_coordination1 td:test-process-start-form1-subform1 ;
