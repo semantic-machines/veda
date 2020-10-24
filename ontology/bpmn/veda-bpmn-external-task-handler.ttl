@@ -42,8 +42,8 @@ bpmn:disabled
 bpmn:script
   rdf:type owl:DatatypeProperty ;
   rdfs:domain bpmn:ExternalTaskHandler ;
-  rdfs:label "Выключен"@ru ;
-  rdfs:label "Disabled"@en ;
+  rdfs:label "Скрипт"@ru ;
+  rdfs:label "Script"@en ;
   rdfs:range xsd:string ;
 .
 
@@ -60,6 +60,10 @@ bpmn:TestTopicHandler
  */
 
 console.log( JSON.stringify(task, null, 2) );
+
+task.variables["resultVariable"] = {value: "resultVariable", type: "String"};
+
+return task.variables;
 
   """ ;
 .
