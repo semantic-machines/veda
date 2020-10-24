@@ -11,13 +11,6 @@ use v_storage::remote_indv_r_storage::get_individual;
 pub struct CallbackSharedData {
     pub g_key2indv: HashMap<String, Individual>,
     pub g_key2attr: HashMap<String, String>,
-    //pub g_super_classes: String,
-    //pub g_parent_script_id: String,
-    //pub g_parent_document_id: String,
-    //pub g_user: String,
-    //pub g_event_id: String,
-    //pub g_uri: String,
-    //pub g_ticket: String,
 }
 
 impl Default for CallbackSharedData {
