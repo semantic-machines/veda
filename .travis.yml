@@ -55,7 +55,8 @@ jobs:
         - "export DISPLAY=:99.0"
         - fluxbox >/dev/null 2>&1 &
         - "cp -R ./qa/onto/* ./ontology 2>/dev/null || :"
-        - ./control-start.sh
+        #- ./control-start.sh
+	./veda
         - sleep 180
       script:
         - travis_wait 3 grunt test --stack --verbose
