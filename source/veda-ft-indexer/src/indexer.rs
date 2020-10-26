@@ -16,7 +16,7 @@ use v_onto::datatype::{DataType, Lang};
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_onto::resource::Resource;
-use xapian_rusty::{get_xapian_err_type, Document, Stem, TermGenerator, WritableDatabase, DB_CREATE_OR_OPEN};
+use xapian_rusty::{get_xapian_err_type, Document, Stem, TermGenerator, WritableDatabase, CHERT, DB_CREATE_OR_OPEN};
 
 pub(crate) struct Indexer {
     pub onto: Onto,
@@ -59,7 +59,7 @@ impl Indexer {
         for (db_name, path) in self.db2path.iter() {
             debug!("path={}", path);
             fs::create_dir_all(&("./".to_owned() + path))?;
-            if let Ok(db) = WritableDatabase::new(path, DB_CREATE_OR_OPEN) {
+            if let Ok(db) = WritableDatabase::new(path, DB_CREATE_OR_OPEN, CHERT) {
                 self.index_dbs.insert(db_name.to_owned(), db);
             }
         }
