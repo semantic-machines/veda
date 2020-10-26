@@ -8,17 +8,13 @@
       <bpmn:incoming>Flow_1xtazub</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:userTask id="Activity_1pf6f5f" name="Test user task">
-      <bpmn:extensionElements>
-        <camunda:inputOutput>
-          <camunda:inputParameter name="Input_0ps2qi5" />
-        </camunda:inputOutput>
-      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0n4stuc</bpmn:incoming>
+      <bpmn:incoming>Flow_0evua24</bpmn:incoming>
       <bpmn:outgoing>Flow_1xtazub</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:serviceTask id="Activity_1amxzx7" name="Test service task" camunda:type="external" camunda:topic="TestTopic">
       <bpmn:incoming>Flow_1fyp7le</bpmn:incoming>
-      <bpmn:outgoing>Flow_1nkt0a9</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0evua24</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_1xtazub" sourceRef="Activity_1pf6f5f" targetRef="Event_06kypbl" />
     <bpmn:exclusiveGateway id="Gateway_0hy0knx" default="Flow_0n4stuc">
@@ -31,17 +27,10 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ startForm.prop("rdf:type").elements().get(0).prop("data").value() == "bpmn:StartForm" }</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0n4stuc" sourceRef="Gateway_0hy0knx" targetRef="Activity_1pf6f5f" />
-    <bpmn:endEvent id="Event_1be1oya">
-      <bpmn:incoming>Flow_1nkt0a9</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1nkt0a9" sourceRef="Activity_1amxzx7" targetRef="Event_1be1oya" />
+    <bpmn:sequenceFlow id="Flow_0evua24" sourceRef="Activity_1amxzx7" targetRef="Activity_1pf6f5f" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="TestProcess">
-      <bpmndi:BPMNEdge id="Flow_1nkt0a9_di" bpmnElement="Flow_1nkt0a9">
-        <di:waypoint x="589" y="282" />
-        <di:waypoint x="922" y="282" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0n4stuc_di" bpmnElement="Flow_0n4stuc">
         <di:waypoint x="370" y="172" />
         <di:waypoint x="370" y="115" />
@@ -60,6 +49,10 @@
         <di:waypoint x="589" y="115" />
         <di:waypoint x="922" y="115" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0evua24_di" bpmnElement="Flow_0evua24">
+        <di:waypoint x="539" y="242" />
+        <di:waypoint x="539" y="155" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="142" y="179" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -74,9 +67,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0hy0knx_di" bpmnElement="Gateway_0hy0knx" isMarkerVisible="true">
         <dc:Bounds x="345" y="172" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1be1oya_di" bpmnElement="Event_1be1oya">
-        <dc:Bounds x="922" y="264" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
