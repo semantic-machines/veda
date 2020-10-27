@@ -7,7 +7,7 @@
     <bpmn:endEvent id="Event_06kypbl">
       <bpmn:incoming>Flow_1xtazub</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="Activity_1pf6f5f" name="Test user task">
+    <bpmn:userTask id="Activity_1pf6f5f" name="Test user task" camunda:assignee="${ startForm.jsonPath(&#34;$.v-wf:onDocument[0].data&#34;).stringValue() }">
       <bpmn:incoming>Flow_0n4stuc</bpmn:incoming>
       <bpmn:incoming>Flow_0evua24</bpmn:incoming>
       <bpmn:outgoing>Flow_1xtazub</bpmn:outgoing>
@@ -24,13 +24,17 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1cwi5c3" sourceRef="StartEvent_1" targetRef="Gateway_0hy0knx" />
     <bpmn:sequenceFlow id="Flow_1fyp7le" sourceRef="Gateway_0hy0knx" targetRef="Activity_1amxzx7">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ startForm.prop("rdf:type").elements().get(0).prop("data").value() == "bpmn:StartForm" }</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ startForm.jsonPath("$.rdf:type[0].data").stringValue() == "bpmn:StartForm" }</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0n4stuc" sourceRef="Gateway_0hy0knx" targetRef="Activity_1pf6f5f" />
     <bpmn:sequenceFlow id="Flow_0evua24" sourceRef="Activity_1amxzx7" targetRef="Activity_1pf6f5f" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="TestProcess">
+      <bpmndi:BPMNEdge id="Flow_0evua24_di" bpmnElement="Flow_0evua24">
+        <di:waypoint x="539" y="242" />
+        <di:waypoint x="539" y="155" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0n4stuc_di" bpmnElement="Flow_0n4stuc">
         <di:waypoint x="370" y="172" />
         <di:waypoint x="370" y="115" />
@@ -48,10 +52,6 @@
       <bpmndi:BPMNEdge id="Flow_1xtazub_di" bpmnElement="Flow_1xtazub">
         <di:waypoint x="589" y="115" />
         <di:waypoint x="922" y="115" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0evua24_di" bpmnElement="Flow_0evua24">
-        <di:waypoint x="539" y="242" />
-        <di:waypoint x="539" y="155" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="142" y="179" width="36" height="36" />
