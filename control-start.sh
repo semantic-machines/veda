@@ -14,5 +14,4 @@ mkdir data/xapian-info
 #export RUST_LOG="debug,actix_server=info,actix_web=info"
 #export RUST_BACKTRACE=1
 /sbin/start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/./.pids/veda-pid --background --startas /bin/bash -- -c "exec ./veda --id=$VEDA_ID no-watchdog>> $PWD/logs/veda-console.log 2>&1"
-./veda-ft-indexer
 exit 0
