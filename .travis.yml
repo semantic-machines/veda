@@ -56,7 +56,7 @@ jobs:
         - fluxbox >/dev/null 2>&1 &
         - "cp -R ./qa/onto/* ./ontology 2>/dev/null || :"
       # - ./control-start.sh
-	- /sbin/start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/./.pids/tt-pid --background --startas /bin/bash -- -c "exec tarantool ./source/init_tarantool.lua 2>./logs/tarantool-stderr.log  >./logs/tarantool-stdout.log 2>&1"
+	- ./tools/tarantppl-start.sh
 	- ./veda
         - sleep 180
       script:
