@@ -20,7 +20,6 @@ use v_ft_xapian::xapian_reader::XapianReader;
 use v_queue::consumer::*;
 use xapian_rusty::*;
 
-//const XAPIAN_DB_TYPE: i8 = BRASS;
 const BASE_PATH: &str = "./data";
 
 fn main() -> Result<(), i32> {
