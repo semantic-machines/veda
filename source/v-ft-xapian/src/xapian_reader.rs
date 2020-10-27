@@ -19,7 +19,6 @@ use v_search::common::{FTQuery, QueryResult};
 use v_storage::storage::VStorage;
 use xapian_rusty::{get_xapian_err_type, Database, Query, QueryParser, Stem, UNKNOWN};
 
-const XAPIAN_DB_TYPE: i8 = UNKNOWN;
 const MAX_WILDCARD_EXPANSION: i32 = 20_000;
 const BASE_PATH: &str = "./data";
 
@@ -243,7 +242,7 @@ impl XapianReader {
     fn open_db_if_need(&mut self, db_name: &str) -> Result<()> {
         if !self.opened_db.contains_key(db_name) {
             if let Some(path) = self.db2path.get(db_name) {
-                let db = Database::new_with_path(&("./".to_owned() + path), XAPIAN_DB_TYPE)?;
+                let db = Database::new_with_path(&("./".to_owned() + path), UNKNOWN)?;
                 self.opened_db.insert(db_name.to_owned(), db);
             } else {
                 return Err(XError::from(Error::new(ErrorKind::Other, "db2path invalid")));
