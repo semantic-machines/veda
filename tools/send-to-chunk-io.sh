@@ -24,7 +24,7 @@ file=$(echo $(git ls-files -o | sed "${i}q;d"))
 
 echo "FILE=$file"
 
-cat $file | curl -u semantic_machines:8b8nfecIhO -sT - chunk.io
+cat $file | curl -u sm:8b8nfecIhO -sT - chunk.io
 
 done
 
