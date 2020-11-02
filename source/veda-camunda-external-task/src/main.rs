@@ -84,12 +84,16 @@ fn main() -> Result<(), i32> {
                             Ok(locked_tasks) => {
                                 for i_task in locked_tasks.iter() {
                                     let execution_id = i_task.id.as_deref().unwrap_or_default();
+                                    let topic_id = i_task.topic_name.as_deref().unwrap_or_default();
                                     let mut res = OutValue::Json(Value::default());
-                                    if execute_external_js_task(i_task, i_task.topic_name.as_deref().unwrap_or_default(), &mut ctx, &mut res) {
+                                    if execute_external_js_task(i_task, topic_id, &mut ctx, &mut res) {
                                         let out_data = out_value_2_complete_external_task(worker_id, res);
                                         if let Err(e) = ctx.api_client.external_task_api().complete_external_task_resource(&execution_id, Some(out_data)) {
                                             error!("complete_external_task_resource, error={:?}", e);
                                         }
+                                    } else {
+                                        warn!("topic {} not found", topic_id);
+                                        ctx.api_client.external_task_api().unlock(&execution_id);
                                     }
                                 }
                             }
