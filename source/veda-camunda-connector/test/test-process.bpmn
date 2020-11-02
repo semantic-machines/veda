@@ -7,7 +7,7 @@
     <bpmn:endEvent id="Event_06kypbl">
       <bpmn:incoming>Flow_1xtazub</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="Activity_1pf6f5f" name="Test user task" camunda:assignee="${ startForm.jsonPath(&#34;$.v-wf:onDocument[0].data&#34;).stringValue() }">
+    <bpmn:userTask id="Activity_1pf6f5f" name="Test user task" camunda:assignee="${ execution.getVariable( startForm.jsonPath(&#34;$.v-wf:onDocument[0].data&#34;).stringValue() ).prop(&#34;@&#34;).stringValue() }">
       <bpmn:incoming>Flow_0n4stuc</bpmn:incoming>
       <bpmn:incoming>Flow_0evua24</bpmn:incoming>
       <bpmn:outgoing>Flow_1xtazub</bpmn:outgoing>
