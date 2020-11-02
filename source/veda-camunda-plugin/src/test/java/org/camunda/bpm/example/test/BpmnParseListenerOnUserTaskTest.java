@@ -59,27 +59,28 @@ public class BpmnParseListenerOnUserTaskTest {
     // start the process instance
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("bpmnParseListenerOnUserTask");
 
-    // check if the first task listener was executed
-    List<String> assigneeList = VedaTaskListener.assigneeList;
-    assertThat(assigneeList.size(), is(1));
-    assertThat(assigneeList.get(0), is("Kermit"));
+    // create + assignment = 2
+    assertThat(VedaTaskListener.callCounter, is(2L)); 
 
     // complete first user task
     Task task = taskService.createTaskQuery().singleResult();
     taskService.complete(task.getId());
-
-    // check if the second task lister was executed
-    assertThat(assigneeList.size(), is(2));
-    assertThat(assigneeList.get(1), is("Fozzie"));
-
+  
+    // create + assignment + complete + create + assignment = 5
+    assertThat(VedaTaskListener.callCounter, is(5L));   
+    
     // reset the assignee
     task = taskService.createTaskQuery().singleResult();
     taskService.setAssignee(task.getId(), "Kermit");
-    assertThat(assigneeList.size(), is(3));
-    assertThat(assigneeList.get(2), is("Kermit"));
+
+    // create + assignment + complete + create + assignment + update + assignment = 7
+    assertThat(VedaTaskListener.callCounter, is(7L));
 
     // complete second user task
     taskService.complete(task.getId());
+    
+    // create + assignment + complete + create + assignment + update + assignment + complete = 8    
+    assertThat(VedaTaskListener.callCounter, is(8L)); 
 
     // check if process instance ended
     processInstance = runtimeService

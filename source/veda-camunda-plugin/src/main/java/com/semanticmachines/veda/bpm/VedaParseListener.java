@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.impl.bpmn.parser.AbstractBpmnParseListener;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 import org.camunda.bpm.engine.impl.pvm.process.ScopeImpl;
+import org.camunda.bpm.engine.impl.task.TaskDefinition;
 import org.camunda.bpm.engine.impl.util.xml.Element;
 import com.semanticmachines.veda.bpm.VedaTaskListener;
 
@@ -19,9 +20,13 @@ public class VedaParseListener extends AbstractBpmnParseListener {
     ActivityBehavior activityBehavior = activity.getActivityBehavior();
     if(activityBehavior instanceof UserTaskActivityBehavior ){
       UserTaskActivityBehavior userTaskActivityBehavior = (UserTaskActivityBehavior) activityBehavior;
-      userTaskActivityBehavior
-        .getTaskDefinition()
-        .addTaskListener("assignment", VedaTaskListener.getInstance());
+      TaskDefinition task = userTaskActivityBehavior.getTaskDefinition();
+      task.addTaskListener("create", VedaTaskListener.getInstance());
+      task.addTaskListener("assignment", VedaTaskListener.getInstance());
+      task.addTaskListener("update", VedaTaskListener.getInstance());
+      task.addTaskListener("delete", VedaTaskListener.getInstance());
+      task.addTaskListener("timeout", VedaTaskListener.getInstance());
+      task.addTaskListener("complete", VedaTaskListener.getInstance());
     }
   }
 }

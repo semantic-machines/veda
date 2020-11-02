@@ -12,8 +12,10 @@ import java.util.logging.Logger;
  */
 public class VedaTaskListener implements TaskListener {
 
+  // Possible events = create, assignment, complete, update, delete, timeout
+	
   private final Logger LOGGER = Logger.getLogger(this.getClass().getName());
-  public static List<String> assigneeList = new ArrayList<String>();
+  public static long callCounter = 0;
 
   private static VedaTaskListener instance = null;
 
@@ -27,10 +29,29 @@ public class VedaTaskListener implements TaskListener {
   }
 
   public void notify(DelegateTask delegateTask) {
-    String assignee = delegateTask.getAssignee();
-    assigneeList.add(assignee);
-    LOGGER.info("New user task. Assignee: " + assignee + ", id: " + delegateTask.getId());
-    LOGGER.info("Variables: " + delegateTask.getVariables().toString());
+    callCounter++;
+    String event = delegateTask.getEventName();
+    LOGGER.info("["+ callCounter + "] Task event: '" + event + "', task: " + delegateTask);
+    switch (event) {
+      case "assignment":
+  		  // Assigned message
+  		  break;
+  	  case "complete":
+  		  // Completed message
+  		  break;
+  	  case "delete":
+        // Deleted message
+  	    break;
+  	  case "timeout":
+        // Timeout message
+  	    break;
+  
+  	  // Unused events
+  	  case "create":
+  	  case "update":
+  	  default:
+  		break;
+  	}
   }
 
 }
