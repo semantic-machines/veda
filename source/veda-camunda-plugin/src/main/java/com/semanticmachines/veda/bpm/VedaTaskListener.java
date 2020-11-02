@@ -32,26 +32,7 @@ public class VedaTaskListener implements TaskListener {
     callCounter++;
     String event = delegateTask.getEventName();
     LOGGER.info("["+ callCounter + "] Task event: '" + event + "', task: " + delegateTask);
-    switch (event) {
-      case "assignment":
-  		  // Assigned message
-  		  break;
-  	  case "complete":
-  		  // Completed message
-  		  break;
-  	  case "delete":
-        // Deleted message
-  	    break;
-  	  case "timeout":
-        // Timeout message
-  	    break;
-  
-  	  // Unused events
-  	  case "create":
-  	  case "update":
-  	  default:
-  		break;
-  	}
+    // Create individual in Veda with taskId and event type
   }
 
 }
