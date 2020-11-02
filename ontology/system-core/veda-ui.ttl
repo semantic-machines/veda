@@ -764,14 +764,32 @@ v-ui:StandardButtonsTemplate
   template.on("click", "#edit, #save, #cancel, #delete, #destroy", function (e) {
     e.preventDefault();
     var action = this.id;
-    if (action === "delete" || action === "destroy") {
+    if (action === "destroy") {
       var warning = new veda.IndividualModel("v-s:AreYouSure");
       warning.load().then(function (warning) {
         if ( confirm( warning["rdfs:label"].join(" ") ) ) {
           template.parent().closest("[resource]").trigger(action);
         }
       });
-    } else {
+    } 
+    else if(action === "delete"){
+      var queryString = "'rdf:type'==='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + individual.id + "' && 'v-wf:isCompleted'==false";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          var warning = new veda.IndividualModel("v-s:AreYouSure");
+          warning.load().then(function (warning) {
+            if ( confirm( warning["rdfs:label"].join(" ") ) ) {
+              template.parent().closest("[resource]").trigger(action);
+            }
+          });
+        }
+        else {
+          alert("Документ не может быть удален, так как по нему есть незакрытые задачи. Закройте все задачи и попробуйте ещё раз");
+        }
+      });
+    }
+    else {
       template.parent().closest("[resource]").trigger(action);
     }
   });
@@ -827,16 +845,16 @@ v-ui:StandardButtonsTemplate
 </script>
 <span>
   <button type="refresh" class="btn btn-success view -edit -search hidden" id="refresh"><span class="glyphicon glyphicon-refresh"></span></button>
-  <button type="submit" class="rm hidden action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
-  <button type="button" class="rm hidden action btn btn-primary view -edit -search" id="edit"><span about="v-s:Edit" property="rdfs:label"></span></button>
-  <button type="submit" class="rm hidden action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
-  <button type="button" class="rm hidden action btn btn-default -view edit -search" id="cancel"><span about="v-s:Cancel" property="rdfs:label"></span></button>
-  <button type="button" class="rm hidden action btn btn-link view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-  <button type="button" class="rm hidden action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
-  <button type="button" class="rm hidden action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"></button>
-  <button type="button" class="rm hidden action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"></button>
-  <button type="button" class="rm hidden action btn btn-default view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"></button>
-  <div class="rm hidden action btn-group dropup view -edit -search" id="task">
+  <button type="submit" class="rm hidden action btn btn-warning allButtons view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-primary allButtons view -edit -search" id="edit"><span about="v-s:Edit" property="rdfs:label"></span></button>
+  <button type="submit" class="rm hidden action btn btn-success allButtons -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-default allButtons -view edit -search" id="cancel"><span about="v-s:Cancel" property="rdfs:label"></span></button>
+  <button type="button" class="rm hidden action btn btn-link allButtons view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-danger allButtons view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-default allButtons view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-default allButtons view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"></button>
+  <button type="button" class="rm hidden action btn btn-default allButtons view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"></button>
+  <div class="rm hidden action btn-group dropup allButtons view -edit -search" id="task">
     <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
       <span about="v-s:SendTask" property="rdfs:label"> </span>
       <span class="caret"></span>
@@ -857,6 +875,22 @@ v-ui:StandardButtonsTemplate
   </button>
 </span>
 <script>
+  function hiddenButtonsForDeleted(){
+    if(individual.hasValue("v-s:deleted",true) && veda.appointment.id !== "cfg:AdministratorAppointment"){
+       $(".allButtons", template).addClass("hidden");
+    }
+    else {$(".allButtons", template).removeClass("hidden");}
+  }
+  hiddenButtonsForDeleted();
+  individual.on("v-s:deleted", hiddenButtonsForDeleted);
+  template.one("remove", function () {
+    individual.off("v-s:deleted", hiddenButtonsForDeleted);
+  });
+
+
+  
+
+
   $(".toggle-actions", template).click(function () {
     template.closest(".actions").children(":not(.toggle-actions)").toggleClass("hidden");
     var button = $(this);
