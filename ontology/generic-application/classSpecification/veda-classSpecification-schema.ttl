@@ -1,0 +1,85 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+
+<http://semantic-machines.com/veda/veda-classSpecification-schema>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Спецификация класса. Схема."@ru ;
+  rdfs:label "Veda system ontology. Organization. Schema."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+
+v-s:ClassSpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Спецификация класса"@ru ;
+  rdfs:label "Class specification"@en ;
+.
+
+
+#-----Класс 
+v-s:hasClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Класс"@ru ;
+  rdfs:label "Class"@en ;
+  rdfs:range owl:Class ;
+  rdfs:domain v-s:ClassSpecification;
+.
+
+#-----Срок хранения
+v-s:shelfLife
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Срок хранения"@ru ;
+  rdfs:label "Chelf life"@en ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:ClassSpecification;
+.
+  v-s:PS_shelfLife_ClassSpecification
+    rdf:type v-ui:DatatypePropertySpecification ;
+    v-ui:forClass v-s:ClassSpecification ;
+    v-ui:forProperty v-s:shelfLife ;
+    v-ui:minCardinality 0 ;
+    v-ui:maxCardinality 1 ;
+    v-ui:minValue 0 ;
+    v-ui:maxValue 100 ;
+    v-ui:tooltip "Укажите количество лет от 0 до 100"@ru ;
+    v-ui:tooltip "Non-required, single integer value, range 0-100."@en ;
+    rdfs:label "Спецификация cвойства v-s:shelfLife в v-s:ClassSpecification"@ru ;
+    rdfs:label "v-s:shelfLife property specification in v-s:ClassSpecification"@en ;
+  . 
+
+#-----Бессрочно
+v-s:isShelfLifeAlways
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Бессрочно"@ru ;
+  rdfs:label "Indefinitely"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:ClassSpecification;
+.
+
+#-----Проверяемая дата(id поле типа дата для данного класса. Например, дата регистрации или дата создания и прочее)
+v-s:dateProperties
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Поле"@ru ;
+  rdfs:label "Field"@en ;
+  rdfs:range owl:DatatypeProperty;
+  rdfs:domain v-s:ClassSpecification;
+.
+
+#-----Ответственный
+#v-s:responsible
+
+#-----Бизнес область
+#v-s:hasAspect
+
+#-----Бизнес приложение
+#v-s:hasApplication
+
+
