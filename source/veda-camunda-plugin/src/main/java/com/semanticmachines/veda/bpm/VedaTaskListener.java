@@ -29,7 +29,8 @@ public class VedaTaskListener implements TaskListener {
   public void notify(DelegateTask delegateTask) {
     String assignee = delegateTask.getAssignee();
     assigneeList.add(assignee);
-    LOGGER.info("Hello " + assignee + "! Please start to work on your task " + delegateTask.getName());
+    LOGGER.info("New user task. Assignee: " + assignee + ", id: " + delegateTask.getId());
+    LOGGER.info("Variables: " + delegateTask.getVariables().toString());
   }
 
 }
