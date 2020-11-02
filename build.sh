@@ -253,6 +253,23 @@ if [ -z $1 ] || [ $1 == "nano-bpmn" ] || [ $1 == "veda-nano-bpmn" ] || [ $1 == "
     cp $CARGO_TARGET_DIR/release/veda-nano-bpmn $PWD
 fi
 
+if [ -z $1 ] || [ $1 == "camunda-external-task" ] || [ $1 == "veda-camunda-external-task" ] || [ $1 == "all" ]; then
+    echo BUILD camunda-external-task
+    cd source/veda-camunda-external-task
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-camunda-external-task $PWD
+fi
+
+
+if [ -z $1 ] || [ $1 == "camunda-connector" ] || [ $1 == "veda-camunda-connector" ] || [ $1 == "all" ]; then
+    echo BUILD camunda-connector
+    cd source/veda-camunda-connector
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-camunda-connector $PWD
+fi
+
 if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "basic" ] || [ $1 == "all" ]; then
     echo BUILD FT-INDEXER
     cd source/veda-ft-indexer

@@ -7,7 +7,7 @@ use camunda_client::apis::client::APIClient;
 use camunda_client::apis::configuration::Configuration;
 use std::error::Error;
 use v_module::info::ModuleInfo;
-use v_module::module::{get_cmd, get_inner_binobj_as_individual, init_log, Module, PrepareError};
+use v_module::module::{get_cmd, get_inner_binobj_as_individual, init_log, Module, PrepareError, get_info_of_module, wait_module, wait_load_ontology};
 use v_module::onto::load_onto;
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
@@ -23,7 +23,11 @@ pub struct Context {
 }
 
 fn main() -> Result<(), i32> {
-    init_log("VEDA-CAMUNDA-ENGINE");
+    init_log("VEDA-CAMUNDA-CONNECTOR");
+
+    if get_info_of_module("fulltext_indexer").unwrap_or((0, 0)).0 == 0 {
+        wait_module("fulltext_indexer", wait_load_ontology());
+    }
 
     listen_queue()
 }
