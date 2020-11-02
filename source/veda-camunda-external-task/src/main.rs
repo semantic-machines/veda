@@ -11,7 +11,7 @@ use camunda_client::models::{FetchExternalTaskTopicDto, FetchExternalTasksDto};
 use serde_json::Value;
 use std::{thread, time};
 use v_ft_xapian::xapian_reader::XapianReader;
-use v_module::module::{init_log, Module};
+use v_module::module::{init_log, Module, get_info_of_module, wait_module, wait_load_ontology};
 use v_module::onto::load_onto;
 use v_onto::onto::Onto;
 use v_storage::remote_indv_r_storage::inproc_storage_manager;
@@ -31,6 +31,11 @@ pub struct Context<'a> {
 
 fn main() -> Result<(), i32> {
     init_log("CAMUNDA-EXTERNAL-TASK");
+
+    if get_info_of_module("fulltext_indexer").unwrap_or((0, 0)).0 == 0 {
+        wait_module("fulltext_indexer", wait_load_ontology());
+    }
+
     thread::spawn(move || inproc_storage_manager(get_storage_init_param()));
 
     let mut module = Module::default();
