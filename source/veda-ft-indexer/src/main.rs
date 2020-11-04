@@ -22,7 +22,7 @@ use xapian_rusty::*;
 
 const BASE_PATH: &str = "./data";
 
-fn main() -> Result<(), i32> {
+fn main() -> Result<(), XError> {
     init_log("FT_INDEXER");
 
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
@@ -57,7 +57,17 @@ fn main() -> Result<(), i32> {
 
         info!("Rusty search-index: start listening to queue");
 
-        ctx.init("").expect("fail init");
+        if let Err(e) = ctx.init("") {
+            match e {
+                XError::Xapian(c) => {
+                    error!("fail init index base, err={}", get_xapian_err_type (c));
+                }
+                _ => {
+                    error!("fail init index base, err={:?}", e);
+                }
+            }
+            return Err(e);
+        }
 
         module.listen_queue(
             &mut queue_consumer,

@@ -1,8 +1,6 @@
 use crate::key2slot::*;
 use crate::to_lower_and_replace_delimiters;
 use crate::vql::{Decor, TTA};
-use crate::xerror::XError::*;
-use crate::xerror::*;
 use chrono::NaiveDateTime;
 use regex::Regex;
 use std::collections::HashSet;
@@ -13,7 +11,7 @@ use v_authorization::common::Access;
 use v_az_lmdb::_authorize;
 use v_onto::onto::Onto;
 use v_search::common::QueryResult;
-use xapian_rusty::{get_xapian_err_type, Enquire, FeatureFlag, MultiValueKeyMaker, Query, QueryParser, XapianOp};
+use xapian_rusty::*;
 
 #[derive(Debug, PartialEq)]
 enum TokenType {
@@ -37,7 +35,7 @@ pub(crate) fn exec_xapian_query_and_queue_authorize<T>(
     match exec(user_uri, xapian_enquire, from, top, limit, add_out_element, op_auth, ctx) {
         Ok(res) => return res,
         Err(e) => match e {
-            Xapian(err_code) => {
+            XError::Xapian(err_code) => {
                 if err_code == -1 {
                     sr.result_code = ResultCode::DatabaseModifiedError;
                 } else {

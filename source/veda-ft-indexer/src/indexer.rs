@@ -1,5 +1,4 @@
 use crate::index_workplace::IndexDocWorkplace;
-//use crate::XAPIAN_DB_TYPE;
 use std::collections::HashMap;
 use std::process::exit;
 use std::time::Instant;
@@ -9,14 +8,14 @@ use v_ft_xapian::index_schema::IndexerSchema;
 use v_ft_xapian::key2slot::{Key2Slot, XAPIAN_INFO_PATH};
 use v_ft_xapian::to_lower_and_replace_delimiters;
 use v_ft_xapian::xapian_reader::XapianReader;
-use v_ft_xapian::xerror::Result;
 use v_module::info::ModuleInfo;
 use v_module::module::Module;
 use v_onto::datatype::{DataType, Lang};
 use v_onto::individual::Individual;
 use v_onto::onto::Onto;
 use v_onto::resource::Resource;
-use xapian_rusty::{get_xapian_err_type, Document, Stem, TermGenerator, WritableDatabase, CHERT, DB_CREATE_OR_OPEN};
+use xapian_rusty::*;
+use std::path::Path;
 
 pub(crate) struct Indexer {
     pub onto: Onto,
@@ -41,7 +40,7 @@ impl fmt::Debug for Indexer {
 }
 
 impl Indexer {
-    pub(crate) fn init(&mut self, use_db: &str) -> Result<()> {
+    pub(crate) fn init(&mut self, use_db: &str) -> Result<(), XError> {
         if !use_db.is_empty() {
             warn!("indexer use only {} db", use_db);
         }
@@ -57,11 +56,20 @@ impl Indexer {
         self.use_db = use_db.to_string();
 
         for (db_name, path) in self.db2path.iter() {
-            debug!("path={}", path);
-            fs::create_dir_all(&("./".to_owned() + path))?;
-            if let Ok(db) = WritableDatabase::new(path, DB_CREATE_OR_OPEN, CHERT) {
-                self.index_dbs.insert(db_name.to_owned(), db);
+
+            let full_path = &("./".to_owned() + path);
+            if Path::new(full_path).is_dir() {
+                info!("open db {}, path={}", db_name, full_path);
+                Database::new_with_path(path, UNKNOWN)?;
+            } else {
+                info!("new db {}, create path={}", db_name, full_path);
+                fs::create_dir_all(full_path)?;
             }
+
+            let mut db = WritableDatabase::new(path, DB_CREATE_OR_OPEN, UNKNOWN)?;
+            let doccount = db.get_doccount()?;
+            info!("{}, {}", db_name, doccount);
+            self.index_dbs.insert(db_name.to_owned(), db);
         }
 
         let mut stem = Stem::new(&self.lang)?;
@@ -307,9 +315,10 @@ impl Indexer {
         if delta > 0 {
             let mut is_fail_commit = false;
             for (name, db) in self.index_dbs.iter_mut() {
+                info!("commit to {}", name);
                 if let Err(e) = db.commit() {
                     is_fail_commit = true;
-                    error!("FT:commit:{} fail={}, err={:?}", name, self.prepared_op_id, get_xapian_err_type(e));
+                    error!("FT:commit:{} fail={}, err={:?}", name, self.prepared_op_id, get_xapian_err_type(e.into()));
                 }
             }
 
