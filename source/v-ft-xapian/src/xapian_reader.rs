@@ -3,8 +3,6 @@ use crate::init_db_path;
 use crate::key2slot::*;
 use crate::vql::*;
 use crate::xapian_vql::*;
-use crate::xerror::XError::{Io, Xapian};
-use crate::xerror::*;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use std::time::SystemTime;
@@ -17,7 +15,7 @@ use v_onto::onto::Onto;
 use v_onto::onto_index::OntoIndex;
 use v_search::common::{FTQuery, QueryResult};
 use v_storage::storage::VStorage;
-use xapian_rusty::{get_xapian_err_type, Database, Query, QueryParser, Stem, UNKNOWN};
+use xapian_rusty::*;
 
 const MAX_WILDCARD_EXPANSION: i32 = 20_000;
 const BASE_PATH: &str = "./data";
@@ -204,10 +202,10 @@ impl XapianReader {
                 }
             }
             Err(e) => match e {
-                Xapian(code) => {
+                XError::Xapian(code) => {
                     error!("fail load index schema, err={} ({})", get_xapian_err_type(code), code);
                 }
-                Io(e) => {
+                XError::Io(e) => {
                     error!("fail load index schema, err={:?}", e);
                 }
             },

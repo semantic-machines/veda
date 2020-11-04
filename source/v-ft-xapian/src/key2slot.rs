@@ -1,10 +1,10 @@
-use crate::xerror::Result;
 use crc32fast::Hasher;
 use std::collections::HashMap;
 use std::fs;
 use std::fs::OpenOptions;
 use std::io::{BufRead, BufReader, Seek, SeekFrom, Write};
 use std::time::SystemTime;
+use xapian_rusty::XError;
 
 pub const XAPIAN_INFO_PATH: &str = "./data/xapian-info";
 
@@ -69,13 +69,13 @@ impl Key2Slot {
         slot
     }
 
-    pub fn is_need_reload(&mut self) -> Result<bool> {
+    pub fn is_need_reload(&mut self) -> Result<bool, XError> {
         let fname = XAPIAN_INFO_PATH.to_owned() + "/key2slot";
         let cur_modified = fs::metadata(fname)?.modified()?;
         Ok(cur_modified != self.modified)
     }
 
-    pub fn load() -> Result<Key2Slot> {
+    pub fn load() -> Result<Key2Slot, XError> {
         let fname = XAPIAN_INFO_PATH.to_owned() + "/key2slot";
         let mut ff = OpenOptions::new().read(true).open(fname)?;
         ff.seek(SeekFrom::Start(0))?;
@@ -98,7 +98,7 @@ impl Key2Slot {
         Ok(key2slot)
     }
 
-    pub fn store(&mut self) -> Result<()> {
+    pub fn store(&mut self) -> Result<(), XError> {
         let (data, hash) = self.serialize();
 
         if data.len() == self.last_size_key2slot {
