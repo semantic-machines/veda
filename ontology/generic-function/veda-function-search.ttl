@@ -1157,7 +1157,7 @@ v-fs:AttributiveSearchInlineTemplate
 
   // All results button
   allResults.click(function () {
-    var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+    var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].map(veda.Util.formatValue).join(" ");
     if ( self["v-fs:estimated"][0] - self["v-fs:cursor"][0] < 100 || confirm(warn) ) {
       loadAll();
     }
@@ -1313,7 +1313,7 @@ v-fs:AttributiveSearchInlineTemplate
                 html: true,
                 placement: "top"
               }).tooltip({
-                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].map(veda.Util.formatValue).join(" "),
                 placement: "bottom",
                 delay: { show: 750, hide: 0 }
               });

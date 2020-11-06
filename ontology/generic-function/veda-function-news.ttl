@@ -59,7 +59,7 @@ v-s:AllNotificationsBundle
   rdfs:label "All notifications"@en ;
 .
 
-v-s:TS_News 
+v-s:TS_News
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:NewsTemplate;
@@ -204,7 +204,7 @@ v-s:NewsIndicatorTemplate
     container: template,
     placement: "bottom",
     trigger: "hover",
-    title: individual["rdfs:label"].join(" ")
+    title: individual["rdfs:label"].map(veda.Util.formatValue).join(" ")
   });
   //# sourceURL=v-s:NewsIndicatorTemplate_pre
 </script>
