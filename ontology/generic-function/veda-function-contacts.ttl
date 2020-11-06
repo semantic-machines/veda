@@ -454,7 +454,7 @@ v-s:ContactsTemplate
     var self = $(this);
     var currentRow = self.closest('div.value-row');
     var parentRow = currentRow.parent().closest("[resource]");
-    var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+    var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].map(veda.Util.formatValue).join(" ");
     if ( !confirm(warning) ) { return; }
     currentRow.closest("[resource]").trigger('delete');
     setTimeout(function () {

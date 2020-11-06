@@ -460,7 +460,7 @@ v-ui:ExitButtonTemplate
     container: template,
     placement: "bottom",
     trigger: "hover",
-    title: individual["rdfs:label"].join(" ")
+    title: individual["rdfs:label"].map(veda.Util.formatValue).join(" ")
   });
   template.click(function(e) {
     e.preventDefault();
@@ -488,7 +488,7 @@ v-ui:AdministrationIconTemplate
         container: template,
         placement: "bottom",
         trigger: "hover",
-        title: individual["rdfs:label"].join(" ")
+        title: individual["rdfs:label"].map(veda.Util.formatValue).join(" ")
       });
     }
   });
@@ -589,7 +589,7 @@ v-ui:FullWidthSwitchTemplate
       container: template,
       placement: "bottom",
       trigger: "hover",
-      title: changeSizeBundle["rdfs:label"].join(" ")
+      title: changeSizeBundle["rdfs:label"].map(veda.Util.formatValue).join(" ")
     });
   })
   //# sourceURL=v-ui:FullWidthSwitchTemplate
@@ -767,11 +767,11 @@ v-ui:StandardButtonsTemplate
     if (action === "destroy") {
       var warning = new veda.IndividualModel("v-s:AreYouSure");
       warning.load().then(function (warning) {
-        if ( confirm( warning["rdfs:label"].join(" ") ) ) {
+        if ( confirm( warning["rdfs:label"].map(veda.Util.formatValue).join(" ") ) ) {
           template.parent().closest("[resource]").trigger(action);
         }
       });
-    } 
+    }
     else if(action === "delete"){
       var queryString = "'rdf:type'==='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + individual.id + "' && 'v-wf:isCompleted'==false";
       veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
@@ -779,7 +779,7 @@ v-ui:StandardButtonsTemplate
         if (tmp.length == 0) {
           var warning = new veda.IndividualModel("v-s:AreYouSure");
           warning.load().then(function (warning) {
-            if ( confirm( warning["rdfs:label"].join(" ") ) ) {
+            if ( confirm( warning["rdfs:label"].map(veda.Util.formatValue).join(" ") ) ) {
               template.parent().closest("[resource]").trigger(action);
             }
           });
@@ -888,7 +888,7 @@ v-ui:StandardButtonsTemplate
   });
 
 
-  
+
 
 
   $(".toggle-actions", template).click(function () {
@@ -982,7 +982,7 @@ v-ui:IconButtonsTemplate
     if (action === "delete") {
       var warning = new veda.IndividualModel("v-s:AreYouSure");
       warning.load().then(function (warning) {
-        if ( confirm( warning["rdfs:label"].join(" ") ) ) {
+        if ( confirm( warning["rdfs:label"].map(veda.Util.formatValue).join(" ") ) ) {
           template.parent().closest("[resource]").trigger(action);
         }
       });
@@ -1144,7 +1144,7 @@ v-ui:IconPersonTemplate
       container: template,
       placement: "bottom",
       trigger: "hover",
-      title: personalInfo["rdfs:label"].join(" ")
+      title: personalInfo["rdfs:label"].map(veda.Util.formatValue).join(" ")
     });
   })
 </script>
@@ -2570,7 +2570,7 @@ v-ui:DocumentEventTemplate
           e.preventDefault();
           var warn = new veda.IndividualModel("v-s:AreYouSure");
           warn.load().then(function (warn) {
-            warn = warn["rdfs:label"].join(" ");
+            warn = warn["rdfs:label"].map(veda.Util.formatValue).join(" ");
             if ( confirm(warn) ) {
               process['v-wf:isStopped'] = [ true ];
               $(self).remove();

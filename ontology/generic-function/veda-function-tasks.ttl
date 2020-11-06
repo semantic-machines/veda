@@ -279,7 +279,7 @@ v-ft:FunctionTasksIndicatorTemplate
       container: template,
       placement: "bottom",
       trigger: "hover",
-      title: taskBundle["rdfs:label"].join(" ")
+      title: taskBundle["rdfs:label"].map(veda.Util.formatValue).join(" ")
     });
   })
   //# sourceURL=v-ft:FunctionTasksIndicatorTemplate_pre

@@ -629,12 +629,12 @@ v-s:LetterRegistrationRecordTemplate
       if (isEnumerated ) {
         var autoBundle = new veda.IndividualModel("v-s:AutomaticallyBundle");
         autoBundle.load().then(function (autoBundle) {
-          $("input, textarea", template).attr("placeholder", autoBundle["rdfs:label"].join(" "));
+          $("input, textarea", template).attr("placeholder", autoBundle["rdfs:label"].map(veda.Util.formatValue).join(" "));
         });
       } else {
         var manualBundle = new veda.IndividualModel("v-s:ManuallyBundle");
         manualBundle.load().then(function (manualBundle) {
-          $("input, textarea", template).attr("placeholder", manualBundle["rdfs:label"].join(" "));
+          $("input, textarea", template).attr("placeholder", manualBundle["rdfs:label"].map(veda.Util.formatValue).join(" "));
         });
       }
     });
