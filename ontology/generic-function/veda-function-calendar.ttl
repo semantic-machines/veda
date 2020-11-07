@@ -66,9 +66,9 @@ this.getEvents = function (start, end) {
         .then(function (event) {
           var label;
           try {
-            label = event["rdfs:label"].join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].join(" ");
+            label = event["rdfs:label"].map(veda.Util.formatValue).join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].map(veda.Util.formatValue).join(" ");
           } catch (e) {
-            event["rdfs:label"].join(" ");
+            event["rdfs:label"].map(veda.Util.formatValue).join(" ");
           }
           var className;
           var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
@@ -118,7 +118,7 @@ v-cal:TasksCalendar
   v-cal:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 
-v-s:TS_FunctionCalendar 
+v-s:TS_FunctionCalendar
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-cal:FunctionCalendarTemplate;
@@ -192,7 +192,7 @@ v-cal:FunctionCalendarTemplate
     });
   }, 0);
 
-  //# sourceURL=v-cal:FunctionCalendarTemplate
+  //# sourceURL=v-cal:FunctionCalendarTemplate_post
 </script>
   """ ;
 .
@@ -209,7 +209,7 @@ v-cal:FunctionCalendarIndicatorTemplate
     container: template,
     placement: "bottom",
     trigger: "hover",
-    title: individual["rdfs:label"].join(" ")
+    title: individual["rdfs:label"].map(veda.Util.formatValue).join(" ")
   });
   //# sourceURL=v-cal:FunctionCalendarIndicatorTemplate_pre
 </script>
