@@ -7,7 +7,6 @@ edition = "2018"
 [dependencies]
 chrono = "0.4"
 log = "0.4"
-#rust-ini = "0.15"
 xapian-rusty = "0.0.37"
 #xapian-rusty = { path = "../xapian-rusty" }
 
