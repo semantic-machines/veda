@@ -1,13 +1,14 @@
 /*
- * Инициирует и проводит сеансы обмена данными с внешними системами, является master частью в протоколе связи.
- * Знает о всех точках обмена (load_linked_nodes)
-*/
+ * Инициирует и проводит сеансы обмена данными с внешними системами, является
+ * master частью в протоколе связи. Знает о всех точках обмена
+ * (load_linked_nodes)
+ */
 #[macro_use]
 extern crate log;
 
-use nng::{Message, Protocol, Socket};
 use std::collections::HashMap;
 use std::{thread, time};
+use v_exim::configuration::Configuration;
 use v_exim::*;
 use v_module::module::*;
 use v_queue::consumer::*;
@@ -18,11 +19,11 @@ fn main() -> std::io::Result<()> {
 
     let mut module = Module::new(StorageMode::ReadOnly, false);
 
-    let systicket;
+    let sys_ticket;
     if let Ok(t) = module.get_sys_ticket_id() {
-        systicket = t;
+        sys_ticket = t;
     } else {
-        error!("fail get systicket");
+        error!("fail get system ticket");
         return Ok(());
     }
 
@@ -50,43 +51,40 @@ fn main() -> std::io::Result<()> {
 
             let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE EXTRACT");
 
-            let mut soc = Socket::new(Protocol::Req0).unwrap();
+            let exim_resp_api = Configuration::new(remote_node_addr, "", "");
 
-            if let Err(e) = soc.dial(remote_node_addr) {
-                error!("fail connect to, {} {}, err={}", remote_node_id, remote_node_addr, e);
-                continue;
-            }
-            debug!("success connect to, {} {}", remote_node_id, remote_node_addr);
-
-            send_changes_to_node(&mut queue_consumer, &mut soc, remote_node_id, remote_node_addr);
+            send_changes_to_node(&mut queue_consumer, &exim_resp_api, remote_node_id);
 
             // request changes from slave node
             loop {
-                let req = Message::from(("?,".to_owned() + &node_id).as_bytes());
-                //info!("send request for changes to {}", remote_node_addr);
-                if let Err(e) = soc.send(req) {
-                    error!("fail send request to slave node, err={:?}", e);
-                    break;
-                }
+                /*
+                                let req = Message::from(("?,".to_owned() + &node_id).as_bytes());
+                                //info!("send request for changes to {}", remote_node_addr);
+                                if let Err(e) = soc.send(req) {
+                                    error!("fail send request to slave node, err={:?}", e);
+                                    break;
+                                }
 
-                // Wait for the response from the server (slave)
-                let wmsg = soc.recv();
-                if let Err(e) = wmsg {
-                    error!("fail recv from slave node, err={:?}", e);
-                    break;
-                }
+                                // Wait for the response from the server (slave)
+                                let wmsg = soc.recv();
+                                if let Err(e) = wmsg {
+                                    error!("fail recv from slave node, err={:?}", e);
+                                    break;
+                                }
 
-                let msg = wmsg.unwrap().to_vec();
+                                let msg = wmsg.unwrap().to_vec();
 
-                if msg.len() == 2 && msg[0] == b'[' && msg[1] == b']' {
-                    // this empty result
-                    break;
-                }
-
-                let res = processing_message_contains_one_change(&node_id, msg, &systicket, &mut module);
-                if res.1 != ExImCode::Ok {
-                    error!("fail accept changes, uri={}, err={:?}", res.0, res.1);
-                }
+                                if msg.len() == 2 && msg[0] == b'[' && msg[1] == b']' {
+                                    // this empty result
+                                    break;
+                                }
+                */
+                //let res = processing_message_contains_one_change(&node_id,
+                // msg, &sys_ticket, &mut module.api);
+                // if res.1 != ExImCode::Ok {
+                //    error!("fail accept changes, uri={}, err={:?}", res.0,
+                // res.1);
+                //}
             }
         }
         thread::sleep(time::Duration::from_millis(5000));
