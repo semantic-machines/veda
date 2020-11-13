@@ -1,116 +1,141 @@
 /*
- * Ожидает и обрабатывает сеанс обмена данными с другими системами, является slave частью в протоколе связи
-*/
+ * Ожидает и обрабатывает сеанс обмена данными с другими системами, является
+ * slave частью в протоколе связи
+ */
+#![feature(proc_macro_hygiene, decl_macro)]
+
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate rocket;
+#[macro_use]
+extern crate rocket_contrib;
 
-use nng::{Message, Protocol, Socket};
-use std::str::from_utf8;
+use rocket::config::Environment;
+use rocket::{Config, State};
+use rocket_contrib::json::{Json, JsonValue};
+use serde_json::Value;
+use std::error::Error;
+use std::io::ErrorKind;
+use std::sync::Mutex;
+use v_api::*;
 use v_exim::*;
 use v_module::module::*;
 use v_onto::individual::{Individual, RawObj};
-use v_onto::individual2msgpack::to_msgpack;
+use v_onto::json2individual::parse_json_to_individual;
 use v_queue::consumer::Consumer;
 use v_queue::record::ErrorQueue;
 
-fn main() -> std::io::Result<()> {
+struct Context {
+    node_id: String,
+    sys_ticket: String,
+    api: APIClient,
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
     init_log("EXIM_RESPOND");
 
+    rocket()?.launch();
+
+    Ok(())
+}
+
+fn rocket() -> Result<rocket::Rocket, Box<dyn Error>> {
     let mut module = Module::default();
 
-    let param_name = "exim_url";
-    let exim_slave_port = Module::get_property(param_name);
-    if exim_slave_port.is_none() {
-        error!("not found param {} in properties file", param_name);
-        return Ok(());
+    let param_name = "exim_respond_port";
+    let exim_respond_port = Module::get_property(param_name);
+    if exim_respond_port.is_none() {
+        return Err(Box::new(std::io::Error::new(ErrorKind::NotFound, format!("not found param {} in properties file", param_name))));
     }
 
-    let systicket;
+    let sys_ticket;
     if let Ok(t) = module.get_sys_ticket_id() {
-        systicket = t;
+        sys_ticket = t;
     } else {
-        error!("fail get systicket");
-        return Ok(());
-    }
-
-    let server = Socket::new(Protocol::Rep0)?;
-    if let Err(e) = server.listen(&exim_slave_port.unwrap()) {
-        error!("fail listen, {:?}", e);
-        return Ok(());
+        return Err(Box::new(std::io::Error::new(ErrorKind::NotFound, format!("fail get system ticket"))));
     }
 
     let mut node_id = get_db_id(&mut module);
     if node_id.is_none() {
         node_id = create_db_id(&mut module);
     }
+
     if node_id.is_none() {
-        error!("fail create node_id");
-        return Ok(());
+        return Err(Box::new(std::io::Error::new(ErrorKind::NotFound, format!("fail create node_id"))));
     }
     let node_id = node_id.unwrap();
     info!("my node_id={}", node_id);
 
-    loop {
-        if let Ok(recv_msg) = server.recv() {
-            let msg = recv_msg.to_vec();
+    let ctx = Context {
+        node_id,
+        sys_ticket,
+        api: APIClient::new(Module::get_property("ft_query_service_url").unwrap_or_default()),
+    };
 
-            if msg.len() > 1 && msg[0] == b'?' {
-                // this request changes from master
-                if let Ok(remote_node_id) = from_utf8(&msg[2..msg.len()]) {
-                    // читаем элемент очереди, создаем обьект и отправляем на server
-                    let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
+    let config = Config::build(Environment::Staging).address("127.0.0.1").port(exim_respond_port.unwrap().parse::<u16>()?).finalize();
 
-                    if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
-                        error!("get_info_of_part {}: {}", queue_consumer.id, e.as_str());
-                    }
+    if config.is_err() {
+        return Err(Box::new(std::io::Error::new(ErrorKind::Other, format!("fail config"))));
+    }
 
-                    // пробуем взять из очереди заголовок сообщения
-                    if queue_consumer.pop_header() {
-                        let mut raw = RawObj::new(vec![0; (queue_consumer.header.msg_length) as usize]);
+    Ok(rocket::custom(config.unwrap()).mount("/", routes![import_delta, export_delta]).register(catchers![not_found]).manage(Mutex::new(ctx)))
+}
 
-                        if let Err(e) = queue_consumer.pop_body(&mut raw.data) {
-                            if e != ErrorQueue::FailReadTailMessage {
-                                error!("get msg from queue: {}", e.as_str());
-                            }
-                        } else {
-                            let indv = &mut Individual::new_raw(raw);
-                            match create_out_obj(indv, remote_node_id) {
-                                Ok(out_obj) => {
-                                    let mut raw1: Vec<u8> = Vec::new();
-                                    if to_msgpack(&out_obj, &mut raw1).is_ok() {
-                                        info!("send {} to {}", out_obj.get_id(), remote_node_id);
-                                        let req = Message::from(raw1.as_slice());
+#[get("/import_delta?<remote_node_id>", format = "text/html")]
+fn import_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
+    //let ctx = in_ctx.lock().unwrap();
 
-                                        if let Err(e) = server.send(req) {
-                                            error!("fail send {:?}", e);
-                                        } else {
-                                            queue_consumer.commit_and_next();
-                                        }
-                                        continue;
-                                    }
-                                }
-                                Err(e) => {
-                                    error!("fail create out message {:?}", e);
-                                }
-                            }
-                        }
-                    }
-                }
+    // this request changes from master
+    // читаем элемент очереди, создаем обьект и отправляем на server
+    let mut queue_consumer = Consumer::new("./data/out", &remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
 
-                let req = Message::from("[]".as_bytes());
-                if let Err(e) = server.send(req) {
-                    error!("fail send {:?}", e);
-                }
-            } else {
-                let res = processing_message_contains_one_change(&node_id, msg, &systicket, &mut module);
-                if let Err(e) = server.send(Message::from(enc_slave_resp(&res.0, res.1).as_bytes())) {
-                    error!("fail send {:?}", e);
-                }
+    if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
+        error!("get_info_of_part {}: {}", queue_consumer.id, e.as_str());
+    }
+
+    // пробуем взять из очереди заголовок сообщения
+    if queue_consumer.pop_header() {
+        let mut raw = RawObj::new(vec![0; (queue_consumer.header.msg_length) as usize]);
+
+        if let Err(e) = queue_consumer.pop_body(&mut raw.data) {
+            if e != ErrorQueue::FailReadTailMessage {
+                error!("get msg from queue: {}", e.as_str());
             }
-
-        //msg.clear();
         } else {
-            error!("fail recv")
+            let indv = &mut Individual::new_raw(raw);
+            match create_out_obj(indv, &remote_node_id) {
+                Ok(out_obj) => {
+                    return Some(out_obj.get_obj().as_json().into());
+                },
+                Err(e) => {
+                    error!("fail create out message {:?}", e);
+                },
+            }
         }
     }
+
+    None
+}
+
+#[put("/export_delta", format = "json", data = "<msg>")]
+fn export_delta(msg: Json<Value>, in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
+    let mut q = in_ctx.lock();
+    let ctx = q.as_mut().unwrap();
+    let node_id = ctx.node_id.to_owned();
+    let sys_ticket = ctx.sys_ticket.to_owned();
+    let mut recv_indv = Individual::default();
+    if parse_json_to_individual(&msg.0, &mut recv_indv) {
+        let res = processing_message_contains_one_change(&node_id, &mut recv_indv, &sys_ticket, &mut ctx.api);
+        return Some(json!(res));
+    }
+    None
+}
+
+#[catch(404)]
+fn not_found() -> JsonValue {
+    json!({
+        "status": "error",
+        "reason": "Resource was not found."
+    })
 }
