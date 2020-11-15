@@ -47,7 +47,6 @@ fn main() -> std::io::Result<()> {
 
     loop {
         for (remote_node_id, remote_node_addr) in &link_node_addresses {
-            info!("@A1");
 
             let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE EXTRACT");
 
@@ -57,34 +56,14 @@ fn main() -> std::io::Result<()> {
 
             // request changes from slave node
             loop {
-                /*
-                                let req = Message::from(("?,".to_owned() + &node_id).as_bytes());
-                                //info!("send request for changes to {}", remote_node_addr);
-                                if let Err(e) = soc.send(req) {
-                                    error!("fail send request to slave node, err={:?}", e);
-                                    break;
-                                }
-
-                                // Wait for the response from the server (slave)
-                                let wmsg = soc.recv();
-                                if let Err(e) = wmsg {
-                                    error!("fail recv from slave node, err={:?}", e);
-                                    break;
-                                }
-
-                                let msg = wmsg.unwrap().to_vec();
-
-                                if msg.len() == 2 && msg[0] == b'[' && msg[1] == b']' {
-                                    // this empty result
-                                    break;
-                                }
-                */
-                //let res = processing_message_contains_one_change(&node_id,
-                // msg, &sys_ticket, &mut module.api);
-                // if res.1 != ExImCode::Ok {
-                //    error!("fail accept changes, uri={}, err={:?}", res.0,
-                // res.1);
-                //}
+                if let Ok(mut recv_msg) = get_import_obj(&node_id, &exim_resp_api) {
+                    let res = processing_message_contains_one_change(&node_id, &mut recv_msg, &sys_ticket, &mut module.api);
+                    if res.res_code != ExImCode::Ok {
+                        error!("fail accept changes, uri={}, err={:?}", res.id, res.res_code);
+                    }
+                } else {
+                    break;
+                }
             }
         }
         thread::sleep(time::Duration::from_millis(5000));

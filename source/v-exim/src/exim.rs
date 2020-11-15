@@ -6,8 +6,10 @@ extern crate log;
 pub mod configuration;
 
 use num_traits::{FromPrimitive, ToPrimitive};
+use serde_json::value::Value as JSONValue;
 use std::collections::HashMap;
 use std::error::Error;
+use std::io::ErrorKind;
 use std::{thread, time};
 use uuid::*;
 use v_api::app::ResultCode;
@@ -21,6 +23,7 @@ use v_queue::consumer::*;
 use v_queue::record::*;
 
 use crate::configuration::Configuration;
+use v_onto::json2individual::parse_json_to_individual;
 
 const TRANSMIT_FAILED: i64 = 32;
 
@@ -203,56 +206,69 @@ pub fn create_out_obj(msg: &mut Individual, node_id: &str) -> Result<Individual,
     Err(ExImCode::InvalidMessage)
 }
 
-fn send_out_obj(out_obj: &mut Individual, resp_api: &Configuration) -> Result<ExportDataResult, Box<dyn Error>> {
+fn send_out_obj(out_obj: &mut Individual, resp_api: &Configuration) -> Result<IOResult, Box<dyn Error>> {
     let uri_str = format!("{}/export_delta", resp_api.base_path);
     let res = resp_api.client.post(&uri_str).json(&out_obj.get_obj().as_json()).send()?;
 
     Ok(res.json()?)
 }
 
+pub fn get_import_obj(importer_id: &str, resp_api: &Configuration) -> Result<Individual, Box<dyn Error>> {
+    let mut out_indv = Individual::default();
+
+    let uri_str = format!("{}/import_delta/{}", resp_api.base_path, importer_id);
+    let res: JSONValue = resp_api.client.get(&uri_str).send()?.json()?;
+
+    if !parse_json_to_individual(&res, &mut out_indv) {
+        return Err(Box::new(std::io::Error::new(ErrorKind::Other, format!("fail parse import object"))));
+    }
+
+    Ok(out_indv)
+}
+
 #[macro_use]
 extern crate serde_derive;
 
 #[derive(Serialize, Deserialize)]
-pub struct ExportDataResult {
-    id: String,
-    res_code: ExImCode,
+pub struct IOResult {
+    pub id: String,
+    pub res_code: ExImCode,
 }
 
-impl ExportDataResult {
+impl IOResult {
     pub fn new(id: &str, res_code: ExImCode) -> Self {
-        ExportDataResult {
+        IOResult {
             id: id.to_owned(),
             res_code,
         }
     }
 }
 
-pub fn processing_message_contains_one_change(my_node_id: &str, recv_indv: &mut Individual, systicket: &str, api: &mut APIClient) -> ExportDataResult {
+pub fn processing_message_contains_one_change(my_node_id: &str, recv_indv: &mut Individual, systicket: &str, veda_api: &mut APIClient) -> IOResult {
     let wcmd = recv_indv.get_first_integer("cmd");
     if wcmd.is_none() {
-        return ExportDataResult::new(recv_indv.get_id(), ExImCode::InvalidCmd);
+        return IOResult::new(recv_indv.get_id(), ExImCode::InvalidCmd);
     }
     let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
     let source_veda = recv_indv.get_first_literal("source_veda");
     if source_veda.is_none() {
-        return ExportDataResult::new(recv_indv.get_id(), ExImCode::InvalidTarget);
+        return IOResult::new(recv_indv.get_id(), ExImCode::InvalidTarget);
     }
 
     let source_veda = source_veda.unwrap_or_default();
     if source_veda.len() < 32 {
-        return ExportDataResult::new(recv_indv.get_id(), ExImCode::InvalidTarget);
+        return IOResult::new(recv_indv.get_id(), ExImCode::InvalidTarget);
     }
 
     let target_veda = recv_indv.get_first_literal("target_veda");
     if target_veda.is_none() {
-        return ExportDataResult::new(recv_indv.get_id(), ExImCode::InvalidTarget);
+        return IOResult::new(recv_indv.get_id(), ExImCode::InvalidTarget);
     }
     let target_veda = target_veda.unwrap();
 
     if target_veda != "*" && my_node_id != target_veda {
-        return ExportDataResult::new(recv_indv.get_id(), ExImCode::InvalidTarget);
+        return IOResult::new(recv_indv.get_id(), ExImCode::InvalidTarget);
     }
 
     let new_state = recv_indv.get_first_binobj("new_state");
@@ -262,19 +278,19 @@ pub fn processing_message_contains_one_change(my_node_id: &str, recv_indv: &mut 
             indv.parse_all();
             indv.add_uri("sys:source", &source_veda);
 
-            let res = api.update(systicket, cmd, &indv);
+            let res = veda_api.update(systicket, cmd, &indv);
 
             if res.result != ResultCode::Ok {
                 error!("fail update, uri={}, result_code={:?}", recv_indv.get_id(), res.result);
-                return ExportDataResult::new(recv_indv.get_id(), ExImCode::FailUpdate);
+                return IOResult::new(recv_indv.get_id(), ExImCode::FailUpdate);
             } else {
                 info!("get form {}, success update, uri={}", source_veda, recv_indv.get_id());
-                return ExportDataResult::new(recv_indv.get_id(), ExImCode::Ok);
+                return IOResult::new(recv_indv.get_id(), ExImCode::Ok);
             }
         }
     }
 
-    ExportDataResult::new(recv_indv.get_id(), ExImCode::FailUpdate)
+    IOResult::new(recv_indv.get_id(), ExImCode::FailUpdate)
 }
 
 pub fn load_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
