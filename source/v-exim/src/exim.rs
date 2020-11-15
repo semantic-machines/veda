@@ -79,13 +79,13 @@ impl ExImCode {
     }
 }
 
-pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configuration, node_id: &str) {
+pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configuration, node_id: &str) -> ExImCode {
     let mut size_batch = 0;
 
     // read queue current part info
     if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
         error!("get_info_of_part {}: {}", queue_consumer.id, e.as_str());
-        return;
+        return ExImCode::InvalidMessage;
     }
 
     if queue_consumer.queue.count_pushed - queue_consumer.count_popped == 0 {
@@ -127,15 +127,19 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configurat
 
             let mut indv = &mut Individual::new_raw(raw);
 
-            loop {
-                let out_obj = create_out_obj(&mut indv, node_id);
+            for attempt_count in 0..10 {
+                let msg = create_export_message(&mut indv, node_id);
 
-                if out_obj.is_ok() {
-                    if let Err(e) = send_out_obj(&mut out_obj.unwrap(), resp_api) {
+                if msg.is_ok() {
+                    if let Err(e) = send_export_message(&mut msg.unwrap(), resp_api) {
                         error!("fail prepare queue element, err={:?}", e);
+                        return ExImCode::SendFailed;
                     } else {
                         break;
                     }
+                } else {
+                    error!("fail create export message, err={:?}", msg.is_err());
+                    return ExImCode::Ok;
                 }
 
                 thread::sleep(time::Duration::from_millis(10000));
@@ -148,9 +152,10 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configurat
             }
         }
     }
+    return ExImCode::Ok;
 }
 
-pub fn create_out_obj(msg: &mut Individual, node_id: &str) -> Result<Individual, ExImCode> {
+pub fn create_export_message(msg: &mut Individual, node_id: &str) -> Result<Individual, ExImCode> {
     if parse_raw(msg).is_ok() {
         let target_veda = msg.get_first_literal("target_veda");
         if target_veda.is_none() {
@@ -206,14 +211,14 @@ pub fn create_out_obj(msg: &mut Individual, node_id: &str) -> Result<Individual,
     Err(ExImCode::InvalidMessage)
 }
 
-fn send_out_obj(out_obj: &mut Individual, resp_api: &Configuration) -> Result<IOResult, Box<dyn Error>> {
+fn send_export_message(out_obj: &mut Individual, resp_api: &Configuration) -> Result<IOResult, Box<dyn Error>> {
     let uri_str = format!("{}/export_delta", resp_api.base_path);
     let res = resp_api.client.post(&uri_str).json(&out_obj.get_obj().as_json()).send()?;
 
     Ok(res.json()?)
 }
 
-pub fn get_import_obj(importer_id: &str, resp_api: &Configuration) -> Result<Individual, Box<dyn Error>> {
+pub fn get_import_message(importer_id: &str, resp_api: &Configuration) -> Result<Individual, Box<dyn Error>> {
     let mut out_indv = Individual::default();
 
     let uri_str = format!("{}/import_delta/{}", resp_api.base_path, importer_id);
@@ -244,7 +249,7 @@ impl IOResult {
     }
 }
 
-pub fn processing_message_contains_one_change(my_node_id: &str, recv_indv: &mut Individual, systicket: &str, veda_api: &mut APIClient) -> IOResult {
+pub fn processing_imported_message(my_node_id: &str, recv_indv: &mut Individual, systicket: &str, veda_api: &mut APIClient) -> IOResult {
     let wcmd = recv_indv.get_first_integer("cmd");
     if wcmd.is_none() {
         return IOResult::new(recv_indv.get_id(), ExImCode::InvalidCmd);
