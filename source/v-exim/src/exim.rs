@@ -125,21 +125,24 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configurat
                 }
             }
 
-            let mut indv = &mut Individual::new_raw(raw);
+            let mut queue_element = &mut Individual::new_raw(raw);
 
             for attempt_count in 0..10 {
-                let msg = create_export_message(&mut indv, node_id);
+                let msg = create_export_message(&mut queue_element, node_id);
 
                 if msg.is_ok() {
                     if let Err(e) = send_export_message(&mut msg.unwrap(), resp_api) {
-                        error!("fail prepare queue element, err={:?}", e);
-                        return ExImCode::SendFailed;
+                        error!("fail send export message, err={:?}", e);
+
+                        if attempt_count == 10 {
+                            return ExImCode::SendFailed;
+                        }
                     } else {
                         break;
                     }
                 } else {
                     error!("fail create export message, err={:?}", msg.is_err());
-                    return ExImCode::Ok;
+                    return ExImCode::InvalidMessage;
                 }
 
                 thread::sleep(time::Duration::from_millis(10000));
@@ -155,9 +158,9 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configurat
     return ExImCode::Ok;
 }
 
-pub fn create_export_message(msg: &mut Individual, node_id: &str) -> Result<Individual, ExImCode> {
-    if parse_raw(msg).is_ok() {
-        let target_veda = msg.get_first_literal("target_veda");
+pub fn create_export_message(queue_element: &mut Individual, node_id: &str) -> Result<Individual, ExImCode> {
+    if parse_raw(queue_element).is_ok() {
+        let target_veda = queue_element.get_first_literal("target_veda");
         if target_veda.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
@@ -167,23 +170,23 @@ pub fn create_export_message(msg: &mut Individual, node_id: &str) -> Result<Indi
             return Err(ExImCode::Ok);
         }
 
-        let wcmd = msg.get_first_integer("cmd");
+        let wcmd = queue_element.get_first_integer("cmd");
         if wcmd.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
-        let new_state = msg.get_first_binobj("new_state");
+        let new_state = queue_element.get_first_binobj("new_state");
         if cmd != IndvOp::Remove && new_state.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
 
-        let source_veda = msg.get_first_literal("source_veda");
+        let source_veda = queue_element.get_first_literal("source_veda");
         if source_veda.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
 
-        let date = msg.get_first_integer("date");
+        let date = queue_element.get_first_integer("date");
         if date.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
@@ -212,8 +215,9 @@ pub fn create_export_message(msg: &mut Individual, node_id: &str) -> Result<Indi
 }
 
 fn send_export_message(out_obj: &mut Individual, resp_api: &Configuration) -> Result<IOResult, Box<dyn Error>> {
-    let uri_str = format!("{}/export_delta", resp_api.base_path);
-    let res = resp_api.client.post(&uri_str).json(&out_obj.get_obj().as_json()).send()?;
+    out_obj.parse_all();
+    let uri_str = format!("{}/import_delta", resp_api.base_path);
+    let res = resp_api.client.put(&uri_str).json(&out_obj.get_obj().as_json()).send()?;
 
     Ok(res.json()?)
 }
@@ -221,7 +225,7 @@ fn send_export_message(out_obj: &mut Individual, resp_api: &Configuration) -> Re
 pub fn get_import_message(importer_id: &str, resp_api: &Configuration) -> Result<Individual, Box<dyn Error>> {
     let mut out_indv = Individual::default();
 
-    let uri_str = format!("{}/import_delta/{}", resp_api.base_path, importer_id);
+    let uri_str = format!("{}/export_delta/{}", resp_api.base_path, importer_id);
     let res: JSONValue = resp_api.client.get(&uri_str).send()?.json()?;
 
     if !parse_json_to_individual(&res, &mut out_indv) {

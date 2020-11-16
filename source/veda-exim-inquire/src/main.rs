@@ -31,17 +31,17 @@ fn main() -> std::io::Result<()> {
     let mut node_upd_counter = 0;
     let mut link_node_addresses = HashMap::new();
 
-    let mut node_id = get_db_id(&mut module);
-    if node_id.is_none() {
-        node_id = create_db_id(&mut module);
-    }
+    let mut my_node_id = get_db_id(&mut module);
+    if my_node_id.is_none() {
+        my_node_id = create_db_id(&mut module);
 
-    if node_id.is_none() {
-        error!("fail create node_id");
-        return Ok(());
+        if my_node_id.is_none() {
+            error!("fail create Database Identification");
+            return Ok(());
+        }
     }
-    let node_id = node_id.unwrap();
-    info!("my node_id={}", node_id);
+    let my_node_id = my_node_id.unwrap();
+    info!("my node_id={}", my_node_id);
 
     load_linked_nodes(&mut module, &mut node_upd_counter, &mut link_node_addresses);
 
@@ -55,8 +55,8 @@ fn main() -> std::io::Result<()> {
 
             // request changes from slave node
             loop {
-                if let Ok(mut recv_msg) = get_import_message(&node_id, &exim_resp_api) {
-                    let res = processing_imported_message(&node_id, &mut recv_msg, &sys_ticket, &mut module.api);
+                if let Ok(mut recv_msg) = get_import_message(&my_node_id, &exim_resp_api) {
+                    let res = processing_imported_message(&my_node_id, &mut recv_msg, &sys_ticket, &mut module.api);
                     if res.res_code != ExImCode::Ok {
                         error!("fail accept changes, uri={}, err={:?}", res.id, res.res_code);
                     }

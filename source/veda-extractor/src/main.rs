@@ -1,10 +1,13 @@
 /*
- * Извлекает из текущей очереди [individuals-flow] и производит проверку следует ли выгружать в другую систему.
- * Проверка производится методом is_exportable, если ответ успешный, то происходит запись в очередь  ./data/out/extract
-*/
+ * Извлекает из текущей очереди [individuals-flow] и производит проверку
+ * следует ли выгружать в другую систему. Проверка производится методом
+ * is_exportable, если ответ успешный, то происходит запись в очередь
+ * ./data/out/extract
+ */
 #[macro_use]
 extern crate log;
 
+use std::{thread, time};
 use v_api::IndvOp;
 use v_exim::*;
 use v_module::info::ModuleInfo;
@@ -27,16 +30,16 @@ pub struct Context {
 fn main() -> Result<(), i32> {
     init_log("EXTRACTOR");
 
+    let module_info = ModuleInfo::new("./data", "extract", true);
+    if module_info.is_err() {
+        error!("{:?}", module_info.err());
+        return Err(-1);
+    }
+
     let mut module = Module::default();
-
-    let mut db_id = get_db_id(&mut module);
-    if db_id.is_none() {
-        db_id = create_db_id(&mut module);
-
-        if db_id.is_none() {
-            error!("fail create Database Identification");
-            return Ok(());
-        }
+    while !module.api.connect() {
+        error!("main module not ready, sleep and repeat");
+        thread::sleep(time::Duration::from_millis(1000));
     }
 
     let mut onto = Onto::default();
@@ -45,21 +48,25 @@ fn main() -> Result<(), i32> {
     load_onto(&mut module.storage, &mut onto);
     info!("load onto end");
 
-    let module_info = ModuleInfo::new("./data", "extract", true);
-    if module_info.is_err() {
-        error!("{:?}", module_info.err());
-        return Err(-1);
-    }
+    let mut my_node_id = get_db_id(&mut module);
+    if my_node_id.is_none() {
+        my_node_id = create_db_id(&mut module);
 
-    //wait_load_ontology();
+        if my_node_id.is_none() {
+            error!("fail create Database Identification");
+            return Ok(());
+        }
+    }
+    let my_node_id = my_node_id.unwrap();
+    info!("my node_id={}", my_node_id);
 
     let queue_out = Queue::new("./data/out", "extract", Mode::ReadWrite).expect("!!!!!!!!! FAIL QUEUE");
     let mut queue_consumer = Consumer::new("./data/queue", "extract", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
     let mut ctx = Context {
         onto,
-        db_id: db_id.unwrap(),
         queue_out,
+        db_id: my_node_id,
     };
 
     module.listen_queue(
@@ -76,13 +83,9 @@ fn main() -> Result<(), i32> {
 
 fn heartbeat(_module: &mut Module, _module_info: &mut ModuleInfo, _ctx: &mut Context) {}
 
-fn before_batch(_module: &mut Module, _ctx: &mut Context, _size_batch: u32) -> Option<u32> {
-    None
-}
+fn before_batch(_module: &mut Module, _ctx: &mut Context, _size_batch: u32) -> Option<u32> { None }
 
-fn after_batch(_module: &mut Module, _module_info: &mut ModuleInfo, _ctx: &mut Context, _prepared_batch_size: u32) -> bool {
-    false
-}
+fn after_batch(_module: &mut Module, _module_info: &mut ModuleInfo, _ctx: &mut Context, _prepared_batch_size: u32) -> bool { false }
 
 fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
@@ -123,7 +126,8 @@ fn is_exportable(module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut 
 
     if let Some(types) = new_state_indv.get_literals("rdf:type") {
         for itype in types {
-            // для всех потребителей выгружаем элемент орг струкутры не имеющий поля [sys:source]
+            // для всех потребителей выгружаем элемент орг струкутры не имеющий поля
+            // [sys:source]
             if ctx.onto.is_some_entered(&itype, &["v-s:OrganizationUnit"]) {
                 return Some("*".to_owned());
             }
@@ -140,8 +144,9 @@ fn is_exportable(module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut 
                 }
             }
 
-            // выгрузка формы решения у которого в поле [v-wf:to] находится индивид из другой системы
-            // и в поле [v-wf:onDocument] должен находится документ типа gen:InternalDocument
+            // выгрузка формы решения у которого в поле [v-wf:to] находится индивид из
+            // другой системы и в поле [v-wf:onDocument] должен находится
+            // документ типа gen:InternalDocument
             if itype == "v-wf:DecisionForm" {
                 if let Some(d) = new_state_indv.get_first_literal("v-wf:onDocument") {
                     let mut doc = Individual::default();
@@ -181,7 +186,8 @@ fn is_exportable(module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut 
                 }
             }
 
-            // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится индивид из другой системы
+            // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится
+            // индивид из другой системы
             if ctx.onto.is_some_entered(&itype, &["v-wf:Decision"]) {
                 if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:backwardTarget", "sys:source", &mut Individual::default()) {
                     return Some(src);
