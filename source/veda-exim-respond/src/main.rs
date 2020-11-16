@@ -82,7 +82,7 @@ fn rocket() -> Result<rocket::Rocket, Box<dyn Error>> {
     Ok(rocket::custom(config.unwrap()).mount("/", routes![import_delta, export_delta]).register(catchers![not_found]).manage(Mutex::new(ctx)))
 }
 
-#[get("/import_delta?<remote_node_id>", format = "text/html")]
+#[get("/export_delta?<remote_node_id>", format = "text/html")]
 fn import_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
     //let ctx = in_ctx.lock().unwrap();
 
@@ -103,8 +103,8 @@ fn import_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Optio
                 error!("get msg from queue: {}", e.as_str());
             }
         } else {
-            let indv = &mut Individual::new_raw(raw);
-            match create_out_obj(indv, &remote_node_id) {
+            let queue_element = &mut Individual::new_raw(raw);
+            match create_export_message(queue_element, &remote_node_id) {
                 Ok(out_obj) => {
                     return Some(out_obj.get_obj().as_json().into());
                 },
@@ -118,7 +118,7 @@ fn import_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Optio
     None
 }
 
-#[put("/export_delta", format = "json", data = "<msg>")]
+#[put("/import_delta", format = "json", data = "<msg>")]
 fn export_delta(msg: Json<Value>, in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
     let mut q = in_ctx.lock();
     let ctx = q.as_mut().unwrap();
@@ -126,7 +126,7 @@ fn export_delta(msg: Json<Value>, in_ctx: State<Mutex<Context>>) -> Option<JsonV
     let sys_ticket = ctx.sys_ticket.to_owned();
     let mut recv_indv = Individual::default();
     if parse_json_to_individual(&msg.0, &mut recv_indv) {
-        let res = processing_message_contains_one_change(&node_id, &mut recv_indv, &sys_ticket, &mut ctx.api);
+        let res = processing_imported_message(&node_id, &mut recv_indv, &sys_ticket, &mut ctx.api);
         return Some(json!(res));
     }
     None
