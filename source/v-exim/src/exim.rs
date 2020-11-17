@@ -2,10 +2,13 @@
 extern crate enum_primitive_derive;
 #[macro_use]
 extern crate log;
+extern crate base64;
 
 pub mod configuration;
 
+use base64::{decode, encode};
 use num_traits::{FromPrimitive, ToPrimitive};
+use serde_json::json;
 use serde_json::value::Value as JSONValue;
 use std::collections::HashMap;
 use std::error::Error;
@@ -214,15 +217,40 @@ pub fn create_export_message(queue_element: &mut Individual, node_id: &str) -> R
     Err(ExImCode::InvalidMessage)
 }
 
-fn send_export_message(out_obj: &mut Individual, resp_api: &Configuration) -> Result<IOResult, Box<dyn Error>> {
+fn encode_message(out_obj: &mut Individual) -> Result<JSONValue, Box<dyn Error>> {
     out_obj.parse_all();
+
+    let mut raw1: Vec<u8> = Vec::new();
+    to_msgpack(&out_obj, &mut raw1)?;
+    let msg_base64 = encode(raw1.as_slice());
+
+    Ok(json!({ "msg": &msg_base64 }))
+}
+
+pub fn decode_message(src: &JSONValue) -> Result<Individual, Box<dyn Error>> {
+    if let Some(props) = src.as_object() {
+        if let Some(msg) = props.get("msg") {
+            if let Some(m) = msg.as_str() {
+                let mut recv_indv = Individual::new_raw(RawObj::new(decode(&m)?));
+                if parse_raw(&mut recv_indv).is_ok() {
+                    return Ok(recv_indv);
+                }
+            }
+        }
+    }
+
+    return Err(Box::new(std::io::Error::new(ErrorKind::Other, format!("fail decode import message"))));
+}
+
+fn send_export_message(out_obj: &mut Individual, resp_api: &Configuration) -> Result<IOResult, Box<dyn Error>> {
     let uri_str = format!("{}/import_delta", resp_api.base_path);
-    let res = resp_api.client.put(&uri_str).json(&out_obj.get_obj().as_json()).send()?;
+
+    let res = resp_api.client.put(&uri_str).json(&encode_message(out_obj)?).send()?;
 
     Ok(res.json()?)
 }
 
-pub fn get_import_message(importer_id: &str, resp_api: &Configuration) -> Result<Individual, Box<dyn Error>> {
+pub fn recv_import_message(importer_id: &str, resp_api: &Configuration) -> Result<Individual, Box<dyn Error>> {
     let mut out_indv = Individual::default();
 
     let uri_str = format!("{}/export_delta/{}", resp_api.base_path, importer_id);

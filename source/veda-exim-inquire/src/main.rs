@@ -55,7 +55,7 @@ fn main() -> std::io::Result<()> {
 
             // request changes from slave node
             loop {
-                if let Ok(mut recv_msg) = get_import_message(&my_node_id, &exim_resp_api) {
+                if let Ok(mut recv_msg) = recv_import_message(&my_node_id, &exim_resp_api) {
                     let res = processing_imported_message(&my_node_id, &mut recv_msg, &sys_ticket, &mut module.api);
                     if res.res_code != ExImCode::Ok {
                         error!("fail accept changes, uri={}, err={:?}", res.id, res.res_code);

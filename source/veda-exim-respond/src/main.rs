@@ -22,7 +22,6 @@ use v_api::*;
 use v_exim::*;
 use v_module::module::*;
 use v_onto::individual::{Individual, RawObj};
-use v_onto::json2individual::parse_json_to_individual;
 use v_queue::consumer::Consumer;
 use v_queue::record::ErrorQueue;
 
@@ -70,7 +69,7 @@ fn rocket() -> Result<rocket::Rocket, Box<dyn Error>> {
     let ctx = Context {
         node_id,
         sys_ticket,
-        api: APIClient::new(Module::get_property("ft_query_service_url").unwrap_or_default()),
+        api: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
     };
 
     let config = Config::build(Environment::Staging).address("127.0.0.1").port(exim_respond_port.unwrap().parse::<u16>()?).finalize();
@@ -124,8 +123,8 @@ fn export_delta(msg: Json<Value>, in_ctx: State<Mutex<Context>>) -> Option<JsonV
     let ctx = q.as_mut().unwrap();
     let node_id = ctx.node_id.to_owned();
     let sys_ticket = ctx.sys_ticket.to_owned();
-    let mut recv_indv = Individual::default();
-    if parse_json_to_individual(&msg.0, &mut recv_indv) {
+
+    if let Ok(mut recv_indv) = decode_message(&msg.0) {
         let res = processing_imported_message(&node_id, &mut recv_indv, &sys_ticket, &mut ctx.api);
         return Some(json!(res));
     }
