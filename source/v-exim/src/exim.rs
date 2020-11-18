@@ -6,6 +6,7 @@ extern crate base64;
 
 pub mod configuration;
 
+use crate::configuration::Configuration;
 use base64::{decode, encode};
 use num_traits::{FromPrimitive, ToPrimitive};
 use serde_json::json;
@@ -24,9 +25,6 @@ use v_onto::individual2msgpack::*;
 use v_onto::parser::*;
 use v_queue::consumer::*;
 use v_queue::record::*;
-
-use crate::configuration::Configuration;
-use v_onto::json2individual::parse_json_to_individual;
 
 const TRANSMIT_FAILED: i64 = 32;
 
@@ -217,7 +215,7 @@ pub fn create_export_message(queue_element: &mut Individual, node_id: &str) -> R
     Err(ExImCode::InvalidMessage)
 }
 
-fn encode_message(out_obj: &mut Individual) -> Result<JSONValue, Box<dyn Error>> {
+pub fn encode_message(out_obj: &mut Individual) -> Result<JSONValue, Box<dyn Error>> {
     out_obj.parse_all();
 
     let mut raw1: Vec<u8> = Vec::new();
@@ -247,20 +245,16 @@ fn send_export_message(out_obj: &mut Individual, resp_api: &Configuration) -> Re
 
     let res = resp_api.client.put(&uri_str).json(&encode_message(out_obj)?).send()?;
 
-    Ok(res.json()?)
+    let jj: IOResult = res.json()?;
+    info!("@send_export_message {:?}", jj.res_code);
+
+    Ok(jj)
 }
 
-pub fn recv_import_message(importer_id: &str, resp_api: &Configuration) -> Result<Individual, Box<dyn Error>> {
-    let mut out_indv = Individual::default();
-
+pub fn recv_import_message(importer_id: &str, resp_api: &Configuration) -> Result<JSONValue, Box<dyn Error>> {
     let uri_str = format!("{}/export_delta/{}", resp_api.base_path, importer_id);
-    let res: JSONValue = resp_api.client.get(&uri_str).send()?.json()?;
-
-    if !parse_json_to_individual(&res, &mut out_indv) {
-        return Err(Box::new(std::io::Error::new(ErrorKind::Other, format!("fail parse import object"))));
-    }
-
-    Ok(out_indv)
+    let msg: JSONValue = resp_api.client.get(&uri_str).send()?.json()?;
+    Ok(msg)
 }
 
 #[macro_use]
@@ -321,7 +315,7 @@ pub fn processing_imported_message(my_node_id: &str, recv_indv: &mut Individual,
                 error!("fail update, uri={}, result_code={:?}", recv_indv.get_id(), res.result);
                 return IOResult::new(recv_indv.get_id(), ExImCode::FailUpdate);
             } else {
-                info!("get form {}, success update, uri={}", source_veda, recv_indv.get_id());
+                info!("get from {}, success update, uri={}", source_veda, recv_indv.get_id());
                 return IOResult::new(recv_indv.get_id(), ExImCode::Ok);
             }
         }
@@ -343,7 +337,7 @@ pub fn load_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_n
 
                         if module.storage.get_individual(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
                             if let Some(addr) = link_node.get_first_literal("rdf:value") {
-                                link_node_addresses.insert(el, addr);
+                                link_node_addresses.insert(link_node.get_first_literal("cfg:node_id").unwrap_or_default(), addr);
                             }
                         }
                     }

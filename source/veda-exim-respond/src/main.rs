@@ -81,13 +81,12 @@ fn rocket() -> Result<rocket::Rocket, Box<dyn Error>> {
     Ok(rocket::custom(config.unwrap()).mount("/", routes![import_delta, export_delta]).register(catchers![not_found]).manage(Mutex::new(ctx)))
 }
 
-#[get("/export_delta?<remote_node_id>", format = "text/html")]
-fn import_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
-    //let ctx = in_ctx.lock().unwrap();
-
+#[get("/export_delta/<remote_node_id>", format = "text/html")]
+fn export_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
     // this request changes from master
     // читаем элемент очереди, создаем обьект и отправляем на server
-    let mut queue_consumer = Consumer::new("./data/out", &remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
+    let consumer_name = format!("r_{}", remote_node_id.replace(":", "_"));
+    let mut queue_consumer = Consumer::new("./data/out", &consumer_name, "extract").expect("!!!!!!!!! FAIL QUEUE");
 
     if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
         error!("get_info_of_part {}: {}", queue_consumer.id, e.as_str());
@@ -104,8 +103,12 @@ fn import_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Optio
         } else {
             let queue_element = &mut Individual::new_raw(raw);
             match create_export_message(queue_element, &remote_node_id) {
-                Ok(out_obj) => {
-                    return Some(out_obj.get_obj().as_json().into());
+                Ok(mut out_obj) => {
+                    if let Ok(msg) = encode_message(&mut out_obj) {
+                        return Some(msg.into());
+                    } else {
+                        error!("fail encode out message");
+                    }
                 },
                 Err(e) => {
                     error!("fail create out message {:?}", e);
@@ -118,7 +121,7 @@ fn import_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Optio
 }
 
 #[put("/import_delta", format = "json", data = "<msg>")]
-fn export_delta(msg: Json<Value>, in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
+fn import_delta(msg: Json<Value>, in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
     let mut q = in_ctx.lock();
     let ctx = q.as_mut().unwrap();
     let node_id = ctx.node_id.to_owned();
