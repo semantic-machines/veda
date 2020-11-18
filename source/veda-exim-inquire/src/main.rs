@@ -47,7 +47,8 @@ fn main() -> std::io::Result<()> {
 
     loop {
         for (remote_node_id, remote_node_addr) in &link_node_addresses {
-            let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE EXTRACT");
+            let consumer_name = format!("i_{}", remote_node_id.replace(":", "_"));
+            let mut queue_consumer = Consumer::new("./data/out", &consumer_name, "extract").expect("!!!!!!!!! FAIL QUEUE EXTRACT");
 
             let exim_resp_api = Configuration::new(remote_node_addr, "", "");
 
@@ -55,10 +56,12 @@ fn main() -> std::io::Result<()> {
 
             // request changes from slave node
             loop {
-                if let Ok(mut recv_msg) = recv_import_message(&my_node_id, &exim_resp_api) {
-                    let res = processing_imported_message(&my_node_id, &mut recv_msg, &sys_ticket, &mut module.api);
-                    if res.res_code != ExImCode::Ok {
-                        error!("fail accept changes, uri={}, err={:?}", res.id, res.res_code);
+                if let Ok(recv_msg) = recv_import_message(&my_node_id, &exim_resp_api) {
+                    if let Ok(mut recv_indv) = decode_message(&recv_msg) {
+                        let res = processing_imported_message(&my_node_id, &mut recv_indv, &sys_ticket, &mut module.api);
+                        if res.res_code != ExImCode::Ok {
+                            error!("fail accept changes, uri={}, err={:?}", res.id, res.res_code);
+                        }
                     }
                 } else {
                     break;
