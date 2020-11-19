@@ -131,19 +131,25 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configurat
             for attempt_count in 0..10 {
                 let msg = create_export_message(&mut queue_element, node_id);
 
-                if msg.is_ok() {
-                    if let Err(e) = send_export_message(&mut msg.unwrap(), resp_api) {
-                        error!("fail send export message, err={:?}, attempt_count={}", e, attempt_count);
+                match msg {
+                    Ok(mut msg) => {
+                        if let Err(e) = send_export_message(&mut msg, resp_api) {
+                            error!("fail send export message, err={:?}, attempt_count={}", e, attempt_count);
 
-                        if attempt_count == 10 {
-                            return ExImCode::SendFailed;
+                            if attempt_count == 10 {
+                                return ExImCode::SendFailed;
+                            }
+                        } else {
+                            break;
                         }
-                    } else {
-                        break;
                     }
-                } else {
-                    error!("fail create export message, err={:?}", msg.is_err());
-                    return ExImCode::InvalidMessage;
+                    Err(e) => {
+                        if e == ExImCode::Ok {
+                            break;
+                        }
+                        error!("fail create export message, err={:?}", e);
+                        return ExImCode::InvalidMessage;
+                    }
                 }
 
                 thread::sleep(time::Duration::from_millis(10000));
@@ -161,6 +167,9 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configurat
 
 pub fn create_export_message(queue_element: &mut Individual, node_id: &str) -> Result<Individual, ExImCode> {
     if parse_raw(queue_element).is_ok() {
+
+
+
         let target_veda = queue_element.get_first_literal("target_veda");
         if target_veda.is_none() {
             return Err(ExImCode::InvalidMessage);
