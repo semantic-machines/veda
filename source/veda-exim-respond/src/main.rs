@@ -109,6 +109,7 @@ fn export_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Optio
             match create_export_message(queue_element, &remote_node_id) {
                 Ok(mut out_obj) => {
                     if let Ok(msg) = encode_message(&mut out_obj) {
+                        queue_consumer.commit_and_next();
                         return Some(msg.into());
                     } else {
                         error!("fail encode out message");
