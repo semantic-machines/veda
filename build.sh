@@ -88,9 +88,10 @@ if [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] || [ $1 == "exim" ]
     echo BUILD EXIM-RESPOND
 
     rm ./veda-exim-respond
-
     cd source/veda-exim-respond
-    cargo build --release
+
+    cargo +nightly build --release
+
     cd $BUILD_PATH
     cp $CARGO_TARGET_DIR/release/veda-exim-respond $PWD
 
