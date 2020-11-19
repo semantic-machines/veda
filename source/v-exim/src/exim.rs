@@ -133,7 +133,7 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, resp_api: &Configurat
 
                 if msg.is_ok() {
                     if let Err(e) = send_export_message(&mut msg.unwrap(), resp_api) {
-                        error!("fail send export message, err={:?}", e);
+                        error!("fail send export message, err={:?}, attempt_count={}", e, attempt_count);
 
                         if attempt_count == 10 {
                             return ExImCode::SendFailed;
@@ -246,7 +246,7 @@ fn send_export_message(out_obj: &mut Individual, resp_api: &Configuration) -> Re
     let res = resp_api.client.put(&uri_str).json(&encode_message(out_obj)?).send()?;
 
     let jj: IOResult = res.json()?;
-    info!("@send_export_message {:?}", jj.res_code);
+    info!("sucess send export message: res={:?}, id={}", jj.res_code, out_obj.get_id());
 
     Ok(jj)
 }

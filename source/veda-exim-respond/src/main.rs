@@ -11,8 +11,8 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
-use rocket::config::Environment;
-use rocket::{Config, State};
+//use rocket::config::{Environment, LoggingLevel};
+use rocket::{State};
 use rocket_contrib::json::{Json, JsonValue};
 use serde_json::Value;
 use std::error::Error;
@@ -32,14 +32,14 @@ struct Context {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    init_log("EXIM_RESPOND");
-
+    init_log_with_filter("EXIM_RESPOND", Some ("error,rocket=info,exim=info"));
     rocket()?.launch();
 
     Ok(())
 }
 
 fn rocket() -> Result<rocket::Rocket, Box<dyn Error>> {
+    info!("START EXIM RESPOND");
     let mut module = Module::default();
 
     let param_name = "exim_respond_port";
@@ -71,15 +71,19 @@ fn rocket() -> Result<rocket::Rocket, Box<dyn Error>> {
         sys_ticket,
         api: APIClient::new(Module::get_property("main_module_url").unwrap_or_default()),
     };
-
-    let config = Config::build(Environment::Staging).address("127.0.0.1").port(exim_respond_port.unwrap().parse::<u16>()?).finalize();
-
+/*
+    let config = Config::build(Environment::Staging).address("0.0.0.0").port(exim_respond_port.unwrap().parse::<u16>()?).log_level(LoggingLevel::Off).finalize();
     if config.is_err() {
         return Err(Box::new(std::io::Error::new(ErrorKind::Other, format!("fail config"))));
     }
+    let mut config = config.unwrap();
+    config.set_log_level(LoggingLevel::Critical);
 
-    Ok(rocket::custom(config.unwrap()).mount("/", routes![import_delta, export_delta]).register(catchers![not_found]).manage(Mutex::new(ctx)))
+    Ok(rocket::custom(config).mount("/", routes![import_delta, export_delta]).register(catchers![not_found]).manage(Mutex::new(ctx)))
+*/
+    Ok(rocket::ignite().mount("/", routes![import_delta, export_delta]).register(catchers![not_found]).manage(Mutex::new(ctx)))
 }
+
 
 #[get("/export_delta/<remote_node_id>", format = "text/html")]
 fn export_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Option<JsonValue> {
@@ -117,7 +121,7 @@ fn export_delta(remote_node_id: String, _in_ctx: State<Mutex<Context>>) -> Optio
         }
     }
 
-    None
+    Some (json!({"msg": ""}))
 }
 
 #[put("/import_delta", format = "json", data = "<msg>")]
