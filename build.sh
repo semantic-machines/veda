@@ -246,7 +246,7 @@ if [ -z $1 ] || [ $1 == "scripts-v8" ] || [ $1 == "veda-scripts-v8" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-scripts-v8 $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "nano-bpmn" ] || [ $1 == "veda-nano-bpmn" ] || [ $1 == "all" ]; then
+if [ $1 == "nano-bpmn" ] || [ $1 == "veda-nano-bpmn" ] || [ $1 == "all" ]; then
     echo BUILD nano-bpmn
     cd source/veda-nano-bpmn
     cargo build --release
@@ -254,7 +254,7 @@ if [ -z $1 ] || [ $1 == "nano-bpmn" ] || [ $1 == "veda-nano-bpmn" ] || [ $1 == "
     cp $CARGO_TARGET_DIR/release/veda-nano-bpmn $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "camunda-external-task" ] || [ $1 == "veda-camunda-external-task" ] || [ $1 == "all" ]; then
+if [ $1 == "camunda-external-task" ] || [ $1 == "veda-camunda-external-task" ] || [ $1 == "all" ]; then
     echo BUILD camunda-external-task
     cd source/veda-camunda-external-task
     cargo build --release
@@ -263,7 +263,7 @@ if [ -z $1 ] || [ $1 == "camunda-external-task" ] || [ $1 == "veda-camunda-exter
 fi
 
 
-if [ -z $1 ] || [ $1 == "camunda-connector" ] || [ $1 == "veda-camunda-connector" ] || [ $1 == "all" ]; then
+if [ $1 == "camunda-connector" ] || [ $1 == "veda-camunda-connector" ] || [ $1 == "all" ]; then
     echo BUILD camunda-connector
     cd source/veda-camunda-connector
     cargo build --release
