@@ -25,25 +25,29 @@ impl Drop for SetupGuard {
     }
 }
 
-pub fn is_exportable(_module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut Individual, new_state_indv: &mut Individual) -> Option<String> {
+pub fn is_exportable(_module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut Individual, new_state_indv: &mut Individual, user_id: &str) -> Option<String> {
     let rdf_types = new_state_indv.get_literals("rdf:type").unwrap_or_default();
 
-    for script_id in ctx.workplace.scripts_order.iter() {
-        let mut session_data = CallbackSharedData::default();
-        session_data.g_key2indv.insert("$document".to_owned(), Individual::new_from_obj(new_state_indv.get_obj()));
-        session_data.g_key2attr.insert("$ticket".to_owned(), ctx.sys_ticket.to_owned());
+    let mut session_data = CallbackSharedData::default();
+    session_data.g_key2indv.insert("$document".to_owned(), Individual::new_from_obj(new_state_indv.get_obj()));
+    session_data.g_key2attr.insert("$ticket".to_owned(), ctx.sys_ticket.to_owned());
+    if !user_id.is_empty() {
+        session_data.g_key2attr.insert("$user".to_owned(), user_id.to_string());
+    } else {
+        session_data.g_key2attr.insert("$user".to_owned(), "cfg:VedaSystem".to_owned());
+    }
+    let mut sh_g_vars = G_VARS.lock().unwrap();
+    let g_vars = sh_g_vars.get_mut();
+    *g_vars = session_data;
+    drop(sh_g_vars);
 
+    for script_id in ctx.workplace.scripts_order.iter() {
         if let Some(script) = ctx.workplace.scripts.get(script_id) {
             if let Some(compiled_script) = script.compiled_script {
                 if !is_filter_pass(script, new_state_indv.get_id(), &rdf_types, &mut ctx.onto) {
                     debug!("skip (filter) script:{}", script_id);
                     continue;
                 }
-
-                let mut sh_g_vars = G_VARS.lock().unwrap();
-                let g_vars = sh_g_vars.get_mut();
-                *g_vars = session_data;
-                drop(sh_g_vars);
 
                 let hs = ContextScope::new(&mut ctx.workplace.scope, ctx.workplace.context);
                 let mut local_scope = hs;
@@ -66,7 +70,7 @@ pub fn is_exportable(_module: &mut Module, ctx: &mut Context, _prev_state_indv: 
 //}
 
 pub(crate) fn load_exim_filter_scripts(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, xr: &mut XapianReader) {
-    let res = xr.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'bpmn:ExternalTaskHandler'"), &mut wp.module.storage);
+    let res = xr.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'v-s:EximFilter'"), &mut wp.module.storage);
 
     if res.result_code == ResultCode::Ok && res.count > 0 {
         for id in &res.result {
@@ -87,12 +91,13 @@ pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, ev_in
         return;
     }
 
-    if let Some(script_text) = ev_indv.get_first_literal("bpmn:script") {
+    if let Some(script_text) = ev_indv.get_first_literal("v-s:script") {
         let str_script = "\
       (function () { \
         try { \
           var ticket = get_env_str_var ('$ticket'); \
-          var task = JSON.parse(get_env_str_var ('$task')); \
+          var document = get_individual (ticket, '$document'); \
+          var user_uri = get_env_str_var ('$user'); \
           "
         .to_owned()
             + &script_text

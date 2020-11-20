@@ -136,12 +136,14 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context
     let mut new_state = Individual::default();
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
+    let user_id = queue_element.get_first_literal("user_uri").unwrap_or_default();
+
     let date = queue_element.get_first_integer("date");
     //    if date.is_none() {
     //        return Ok(());
     //    }
 
-    let exportable = is_exportable(module, ctx, &mut prev_state, &mut new_state);
+    let exportable = is_exportable(module, ctx, &mut prev_state, &mut new_state, &user_id);
     if exportable.is_none() {
         return Ok(true);
     }
