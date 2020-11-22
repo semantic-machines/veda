@@ -25,10 +25,17 @@ impl Drop for SetupGuard {
     }
 }
 
-pub fn is_exportable(_module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut Individual, new_state_indv: &mut Individual, user_id: &str) -> Option<String> {
+pub struct OutValue {
+    pub target: String,
+    pub indv: Individual,
+}
+
+pub fn is_exportable(_module: &mut Module, ctx: &mut Context, prev_state_indv: &mut Individual, new_state_indv: &mut Individual, user_id: &str) -> Vec<OutValue> {
     let rdf_types = new_state_indv.get_literals("rdf:type").unwrap_or_default();
 
     let mut session_data = CallbackSharedData::default();
+
+    session_data.g_key2indv.insert("$prev_state".to_owned(), Individual::new_from_obj(prev_state_indv.get_obj()));
     session_data.g_key2indv.insert("$document".to_owned(), Individual::new_from_obj(new_state_indv.get_obj()));
     session_data.g_key2attr.insert("$ticket".to_owned(), ctx.sys_ticket.to_owned());
     if !user_id.is_empty() {
@@ -36,6 +43,8 @@ pub fn is_exportable(_module: &mut Module, ctx: &mut Context, _prev_state_indv: 
     } else {
         session_data.g_key2attr.insert("$user".to_owned(), "cfg:VedaSystem".to_owned());
     }
+    session_data.set_g_super_classes(&rdf_types, &ctx.onto);
+
     let mut sh_g_vars = G_VARS.lock().unwrap();
     let g_vars = sh_g_vars.get_mut();
     *g_vars = session_data;
@@ -55,14 +64,17 @@ pub fn is_exportable(_module: &mut Module, ctx: &mut Context, _prev_state_indv: 
                 if let Some(res) = compiled_script.run(&mut local_scope) {
                     if res.is_string() {
                         if let Some(s) = res.to_string(local_scope.as_mut()) {
-                            return Some(s.to_rust_string_lossy(&mut local_scope));
+                            let s = s.to_rust_string_lossy(&mut local_scope);
+                            if !s.is_empty() {
+                                return vec![];
+                            }
                         }
                     }
                 }
             }
         }
     }
-    None
+    vec![]
 }
 
 //pub fn get_script_identity(id: &str, text: &str) -> String {
@@ -97,6 +109,8 @@ pub(crate) fn prepare_script(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, ev_in
         try { \
           var ticket = get_env_str_var ('$ticket'); \
           var document = get_individual (ticket, '$document'); \
+          var prev_state = get_individual (ticket, '$prev_state'); \
+          var super_classes = get_env_str_var ('$super_classes'); \
           var user_uri = get_env_str_var ('$user'); \
           "
         .to_owned()
