@@ -143,15 +143,17 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context
     //        return Ok(());
     //    }
 
-    let exportable = is_exportable(module, ctx, &mut prev_state, &mut new_state, &user_id);
-    if exportable.is_none() {
+    let mut exportable = is_exportable(module, ctx, &mut prev_state, &mut new_state, &user_id);
+    if exportable.is_empty() {
         return Ok(true);
     }
-    let exportable = exportable.unwrap();
 
-    if let Err(e) = add_to_queue(&mut ctx.queue_out, cmd.unwrap(), &mut new_state, &queue_element.get_id(), &ctx.db_id, &exportable, date.unwrap_or_default()) {
-        error!("fail prepare message, err={:?}", e);
-        return Err(PrepareError::Fatal);
+    let cmd = cmd.unwrap();
+    for el in exportable.iter_mut() {
+        if let Err(e) = add_to_queue(&mut ctx.queue_out, cmd.clone(), &mut el.indv, &queue_element.get_id(), &ctx.db_id, &el.target, date.unwrap_or_default()) {
+            error!("fail prepare message, err={:?}", e);
+            return Err(PrepareError::Fatal);
+        }
     }
 
     Ok(true)
