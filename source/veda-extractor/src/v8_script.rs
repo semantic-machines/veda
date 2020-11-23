@@ -1,6 +1,6 @@
 use crate::Context;
 use rusty_v8 as v8;
-use rusty_v8::ContextScope;
+use rusty_v8::{ContextScope, HandleScope, Local, Value};
 use std::sync::Mutex;
 use v_api::app::ResultCode;
 use v_ft_xapian::xapian_reader::XapianReader;
@@ -27,10 +27,12 @@ impl Drop for SetupGuard {
 
 pub struct OutValue {
     pub target: String,
-    pub indv: Individual,
+    pub indv: Option<Individual>,
 }
 
 pub fn is_exportable(_module: &mut Module, ctx: &mut Context, prev_state_indv: &mut Individual, new_state_indv: &mut Individual, user_id: &str) -> Vec<OutValue> {
+    let mut ov = vec![];
+
     let rdf_types = new_state_indv.get_literals("rdf:type").unwrap_or_default();
 
     let mut session_data = CallbackSharedData::default();
@@ -58,15 +60,30 @@ pub fn is_exportable(_module: &mut Module, ctx: &mut Context, prev_state_indv: &
                     continue;
                 }
 
-                let hs = ContextScope::new(&mut ctx.workplace.scope, ctx.workplace.context);
-                let mut local_scope = hs;
-
-                if let Some(res) = compiled_script.run(&mut local_scope) {
+                let mut scope = ContextScope::new(&mut ctx.workplace.scope, ctx.workplace.context);
+                if let Some(res) = compiled_script.run(&mut scope) {
+                    if res.is_array() {
+                        if let Some(res) = res.to_object(&mut scope) {
+                            if let Some(key_list) = res.get_property_names(&mut scope) {
+                                for resources_idx in 0..key_list.length() {
+                                    let j_resources_idx = v8::Integer::new(&mut scope, resources_idx as i32);
+                                    if let Some(v) = res.get(&mut scope, j_resources_idx.into()) {
+                                        prepare_out_obj(&mut ov, v, &mut scope);
+                                    }
+                                }
+                            }
+                        }
+                    } else if res.is_object() {
+                        prepare_out_obj(&mut ov, res, &mut scope);
+                    }
                     if res.is_string() {
-                        if let Some(s) = res.to_string(local_scope.as_mut()) {
-                            let s = s.to_rust_string_lossy(&mut local_scope);
-                            if !s.is_empty() {
-                                return vec![];
+                        if let Some(s) = res.to_string(scope.as_mut()) {
+                            let target = s.to_rust_string_lossy(&mut scope);
+                            if !target.is_empty() {
+                                ov.push(OutValue {
+                                    target,
+                                    indv: None,
+                                });
                             }
                         }
                     }
@@ -74,12 +91,26 @@ pub fn is_exportable(_module: &mut Module, ctx: &mut Context, prev_state_indv: &
             }
         }
     }
-    vec![]
+    return ov;
 }
 
-//pub fn get_script_identity(id: &str, text: &str) -> String {
-//    format!("{}+{}", id, text)
-//}
+fn prepare_out_obj(ov: &mut Vec<OutValue>, res: Local<Value>, scope: &mut ContextScope<HandleScope>) {
+    if let Some(out_obj) = res.to_object(scope) {
+        if let Some(j_predicates) = out_obj.get_property_names(scope) {
+            let idx0 = v8::Integer::new(scope, 0);
+            let k0 = j_predicates.get(scope, idx0.into()).unwrap();
+            let t0 = out_obj.get(scope, k0).unwrap();
+            let target = v8_2_str(scope, &t0);
+
+            let mut ri = Individual::default();
+            v8obj_into_individual(scope, out_obj, &mut ri);
+            ov.push(OutValue {
+                target,
+                indv: Some(ri),
+            });
+        }
+    }
+}
 
 pub(crate) fn load_exim_filter_scripts(wp: &mut ScriptsWorkPlace<ScriptInfoContext>, xr: &mut XapianReader) {
     let res = xr.query(FTQuery::new_with_user("cfg:VedaSystem", "'rdf:type' === 'v-s:EximFilter'"), &mut wp.module.storage);
