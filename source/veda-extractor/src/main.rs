@@ -150,7 +150,13 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context
 
     let cmd = cmd.unwrap();
     for el in exportable.iter_mut() {
-        if let Err(e) = add_to_queue(&mut ctx.queue_out, cmd.clone(), &mut el.indv, &queue_element.get_id(), &ctx.db_id, &el.target, date.unwrap_or_default()) {
+        let res = if let Some(i) = &mut el.indv {
+            add_to_queue(&mut ctx.queue_out, cmd.clone(), i, &queue_element.get_id(), &ctx.db_id, &el.target, date.unwrap_or_default())
+        } else {
+            add_to_queue(&mut ctx.queue_out, cmd.clone(), &mut new_state, &queue_element.get_id(), &ctx.db_id, &el.target, date.unwrap_or_default())
+        };
+
+        if let Err(e) = res {
             error!("fail prepare message, err={:?}", e);
             return Err(PrepareError::Fatal);
         }
