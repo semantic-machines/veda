@@ -89,7 +89,7 @@ v-s:EximFilter3
 	return '';
     }
 
-    var src = veda.Util.getPropertyChain(new_state_indv, "v-s:backwardTarget", "sys:source");
+    var src = veda.Util.getPropertyChain(document, "v-s:backwardTarget", "sys:source");
     if (src) {
 	return src;
     }
@@ -118,7 +118,7 @@ v-s:EximFilter4
 	return '';
     }
 
-    var src = veda.Util.getPropertyChain(new_state_indv, "v-s:permissionSubject", "sys:source");
+    var src = veda.Util.getPropertyChain(document, "v-s:permissionSubject", "sys:source");
     if (src) {
 	return src;
     }
