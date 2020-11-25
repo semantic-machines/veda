@@ -24,6 +24,7 @@ use v_onto::onto::*;
 use v_queue::consumer::*;
 use v_queue::queue::*;
 use v_queue::record::*;
+use v_storage::remote_indv_r_storage::inproc_storage_manager;
 use v_v8::common::ScriptInfoContext;
 use v_v8::jsruntime::JsRuntime;
 use v_v8::scripts_workplace::ScriptsWorkPlace;
@@ -41,7 +42,7 @@ pub struct Context<'a> {
 
 fn main() -> Result<(), i32> {
     init_log("EXTRACTOR");
-    //    thread::spawn(move || inproc_storage_manager(get_storage_init_param()));
+    thread::spawn(move || inproc_storage_manager(get_storage_init_param()));
 
     let mut js_runtime = JsRuntime::new();
     listen_queue(&mut js_runtime)
@@ -98,6 +99,7 @@ fn listen_queue<'a>(js_runtime: &'a mut JsRuntime) -> Result<(), i32> {
             onto,
         };
 
+        ctx.workplace.load_ext_scripts(&ctx.sys_ticket);
         load_exim_filter_scripts(&mut ctx.workplace, &mut ctx.xr);
 
         module.listen_queue(
@@ -191,4 +193,18 @@ fn add_to_queue(queue_out: &mut Queue, cmd: IndvOp, new_state_indv: &mut Individ
         }
     }
     Ok(())
+}
+
+pub fn get_storage_init_param() -> String {
+    let tarantool_addr = if let Some(p) = Module::get_property("tarantool_url") {
+        p
+    } else {
+        warn!("param [tarantool_url] not found in veda.properties");
+        "".to_owned()
+    };
+
+    if !tarantool_addr.is_empty() {
+        info!("tarantool addr={}", &tarantool_addr);
+    }
+    tarantool_addr
 }
