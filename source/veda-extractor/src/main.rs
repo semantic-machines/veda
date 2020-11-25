@@ -194,17 +194,3 @@ fn add_to_queue(queue_out: &mut Queue, cmd: IndvOp, new_state_indv: &mut Individ
     }
     Ok(())
 }
-
-pub fn get_storage_init_param() -> String {
-    let tarantool_addr = if let Some(p) = Module::get_property("tarantool_url") {
-        p
-    } else {
-        warn!("param [tarantool_url] not found in veda.properties");
-        "".to_owned()
-    };
-
-    if !tarantool_addr.is_empty() {
-        info!("tarantool addr={}", &tarantool_addr);
-    }
-    tarantool_addr
-}
