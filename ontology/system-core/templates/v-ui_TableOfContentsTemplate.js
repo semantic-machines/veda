@@ -11,10 +11,17 @@ export const pre = function (individual, template, container, mode, extra) {
     var $spy = $(this).scrollspy('refresh');
   });
   const menu = $('#offcanvas-menu', template);
-  menu.addClass('open');
+  if (localStorage.getItem('menu-open') === 'true') {
+    menu.addClass('open');
+    $('.glyphicon', toggle).removeClass('glyphicon-chevron-left').addClass('glyphicon-chevron-right');
+  } else {
+    menu.removeClass('open');
+    $('.glyphicon', toggle).removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-left');
+  }
   
   toggle.click(function() {
     menu.toggleClass('open');
+    localStorage.setItem('menu-open', menu.hasClass('open'));
 
     if (menu.hasClass('open')) {
       $('.glyphicon', toggle).removeClass('glyphicon-chevron-left').addClass('glyphicon-chevron-right');
