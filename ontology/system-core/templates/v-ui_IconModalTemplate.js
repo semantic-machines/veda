@@ -6,6 +6,7 @@ export const post = function (individual, template, container, mode, extra) {
   container = $(container);
 
   template.on('click', function (e) {
+    e.stopPropagation();
     e.preventDefault();
     let newMode = container.attr('data-mode');
     const parentTmpl = template.parent().closest('[resource]');
