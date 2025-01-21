@@ -130,7 +130,9 @@ export const post = function (individual, template, container, mode, extra) {
     '<span class="margin-sm-h badge"></span>' +
     '</small></div>' +
     '</div>' +
-    '<div class="col-md-6" about="@" rel="v-s:hasCommunicationMean">' +
+    '<div class="col-md-6"><div about="@" rel="v-s:hasCommunicationMean"></div><div about="@" rel="v-s:hasChiefDetail">' +
+    '<div><span>Руководитель: </span><strong about="@" rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong></div>' +
+    '</div>' +
     '<div>' +
     '<strong class="margin-sm-h" about="@" rel="v-s:hasCommunicationMeanChannel" data-template="v-ui:LabelTemplate"></strong>' +
     '<span about="@" property="v-s:description"></span>  ' +

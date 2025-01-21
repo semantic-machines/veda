@@ -11,6 +11,10 @@ export const pre = function (individual, template, container, mode, extra) {
     $('#orgLabel', template).remove();
     $('span.unit-icon', template).remove();
     $('div.logo-image', template).remove();
+    
+    if (individual.hasValue('v-s:employee')) {
+      $('#modal-button', template).attr('about', individual['v-s:employee'][0].id);
+    }
     return individual.getPropertyChain('v-s:employee', 'v-s:hasImage').then(function (image) {
       if (image.length == 0) {
         individual['v-s:employee'][0]['v-s:hasImage'] = [new IndividualModel('v-s:DefaultPhoto')];
@@ -196,7 +200,7 @@ export const html = `
         <a href="#" class="hidden margin-xs-h profileIcon pointer fa fa-lg fa-id-badge"></a>
       </div>
       <div>
-        <span about="@" class="zoom hidden" style="float:right;" data-template="v-ui:IconModalTemplate"></span>
+        <span id="modal-button" about="@" class="zoom hidden" style="float:right;" data-template="v-ui:IconModalTemplate"></span>
       </div>
     </td>
   </tr>
