@@ -56,7 +56,7 @@ v-s:hasFieldChief
 v-s:hasChiefDetail
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
-  rdfs:label "Непосредственный руководитель"@ru ;
+  rdfs:label "Прямой непосредственный руководитель"@ru ;
   rdfs:label "Chief Detail"@en ;
   rdfs:range v-s:Appointment ;
   v-s:comment "Непосредственный руководитель из поля 012"@ru ;

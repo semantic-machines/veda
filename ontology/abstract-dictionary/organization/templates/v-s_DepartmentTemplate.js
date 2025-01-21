@@ -82,6 +82,9 @@ export const html = `
           <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
           <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
           <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext dropdown"></veda-control>
+          <em about="v-s:hasChiefDetail" property="rdfs:label"></em>
+          <div rel="v-s:hasChiefDetail" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="link" rel="v-s:hasChiefDetail" class="-view edit search fulltext dropdown"></veda-control>
         </div>
       </div>
       <hr class="view -edit -search" />
