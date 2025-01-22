@@ -1,6 +1,9 @@
 import $ from 'jquery';
+import veda from '/js/common/veda.js';
+
 
 export const pre = function (individual, template, container, mode, extra) {
+  const prefs = veda.user.preferences;
   if (template.closest('.modal-body') || container.classList.contains('modal-body')) {
     template.classList.add('hidden');
     return;
@@ -11,7 +14,7 @@ export const pre = function (individual, template, container, mode, extra) {
     var $spy = $(this).scrollspy('refresh');
   });
   const menu = $('#offcanvas-menu', template);
-  if (localStorage.getItem('menu-open') === 'true') {
+  if (prefs.hasValue('v-ui:contentPanelOpened', true)) {
     menu.addClass('open');
     $('.glyphicon', toggle).removeClass('glyphicon-chevron-left').addClass('glyphicon-chevron-right');
   } else {
@@ -19,9 +22,11 @@ export const pre = function (individual, template, container, mode, extra) {
     $('.glyphicon', toggle).removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-left');
   }
   
-  toggle.click(function() {
+  toggle.click(async function() {
     menu.toggleClass('open');
-    localStorage.setItem('menu-open', menu.hasClass('open'));
+    prefs.set('v-ui:contentPanelOpened', menu.hasClass('open'));
+    console.log(prefs);
+    await prefs.save();
 
     if (menu.hasClass('open')) {
       $('.glyphicon', toggle).removeClass('glyphicon-chevron-left').addClass('glyphicon-chevron-right');

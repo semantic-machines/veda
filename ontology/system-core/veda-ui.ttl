@@ -464,6 +464,13 @@ v-ui:forMode
   rdfs:label "Режим шаблона"@ru ;
   rdfs:label "Template mode"@en 
 .
+v-ui:contentPanelOpened
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:Preferences ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "Панель содержимого открыта"@ru ;
+  rdfs:label "Content panel is open"@en 
+.
 # --------------- System properties template ------------------
 v-ui:ExitButtonTemplate
   rdf:type v-ui:ClassTemplate ;
