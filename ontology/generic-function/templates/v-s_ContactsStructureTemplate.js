@@ -119,30 +119,41 @@ export const post = function (individual, template, container, mode, extra) {
     modal.find('.modal-dialog').removeClass('modal-lg').addClass('modal-sm');
   });
 
-  const parentContainerTmpl =
-    '<div class="row">' +
-    '<div class="col-md-5">' +
-    '<div class="margin-sm-h"><strong about="@" property="rdfs:label"></strong></div>' +
-    '<div class="margin-sm-h"><small>' +
-    '<span about="v-fs:cursor" property="rdfs:label"></span>' +
-    '<span class="margin-sm-h badge"></span>&nbsp;&nbsp;' +
-    '<span about="v-fs:estimated" property="rdfs:label"></span>' +
-    '<span class="margin-sm-h badge"></span>' +
-    '</small></div>' +
-    '</div>' +
-    '<div class="col-md-6"><div about="@" rel="v-s:hasCommunicationMean"></div><div about="@" rel="v-s:hasChiefDetail">' +
-    '<div><span>Руководитель: </span><strong about="@" rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong></div>' +
-    '</div>' +
-    '<div>' +
-    '<strong class="margin-sm-h" about="@" rel="v-s:hasCommunicationMeanChannel" data-template="v-ui:LabelTemplate"></strong>' +
-    '<span about="@" property="v-s:description"></span>  ' +
-    '</div>' +
-    '</div>' +
-    '<div class="col-md-1">' +
-    '<span class="hidden faviconIcon pointer fa fa-lg fa-star-o"></span>' +
-    '<span style="float:right" about="@" class="zoom hidden" data-template="v-ui:IconModalTemplate"></span>' +
-    '</div>' +
-    '</div>';
+  const parentContainerTmpl = `
+    <div class="row">
+      <div class="col-md-5">
+        <div class="margin-sm-h">
+          <strong about="@" property="rdfs:label"></strong>
+        </div>
+        <div class="margin-sm-h">
+          <small>
+            <span about="v-fs:cursor" property="rdfs:label"></span>
+            <span class="margin-sm-h badge"></span>&nbsp;&nbsp;
+            <span about="v-fs:estimated" property="rdfs:label"></span>
+            <span class="margin-sm-h badge"></span>
+          </small>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div about="@" rel="v-s:hasChiefDetail">
+          <div>
+            <span>Руководитель: </span>
+            <strong about="@" rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong>
+          </div>
+        </div>
+        <div about="@" rel="v-s:hasCommunicationMean">
+          <div>
+            <span style="font-weight: bold;" about="@" rel="v-s:hasCommunicationMeanChannel" data-template="v-ui:LabelTemplate"></span>
+            <span>&nbsp;—&nbsp;&nbsp;</span>
+            <span about="@" property="v-s:description"></span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1">
+        <span class="hidden faviconIcon pointer fa fa-lg fa-star-o"></span>
+        <span style="float:right" about="@" class="zoom hidden" data-template="v-ui:IconModalTemplate"></span>
+      </div>
+    </div>`;
 
   function drawCards (parent, from, limit) {
     loadIndicator.show();
