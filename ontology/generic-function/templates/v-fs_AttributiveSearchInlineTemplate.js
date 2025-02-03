@@ -666,10 +666,10 @@ export const html = `
         outline: 2px solid #aaa;
       }
     </style>
-    <h2 class="caption hidden">
+    <h3 class="caption hidden">
       <span about="@" property="rdfs:label"></span>
       <hr class="margin-sm" />
-    </h2>
+    </h3>
     <div class="params">
       <div class="search-form"></div>
       <br />
