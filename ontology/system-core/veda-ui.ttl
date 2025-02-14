@@ -668,6 +668,12 @@ v-ui:LabelLinkWithStatusTemplate
   rdfs:label "Template link with label & status"@en ;
   v-ui:template "v-ui_LabelLinkWithStatusTemplate.js" ;
 .
+v-ui:LabelWithBorderTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с меткой"@ru ;
+  rdfs:label "Template with label"@en ;
+  v-ui:template "v-ui_LabelWithBorderTemplate.js" ;
+.
 v-ui:AppointmentLabelTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для всплывающей информации"@ru ;
