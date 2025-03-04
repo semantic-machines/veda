@@ -1,0 +1,69 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/>.
+
+<http://semantic-machines.com/veda/veda-individual-ClaimRequirementKind>
+  rdf:type owl:Ontology ;
+  v-s:loadPriority 10 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+v-s:ClaimRequirementKind
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Вид требования претензии"@ru ;
+  rdfs:label "Claim requirement kind"@en ;
+.
+
+# ------------------------------------------------------------ ИНДИВИДЫ --
+d:bvfnv1wirgl350petecmnn7c1m 
+  rdf:type v-s:ClaimRequirementKind ;
+  rdfs:label "Возмещение затрат/оплата убытков"@ru ;
+  rdfs:label "Compensation for costs/payment of losses"@en ;
+  v-s:tag "1" ;
+.
+d:in4ggv25em1njcvihjwqykdrfk 
+  rdf:type v-s:ClaimRequirementKind ;
+  rdfs:label "Оплата неустойки"@ru ;
+  rdfs:label "Payment of penalties"@en ;
+  v-s:tag "2" ;
+.
+d:v6andru3r9l75aj855m9zzveke 
+  rdf:type v-s:ClaimRequirementKind ;
+  rdfs:label "Замена оборудования"@ru ;
+  rdfs:label "Replacement of equipment"@en ;
+  v-s:tag "3" ;
+.
+d:uznkg1pnm1s44tql8xrvdmhnrp 
+  rdf:type v-s:ClaimRequirementKind ;
+  rdfs:label "Ремонт оборудования"@ru ;
+  rdfs:label "Repair of equipment"@en ;
+  v-s:tag "4" ;
+.
+d:a1p791k6ukh1du3bwgbigcyi0uk 
+  rdf:type v-s:ClaimRequirementKind ;
+  rdfs:label "Предоставление документации"@ru ;
+  rdfs:label "Provision of documentation"@en ;
+  v-s:tag "5" ;
+.
+d:g0tq1r35o2bivfzcbf7dycao7u 
+  rdf:type v-s:ClaimRequirementKind ;
+  rdfs:label "Предоставление графика ликвидации отставания"@ru ;
+  rdfs:label "Provision of the schedule of recovery of lag"@en ;
+  v-s:tag "6" ;
+.
+d:wc74d4rll5jjmrbaftg18ioplk 
+  rdf:type v-s:ClaimRequirementKind ;
+  rdfs:label "Устранение дефектов/в работах/услугах и/или выполнение работ/услуг"@ru ;
+  rdfs:label "Elimination of defects/in works/services and/or performance of works/services"@en ;
+  v-s:tag "7" ;
+.
+d:dzzsw1rewm08vferzow04wu97a 
+  rdf:type v-s:ClaimRequirementKind ;
+  rdfs:label "Иное"@ru ;
+  rdfs:label "Other"@en ;
+  v-s:tag "8" ;
+.
