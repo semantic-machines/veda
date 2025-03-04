@@ -152,6 +152,13 @@ v-s:claimRequirement
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
+v-s:hasClaimRequirementKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид требования претензии"@ru ;
+  rdfs:label "Claim requirement kind"@en ;
+  rdfs:range v-s:ClaimRequirementKind ;
+  rdfs:domain v-s:Claim ;
+.
 v-s:claimCircumstanceDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Описание обстоятельств претензии"@ru ;
