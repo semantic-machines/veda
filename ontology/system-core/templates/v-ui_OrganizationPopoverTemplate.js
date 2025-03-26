@@ -2,6 +2,7 @@ export const html = `
   <div class="media" style="margin-top:0px;">
     <span class="close">&nbsp;&times;</span>
     <div class="media-body" style="width:auto;">
+      <div about="@" rel="v-s:hasVisualStatus"></div>
       <div>
         <strong about="v-s:taxId" property="rdfs:label"></strong>
         <small about="@" property="v-s:taxId"></small>
