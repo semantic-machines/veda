@@ -23,7 +23,21 @@ export const pre = function (individual, template, container, mode, extra) {
       if (!employee.hasValue('v-s:delegate')) {
         $('.delegate-block', template).remove(); 
       }
+      if (employee.hasValue('v-s:hasVisualStatus','v-s:StatusWorking')) {
+        $('.status-block', template).remove();
+      }
     });
+  }
+};
+export const post = function (individual, template, container, mode, extra) {
+  template = $(template);
+  container = $(container);
+
+  if (individual.hasValue('v-s:employee')) {
+    if (individual.hasValue('v-s:deleted',true)) {
+      console.log('deleted');
+      $('.media', template).removeClass('deleted');
+    }
   }
 };
 
@@ -34,6 +48,9 @@ export const html = `
         <a href="#/@" about="@" rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></a>
     </div>
     <div class="media-body" style="width:auto;">
+      <div class="status-block" about="@" rel="v-s:employee">
+        <div about="@" rel="v-s:hasVisualStatus"></div>
+      </div>
       <strong class="media-heading" about="@" rel="v-s:employee">
         <span>
           <span about="@" property="v-s:lastName"></span>
@@ -42,12 +59,16 @@ export const html = `
         </span>
       </strong>
       <hr class="no-margin" />
-      <div about="@" rel="v-s:occupation">
-        <div>
-          <small about="@" property="rdfs:label"></small>
-          <br />
-          <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
-        </div>
+      <div about="@" rel="v-s:employee">
+          <div about="@" rel="v-s:defaultAppointment">
+            <div about="@" rel="v-s:occupation">
+              <div>
+                <small about="@" property="v-s:title"></small>
+                <br />
+                <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
+              </div>
+            </div>
+          </div>
       </div>
       <div about="@" rel="v-s:employee">
         <div>

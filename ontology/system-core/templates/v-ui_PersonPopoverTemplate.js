@@ -22,6 +22,9 @@ export const pre = function (individual, template, container, mode, extra) {
   if (!individual.hasValue('v-s:dateAbsenceTo')) {
     $('.delegate-block', template).remove(); 
   }
+  if (individual.hasValue('v-s:hasVisualStatus','v-s:StatusWorking')) {
+    $('.status-block', template).remove();
+  }
 };
 
 export const html = `
@@ -34,6 +37,7 @@ export const html = `
     </a> -->
     </div>
     <div class="media-body" style="width:auto">
+      <div class="status-block" about="@" rel="v-s:hasVisualStatus"></div>
       <strong class="media-heading">
         <span>
           <span about="@" property="v-s:lastName"></span>
@@ -42,7 +46,7 @@ export const html = `
         </span>
       </strong>
       <hr class="no-margin" />
-      <div about="@" rel="v-s:hasAppointment">
+      <div about="@" rel="v-s:defaultAppointment">
         <small about="@" rel="v-s:occupation">
           <span about="@" property="rdfs:label"></span>
         </small>
