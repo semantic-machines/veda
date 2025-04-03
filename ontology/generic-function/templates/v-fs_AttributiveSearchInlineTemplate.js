@@ -465,7 +465,7 @@ export const post = function (individual, template, container, mode) {
 
               $('td', tmpl).each(function () {
                 const text = this.innerText || this.textContent;
-                if (text && text.length > 100) {
+                if (text && text.length > 150) {
                   const $this = $(this);
                   const contents = $this.contents();
                   const wrapper = $("<div class='td-wrapper'></div>").append(contents);

@@ -3,7 +3,7 @@ import $ from 'jquery';
 export const pre = function (individual, template, container, mode, extra) {
   template = $(template);
   container = $(container);
-
+  console.log('appointment popover');
   if (individual.id.indexOf('cfg:') < 0) {
     $('.open-structure', template).click(function() {
       window.open('/#/v-s:Contacts////target='+individual.id);
@@ -36,7 +36,7 @@ export const post = function (individual, template, container, mode, extra) {
   if (individual.hasValue('v-s:employee')) {
     if (individual.hasValue('v-s:deleted',true)) {
       console.log('deleted');
-      $('.media', template).removeClass('deleted');
+      template.removeClass('deleted');
     }
   }
 };
