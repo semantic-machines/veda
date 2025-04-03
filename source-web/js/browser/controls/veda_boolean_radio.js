@@ -4,15 +4,7 @@ import $ from 'jquery';
 import Util from '../../common/util.js';
 import IndividualModel from '../../common/individual_model.js';
 
-const defaults = {
-  template: `
-<div class="radio">
-  <label>
-    <input type="radio" />
-  </label>
-</div>
-  `,
-};
+
 
 $.fn.veda_booleanRadio = function (params) {
   const opts = {...defaults, ...params};
@@ -42,20 +34,37 @@ $.fn.veda_booleanRadio = function (params) {
   function renderOptions () {
     self.empty();
     options.forEach((option) => {
-      const hld = $(opts.template).appendTo(self);
-      option.label.then((label) => {
-        const rad = $('input', hld).data('value', option.value).prop('checked', individual.hasValue(property_uri, option.value));
+      let hld;
+      if (opts.mode === 'search') {
+        hld = $(opts.template_search).appendTo(self);
+        option.label.then((label) => {
+          const lbl = $('label', hld).append(label);
+          const chk = $('input', lbl).data('value', option.value);
 
-        rad.change(() => {
-          if (rad.is(':checked')) {
-            individual.set(property_uri, [rad.data('value')]);
-          } else {
-            individual.set(property_uri, individual.get(property_uri).filter((i) => i.valueOf() !== rad.data('value').valueOf()));
-          }
+          const hasValue = individual.hasValue(property_uri, option.value);
+          chk.prop('checked', hasValue);
+          chk.change(() => {
+            if ( chk.is(':checked') ) {
+              individual.addValue(property_uri, option.value);
+            } else {
+              individual.removeValue(property_uri, option.value);
+            }
+          });
         });
-
-        $('label', hld).append(label);
-      });
+      } else {
+        hld = $(opts.template).appendTo(self);
+        option.label.then((label) => {
+          const rad = $('input', hld).data('value', option.value).prop('checked', individual.hasValue(property_uri, option.value));
+          rad.change(() => {
+            if (rad.is(':checked')) {
+              individual.set(property_uri, [rad.data('value')]);
+            } else {
+              individual.set(property_uri, individual.get(property_uri).filter((i) => i.valueOf() !== rad.data('value').valueOf()));
+            }
+          });
+          $('label', hld).append(label);
+        });
+      }
     });
   }
 
@@ -92,4 +101,21 @@ $.fn.veda_booleanRadio = function (params) {
   });
 
   return this;
+};
+
+const defaults = {
+  template: `
+<div class="radio">
+  <label>
+    <input type="radio" />
+  </label>
+</div>
+  `,
+  template_search: `
+<div class="checkbox">
+  <label>
+    <input type="checkbox" />
+  </label>
+</div>
+  `,
 };
