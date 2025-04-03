@@ -40,7 +40,7 @@ export const pre = function (individual, template, container, mode, extra) {
     }
   } else {
     headTmpl += "<th width='24px'><span class='glyphicon glyphicon-zoom-in'></span></th>";
-    rowTmpl += "<td about='@' data-template='v-ui:IconModalTemplate'></td>";
+    rowTmpl += "<td about='@'><a href='/#/@' target='_blank' class='glyphicon glyphicon-zoom-in'></a></td>";
   }
 
   const allowedFilterFn = (function () {
