@@ -98,21 +98,25 @@ function veda_dateTime (options) {
     //     pickerOptions.minDate = moment(startDate[0], format);
     //   }
     // }
-
+    control.parent().css('position', 'relative');
     control.datetimepicker(pickerOptions);
   });
 
-  input.on('focusin', () => {
-    control.data('DateTimePicker').show();
-  });
+  // input.on('focusin', () => {
+  //   control.data('DateTimePicker').show();
+  // });
   $('.date', control).click(function () {
-    control.data('DateTimePicker').show();
+    const picker = control.data('DateTimePicker');
+    if (!picker) {
+      console.error('DateTimePicker не инициализирован для:', control);
+      return;
+    }
+    picker.show();
   });
   input.on('change focusout', function (e) {
     const value = opts.parser(e.target.value);
     change(value);
   });
-
   this.on('view edit search', function (e) {
     e.stopPropagation();
     if (e.type === 'search') {
