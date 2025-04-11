@@ -169,6 +169,7 @@ export const post = function (individual, template, container, mode, extra) {
   // уволить сотрудника
   $('#dismissEmployee', template).click(function () {
     individual['v-s:deleted'] = [true];
+    individual['rdf:type'] = individual['rdf:type'].concat('v-s:Deletable');
     individual.save();
   });
 
@@ -252,6 +253,15 @@ export const html = `
           </div>
           <div class="col-sm-9 col-xs-7">
             <veda-control property="v-s:middleName" data-type="multilingualString" class="-view edit search"></veda-control>
+          </div>
+        </div>
+        <div class="row row-attribute view -edit -search">
+          <div class="col-sm-3 col-xs-5">
+          </div>
+          <div class="col-sm-3 col-xs-3">
+            <span class="view -edit -search" about="@" rel="v-s:hasVisualStatus"></span>
+            <veda-control rel="v-s:hasVisualStatus" data-type="link" class="-view -edit search fulltext">
+            </veda-control>
           </div>
         </div>
         <div class="row row-attribute">
