@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import CommonUtil from '/js/common/util.js';
+import IndividualModel from '/js/common/individual_model.js';
 
 export const pre = function (individual, template, container, mode, extra) {
   template = $(template);
