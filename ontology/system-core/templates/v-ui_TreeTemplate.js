@@ -9,7 +9,6 @@ import Backend from '/js/common/backend.js';
 export const pre = function (individual, template, container, mode, extra) {
   template = $(template);
   container = $(container);
-
   const root = this.hasValue('v-ui:treeRoot') ? this['v-ui:treeRoot'] : undefined;
   const expandLevel = this.hasValue('v-ui:treeExpandLevel') ? this['v-ui:treeExpandLevel'][0] : undefined;
   const inProperty = this.hasValue('v-ui:treeInProperty') ? this['v-ui:treeInProperty'] : undefined;
@@ -19,6 +18,7 @@ export const pre = function (individual, template, container, mode, extra) {
   const selectableClass = this.hasValue('v-ui:treeSelectableClass') ? this['v-ui:treeSelectableClass'] : undefined;
   const selectableFilter = this.hasValue('v-ui:treeSelectableFilter') ? this['v-ui:treeSelectableFilter'] : undefined;
   const displayedProperty = this.hasValue('v-ui:treeDisplayedProperty') ? this['v-ui:treeDisplayedProperty'] : [new IndividualModel('rdfs:label')];
+  const notFolderProperty = this.hasValue('v-ui:treeDisplayNotAsFolderProperty') ? this['v-ui:treeDisplayNotAsFolderProperty'] : undefined;
   const target = extra && extra.target;
   const rel_uri = extra && extra.target_rel_uri;
   const isSingle = extra && extra.isSingle;
@@ -84,19 +84,26 @@ export const pre = function (individual, template, container, mode, extra) {
     const isLiteral = literals.indexOf(property['rdfs:range'][0].id) >= 0;
     const isFile = property.hasValue('rdfs:range', 'v-s:File');
     if (index === 0) {
+      const aElement = "<a href='#' class='expand glyphicon glyphicon-chevron-right' style='margin-right: 5px;'></a>";
       if (isLiteral) {
         rowTmpl +=
-          "<td><div class='spacer'><a href='#' class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' property='" +
+          "<td><div class='spacer'>" +
+          aElement +
+          " <span about='@' property='" +
           property.id +
           "'></span></div></td>";
       } else if (isFile) {
         rowTmpl +=
-          "<td><div class='spacer'><a href='#' class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" +
+          "<td><div class='spacer'>" +
+          aElement +
+          " <span about='@' rel='" +
           property.id +
           "' data-template='v-ui:FileMinTemplate'></span></div></td>";
       } else {
         rowTmpl +=
-          "<td><div class='spacer'><a href='#' class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" +
+          "<td><div class='spacer'>" +
+          aElement +
+          " <span about='@' rel='" +
           property.id +
           "' data-template='v-ui:LabelTemplate'></span></div></td>";
       }
@@ -157,10 +164,10 @@ export const pre = function (individual, template, container, mode, extra) {
   function renderRows (values_uris, parentRow, expandLevel) {
     const cont = $('<div>');
     const parentLvl = parentRow ? parseInt(parentRow.attr('data-level')) : -1;
-    const tmpl = $("<tr class='value-row'>")
+    const tmplTr = $("<tr class='value-row'>")
       .attr('data-level', parentLvl + 1)
       .append(rowTmpl);
-    $('.spacer', tmpl).css({'margin-left': 16 * (parentLvl + 1) + 'px', 'display': 'inline-block'});
+    $('.spacer', tmplTr).css({'margin-left': 16 * (parentLvl + 1) + 'px', 'display': 'inline-block'});
     return Promise.all(
       values_uris.map(function (valueUri, index) {
         const value = new IndividualModel(valueUri);
@@ -168,7 +175,17 @@ export const pre = function (individual, template, container, mode, extra) {
           if (!allowedFilterFn.call(value)) {
             return;
           }
-          return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {
+          const valueTemplate = tmplTr.clone();
+          if (notFolderProperty) {
+            const folderIcon = '<span class="fa fa-lg fa-folder-o" style="margin-right: 5px;"></span>';
+            const isNotFolder = notFolderProperty.some(function (property) {
+              return value.hasValue(property.id);
+            });
+            if (!isNotFolder) {
+              $('.spacer a.expand', valueTemplate).after(folderIcon);
+            }
+          }
+          return value.present(cont, valueTemplate[0].outerHTML).then(function (tmpl) {
             tmpl = $(tmpl);
             // Pre-check children
             return getChildren([], value, false)
