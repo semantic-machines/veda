@@ -361,6 +361,17 @@ v-ui:treeDisplayedProperty
   rdfs:range owl:ObjectProperty ;
   rdfs:range owl:DatatypeProperty ;
 .
+v-ui:treeDisplayNotAsFolderProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
+  rdfs:label "Отображать как элемент"@ru ;
+  rdfs:label "Display as item"@en ;
+  rdfs:range owl:ObjectProperty ;
+  rdfs:range owl:DatatypeProperty ;
+  rdfs:comment "Включает отображение иконок с папками в дереве. При наличии этого свойства, объект будет отображаться в виде элемента дерева, а не в виде папки"@ru ;
+  rdfs:comment "Enables the display of folder icons in the tree. When this property is present, the object will be displayed as an item of the tree, not as a folder"@en ;
+.
 v-ui:TemplateSpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
