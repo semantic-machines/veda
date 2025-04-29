@@ -41,7 +41,7 @@ v-s:OrganizationStructureApplication
   rdf:type v-s:Application;
   rdfs:label "Управление оргструктурой"@ru, "Organization structure"@en;
   v-s:hasCreate v-s:AppointmentCreate, v-s:OccupationCreate, v-s:EmployeeCreate, v-s:DepartmentCreate;
-  v-s:hasRegistry v-s:AppointmentSearch, v-s:OccupationSearch, v-s:EmployeeSearch, v-s:DepartmentSearch;
+  v-s:hasRegistry v-s:AppointmentSearch, v-s:OccupationSearch, v-s:EmployeeSearch, v-s:DepartmentSearch, v-s:MailSearch;
   v-ui:hasTemplate v-s:ApplicationTemplate;
 .
 #---------------Создание------------
@@ -136,7 +136,18 @@ v-s:OrganizationStructureApplication
     rdfs:label "Подразделение"@ru, "Department"@en;
     v-fc:targetType v-s:Department;
   .
-
+  v-s:MailSearch
+    rdf:type v-fs:AttributiveSearch;
+    rdfs:label "Электронное письмо"@ru, "email"@en;
+    v-fs:searchBlank v-s:MailSearchBlank ;
+    v-fs:searchBlankTemplate v-s:EmailTemplate;
+    v-fs:searchResultTemplate v-s:MailSearchResultTemplate;
+  .
+  v-s:MailSearchBlank
+    rdf:type v-fc:Blank;
+    rdfs:label "Электронное письмо"@ru, "email"@en;
+    v-fc:targetType v-s:Email;
+  .
 
 # -- НАПОЛНЕНИЕ АСПЕКТА АДМИНИСТИРОВАНИЯ --
 
@@ -751,4 +762,9 @@ v-s:DepartmentSearchResultTemplate
   rdf:type v-ui:ClassTemplate;
   rdfs:label "Шаблон для класса v-s:Department (Подразделение)"@ru, "Template for v-s:Department (Подразделение) class"@en;
   v-ui:template "v-s_DepartmentSearchResultTemplate.js" ;
+.
+v-s:MailSearchResultTemplate
+  rdf:type v-ui:ClassTemplate;
+  rdfs:label "Шаблон для класса v-s:Email (Электронная почта)"@ru, "Template for v-s:Email (email) class"@en;
+  v-ui:template "v-s_EmailSearchResultTemplate.js" ;
 .
