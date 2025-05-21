@@ -65,7 +65,7 @@ export const post = function (individual, template, container, mode, extra) {
     $('#positions', template).empty();
     if (values.length) {
       const delegator = values[0];
-      const queryStr = "( 'rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "' )";
+      const queryStr = "( 'rdf:type' === 'v-s:Appointment' && 'v-s:hasDelegationPurpose'!='d:delegate_Control' && 'v-s:employee' == '" + delegator.id + "' )";
       const delegatedPositions = [];
       Backend.query(veda.ticket, queryStr)
         .then(function (queryResult) {
