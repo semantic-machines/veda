@@ -20,7 +20,7 @@ v-s:TS_CurrencyExchangeRate
   rdf:type v-ui:TemplateSpecification;
   v-s:loadPriority "15"^^xsd:integer;
   v-ui:defaultTemplate v-s:CurrencyExchangeRateTemplate;
-  v-ui:forClass v-s:CurrencyExchangeRate
+  v-ui:forClass v-s:CurrencyExchangeRate;
 .
 v-s:CS_CurrencyExchangeRate
   rdf:type v-s:ClassSpecification ;
@@ -36,4 +36,37 @@ v-s:CurrencyExchangeRateTemplate
   rdfs:label "Шаблон для класса v-s:CurrencyExchangeRate"@ru ;
   rdfs:label "Template for v-s:CurrencyExchangeRate class"@en ;
   v-ui:template "v-s_CurrencyExchangeRateTemplate.js" ;
+.
+v-s:CurrencyPairTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:CurrencyPair ;
+  rdfs:label "Шаблон для класса v-s:CurrencyPair"@ru ;
+  rdfs:label "Template for v-s:CurrencyPair class"@en ;
+  v-ui:template "v-s_CurrencyPairTemplate.js" ;
+.
+v-s:TS_CurrencyPair
+  rdf:type v-ui:TemplateSpecification;
+  v-s:loadPriority "15"^^xsd:integer;
+  v-ui:defaultTemplate v-s:CurrencyPairTemplate;
+  v-ui:forClass v-s:CurrencyPair ;
+.
+
+# ---------- Bundles ----------------
+v-s:DateFromToBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Дата окончания должна быть не раньше даты начала"@ru ;
+  rdfs:label "End date must not be earlier than start date"@en ;
+.
+
+#-----------Tooltips----------------
+v-s:PS_comment_CurrencyPair
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:CurrencyPair ;
+  v-ui:forProperty v-s:Comment ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 2 ;
+  v-ui:tooltip "Опишите методику расчёта курсов"@ru ;
+  v-ui:tooltip "Currency pair comment"@en ;
+  rdfs:label "Спецификация свойства v-s:Comment для класса v-s:CurrencyPair"@ru ;
+  rdfs:label "v-s:Comment property specification for v-s:CurrencyPair classes"@en ;
 .

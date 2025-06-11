@@ -24,6 +24,14 @@ v-s:CurrencyExchangeRateSearch
   v-fs:searchBlankTemplate v-s:CurrencyExchangeRateSearchTemplate;
   v-fs:searchResultTemplate v-s:CurrencyExchangeRateSearchResultTemplate ;
 .
+v-s:CurrencyPairSearch
+  a v-fs:AttributiveSearch;
+  rdfs:label "Валютные пары"@ru;
+  rdfs:label "Currency pairs"@en;
+  v-fs:searchBlank v-s:CurrencyPairSearchBlank ;
+  v-fs:searchBlankTemplate v-s:CurrencyPairSearchTemplate;
+  v-fs:searchResultTemplate v-s:CurrencyPairSearchResultTemplate ;
+.
 # ------------- Search templates ---------------
 v-s:CurrencyExchangeRateSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -36,4 +44,16 @@ v-s:CurrencyExchangeRateSearchTemplate
   rdfs:label "Шаблон для класса v-s:CurrencyExchangeRate"@ru ;
   rdfs:label "Template for v-s:CurrencyExchangeRate class"@en ;
   v-ui:template "v-s_CurrencyExchangeRateSearchTemplate.js" ;
+.
+v-s:CurrencyPairSearchResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон результатов реестра Валютные пары"@ru ;
+  rdfs:label "Currency pairs registry result template"@en ;
+  v-ui:template "v-s_CurrencyPairSearchResultTemplate.js" ;
+.
+v-s:CurrencyPairSearchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:CurrencyPair"@ru ;
+  rdfs:label "Template for v-s:CurrencyExchangeRate class"@en ;
+  v-ui:template "v-s_CurrencyPairTemplate.js" ;
 .
