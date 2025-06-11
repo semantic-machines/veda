@@ -22,3 +22,9 @@ v-s:CurrencyExchangeRateCreate
   rdfs:label "Currency exchange rate"@en ;
   v-fc:hasBlank v-s:CurrencyExchangeRateBlank ;
 .
+v-s:CurrencyPairCreate
+  a v-fc:Create;
+  rdfs:label "Создание валютной пары"@ru ;
+  rdfs:label "Currency pair creation"@en ;
+  v-fc:hasBlank v-s:CurrencyPairBlank ;
+.
