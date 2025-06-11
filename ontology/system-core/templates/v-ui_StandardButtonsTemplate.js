@@ -196,24 +196,38 @@ export const pre = function (individual, template, container, mode, extra) {
   template[0].querySelector('#findError').addEventListener('click', function () {
     const modalContainer = $('.modal.in')[0];
     const container = modalContainer || document.querySelector('#main');
-    const errorElement = $('.has-error', container)[0];
+    const errorElements = document.querySelectorAll('.has-error');
 
-    if (errorElement && window.getComputedStyle(errorElement).visibility == 'hidden') {
-      errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      $(errorElement).popover('show');
-    } else {
-      const hiddenErrorSection = $('.section-with-error', container)[0];
-      if (hiddenErrorSection) {
-        hiddenErrorSection.dispatchEvent(new Event('showRequest'));
-        const ErrorElement = $('.has-error', container)[0];
-        if (ErrorElement) {
-          ErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          $(ErrorElement).popover('show');
+    function canScrollIntoView(element) {
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0;
+    }
+    for (let errorElement of errorElements) {
+      if (errorElements.length > 0 && window.getComputedStyle(errorElement).visibility == 'hidden') {
+        if (canScrollIntoView(errorElement)) {
+          errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          $(errorElement).popover('show');
+          break;
+        } else {
+          console.log('Элемент не может быть прокручен в поле зрения');
         }
       } else {
-        notify('danger', { message: 'Ошибка поиска, обратитесь в службу поддержки.' });
+        const hiddenErrorSection = $('.section-with-error', container)[0];
+        if (hiddenErrorSection) {
+          hiddenErrorSection.dispatchEvent(new Event('showRequest'));
+          if (errorElement && canScrollIntoView(errorElement)) {
+            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            $(errorElement).popover('show');
+            break;
+          } else {
+            console.log('Элемент не может быть прокручен в поле зрения');
+          }
+        } else {
+          notify('danger', { message: 'Ошибка поиска, обратитесь в службу поддержки.' });
+        }
       }
     }
+    
   });
 
   function filePromise (url, name) {
