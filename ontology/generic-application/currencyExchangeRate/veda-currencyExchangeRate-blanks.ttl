@@ -26,3 +26,15 @@ v-s:CurrencyExchangeRateRegistrySearchBlank
   rdfs:label "Currency exchange rate"@en ;
   v-fc:targetType v-s:CurrencyExchangeRate ;
 .
+v-s:CurrencyPairBlank
+  a v-fc:Blank;
+  rdfs:label "Валютная пара"@ru ;
+  rdfs:label "CurrencyPair"@en ;
+  v-fc:targetType v-s:CurrencyPair ;
+.
+v-s:CurrencyPairSearchBlank
+  a v-fc:Blank;
+  rdfs:label "Валютная пара"@ru ;
+  rdfs:label "CurrencyPair"@en ;
+  v-fc:targetType v-s:CurrencyPair ;
+.
