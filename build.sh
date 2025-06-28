@@ -1,4 +1,4 @@
-rustup override set 1.82
+rustup override set 1.88
 
 build_module () {
     BUILD_PATH=$PWD
