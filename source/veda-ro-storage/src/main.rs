@@ -6,7 +6,7 @@ use std::str;
 use v_common::module::module_impl::init_log;
 use v_common::module::module_impl::Module;
 use v_common::module::veda_backend::get_storage_use_prop;
-use v_common::onto::individual::Individual;
+use v_individual_model::onto::individual::Individual;
 use v_common::storage::common::{StorageId, StorageMode, VStorage};
 use v_common::v_api::obj::ResultCode;
 

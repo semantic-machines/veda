@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{Error, ErrorKind};
 use std::path::Path;
-use v_common::onto::individual::Individual;
+use v_individual_model::onto::individual::Individual;
 
 pub fn load_map_of_types(path: &str) -> Result<HashMap<u16, String>, Error> {
     let map_file_name = format!("{}/map-rdf-types.bin", path);

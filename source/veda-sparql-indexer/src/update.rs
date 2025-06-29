@@ -3,11 +3,11 @@ use reqwest::StatusCode;
 use std::collections::HashMap;
 use std::io;
 use v_common::module::module_impl::PrepareError;
-use v_common::onto::datatype::DataType;
-use v_common::onto::individual::Individual;
-use v_common::onto::individual2turtle::format_resource;
-use v_common::onto::resource::Resource;
-use v_common::onto::turtle_formatters_with_prefixes::TurtleFormatterWithPrefixes;
+use v_individual_model::onto::datatype::DataType;
+use v_individual_model::onto::individual::Individual;
+use v_individual_model::onto::individual2turtle::format_resource;
+use v_individual_model::onto::resource::Resource;
+use v_individual_model::onto::turtle_formatters_with_prefixes::TurtleFormatterWithPrefixes;
 
 // Updates the state of an individual in the context of a given system or application.
 pub fn update_individual_states(previous_individual: &mut Individual, current_individual: &mut Individual, update_context: &mut Context) -> Result<bool, PrepareError> {
