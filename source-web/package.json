@@ -46,6 +46,7 @@
     "body-parser": "^1.19.0",
     "bootstrap": "^3.4.1",
     "bootstrap-contextmenu": "^1.0.0",
+    "bootstrap-icons": "^1.11.3",
     "bowser": "^2.11.0",
     "bpmn-js": "^17.1.0",
     "bpmn-js-properties-panel": "^5.13.0",
