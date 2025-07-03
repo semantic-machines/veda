@@ -54,11 +54,11 @@ $.fn.veda_checkbox = function (params) {
     } else if (queryPrefixDefault) {
       let queryPrefix;
       if (isDynamicQueryPrefix) {
-          queryPrefix = self.attr('data-query-prefix');
-        }
-        if (queryPrefix == undefined) {
-          queryPrefix = queryPrefixDefault;
-        }
+        queryPrefix = self.attr('data-query-prefix');
+      }
+      if (queryPrefix == undefined) {
+        queryPrefix = queryPrefixDefault;
+      }
       return interpolate(queryPrefix, individual)
         .then((prefix) => {
           return ftQuery(prefix, undefined, sort, withDeleted, queryPattern);

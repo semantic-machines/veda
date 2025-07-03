@@ -23,7 +23,7 @@ $.fn.veda_string = function ( options ) {
 };
 
 const defaults = {
-  template: `<input type="text" class="form-control" autocomplete="on" />`,
+  template: '<input type="text" class="form-control" autocomplete="on" />',
   parser: function (input) {
     return (input ? String(input) : null);
   },

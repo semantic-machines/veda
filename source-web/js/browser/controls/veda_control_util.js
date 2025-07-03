@@ -94,7 +94,7 @@ async function storedQuery (query, input = '', sort = '', withDeleted = false) {
   queryParams.set('rdf:type', 'v-s:QueryParams');
   queryParams.set('v-s:storedQuery', query);
   queryParams.set('v-s:resultFormat', 'cols');
-  queryParams.set('v-s:content', "%" + input + "%");
+  queryParams.set('v-s:content', '%' + input + '%');
 
   const allData = await Backend.stored_query(veda.ticket, queryParams.properties);
   if (allData.id) {
@@ -104,7 +104,7 @@ async function storedQuery (query, input = '', sort = '', withDeleted = false) {
   }
 }
 
-function sanitizeInput(input) {
+function sanitizeInput (input) {
   return input.replace(/[\n\r\t]+/g, ' ')
     .replace(/[^a-zA-Z0-9а-яА-ЯёЁ@. +\-()]/g, '')
     .replace(/\s+/g, ' ')
@@ -170,7 +170,7 @@ function interpolate (template, individual) {
 function convertToCyrillic (text) {
   const cyrillic = 'йцукенгшщзхъфывапролджэячсмитьбюё';
   const latin = 'qwertyuiop[]asdfghjkl;\'zxcvbnm,.\`';
-  return text.toLowerCase().split('').map(char => {
+  return text.toLowerCase().split('').map((char) => {
     const index = latin.indexOf(char);
     return index >= 0 ? cyrillic[index] : char;
   }).join('');

@@ -21,7 +21,7 @@ $.fn.veda_generic = function ( options ) {
 };
 
 const defaults = {
-  template: `<input type="text" class="form-control" autocomplete="on" />`,
+  template: '<input type="text" class="form-control" autocomplete="on" />',
   parser: function (input) {
     if (!input || !input.trim()) {
       return null;
