@@ -21,7 +21,7 @@ $.fn.veda_link = function ( options ) {
   const rangeRestriction = spec && spec.hasValue('v-ui:rangeRestriction') ? spec['v-ui:rangeRestriction'][0] : undefined;
   const range = rangeRestriction ? [rangeRestriction] : new IndividualModel(rel_uri)['rdfs:range'];
   const queryPattern = this.attr('data-query-pattern') ?? (spec && spec.hasValue('v-ui:queryPattern') ? spec['v-ui:queryPattern'][0].toString() : undefined);
-  let queryPrefixDefault = this.attr('data-query-prefix') || ( spec && spec.hasValue('v-ui:queryPrefix') ? spec['v-ui:queryPrefix'][0].toString() : range.map((item) => {
+  const queryPrefixDefault = this.attr('data-query-prefix') || ( spec && spec.hasValue('v-ui:queryPrefix') ? spec['v-ui:queryPrefix'][0].toString() : range.map((item) => {
     return '\'rdf:type\'===\'' + item.id + '\'';
   }).join(' || ') );
   const isDynamicQueryPrefix = this.attr('data-dynamic-query-prefix') == 'true';
@@ -245,7 +245,7 @@ $.fn.veda_link = function ( options ) {
     function calculateRows (e) {
       const value = fulltext.val();
       const valueRows = value.split('\n').length;
-      let fulltextRows = rows > valueRows ? rows: valueRows
+      const fulltextRows = rows > valueRows ? rows: valueRows;
       fulltext.prop('rows', fulltextRows);
     }
 
@@ -355,8 +355,8 @@ $.fn.veda_link = function ( options ) {
         Promise.all(promises).then((renderedList) => {
           const separator = $('<hr style="margin: 3px 0px 7px 0px; border-color: #ccc" class="separator">');
           const additionInfo = $('<h4 style="padding: 5px; margin: 0px;"><small>Для выбора других значений начните ввод!</small></h4>');
-          renderedList.forEach(elem => elem.addClass('favorite-value'));
-          renderedList.push(separator, additionInfo)
+          renderedList.forEach((elem) => elem.addClass('favorite-value'));
+          renderedList.push(separator, additionInfo);
           suggestions.append(renderedList);
           $(document).off('click', clickOutsideMenuHandler);
           $(document).off('keydown', arrowHandler);
@@ -365,7 +365,7 @@ $.fn.veda_link = function ( options ) {
           $(document).on('keydown', arrowHandler);
         });
       }
-    }
+    };
 
     const inputHandler = (() => {
       let timeout;
@@ -404,33 +404,33 @@ $.fn.veda_link = function ( options ) {
     const mergeFavorite = function (queryResult) {
       if (!spec) return queryResult;
       if (spec.hasValue('v-ui:favoriteValue')) {
-        const favorite = spec['v-ui:favoriteValue'].filter(value => {
-          return queryResult.some(res => {
+        const favorite = spec['v-ui:favoriteValue'].filter((value) => {
+          return queryResult.some((res) => {
             if (res instanceof IndividualModel) {
-              return res.id == value.id
+              return res.id == value.id;
             } else {
               return res == value;
             }
           });
         });
         if (favorite.length != 0) {
-          queryResult = queryResult.filter(res => {
-            return !favorite.some(value => {
+          queryResult = queryResult.filter((res) => {
+            return !favorite.some((value) => {
               if (res instanceof IndividualModel) {
-                return res.id == value.id
+                return res.id == value.id;
               } else {
                 return res == value;
               }
             });
           });
-          favorite.forEach(val => {
+          favorite.forEach((val) => {
             val.favorite = true;
-          })
-          return [...favorite, "separator", ...queryResult];
+          });
+          return [...favorite, 'separator', ...queryResult];
         }
       }
       return queryResult;
-    }
+    };
 
     const renderResults = function (results) {
       suggestions.empty();
@@ -453,7 +453,7 @@ $.fn.veda_link = function ( options ) {
     };
 
     const handleValue = function (value) {
-      if (value == "separator") {
+      if (value == 'separator') {
         return $('<hr style="margin: 3px 0px 7px 0px; border-color: #ccc" class="separator">');
       }
       return renderValue(value, template).then((rendered) => {

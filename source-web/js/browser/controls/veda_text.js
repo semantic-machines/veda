@@ -25,7 +25,7 @@ $.fn.veda_text = function ( options ) {
 };
 
 const defaults = {
-  template: `<textarea class="form-control" rows="1" />`,
+  template: '<textarea class="form-control" rows="1" />',
   parser: function (input) {
     return (input ? String(input) : null);
   },

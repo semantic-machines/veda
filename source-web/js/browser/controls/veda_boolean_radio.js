@@ -5,7 +5,6 @@ import Util from '../../common/util.js';
 import IndividualModel from '../../common/individual_model.js';
 
 
-
 $.fn.veda_booleanRadio = function (params) {
   const opts = {...defaults, ...params};
   const self = this;

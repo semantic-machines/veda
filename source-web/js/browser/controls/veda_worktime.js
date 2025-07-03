@@ -58,7 +58,7 @@ $.fn.veda_worktime = function ( options ) {
 };
 
 const defaults = {
-  template: `<input type="text" class="form-control" autocomplete="on" />`,
+  template: '<input type="text" class="form-control" autocomplete="on" />',
   view: `
 <table>
   <tbody>

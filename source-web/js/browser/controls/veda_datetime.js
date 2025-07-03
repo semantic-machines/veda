@@ -10,7 +10,7 @@ export default veda_dateTime;
 
 /**
  * Common dateTime behaviour
- * @param {Object} options 
+ * @param {Object} options
  * @return {jQuery}
  * @this jQuery
  */
@@ -77,7 +77,7 @@ function veda_dateTime (options) {
       const styleSheet = module.default;
       document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
     });
-    
+
     const pickerOptions = {
       locale: Object.keys(veda.user.preferences.language).length === 1 ? Object.keys(veda.user.preferences.language)[0] : 'EN',
       allowInputToggle: false,
@@ -87,7 +87,7 @@ function veda_dateTime (options) {
       widgetPositioning: {
         horizontal: 'auto',
         vertical: 'bottom',
-      }
+      },
     };
 
     // Для работы нужна динамичность, нужно вообще или нет непонятно
@@ -121,7 +121,7 @@ function veda_dateTime (options) {
     e.stopPropagation();
     if (e.type === 'search') {
       change = async function (value) {
-        //.set return Promise
+        // .set return Promise
         await individual.set(property_uri, individual.get(property_uri).concat(value));
         input.val('');
       };
@@ -147,12 +147,12 @@ function veda_dateTime (options) {
   //   e.stopPropagation();
   // });
 
-  function parsedChange(val) {
+  function parsedChange (val) {
     const value = opts.parser(val);
     change(value);
   }
 
-  function initDropdown() {
+  function initDropdown () {
     if (opts.mode == 'search') {
       $('ul', control).append(dropdownItemsSearch);
     } else if (periodStartProperty) {
@@ -161,14 +161,14 @@ function veda_dateTime (options) {
       $('ul', control).append(dropdownItemsStart);
     }
   }
-  
+
   initDropdown();
 
-  $('.add-time-list>li>a', control).click(e => {
+  $('.add-time-list>li>a', control).click((e) => {
     e.preventDefault();
     const addedTime = $(e.target).attr('data-added-time');
     const time = new Date();
-    
+
     // Получаем значение связанного поля начала периода
     if (periodStartProperty) {
       const startDate = individual[periodStartProperty];
@@ -176,196 +176,196 @@ function veda_dateTime (options) {
         time.setTime(moment(startDate[0], format).toDate().getTime());
       }
     }
-    
+
     individual.clearValue(property_uri);
     setDatesToInput(addedTime, time);
   });
 
-  function setDatesToInput(addedTime, time) {
+  function setDatesToInput (addedTime, time) {
     let dayOfWeek;
     switch (addedTime) {
-    //default dates
-      case '10min':
-        time.setMinutes(time.getMinutes()+10)
-        parsedChange(time);
-        break;
-      case '30min':
-        time.setMinutes(time.getMinutes()+30)
-        parsedChange(time);
-        break;
-      case 'hour':
-        time.setHours(time.getHours()+1)
-        parsedChange(time);
-        break;
-      case 'day':
-        time.setDate(time.getDate()+1)
-        parsedChange(time);
-        break;
-      case 'week':
-        time.setDate(time.getDate()+7)
-        parsedChange(time);
-        break;
-      case 'month':
-        time.setMonth(time.getMonth()+1)
-        parsedChange(time);
-        break;
-  //dates for start period
-      case 'yesterday':
-        time.setDate(time.getDate()-1)
-        parsedChange(time);
-        break;
-      case 'today':
-        parsedChange(new Date());
-        break;
-      case 'nextDay':
-        time.setDate(time.getDate()+1)
-        parsedChange(time);
-        break;
-      case 'startWeek':
-        dayOfWeek = time.getDay();
-        if (dayOfWeek == 0) dayOfWeek = 7;
-        time.setDate(time.getDate() - (dayOfWeek - 1));
-        parsedChange(time);
-        break;
-      case 'startNextWeek':
-        dayOfWeek = time.getDay();
-        if (dayOfWeek == 0) dayOfWeek = 7;
-        time.setDate(time.getDate()+(8-dayOfWeek))
-        parsedChange(time);
-        break;
-      case 'startMonth':
-        const startMonth = new Date(time.getFullYear(), time.getMonth(), 1);
-        parsedChange(startMonth);
-        break;
-      case 'startNextMonth':
-        const nextMonth = new Date(time.getFullYear(), time.getMonth()+1, 1);
-        parsedChange(nextMonth);
-        break;
-  //dates for finish period
-      case 'add_day':
-        time.setDate(time.getDate()+1)
-        parsedChange(time);
-        break;
-      case 'add_2day':
-        time.setDate(time.getDate()+2)
-        parsedChange(time);
-        break;  
-      case 'add_week':
-        time.setDate(time.getDate()+7)
-        parsedChange(time);
-        break;  
-      case 'add_month':
-        time.setMonth(time.getMonth()+1)
-        parsedChange(time);
-        break;
-      case 'add_quart':
-        time.setMonth(time.getMonth()+3)
-        parsedChange(time);
-        break;  
-      case 'add_year':
-        time.setFullYear(time.getFullYear()+1)
-        parsedChange(time);
-        break;
-      case 'add_2_year':
-        time.setFullYear(time.getFullYear()+2)
-        parsedChange(time);
-        break;
-      case 'add_3_year':
-        time.setFullYear(time.getFullYear()+3)
-        parsedChange(time);
-        break;
-      case 'add_5_year':
-        time.setFullYear(time.getFullYear()+5)
-        parsedChange(time);
-        break;
-  //periods for search  
-      case 'searchPrevYear':
-        time.setFullYear(time.getFullYear()-1, 0, 1); // Устанавливаем 1 января прошлого года
-        parsedChange(time);
-        time.setMonth(11, 31); // Устанавливаем 31 декабря того же года
-        parsedChange(time);
-        break;
-      case 'searchPrevQuart':
-        // Устанавливаем начало прошлого квартала
-        const prevQuarterStart = new Date(time.getFullYear(), Math.floor((time.getMonth() - 3) / 3) * 3, 1);
-        parsedChange(prevQuarterStart);
-        // Устанавливаем конец прошлого квартала
-        const prevQuarterEnd = new Date(prevQuarterStart.getFullYear(), prevQuarterStart.getMonth() + 3, 0);
-        parsedChange(prevQuarterEnd);
-        break;
-      case 'searchPrevMonth':
-        // Устанавливаем начало прошлого месяца
-        const prevMonthStart = new Date(time.getFullYear(), time.getMonth() - 1, 1);
-        parsedChange(prevMonthStart);
-        // Устанавливаем конец прошлого месяца
-        const prevMonthEnd = new Date(time.getFullYear(), time.getMonth(), 0);
-        parsedChange(prevMonthEnd);
-        break;
-      case 'searchPrevday':
-        time.setDate(time.getDate()-1)
-        parsedChange(time);
-        break;
-      case 'searchToday':
-        parsedChange(new Date());
-        break;
-      case 'searchNextday':
-        time.setDate(time.getDate()+1);
-        parsedChange(time);
-        break;
-      case 'searchCurrentMonth':
-        const monthStart = new Date(time.getFullYear(), time.getMonth(), 1);
-        parsedChange(monthStart);
-        const monthEnd = new Date(time.getFullYear(), time.getMonth() + 1, 0);
-        parsedChange(monthEnd);
-        break;
-      case 'searchCurrentQuart':
-        const quartStart = new Date(time.getFullYear(), Math.floor(time.getMonth() / 3) * 3, 1);
-        parsedChange(quartStart);
-        const quartEnd = new Date(quartStart.getFullYear(), quartStart.getMonth() + 3, 0);
-        parsedChange(quartEnd);
-        break;
-      case 'searchCurrentYear':
-        const yearStart = new Date(time.getFullYear(), 0, 1);
-        parsedChange(yearStart);
-        const yearEnd = new Date(time.getFullYear(), 11, 31);
-        parsedChange(yearEnd);
-        break;
-      case 'searchNextWeek':
-        // Получаем текущую дату
-        const currentDate = new Date(time);
-        // Находим следующий понедельник
-        const daysUntilMonday = (8 - currentDate.getDay()) % 7;
-        const nextMonday = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + daysUntilMonday);
-        parsedChange(nextMonday);
-        // Устанавливаем воскресенье (конец недели)
-        const nextSunday = new Date(nextMonday.getFullYear(), nextMonday.getMonth(), nextMonday.getDate() + 6);
-        parsedChange(nextSunday);
-        break;
-      case 'searchNextMonth':
-        // Устанавливаем начало следующего месяца
-        const nextMonthStart = new Date(time.getFullYear(), time.getMonth() + 1, 1);
-        parsedChange(nextMonthStart);
-        // Устанавливаем конец следующего месяца
-        const nextMonthEnd = new Date(time.getFullYear(), time.getMonth() + 2, 0);
-        parsedChange(nextMonthEnd);
-        break;
-      case 'searchNextQuart':
-        // Устанавливаем начало следующего квартала
-        const nextQuarterStart = new Date(time.getFullYear(), Math.floor((time.getMonth() + 3) / 3) * 3, 1);
-        parsedChange(nextQuarterStart);
-        // Устанавливаем конец следующего квартала
-        const nextQuarterEnd = new Date(nextQuarterStart.getFullYear(), nextQuarterStart.getMonth() + 3, 0);
-        parsedChange(nextQuarterEnd);
-        break;
-      case 'searchNextYear':
-        // Устанавливаем начало следующего года
-        const nextYearStart = new Date(time.getFullYear() + 1, 0, 1);
-        parsedChange(nextYearStart);
-        // Устанавливаем конец следующего года
-        const nextYearEnd = new Date(time.getFullYear() + 1, 11, 31);
-        parsedChange(nextYearEnd);
-        break;
-      }
+    // default dates
+    case '10min':
+      time.setMinutes(time.getMinutes()+10);
+      parsedChange(time);
+      break;
+    case '30min':
+      time.setMinutes(time.getMinutes()+30);
+      parsedChange(time);
+      break;
+    case 'hour':
+      time.setHours(time.getHours()+1);
+      parsedChange(time);
+      break;
+    case 'day':
+      time.setDate(time.getDate()+1);
+      parsedChange(time);
+      break;
+    case 'week':
+      time.setDate(time.getDate()+7);
+      parsedChange(time);
+      break;
+    case 'month':
+      time.setMonth(time.getMonth()+1);
+      parsedChange(time);
+      break;
+      // dates for start period
+    case 'yesterday':
+      time.setDate(time.getDate()-1);
+      parsedChange(time);
+      break;
+    case 'today':
+      parsedChange(new Date());
+      break;
+    case 'nextDay':
+      time.setDate(time.getDate()+1);
+      parsedChange(time);
+      break;
+    case 'startWeek':
+      dayOfWeek = time.getDay();
+      if (dayOfWeek == 0) dayOfWeek = 7;
+      time.setDate(time.getDate() - (dayOfWeek - 1));
+      parsedChange(time);
+      break;
+    case 'startNextWeek':
+      dayOfWeek = time.getDay();
+      if (dayOfWeek == 0) dayOfWeek = 7;
+      time.setDate(time.getDate()+(8-dayOfWeek));
+      parsedChange(time);
+      break;
+    case 'startMonth':
+      const startMonth = new Date(time.getFullYear(), time.getMonth(), 1);
+      parsedChange(startMonth);
+      break;
+    case 'startNextMonth':
+      const nextMonth = new Date(time.getFullYear(), time.getMonth()+1, 1);
+      parsedChange(nextMonth);
+      break;
+      // dates for finish period
+    case 'add_day':
+      time.setDate(time.getDate()+1);
+      parsedChange(time);
+      break;
+    case 'add_2day':
+      time.setDate(time.getDate()+2);
+      parsedChange(time);
+      break;
+    case 'add_week':
+      time.setDate(time.getDate()+7);
+      parsedChange(time);
+      break;
+    case 'add_month':
+      time.setMonth(time.getMonth()+1);
+      parsedChange(time);
+      break;
+    case 'add_quart':
+      time.setMonth(time.getMonth()+3);
+      parsedChange(time);
+      break;
+    case 'add_year':
+      time.setFullYear(time.getFullYear()+1);
+      parsedChange(time);
+      break;
+    case 'add_2_year':
+      time.setFullYear(time.getFullYear()+2);
+      parsedChange(time);
+      break;
+    case 'add_3_year':
+      time.setFullYear(time.getFullYear()+3);
+      parsedChange(time);
+      break;
+    case 'add_5_year':
+      time.setFullYear(time.getFullYear()+5);
+      parsedChange(time);
+      break;
+      // periods for search
+    case 'searchPrevYear':
+      time.setFullYear(time.getFullYear()-1, 0, 1); // Устанавливаем 1 января прошлого года
+      parsedChange(time);
+      time.setMonth(11, 31); // Устанавливаем 31 декабря того же года
+      parsedChange(time);
+      break;
+    case 'searchPrevQuart':
+      // Устанавливаем начало прошлого квартала
+      const prevQuarterStart = new Date(time.getFullYear(), Math.floor((time.getMonth() - 3) / 3) * 3, 1);
+      parsedChange(prevQuarterStart);
+      // Устанавливаем конец прошлого квартала
+      const prevQuarterEnd = new Date(prevQuarterStart.getFullYear(), prevQuarterStart.getMonth() + 3, 0);
+      parsedChange(prevQuarterEnd);
+      break;
+    case 'searchPrevMonth':
+      // Устанавливаем начало прошлого месяца
+      const prevMonthStart = new Date(time.getFullYear(), time.getMonth() - 1, 1);
+      parsedChange(prevMonthStart);
+      // Устанавливаем конец прошлого месяца
+      const prevMonthEnd = new Date(time.getFullYear(), time.getMonth(), 0);
+      parsedChange(prevMonthEnd);
+      break;
+    case 'searchPrevday':
+      time.setDate(time.getDate()-1);
+      parsedChange(time);
+      break;
+    case 'searchToday':
+      parsedChange(new Date());
+      break;
+    case 'searchNextday':
+      time.setDate(time.getDate()+1);
+      parsedChange(time);
+      break;
+    case 'searchCurrentMonth':
+      const monthStart = new Date(time.getFullYear(), time.getMonth(), 1);
+      parsedChange(monthStart);
+      const monthEnd = new Date(time.getFullYear(), time.getMonth() + 1, 0);
+      parsedChange(monthEnd);
+      break;
+    case 'searchCurrentQuart':
+      const quartStart = new Date(time.getFullYear(), Math.floor(time.getMonth() / 3) * 3, 1);
+      parsedChange(quartStart);
+      const quartEnd = new Date(quartStart.getFullYear(), quartStart.getMonth() + 3, 0);
+      parsedChange(quartEnd);
+      break;
+    case 'searchCurrentYear':
+      const yearStart = new Date(time.getFullYear(), 0, 1);
+      parsedChange(yearStart);
+      const yearEnd = new Date(time.getFullYear(), 11, 31);
+      parsedChange(yearEnd);
+      break;
+    case 'searchNextWeek':
+      // Получаем текущую дату
+      const currentDate = new Date(time);
+      // Находим следующий понедельник
+      const daysUntilMonday = (8 - currentDate.getDay()) % 7;
+      const nextMonday = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + daysUntilMonday);
+      parsedChange(nextMonday);
+      // Устанавливаем воскресенье (конец недели)
+      const nextSunday = new Date(nextMonday.getFullYear(), nextMonday.getMonth(), nextMonday.getDate() + 6);
+      parsedChange(nextSunday);
+      break;
+    case 'searchNextMonth':
+      // Устанавливаем начало следующего месяца
+      const nextMonthStart = new Date(time.getFullYear(), time.getMonth() + 1, 1);
+      parsedChange(nextMonthStart);
+      // Устанавливаем конец следующего месяца
+      const nextMonthEnd = new Date(time.getFullYear(), time.getMonth() + 2, 0);
+      parsedChange(nextMonthEnd);
+      break;
+    case 'searchNextQuart':
+      // Устанавливаем начало следующего квартала
+      const nextQuarterStart = new Date(time.getFullYear(), Math.floor((time.getMonth() + 3) / 3) * 3, 1);
+      parsedChange(nextQuarterStart);
+      // Устанавливаем конец следующего квартала
+      const nextQuarterEnd = new Date(nextQuarterStart.getFullYear(), nextQuarterStart.getMonth() + 3, 0);
+      parsedChange(nextQuarterEnd);
+      break;
+    case 'searchNextYear':
+      // Устанавливаем начало следующего года
+      const nextYearStart = new Date(time.getFullYear() + 1, 0, 1);
+      parsedChange(nextYearStart);
+      // Устанавливаем конец следующего года
+      const nextYearEnd = new Date(time.getFullYear() + 1, 11, 31);
+      parsedChange(nextYearEnd);
+      break;
+    }
   }
 
   $('.clear', control).on('click keydown', function (e) {
@@ -375,8 +375,8 @@ function veda_dateTime (options) {
     e.preventDefault();
     e.stopPropagation();
     individual.clearValue(property_uri);
-    input.val('')
-    //.focus();
+    input.val('');
+    // .focus();
   });
 
   return control;
@@ -450,5 +450,5 @@ const defaults = {
     }
     return null;
   },
-  format: 'DD.MM.YYYY HH:mm'
+  format: 'DD.MM.YYYY HH:mm',
 };

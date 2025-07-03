@@ -83,7 +83,7 @@ $.fn.veda_source = function (options) {
 
 const defaults = {
   value: '',
-  template: `<div class="panel panel-default" style="min-height:300px"></div>`,
+  template: '<div class="panel panel-default" style="min-height:300px"></div>',
   mode: 'javascript',
   parser: function (input) {
     return (input || null);
