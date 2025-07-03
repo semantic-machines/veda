@@ -14,14 +14,14 @@ $.fn.veda_checkbox = function (params) {
   const individual = opts.individual;
   const property_uri = opts.property_uri || opts.rel_uri;
   const spec = opts.spec;
-  const rangeRestriction = spec && spec.hasValue('v-ui:rangeRestriction') ? spec['v-ui:rangeRestriction'][0] : undefined;
+  const rangeRestriction = spec?.hasValue('v-ui:rangeRestriction') ? spec['v-ui:rangeRestriction'][0] : undefined;
   const range = rangeRestriction ? [rangeRestriction] : (new IndividualModel(property_uri))['rdfs:range'];
-  const queryPattern = this.attr('data-query-pattern') ?? (spec && spec.hasValue('v-ui:queryPattern') ? spec['v-ui:queryPattern'][0].toString() : undefined);
-  const queryPrefixDefault = this.attr('data-query-prefix') || ( spec && spec.hasValue('v-ui:queryPrefix') ? spec['v-ui:queryPrefix'][0] : range.map((item) => {
+  const queryPattern = this.attr('data-query-pattern') ?? (spec?.hasValue('v-ui:queryPattern') ? spec['v-ui:queryPattern'][0].toString() : undefined);
+  const queryPrefixDefault = this.attr('data-query-prefix') || ( spec?.hasValue('v-ui:queryPrefix') ? spec['v-ui:queryPrefix'][0] : range.map((item) => {
     return '\'rdf:type\'===\'' + item.id + '\'';
   }).join(' || ') );
   const isDynamicQueryPrefix = this.attr('data-dynamic-query-prefix') == 'true';
-  const sort = this.attr('data-sort') || ( spec && spec.hasValue('v-ui:sort') && spec['v-ui:sort'][0].toString() );
+  const sort = this.attr('data-sort') || ( spec?.hasValue('v-ui:sort') ? spec['v-ui:sort'][0].toString() : undefined );
   const source = this.attr('data-source') || undefined;
   const template = this.attr('data-template') || '{@.rdfs:label}';
   let withDeleted = this.attr('data-deleted') || false;
@@ -38,11 +38,24 @@ $.fn.veda_checkbox = function (params) {
   }
 
   /**
+   * Handle checkbox change event
+   * @param {jQuery} chk
+   * @param {*} value
+   */
+  function handleCheckboxChange(chk, value) {
+    if (chk.is(':checked')) {
+      individual.addValue(property_uri, value);
+    } else {
+      individual.removeValue(property_uri, value);
+    }
+  }
+
+  /**
    * Populate options list
    * @return {Promise}
    */
   function populate () {
-    if (spec && spec.hasValue('v-ui:optionValue')) {
+    if (spec?.hasValue('v-ui:optionValue')) {
       const options = spec['v-ui:optionValue'];
       return renderOptions(options);
     } else if (source) {
@@ -71,40 +84,52 @@ $.fn.veda_checkbox = function (params) {
   }
 
   /**
+   * Setup checkbox element
+   * @param {*} rendered
+   * @param {jQuery} hld
+   * @param {*} value
+   */
+  function setupCheckbox(rendered, hld, value) {
+    const lbl = $('label', hld).append(rendered);
+    const chk = $('input', lbl).data('value', value);
+    if (value instanceof IndividualModel && value.hasValue('v-s:deleted', true)) {
+      hld.addClass('deleted');
+    }
+    const hasValue = individual.hasValue(property_uri, value);
+    chk.prop('checked', hasValue);
+    chk.change(() => handleCheckboxChange(chk, value));
+    if (opts.mode === 'view') {
+      hld.addClass('disabled');
+      chk.attr('disabled', 'disabled');
+    }
+  }
+
+  /**
+   * Process single option
+   * @param {*} value
+   * @param {number} index
+   * @return {Promise}
+   */
+  function processOption(value, index) {
+    if (index >= 100) {
+      return Promise.resolve();
+    }
+    const hld = $(opts.template).appendTo(self);
+    return renderValue(value, template)
+      .then((rendered) => setupCheckbox(rendered, hld, value))
+      .catch((error) => {
+        console.log('Error rendering value', error);
+      });
+  }
+
+  /**
    * Render options list
    * @param {Array} options
    * @return {Promise}
    */
   function renderOptions (options) {
     self.empty();
-    const optionsPromises = options.map((value, index) => {
-      if (index >= 100) {
-        return;
-      }
-      const hld = $(opts.template).appendTo(self);
-      return renderValue(value, template).then((rendered) => {
-        const lbl = $('label', hld).append( rendered );
-        const chk = $('input', lbl).data('value', value);
-        if (value instanceof IndividualModel && value.hasValue('v-s:deleted', true)) {
-          hld.addClass('deleted');
-        }
-        const hasValue = individual.hasValue(property_uri, value);
-        chk.prop('checked', hasValue);
-        chk.change(() => {
-          if ( chk.is(':checked') ) {
-            individual.addValue(property_uri, value);
-          } else {
-            individual.removeValue(property_uri, value);
-          }
-        });
-        if (opts.mode === 'view') {
-          hld.addClass('disabled');
-          chk.attr('disabled', 'disabled');
-        }
-      }).catch((error) => {
-        console.log('Error rendering value', error);
-      });
-    });
+    const optionsPromises = options.map(processOption);
     return Promise.all(optionsPromises);
   }
 
@@ -120,7 +145,7 @@ $.fn.veda_checkbox = function (params) {
     });
   }
 
-  if (spec && spec.hasValue('v-ui:tooltip')) {
+  if (spec?.hasValue('v-ui:tooltip')) {
     this.tooltip({
       title: spec['v-ui:tooltip'].map(Util.formatValue).join(' '),
       placement: 'left',
