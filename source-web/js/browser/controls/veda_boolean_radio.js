@@ -30,39 +30,49 @@ $.fn.veda_booleanRadio = function (params) {
     };
   }
 
+  function handleCheckboxChange(chk, value) {
+    if (chk.is(':checked')) {
+      individual.addValue(property_uri, value);
+    } else {
+      individual.removeValue(property_uri, value);
+    }
+  }
+
+  function handleRadioChange(rad) {
+    if (rad.is(':checked')) {
+      individual.set(property_uri, [rad.data('value')]);
+    } else {
+      individual.set(property_uri, individual.get(property_uri).filter((i) => i.valueOf() !== rad.data('value').valueOf()));
+    }
+  }
+
+  function createSearchOption(option) {
+    const hld = $(opts.template_search).appendTo(self);
+    option.label.then((label) => {
+      const lbl = $('label', hld).append(label);
+      const chk = $('input', lbl).data('value', option.value);
+      const hasValue = individual.hasValue(property_uri, option.value);
+      chk.prop('checked', hasValue);
+      chk.change(() => handleCheckboxChange(chk, option.value));
+    });
+  }
+
+  function createRadioOption(option) {
+    const hld = $(opts.template).appendTo(self);
+    option.label.then((label) => {
+      const rad = $('input', hld).data('value', option.value).prop('checked', individual.hasValue(property_uri, option.value));
+      rad.change(() => handleRadioChange(rad));
+      $('label', hld).append(label);
+    });
+  }
+
   function renderOptions () {
     self.empty();
     options.forEach((option) => {
-      let hld;
       if (opts.mode === 'search') {
-        hld = $(opts.template_search).appendTo(self);
-        option.label.then((label) => {
-          const lbl = $('label', hld).append(label);
-          const chk = $('input', lbl).data('value', option.value);
-
-          const hasValue = individual.hasValue(property_uri, option.value);
-          chk.prop('checked', hasValue);
-          chk.change(() => {
-            if ( chk.is(':checked') ) {
-              individual.addValue(property_uri, option.value);
-            } else {
-              individual.removeValue(property_uri, option.value);
-            }
-          });
-        });
+        createSearchOption(option);
       } else {
-        hld = $(opts.template).appendTo(self);
-        option.label.then((label) => {
-          const rad = $('input', hld).data('value', option.value).prop('checked', individual.hasValue(property_uri, option.value));
-          rad.change(() => {
-            if (rad.is(':checked')) {
-              individual.set(property_uri, [rad.data('value')]);
-            } else {
-              individual.set(property_uri, individual.get(property_uri).filter((i) => i.valueOf() !== rad.data('value').valueOf()));
-            }
-          });
-          $('label', hld).append(label);
-        });
+        createRadioOption(option);
       }
     });
   }

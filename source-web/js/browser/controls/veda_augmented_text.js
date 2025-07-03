@@ -71,8 +71,9 @@ async function augmentText (text, type, property, fn) {
       if (value && value.byteLength > 0) {
         const chunk = decoder.decode(value, {stream: true});
 
+        const dataRegex = /^data: (.*)$/;
         chunk.split('\n').forEach((line) => {
-          const matches = line.match(/^data: (.*)$/);
+          const matches = dataRegex.exec(line);
           if (matches) {
             const jsonString = matches[1];
             try {

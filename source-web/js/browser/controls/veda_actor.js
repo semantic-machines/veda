@@ -14,14 +14,14 @@ $.fn.veda_actor = function ( options ) {
   const individual = opts.individual;
   const rel_uri = opts.property_uri;
   const spec = opts.spec;
-  const placeholder = this.attr('data-placeholder') || ( spec && spec.hasValue('v-ui:placeholder') ? spec['v-ui:placeholder'].map(Util.formatValue).join(' ') : new IndividualModel('v-s:StartTypingBundle') );
-  const queryPattern = this.attr('data-query-pattern') ?? (spec && spec.hasValue('v-ui:queryPattern') ? spec['v-ui:queryPattern'][0].toString() : undefined);
-  const specQueryPrefix = this.attr('data-query-prefix') || ( spec && spec.hasValue('v-ui:queryPrefix') ? spec['v-ui:queryPrefix'][0].toString() : undefined);
+  const placeholder = this.attr('data-placeholder') || ( spec?.hasValue('v-ui:placeholder') ? spec['v-ui:placeholder'].map(Util.formatValue).join(' ') : new IndividualModel('v-s:StartTypingBundle') );
+  const queryPattern = this.attr('data-query-pattern') ?? (spec?.hasValue('v-ui:queryPattern') ? spec['v-ui:queryPattern'][0].toString() : undefined);
+  const specQueryPrefix = this.attr('data-query-prefix') || ( spec?.hasValue('v-ui:queryPrefix') ? spec['v-ui:queryPrefix'][0].toString() : undefined);
   let queryPrefix;
-  const sort = this.attr('data-sort') || ( spec && spec.hasValue('v-ui:sort') && spec['v-ui:sort'][0].toString() );
+  const sort = this.attr('data-sort') || ( spec?.hasValue('v-ui:sort') ? spec['v-ui:sort'][0].toString() : undefined );
   const actorType = this.attr('data-actor-type') || 'v-s:Appointment v-s:Person v-s:Position v-s:Department';
   const complex = this.attr('data-complex') || false;
-  let isSingle = this.attr('data-single') || ( spec && spec.hasValue('v-ui:maxCardinality') ? spec['v-ui:maxCardinality'][0] === 1 : true );
+  let isSingle = this.attr('data-single') || ( spec?.hasValue('v-ui:maxCardinality') ? spec['v-ui:maxCardinality'][0] === 1 : true );
   const withDeleted = this.attr('data-deleted') || false;
   const withDelegation = this.attr('data-delegated') || false;
   let chosenActorType;
@@ -54,7 +54,10 @@ $.fn.veda_actor = function ( options ) {
       $(el).closest('.radio').remove();
       return false;
     } else {
-      $(el).parent().append( new IndividualModel(el.value).toString() );
+      const model = new IndividualModel(el.value);
+      model.load().then(() => {
+        $(el).parent().append( model.toString() );
+      });
       return true;
     }
   }).change((e) => {
@@ -86,10 +89,10 @@ $.fn.veda_actor = function ( options ) {
     const label = new IndividualModel(el.value);
     const self = el;
     label.load().then(() => {
-      $(self).parent().append( new IndividualModel(self.value).toString() );
+      $(self).parent().append( label.toString() );
     });
   }).change((e) => {
-    fullName = $(e.target).is(':checked') ? true : false;
+    fullName = $(e.target).is(':checked');
     const ftValue = $('.fulltext', control).val();
     if (ftValue) {
       performSearch(ftValue);
@@ -100,10 +103,10 @@ $.fn.veda_actor = function ( options ) {
     const label = new IndividualModel(el.value);
     const self = el;
     label.load().then(() => {
-      $(self).parent().append( new IndividualModel(self.value).toString() );
+      $(self).parent().append( label.toString() );
     });
   }).change((e) => {
-    onlyDeleted = $(e.target).is(':checked') ? true : false;
+    onlyDeleted = $(e.target).is(':checked');
     const ftValue = $('.fulltext', control).val();
     if (ftValue) {
       performSearch(ftValue);
@@ -165,7 +168,7 @@ $.fn.veda_actor = function ( options ) {
     });
   } else {
     fulltext.attr({
-      'placeholder': placeholder,
+      'placeholder': String(placeholder),
       'name': (individual.hasValue('rdf:type') ? individual['rdf:type'][0].id + '_' + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, '_'),
     });
   }
@@ -402,16 +405,14 @@ $.fn.veda_actor = function ( options ) {
           return value !== suggestion;
         });
       }
+    } else if (isSingle) {
+      selected = [suggestion];
+      setValue(selected);
+      fulltextMenu.hide();
+      $(document).off('click', clickOutsideMenuHandler);
+      $(document).off('keydown', arrowHandler);
     } else {
-      if (isSingle) {
-        selected = [suggestion];
-        setValue(selected);
-        fulltextMenu.hide();
-        $(document).off('click', clickOutsideMenuHandler);
-        $(document).off('keydown', arrowHandler);
-      } else {
-        selected.push(suggestion);
-      }
+      selected.push(suggestion);
     }
     dblTimeout = setTimeout(() => {
       dblTimeout = undefined;
