@@ -6,7 +6,7 @@ import Util from '../../common/util.js';
 
 import IndividualModel from '../../common/individual_model.js';
 
-import {interpolate, ftQuery, renderValue} from './veda_control_util.js';
+import {interpolate, ftQuery, ftQueryWithDeleted, renderValue} from './veda_control_util.js';
 
 $.fn.veda_radio = function (params) {
   const opts = {...defaults, ...params};
@@ -53,7 +53,7 @@ $.fn.veda_radio = function (params) {
     } else if (queryPrefix) {
       return interpolate(queryPrefix, individual)
         .then((prefix) => {
-          return ftQuery(prefix, undefined, sort, withDeleted, queryPattern);
+          return withDeleted ? ftQueryWithDeleted(prefix, undefined, sort, queryPattern) : ftQuery(prefix, undefined, sort, queryPattern);
         })
         .then(renderOptions)
         .catch((error) => {
