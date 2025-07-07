@@ -6,7 +6,7 @@ import IndividualModel from '../../common/individual_model.js';
 
 import Util from '../../common/util.js';
 
-import {interpolate, ftQuery, convertToCyrillic} from './veda_control_util.js';
+import {interpolate, ftQuery, ftQueryWithDeleted, convertToCyrillic} from './veda_control_util.js';
 
 $.fn.veda_actor = function ( options ) {
   const opts = {...defaults, ...options};
@@ -284,9 +284,9 @@ $.fn.veda_actor = function ( options ) {
 
     const ftQueryPromise = interpolate(queryPrefix, individual).then((prefix) => {
       if (onlyDeleted) {
-        return ftQuery(prefix + ' && \'v-s:deleted\'==\'true\'', value, sort, withDeleted, queryPattern);
+        return withDeleted ? ftQueryWithDeleted(prefix + ' && \'v-s:deleted\'==\'true\'', value, sort, queryPattern) : ftQuery(prefix + ' && \'v-s:deleted\'==\'true\'', value, sort, queryPattern);
       } else {
-        return ftQuery(prefix, value, sort, withDeleted, queryPattern);
+        return withDeleted ? ftQueryWithDeleted(prefix, value, sort, queryPattern) : ftQuery(prefix, value, sort, queryPattern);
       }
     });
 
