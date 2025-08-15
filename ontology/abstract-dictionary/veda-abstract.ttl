@@ -468,6 +468,13 @@ v-s:birthday
   rdfs:label "Birthday"@en ;
   rdfs:range xsd:dateTime ;
 .
+v-s:personalPhone
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Личный телефон"@ru ;
+  rdfs:label "Personal phone"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Identification ;
+.
 
 #--------------------------------------------------------------- Временная сущность--
 v-s:Temporal
