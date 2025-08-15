@@ -21,16 +21,6 @@ export const post = async function (individual, template, container, mode, extra
       .one('remove', function () {
         template.popover('destroy');
       });
-    if (individual.hasValue('v-s:hasVisualStatus')) {
-      const status = await individual['v-s:hasVisualStatus'][0].load();
-      if (status.hasValue('v-s:tag','danger')) {
-        showIcon = true;
-        $('.glyphicon', template).attr('style', 'color: #d9534f');
-      } else if (status.hasValue('v-s:tag','warning')) {
-        showIcon = true;
-        $('.glyphicon', template).attr('style', 'color: #f0ad4e');
-      }
-    }
     if (type === 'v-s:Appointment') {
       const person = await individual['v-s:employee'][0].load();
       if (person.hasValue('v-s:hasVisualStatus')) {
@@ -50,6 +40,16 @@ export const post = async function (individual, template, container, mode, extra
           $('.glyphicon', template).attr('style', 'color: #f0ad4e');
         }
       }
+    }
+  }
+  if (individual.hasValue('v-s:hasVisualStatus')) {
+    const status = await individual['v-s:hasVisualStatus'][0].load();
+    if (status.hasValue('v-s:tag','danger')) {
+      showIcon = true;
+      $('.glyphicon', template).attr('style', 'color: #d9534f');
+    } else if (status.hasValue('v-s:tag','warning')) {
+      showIcon = true;
+      $('.glyphicon', template).attr('style', 'color: #f0ad4e');
     }
   }
 
