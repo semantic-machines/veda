@@ -18,20 +18,11 @@ export const html = `
     </div>
     <div class="row row-attribute">
       <div class="col-sm-3 col-xs-5">
-        <label about="v-s:dateFrom" property="rdfs:label"></label>
+        <label about="v-s:date" property="rdfs:label"></label>
       </div>
       <div class="col-sm-3 col-xs-3">
-        <div property="v-s:dateFrom" class="view -edit search"></div>
-        <veda-control data-type="date" property="v-s:dateFrom" class="-view edit search"></veda-control>
-      </div>
-    </div>
-    <div class="row row-attribute">
-      <div class="col-sm-3 col-xs-5">
-        <label about="v-s:dateTo" property="rdfs:label"></label>
-      </div>
-      <div class="col-sm-3 col-xs-3">
-        <div property="v-s:dateTo" class="view -edit search"></div>
-        <veda-control data-type="date" property="v-s:dateTo" class="-view edit search"></veda-control>
+        <div property="v-s:date" class="view -edit search"></div>
+        <veda-control data-type="date" property="v-s:date" class="-view edit search"></veda-control>
       </div>
     </div>
     <div class="row row-attribute">

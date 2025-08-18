@@ -100,8 +100,7 @@ export const html = `
           <thead>
             <tr class="view edit -search active">
               <th width="1%"><span class="glyphicon glyphicon-search"></th>
-              <th about="v-s:dateFrom" property="rdfs:label"></th>
-              <th about="v-s:dateTo" property="rdfs:label"></th>
+              <th about="v-s:date" property="rdfs:label"></th>
               <th width="5%"></th>
               <th about="v-s:hasCurrencySource" property="rdfs:label"></th>
               <th width="5%"></th>
@@ -113,8 +112,7 @@ export const html = `
           <tbody rel="v-s:hasCurrencyExchangeRate">
             <tr>
               <td about="@" data-template="v-ui:IconModalTemplate"></td>
-              <td property="v-s:dateFrom" data-template="v-ui:DateTemplate"></td>
-              <td property="v-s:dateTo" data-template="v-ui:DateTemplate"></td>
+              <td property="v-s:date" data-template="v-ui:DateTemplate"></td>
               <td>1</td>
               <td property="v-s:hasCurrencySource" data-template="v-ui:LabelTemplate"></td>
               <td>=</td>

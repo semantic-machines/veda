@@ -155,7 +155,6 @@ v-s:PsRate_CurrencyExchangeRate
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-s:CurrencyExchangeRate ;
   v-ui:forProperty v-s:rate ;
-  v-ui:forProperty v-s:date ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;

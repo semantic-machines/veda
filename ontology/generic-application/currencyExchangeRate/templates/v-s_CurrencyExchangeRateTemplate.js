@@ -8,34 +8,12 @@ export const pre = function (individual, template, container, mode, extra) {
   template.on('validate', function () {
     const result = {};
     
-    // Проверка v-s:dateFrom - всегда обязательно
-    if (!individual.hasValue('v-s:dateFrom')) {
-      result['v-s:dateFrom'] = {
+    // Проверка v-s:date - всегда обязательно
+    if (!individual.hasValue('v-s:date')) {
+      result['v-s:date'] = {
         state: false,
         cause: ['v-ui:minCardinality'],
       };
-    }
-    
-    // Проверка v-s:dateTo - обязательно только если v-s:valid == false
-    const isValid = individual.hasValue('v-s:valid') ? individual['v-s:valid'][0] : true;
-    if (!isValid && !individual.hasValue('v-s:dateTo')) {
-      result['v-s:dateTo'] = {
-        state: false,
-        cause: ['v-ui:minCardinality'],
-      };
-    }
-    
-    // Проверка, что даты корректны (dateTo >= dateFrom)
-    if (individual.hasValue('v-s:dateFrom') && individual.hasValue('v-s:dateTo')) {
-      const dateFrom = individual['v-s:dateFrom'][0];
-      const dateTo = individual['v-s:dateTo'][0];
-      
-      if (dateTo < dateFrom) {
-        result['v-s:dateTo'] = {
-          state: false,
-          cause: ['v-s:DateFromToBundle'],
-        };
-      }
     }
     
     // Отправляем результат валидации
@@ -47,14 +25,9 @@ export const post = function (individual, template, container, mode, extra) {
   template = $(template);
   container = $(container);
   
-  // Перевалидация при изменении поля v-s:valid
-  individual.on('v-s:valid', function() {
-    template[0].dispatchEvent(new Event('validate'));
-  });
-  
-  // Удаляем слушатель при удалении шаблона
+  // Удаляем слушатели при удалении шаблона
   template.one('remove', function() {
-    individual.off('v-s:valid');
+    // Нет необходимости в слушателях
   });
   
   // Инициализация пользовательских шаблонов для отображения валют без крестика
@@ -95,20 +68,11 @@ export const html = `
     </div>
     <div class="row row-attribute">
       <div class="col-sm-3 col-xs-5">
-        <label about="v-s:dateFrom" property="rdfs:label"></label>
+        <label about="v-s:date" property="rdfs:label"></label>
       </div>
       <div class="col-sm-3 col-xs-3">
-        <div property="v-s:dateFrom" class="view -edit search"></div>
-        <veda-control data-type="date" property="v-s:dateFrom" class="-view edit search"></veda-control>
-      </div>
-    </div>
-    <div class="row row-attribute">
-      <div class="col-sm-3 col-xs-5">
-        <label about="v-s:dateTo" property="rdfs:label"></label>
-      </div>
-      <div class="col-sm-3 col-xs-3">
-        <div property="v-s:dateTo" class="view -edit search"></div>
-        <veda-control data-type="date" property="v-s:dateTo" class="-view edit search"></veda-control>
+        <div property="v-s:date" class="view -edit search"></div>
+        <veda-control data-type="date" property="v-s:date" class="-view edit search"></veda-control>
       </div>
     </div>
     <div class="row row-attribute">
