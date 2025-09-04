@@ -7,6 +7,7 @@ import Backend from '../common/backend.js';
 import IndividualModel from '../common/individual_model.js';
 import Sha256 from '../common/lib/sha256.js';
 import {delegateHandler, clear, spinnerDecorator} from '../browser/dom_helpers.js';
+import {getMobileCode, verifySmsCode} from './auth_mobile.js';
 import Captcha from 'captcha';
 
 /**
@@ -78,10 +79,55 @@ const submitLoginPassword = spinnerDecorator(function (event) {
 const loginForm = document.getElementById('login-form');
 
 loginForm.querySelector('#submit-login-password').addEventListener('click', submitLoginPassword);
+if (loginForm.querySelector('#get-code') != null) {
+  hide(loginForm.querySelector('#enter-login-password'));
+  loginForm.querySelector('#get-code').addEventListener('click', spinnerDecorator(async function (e) {
+    e.preventDefault();
+    const result = await getMobileCode(e, loginForm);
+    console.log('SMS Response:', result);
+
+    // Сохранение токена для последующей верификации
+    if (result && result.token) {
+      sessionStorage.setItem('sms_auth_token', result.token);
+    }
+  }));
+  loginForm.querySelector('#verify-sms-code').addEventListener('click', spinnerDecorator(async function (e) {
+    e.preventDefault();
+    const result = await verifySmsCode(e, loginForm);
+    console.log('SMS Verify response:', result);
+
+    // Очистка токена из сессии
+    sessionStorage.removeItem('sms_auth_token');
+
+    // Обработка успешной аутентификации
+    if (result &&result.id && result.user_uri) {
+      await handleLoginSuccess(result);
+    } else {
+      throw new Error('Неверный ответ сервера');
+    }
+  }));
+}
 
 delegateHandler(loginForm, 'keyup', '#login, #password', function (e) {
   if (e.key === 'Enter') {
     submitLoginPassword(e);
+  }
+});
+
+delegateHandler(loginForm, 'keyup', '#sms-code', async function (e) {
+  if (e.key === 'Enter') {
+    const result = await verifySmsCode(e, loginForm);
+    console.log('SMS Verify response:', result);
+
+    // Очистка токена из сессии
+    sessionStorage.removeItem('sms_auth_token');
+
+    // Обработка успешной аутентификации
+    if (result &&result.id && result.user_uri) {
+      await handleLoginSuccess(result);
+    } else {
+      throw new Error('Неверный ответ сервера');
+    }
   }
 });
 
