@@ -22,6 +22,7 @@ v-s:SetOfPersonnelReserveForm
   rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:UserSearchableDocument;
+  rdfs:subClassOf v-s:Journaling;
   rdfs:label "Цикл кадрового резерва"@ru ;
   rdfs:label "SetOfPersonnelReserve"@en ;
   v-s:labelPattern "{@.v-s:year}" ;
@@ -67,7 +68,6 @@ v-s:ProcessPersonnelReserveForm
   rdfs:domain v-s:ProcessPersonnelReserveForm ;
 .
 
-
 #------------------------------------------------------ План Преемственности --
 
 v-s:ContinuityPlan
@@ -78,9 +78,9 @@ v-s:ContinuityPlan
   rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:UserSearchableDocument;
+  rdfs:subClassOf v-s:Journaling;
   v-s:labelPattern "{@.v-s:year} {@.v-s:responsibleDepartment.rdfs:label} {@.v-s:occupation.rdfs:label}" ;
 .
-
 
 #------------------------------------------------------ Карточка сотрудника  --
 
@@ -92,6 +92,7 @@ v-s:PersonnelReserve
   rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:UserSearchableDocument;
+  rdfs:subClassOf v-s:Journaling;
   v-s:labelPattern "{@.v-s:year} {@.v-s:hasHREmployeeProfile.rdfs:label}" ;
 .
 #-----Профиль сотрудника
@@ -121,10 +122,7 @@ v-s:hasCandidateEffectiveness
   rdfs:domain v-s:PersonnelReserve ;
 .
 
-
-
 ###----------------------------------Профиль сотрудника---------------------
-
 
 #-----Досье сотрудника
 v-s:HREmployeeProfile
@@ -144,10 +142,6 @@ v-s:HREmployeeProfile
   rdfs:range v-s:EducationExperience ;
   rdfs:domain v-s:HREmployeeProfile ;
 .
-
-
-
-
 
 ###----------------------------------Профессиональный опыт---------------------
 
@@ -252,8 +246,6 @@ v-s:hasWorkExperience
 #-c
 #-по 
 #-Должность
-
-
 
 ###---Результаты тестирования---
 v-s:TestResult
