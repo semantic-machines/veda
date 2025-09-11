@@ -110,7 +110,7 @@ export const pre = function (individual, template, container, mode, extra) {
 
 export const html = `
   <div>
-    <div class="container sheet">
+    <div class="container sheet hidden-xs">
       <div class="ribbon-wrapper top-left">
         <div class="ribbon top-left success" about="v-fc:CreateBundle" property="rdfs:label"></div>
       </div>
