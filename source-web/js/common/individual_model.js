@@ -68,6 +68,9 @@ function IndividualModel (uri, cache = true, init = true) {
     this.isSync(false);
   }
 
+  // Filled in set()
+  this._newLinkValues = new Set();
+
   if (cache) {
     const cached = IndividualModel.cache.get(this.id);
     if (cached) {
@@ -77,6 +80,7 @@ function IndividualModel (uri, cache = true, init = true) {
         cached.properties = this.properties;
         cached.original = this.original;
       }
+      cached._newLinkValues = new Set();
       return cached;
     } else {
       IndividualModel.cache.set(this.id, this);
@@ -148,6 +152,17 @@ proto.set = function (property_uri, values, silently) {
   if (isChanged) {
     this.isSync(false);
     if (uniq.length) {
+      if (property_uri != 'v-s:backwardTarget' && property_uri != 'v-s:parent') {
+        uniq.map(value => {
+          if (value.type === 'Uri') {
+            const filteredVal = values.filter(v => v.properties && v.properties['@'] === value.data);
+            if (filteredVal.length > 0 && filteredVal[0] instanceof IndividualModel && filteredVal[0].isNew()) {
+              this._newLinkValues.add(filteredVal[0]);
+              //console.log(`${this.id} _newLinkValues:`, this._newLinkValues);
+            }
+          }
+        });
+      }
       this.properties[property_uri] = uniq;
     } else {
       delete this.properties[property_uri];
@@ -265,12 +280,14 @@ function serializer (value) {
         data: value.replace(reg_ml_string, '$1'),
         lang: value.replace(reg_ml_string, '$2').toUpperCase(),
       };
-    } else if ( reg_round_decimal.test(value) ) {
-      return {
-        type: 'Decimal',
-        data: parseFloat(value),
-      };
-    } else if (value.length) {
+    }
+    // else if ( reg_round_decimal.test(value) ) {
+    //   return {
+    //     type: 'Decimal',
+    //     data: parseFloat(value),
+    //   };
+    // } 
+    else if (value.length) {
       return {
         type: 'String',
         data: value.valueOf(),
@@ -425,6 +442,7 @@ proto.load = function () {
             this.isLoaded(true);
             this.properties = data;
             this.original = JSON.stringify(data);
+            this._newLinkValues = new Set();
           });
         }
       })
@@ -566,7 +584,7 @@ proto.reset = function () {
       return this.trigger('propertyModified', property_uri, values).then(() => this.trigger(property_uri, values));
     }));
   };
-
+  this._newLinkValues = new Set();
   return this.trigger('beforeReset')
     .then(() => !this.isNew() ? Backend.get_individual(veda.ticket, this.id, false).then(mergeServerState) : null)
     .then(() => this.trigger('afterReset'))
