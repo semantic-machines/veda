@@ -27,6 +27,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install dpkg
           npm install -g testcafe --save-dev
+          npm install baretest --save-dev
           ./tools/install-tarantool.sh
           ./control-install.sh
           source $HOME/.cargo/env
