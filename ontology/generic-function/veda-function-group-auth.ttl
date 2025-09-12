@@ -332,7 +332,7 @@ if (!veda.GroupGenerators) {
     var canRead = veda.Util.getFirstValue(generator["v-s:canRead"]) || 0;
     var canUpdate = veda.Util.getFirstValue(generator["v-s:canUpdate"]) || 0;
     var canDelete = veda.Util.getFirstValue(generator["v-s:canDelete"]) || 0;
-    var power = canCreate * 1 + canRead * 2 + canUpdate * 4 + canUpdate * 8;
+    var power = canCreate * 1 + canRead * 2 + canUpdate * 4 + canDelete * 8;
     var keepMembershipOnDelete = veda.Util.getFirstValue(generator["v-s:keepMembershipOnDelete"]);
     var fn;
     if (authProperty) {
