@@ -681,7 +681,7 @@ export const html = `
           <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
         </span>
         <div class="pull-right btn-group dropup set-columns-wrapper" style="margin-left:3px;">
-        <button type="button" class="btn btn-info dropdown-toggle set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button type="button" class="btn btn-info dropdown-toggle set-columns hidden-xs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span about="v-fs:SetColumns" property="rdfs:label"></span>
           <span class="caret"></span>
         </button>

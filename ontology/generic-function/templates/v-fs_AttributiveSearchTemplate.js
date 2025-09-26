@@ -217,9 +217,9 @@ export const html = `
     </style>
     <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
     <span class="additional-actions">
-      <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
-      <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
-      <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
+      <button class="btn btn-default xls hidden-xs"><span about="v-fs:Excel" property="rdfs:label"></span></button>
+      <button class="btn btn-default files hidden-xs"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
+      <span class="text-muted padding-lg hidden-xs" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
     </span>
   </div>
 `;
