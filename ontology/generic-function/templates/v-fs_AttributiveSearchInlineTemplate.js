@@ -462,8 +462,10 @@ export const post = function (individual, template, container, mode) {
                 tmpl.addClass('marked');
               }
               tmpl.find('.toggle-select').prop('checked', self.hasValue('v-fs:selected', result));
-
               $('td', tmpl).each(function () {
+                if (this.classList.contains('no-wrapper')) {
+                  return;
+                };
                 const text = this.innerText || this.textContent;
                 if (text && text.length > 150) {
                   const $this = $(this);
