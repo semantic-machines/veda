@@ -80,8 +80,9 @@ export const post = function (individual, template, container, mode, extra) {
 
   $('.xls', template).click(function (e) {
     e.preventDefault();
-    let resultTable = $('.search-result table').clone();
+    let resultTable = $('.search-result table', template).clone();
     resultTable.find('.hidden').remove();
+    resultTable.find('.no-export').remove();
     resultTable = resultTable.get(0);
     exportTable(resultTable, individual['rdfs:label'].map(CommonUtil.formatValue).join(' '), 'xls');
   });
