@@ -33,4 +33,5 @@ const defaults = {
     if (isNaN(float)) return null;
     return Util.isInteger(float) ? float + '.0' : float;
   },
+  type: 'decimal',
 };

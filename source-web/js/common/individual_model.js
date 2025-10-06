@@ -68,9 +68,6 @@ function IndividualModel (uri, cache = true, init = true) {
     this.isSync(false);
   }
 
-  // Filled in set()
-  this._newLinkValues = new Set();
-
   if (cache) {
     const cached = IndividualModel.cache.get(this.id);
     if (cached) {
@@ -80,12 +77,15 @@ function IndividualModel (uri, cache = true, init = true) {
         cached.properties = this.properties;
         cached.original = this.original;
       }
-      cached._newLinkValues = new Set();
+      //cached._newLinkValues = new Set();
       return cached;
     } else {
       IndividualModel.cache.set(this.id, this);
     }
   }
+
+  // Filled in set()
+  this._newLinkValues = new Set();
 
   riot.observable(this);
   this.on('rdf:type', this.init);
@@ -128,11 +128,11 @@ proto.get = function (property_uri) {
   return this.properties[property_uri].map(parser).filter((i) => typeof i !== 'undefined');
 };
 
-proto.set = function (property_uri, values, silently) {
+proto.set = function (property_uri, values, silently, controlType) {
   if ( !Array.isArray(values) ) {
     values = [values];
   }
-  const serialized = values.map(serializer).filter(Boolean);
+  const serialized = values.map(value => serializer(value, controlType)).filter(Boolean);
   const uniq = unique(serialized);
   const prevValues = this.properties[property_uri] == undefined ? [] : this.properties[property_uri];
   let isChanged = false;
@@ -158,7 +158,6 @@ proto.set = function (property_uri, values, silently) {
             const filteredVal = values.filter(v => v.properties && v.properties['@'] === value.data);
             if (filteredVal.length > 0 && filteredVal[0] instanceof IndividualModel && filteredVal[0].isNew()) {
               this._newLinkValues.add(filteredVal[0]);
-              //console.log(`${this.id} _newLinkValues:`, this._newLinkValues);
             }
           }
         });
@@ -240,9 +239,10 @@ const reg_round_decimal = /^-?\d+([\.\,])0$/;
 /**
  * Serialize value
  * @param {number|Boolean|Date|string|IndividualModel} value
+ * @param {string} controlType
  * @return {Object}
  */
-function serializer (value) {
+function serializer (value, controlType) {
   if (typeof value === 'number' ) {
     return {
       type: Util.isInteger(value) ? 'Integer' : 'Decimal',
@@ -281,12 +281,12 @@ function serializer (value) {
         lang: value.replace(reg_ml_string, '$2').toUpperCase(),
       };
     }
-    // else if ( reg_round_decimal.test(value) ) {
-    //   return {
-    //     type: 'Decimal',
-    //     data: parseFloat(value),
-    //   };
-    // } 
+    else if ( reg_round_decimal.test(value) && controlType === 'decimal' ) {
+      return {
+        type: 'Decimal',
+        data: parseFloat(value),
+      };
+    } 
     else if (value.length) {
       return {
         type: 'String',

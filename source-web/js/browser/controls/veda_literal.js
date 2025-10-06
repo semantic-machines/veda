@@ -84,9 +84,9 @@ function veda_literal (options) {
   function changeHandler (e) {
     const value = opts.parser(this.value);
     if (input.isSingle) {
-      individual.set(property_uri, [value]);
+      individual.set(property_uri, [value], undefined, opts.type);
     } else {
-      individual.set(property_uri, individual.get(property_uri).concat(value));
+      individual.set(property_uri, individual.get(property_uri).concat(value), undefined, opts.type);
       this.value = '';
     }
   }
