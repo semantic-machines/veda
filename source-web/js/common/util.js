@@ -664,7 +664,7 @@ Util.queryFromIndividualTT_JOIN = function (individual, sort, withDeleted) {
     return individual['rdf:type'].map((_type, type_index) => {
       let from = '';
       let where = '';
-      const visited = visited || {};
+      const visited = {};
       buildQuery(individual, undefined, type_index);
       let query = from ? 'SELECT t1.id FROM ' + from : '';
       query = query && where ? query + ' WHERE ' + where : query;
@@ -760,7 +760,10 @@ Util.queryFromIndividualTT_JOIN = function (individual, sort, withDeleted) {
         if (!parent_prop) {
           from += table_aliased;
         } else {
-          from += ' JOIN ' + table_aliased + ' ON ' + parent_prop + ' = [' + alias + '.id]';
+          // Use ARRAY JOIN to handle multiple values in array properties
+          const array_alias = 'arr' + table_counter;
+          from += ' ARRAY JOIN ' + parent_prop + ' AS ' + array_alias;
+          from += ' JOIN ' + table_aliased + ' ON ' + array_alias + ' = ' + alias + '.id';
         }
 
         if (!withDeleted) {
