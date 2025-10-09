@@ -49,7 +49,7 @@ export const html = `
       <div class="col-md-3">
         <em about="v-s:creator" property="rdfs:label"></em>
         <div property="v-s:creator"></div>
-        <veda-control data-type="link" class="fulltext" property="v-s:creator"></veda-control>
+        <veda-control data-type="link" class="fulltext" property="v-s:creator" data-query-prefix="'rdf:type' === 'v-s:Appointment' && 'v-s:official' == 'true'"></veda-control>
       </div>
     </div>
   </div>
