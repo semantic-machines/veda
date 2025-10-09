@@ -15,12 +15,16 @@ export const pre = function (individual, template, container, mode, extra) {
   } else {
     const isDirectTask = individual.hasValue('v-wf:isDirectTask', true);
     if (isDirectTask) {
-      const currentEmployee = veda.appointment['v-s:employee'][0];
-      const currentOcuppation = veda.appointment['v-s:occupation'][0];
-      const targetEmployee = individual['v-wf:from'][0];
-      const targetOccupation = individual['v-wf:from'][1];
-      const canRevoke = currentEmployee === targetEmployee || currentOcuppation === targetOccupation;
-      const isMemberOccupation_Promise = veda.user.isMemberOf(targetOccupation.id);
+      let canRevoke = false;
+      let isMemberOccupation_Promise = Promise.resolve(false);
+      if (individual.hasValue('v-wf:from')) {
+        const currentEmployee = veda.appointment['v-s:employee'][0];
+        const currentOcuppation = veda.appointment['v-s:occupation'][0];
+        const targetEmployee = individual['v-wf:from'][0];
+        const targetOccupation = individual['v-wf:from'][1];
+        canRevoke = currentEmployee === targetEmployee || currentOcuppation === targetOccupation;
+        isMemberOccupation_Promise = veda.user.isMemberOf(targetOccupation.id);
+      }
       const promises = [isMemberOccupation_Promise, veda.user.isMemberOf('cfg:SuperUser')];
       Promise.all(promises).then(result => {
         const isMemberOccupation = result[0];
