@@ -47,13 +47,13 @@ function veda_literal (options) {
   this.one('remove', function () {
     individual.off(property_uri, propertyModifiedHandler);
   });
-  propertyModifiedHandler();
+  propertyModifiedHandler(true);
 
   /**
    * Individual property handler.
    * @return {void}
    */
-  function propertyModifiedHandler () {
+  function propertyModifiedHandler (isInitialModification = false) {
     if (input.isSingle) {
       const field = input[0];
       let value = Util.formatValue( individual.get(property_uri)[0] );
@@ -69,7 +69,7 @@ function veda_literal (options) {
           field.value = value;
           console.log('selectionStart/End error:', property_uri, value, typeof value);
         } finally {
-          input.change();
+          input.trigger('change', { isInitialModification });
         }
       }
     }
@@ -78,15 +78,16 @@ function veda_literal (options) {
   /**
    * Input change handler
    * @param {Event} e
+   * @param {Object} data - Additional data passed with the event
    * @this jQuery
    * @return {void}
    */
-  function changeHandler (e) {
+  function changeHandler (e, data = {}) {
     const value = opts.parser(this.value);
     if (input.isSingle) {
-      individual.set(property_uri, [value], undefined, opts.type);
+      data.isInitialModification !== true && individual.set(property_uri, [value], undefined, opts.type);
     } else {
-      individual.set(property_uri, individual.get(property_uri).concat(value), undefined, opts.type);
+      data.isInitialModification !== true && individual.set(property_uri, individual.get(property_uri).concat(value), undefined, opts.type);
       this.value = '';
     }
   }
