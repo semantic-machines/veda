@@ -103,6 +103,32 @@ v-s:PersonnelReserve
   rdfs:range v-s:HREmployeeProfile ;
   rdfs:domain v-s:PersonnelReserve ;
 .
+
+###---Пол сотрудника---
+v-s:hasHREmployeeGender
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Пол сотрудника"@ru ;
+  rdfs:label "HR Employee Gender"@en ;
+  rdfs:range v-s:HREmployeeGender ;
+  rdfs:domain v-s:PersonnelReserve ;
+.
+v-s:HREmployeeGender
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Пол сотрудника"@ru ;
+  rdfs:label "Employee gender"@en ;
+.
+d:eqpb4rnxmrqdz9vwrulgrr5oja 
+  rdf:type v-s:HREmployeeGender ;
+  rdfs:label "Мужской"@ru ;
+  rdfs:label "Male"@en ;
+.
+d:cdknq2barm0sed3cm2p7otrsfg 
+  rdf:type v-s:HREmployeeGender ;
+  rdfs:label "Женский"@ru ;
+  rdfs:label "Female"@en ;
+.
+
 ###---Рекомендация---
 v-s:hasRecommendation
   rdf:type owl:ObjectProperty ;
