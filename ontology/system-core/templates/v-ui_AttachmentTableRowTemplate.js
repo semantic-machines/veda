@@ -58,11 +58,13 @@ export const pre = async function (individual, template, container, mode, extra)
 
   async function checkMchdInfo() {
     if (individual.hasValue('v-s:digitalSignature')) {
-      const sign = individual['v-s:digitalSignature'][0];
-      await sign.load();
-      if (sign.hasValue('v-s:hasMchdInfo')) {
-        $('.sign-description', template).show();
-        return;
+      const signs = individual['v-s:digitalSignature'];
+      for (const sign of signs) {
+        await sign.load();
+        if (sign.hasValue('v-s:hasMchdInfo')) {
+          $('.sign-description', template).show();
+          return;
+        }
       }
     }
     $('.sign-description', template).hide();
