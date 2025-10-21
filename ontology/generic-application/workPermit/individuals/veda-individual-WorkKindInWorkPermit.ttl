@@ -464,3 +464,18 @@ d:WorkKindInWorkPermit_33
   v-s:hasRequiredFieldInWorkKind v-s:hasSafetyWorkAction_1_3;
   v-s:hasRequiredFieldInWorkKind v-s:hasSafetyWorkAction_8;  
 . 
+d:WorkKindInWorkPermit_34
+  a v-s:WorkKindInWorkPermit;
+  v-s:parentUnit d:WorkKindInWorkPermit_1;
+  v-s:parentUnit d:WorkKindInWorkPermit_2;
+  v-s:parentUnit d:WorkKindInWorkPermit_3;
+  v-s:parentUnit d:WorkKindInWorkPermit_4;
+  v-s:parentUnit d:WorkKindInWorkPermit_5;
+  rdfs:label "Демонтажные работы и работы по разборке (без обрушения) зданий и сооружений"^^xsd:string;
+  v-s:hasVisibleFieldInWorkKind v-s:hasSafetyWorkAction_1_3;
+  v-s:hasVisibleFieldInWorkKind v-s:hasSafetyWorkAction_13;
+  v-s:hasRequiredFieldInWorkKind v-s:hasWorkingOperations ;
+  v-s:hasRequiredFieldInWorkKind v-s:hasWorkPermitMainRisks ;
+  v-s:hasRequiredFieldInWorkKind v-s:hasSafetyWorkAction_1_3;
+  v-s:hasRequiredFieldInWorkKind v-s:hasSafetyWorkAction_13;
+. 
