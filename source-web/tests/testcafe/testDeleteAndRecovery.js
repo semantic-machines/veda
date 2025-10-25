@@ -22,37 +22,67 @@ const recoverBtn = Selector('#recover');
 const estimatedResults = Selector('.stats-top span[property="v-fs:estimated"]');
 
 test('testDeleteAndRecovery', async (t) => {
-  basic.login('karpovrt', '123');
+  const username = 'karpovrt';
+  const password = '123';
+  const searchText = 'Стартовая форма';
+  const expectedResults = '1';
+  
+  console.log(`Шаг 1: Login as ${username}`);
+  basic.login(username, password);
+  
+  console.log('Шаг 2: Setup dialog handler');
+  await t.setNativeDialogHandler(() => true);
+  
+  console.log(`Шаг 3: Create start form with label ${timeStamp}`);
   await t
-    .setNativeDialogHandler(() => true)
     .click(menu)
     .click(create)
-    .typeText(searchTargetTypeInput, 'Стартовая форма')
+    .typeText(searchTargetTypeInput, searchText)
     .click(startFormSuggestion)
     .typeText(labelInput, timeStamp)
     .click(saveBtn)
-    .wait(3000)
+    .wait(3000);
+  
+  console.log(`Шаг 4: Search for created form with query: ${queryStartForm}`);
+  await t
     .click(fulltextSearch)
     .typeText(fulltextQueryInput, queryStartForm)
     .click(searchBtn)
-    .wait(3000)
+    .wait(3000);
+  
+  console.log('Шаг 5: Open found form and delete it');
+  await t
     .click(searchResult)
     .click(deleteBtn)
-    .wait(3000)
+    .wait(3000);
+  
+  console.log(`Шаг 6: Search for deleted form with query: ${queryDeletedStartForm}`);
+  await t
     .click(fulltextSearch)
     .click(fulltextQueryInput)
     .pressKey('ctrl+a delete')
     .typeText(fulltextQueryInput, queryDeletedStartForm)
     .click(searchBtn)
-    .wait(3000)
+    .wait(3000);
+  
+  console.log('Шаг 7: Open deleted form and recover it');
+  await t
     .click(searchResult)
     .click(recoverBtn)
-    .wait(3000)
+    .wait(3000);
+  
+  console.log(`Шаг 8: Search for recovered form with query: ${queryStartForm}`);
+  await t
     .click(fulltextSearch)
     .click(fulltextQueryInput)
     .pressKey('ctrl+a delete')
     .typeText(fulltextQueryInput, queryStartForm)
     .click(searchBtn)
-    .wait(3000)
-    .expect(estimatedResults.innerText).eql('1');
+    .wait(3000);
+  
+  console.log(`Шаг 9: Verify recovered form is found - expect ${expectedResults} result`);
+  await t
+    .expect(estimatedResults.innerText).eql(expectedResults);
+  
+  console.log('Тест testDeleteAndRecovery завершён');
 });
