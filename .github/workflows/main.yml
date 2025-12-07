@@ -26,11 +26,7 @@ jobs:
           sudo apt-get clean
           sudo apt-get update
           sudo apt-get install dpkg
-
-          sudo apt-get install -y firefox xvfb
           npm install -g testcafe --save-dev
-          testcafe --list-browsers
-
           npm install baretest --save-dev
           ./tools/install-tarantool.sh
           ./control-install.sh
@@ -42,7 +38,6 @@ jobs:
           node --version
           testcafe --version
           testcafe --list-browsers
-          firefox --version
           rustc -V
 
       # Build the project
@@ -55,8 +50,6 @@ jobs:
       # Run tests
       - name: Test
         run: |
-          export DISPLAY=:99
-          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           sleep 2
           ./control-start.sh
           sleep 200
