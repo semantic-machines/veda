@@ -36,6 +36,8 @@ jobs:
           geckodriver --version
 
           npm install -g testcafe --save-dev
+          testcafe --list-browsers
+
           npm install baretest --save-dev
           ./tools/install-tarantool.sh
           ./control-install.sh
