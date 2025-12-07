@@ -25,7 +25,7 @@
     "jsplumb": "/node_modules/jsplumb/dist/js/jsPlumb-1.7.9-min.js",
     "jsworkflow": "/js/browser/veda_workflow_editor.js",
     "jszip": "/node_modules/jszip/dist/jszip.min.js",
-    "marked": "/node_modules/marked/marked.min.js",
+    "marked": "/node_modules/marked/lib/marked.umd.js",
     "moment": "/node_modules/moment/min/moment-with-locales.min.js",
     "@popperjs/core": "/node_modules/@popperjs/core/dist/umd/popper.min.js",
     "regenerator-runtime/runtime": "/node_modules/regenerator-runtime/runtime.js",
