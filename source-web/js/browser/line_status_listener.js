@@ -52,7 +52,7 @@ function statusHandler (status) {
 veda.on('status', statusHandler);
 
 // Line status sources
-(async () => {
+veda.one('started', async () => {
   if ('serviceWorker' in navigator) {
     async function setStatus () {
       let status;
@@ -91,4 +91,4 @@ veda.on('status', statusHandler);
     window.addEventListener('online', setStatus);
     window.addEventListener('offline', setStatus);
   }
-})();
+});

@@ -30,7 +30,8 @@ export default veda;
 
   const response = await fetch('./manifest');
   const manifest = await response.json();
+  veda.manifest = manifest;
 
   appPresenter(manifest);
-  auth();
+  auth(manifest);
 })();

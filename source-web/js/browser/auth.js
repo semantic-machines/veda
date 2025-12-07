@@ -4,7 +4,6 @@
 
 import veda from '../common/veda.js';
 import Backend from '../common/backend.js';
-import IndividualModel from '../common/individual_model.js';
 import Sha256 from '../common/lib/sha256.js';
 import {delegateHandler, clear, spinnerDecorator} from '../browser/dom_helpers.js';
 import {getMobileCode, verifySmsCode} from './auth_mobile.js';
@@ -12,7 +11,7 @@ import Captcha from 'captcha';
 
 /**
  * Authenticate user using NTLM provider
- * @param {string} path - The path to the NTLM provider
+ * @param {string} path - The path to the NTLM provider (full URL like "http://localhost:8085/" or relative path like "/auth/ntlm")
  * @param {string} login - The user's login
  * @param {string} password - The user's password
  * @return {Promise<Object>} - A promise that resolves to the authentication result
@@ -53,26 +52,30 @@ const submitLoginPassword = spinnerDecorator(function (event) {
 
   passwordInput.value = '';
 
-  const ntlmProvider = new IndividualModel('cfg:NTLMAuthProvider', true, false);
-  return ntlmProvider.load()
-    .then(() => {
-      const path = !ntlmProvider.hasValue('v-s:deleted', true) && ntlmProvider.hasValue('rdf:value') && ntlmProvider.get('rdf:value')[0];
-      if (path) {
-        return ntlmAuth(path, login, password);
-      } else {
-        return Promise.reject(Error('NTLM auth provider provider is not defined'));
-      }
-    })
-    .catch((error) => {
-      console.error('NTLM auth failed');
-      return Backend.authenticate({
-        login,
-        password: hash,
-        href: `${window.location.origin}${window.location.pathname}${window.location.hash ? `?hash=${encodeURIComponent(window.location.hash)}` : ''}`,
+  // Try NTLM auth if configured in manifest
+  const ntlmProviderPath = veda.manifest?.veda_ntlm_provider;
+  if (ntlmProviderPath) {
+    return ntlmAuth(ntlmProviderPath, login, password)
+      .then(handleLoginSuccess)
+      .catch((error) => {
+        console.error('NTLM auth failed');
+        return Backend.authenticate({
+          login,
+          password: hash,
+          href: `${window.location.origin}${window.location.pathname}${window.location.hash ? `?hash=${encodeURIComponent(window.location.hash)}` : ''}`,
+        })
+          .then(handleLoginSuccess)
+          .catch(handleLoginError);
       });
+  } else {
+    return Backend.authenticate({
+      login,
+      password: hash,
+      href: `${window.location.origin}${window.location.pathname}${window.location.hash ? `?hash=${encodeURIComponent(window.location.hash)}` : ''}`,
     })
-    .then(handleLoginSuccess)
-    .catch(handleLoginError);
+      .then(handleLoginSuccess)
+      .catch(handleLoginError);
+  }
 });
 
 // Login invitation
@@ -499,23 +502,32 @@ const handleAuthError = spinnerDecorator(function () {
     return;
   }
 
-  // Auto login using NTLM
-  const ntlmProvider = new IndividualModel('cfg:NTLMAuthProvider', true, false);
-  return ntlmProvider.load().then(() => {
-    const path = !ntlmProvider.hasValue('v-s:deleted', true) && ntlmProvider.hasValue('rdf:value') && ntlmProvider.get('rdf:value')[0];
-    if (path) {
-      return ntlmAuth(path)
-        .then(initWithCredentials)
-        .catch((err) => {
-          console.error('NTLM auth failed');
-          show(loginForm);
-        });
-    } else {
-      show(loginForm);
-    }
-  }).catch((error) => {
+  // Check if authentication is required
+  const manifest = veda.manifest;
+  const authRequired = manifest?.veda_auth_required !== false; // Default to true if not specified
+
+  if (!authRequired) {
+    // Guest access allowed - authenticate as guest
+    return Backend.authenticate('guest', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855')
+      .then(initWithCredentials)
+      .catch((err) => {
+        console.error('Guest auth failed');
+        show(loginForm);
+      });
+  }
+
+  // Auto login using NTLM if configured in manifest
+  const ntlmProviderPath = manifest?.veda_ntlm_provider;
+  if (ntlmProviderPath) {
+    return ntlmAuth(ntlmProviderPath)
+      .then(initWithCredentials)
+      .catch((err) => {
+        console.error('NTLM auth failed');
+        show(loginForm);
+      });
+  } else {
     show(loginForm);
-  });
+  }
 });
 
 // Activity handler
@@ -611,9 +623,10 @@ function adjustTicket ({id, user_uri, end_time}) {
 
 /**
  * Initializes the authentication flow
+ * @param {Object} manifest - The manifest object for the application
  * @return {Promise<void>}
  */
-export default spinnerDecorator(async function auth () {
+export default spinnerDecorator(async function auth (manifest) {
   // Try to get auth result from cookie
   try {
     let authResult = getCookie('auth');
@@ -635,13 +648,23 @@ export default spinnerDecorator(async function auth () {
     if (ticket && user_uri && Date.now() < end_time && await Backend.is_ticket_valid(ticket)) {
       await initWithCredentials({ticket, user_uri, end_time});
     } else {
-      const {ticket, user_uri, end_time} = await Backend.authenticate('guest', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
-      const authRequiredParam = await Backend.get_individual(ticket, 'cfg:AuthRequired');
-      const {'rdf:value': [{data: isAuthRequired}]} = authRequiredParam;
-      if (isAuthRequired) {
-        handleAuthError();
+      // Check if authentication is required
+      const authRequired = manifest?.veda_auth_required !== false; // Default to true if not specified
+      if (!authRequired) {
+        // Guest access allowed - authenticate as guest
+        try {
+          const {ticket, user_uri, end_time} = await Backend.authenticate('guest', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+          await initWithCredentials({ticket, user_uri, end_time});
+        } catch (guestError) {
+          console.error('Guest auth failed');
+          // If guest auth fails, show login form directly to avoid infinite retry loop
+          // Don't call handleAuthError() as it would try guest auth again
+          const appContainer = document.getElementById('app');
+          clear(appContainer);
+          show(loginForm);
+        }
       } else {
-        await initWithCredentials({ticket, user_uri, end_time});
+        handleAuthError();
       }
     }
   } catch (error) {

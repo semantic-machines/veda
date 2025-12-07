@@ -56,12 +56,39 @@ export default class UpdateService {
     let pingInterval;
 
     try {
-      const addressCfg = await Backend.get_individual(undefined, 'cfg:ClientUpdateServiceAddress', false);
-      this.address = addressCfg['rdf:value'] && addressCfg['rdf:value'][0].data;
-      this.url = new URL(this.address);
+      // Get address from manifest if available, otherwise try to get from server (requires ticket)
+      // Address should be a full WebSocket URL (ws:// or wss://) or a relative path
+      const manifest = veda.manifest;
+      if (manifest?.veda_update_service_address) {
+        this.address = manifest.veda_update_service_address;
+        // If address is a full URL (starts with ws:// or wss://), use it directly
+        if (this.address.startsWith('ws://') || this.address.startsWith('wss://')) {
+          this.url = new URL(this.address);
+        } else {
+          // Otherwise, treat it as a relative path
+          this.url = new URL(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}${this.address.startsWith('/') ? this.address : '/' + this.address}`);
+        }
+      } else if (veda.ticket) {
+        const addressCfg = await Backend.get_individual(veda.ticket, 'cfg:ClientUpdateServiceAddress', false);
+        this.address = addressCfg['rdf:value'] && addressCfg['rdf:value'][0].data;
+        // If address is a full URL (starts with ws:// or wss://), use it directly
+        if (this.address.startsWith('ws://') || this.address.startsWith('wss://')) {
+          this.url = new URL(this.address);
+        } else {
+          // Otherwise, treat it as a relative path
+          this.url = new URL(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}${this.address.startsWith('/') ? this.address : '/' + this.address}`);
+        }
+      } else {
+        throw new Error('Update service address not configured and no ticket available');
+      }
     } catch (error) {
       console.log(`CCUS address error, address = ${this.address}, url = ${this.url}`, error);
-      this.url = new URL(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}${this.address}`);
+      if (this.address) {
+        // Fallback: treat address as relative path
+        this.url = new URL(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}${this.address.startsWith('/') ? this.address : '/' + this.address}`);
+      } else {
+        throw error;
+      }
     }
 
     try {

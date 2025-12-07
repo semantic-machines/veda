@@ -16,5 +16,8 @@
     "sizes": "512x512",
     "type": "image/png"
   }],
-  "veda_version": 20210416202615
+  "veda_version": 20210416202615,
+  "veda_ntlm_provider": "http://localhost:8085",
+  "veda_update_service_address": "ws://localhost:8088",
+  "veda_auth_required": true
 }

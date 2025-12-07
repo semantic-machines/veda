@@ -14,10 +14,10 @@ import Util from '../common/util.js';
 export default IndividualModel;
 
 // Create an instance of UpdateService if running in a browser
+// UpdateService will be started after authentication (in line_status_listener.js)
 let updateService;
 if (typeof window !== 'undefined') {
   updateService = new UpdateService();
-  updateService.start();
 }
 
 // Create a weak cache for IndividualModel instances
@@ -286,7 +286,7 @@ function serializer (value, controlType) {
         type: 'Decimal',
         data: parseFloat(value),
       };
-    } 
+    }
     else if (value.length) {
       return {
         type: 'String',
