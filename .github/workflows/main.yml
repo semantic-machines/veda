@@ -26,6 +26,7 @@ jobs:
           sudo apt-get clean
           sudo apt-get update
           sudo apt-get install dpkg
+          sudo apt-get install -y firefox
           npm install -g testcafe --save-dev
           npm install baretest --save-dev
           ./tools/install-tarantool.sh
