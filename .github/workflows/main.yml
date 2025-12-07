@@ -26,7 +26,15 @@ jobs:
           sudo apt-get clean
           sudo apt-get update
           sudo apt-get install dpkg
-          sudo apt-get install -y firefox
+
+          sudo apt-get install -y firefox xvfb libgtk-3-0 libdbus-glib-1-2 libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxi6 libxtst6 libnss3 libcups2 libxss1 libxrandr2 libasound2 libpangocairo-1.0-0 libatk1.0-0 libcairo-gobject2 libgtk-3-0 libgdk-pixbuf2.0-0
+          GECKODRIVER_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep '"tag_name"' | sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
+          wget -O /tmp/geckodriver.tar.gz "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz"
+          tar -xzf /tmp/geckodriver.tar.gz -C /tmp
+          sudo mv /tmp/geckodriver /usr/local/bin/geckodriver
+          sudo chmod +x /usr/local/bin/geckodriver
+          geckodriver --version
+
           npm install -g testcafe --save-dev
           npm install baretest --save-dev
           ./tools/install-tarantool.sh
