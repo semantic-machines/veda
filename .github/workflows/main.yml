@@ -27,7 +27,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install dpkg
 
-          sudo apt-get install -y firefox
+          sudo apt-get install -y firefox xvfb
           npm install -g testcafe --save-dev
           testcafe --list-browsers
 
@@ -55,6 +55,9 @@ jobs:
       # Run tests
       - name: Test
         run: |
+          export DISPLAY=:99
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          sleep 2
           ./control-start.sh
           sleep 200
           #tail -n +1 ./data/tarantool/tarantool.log
