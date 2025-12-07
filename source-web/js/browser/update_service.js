@@ -21,6 +21,7 @@ export default class UpdateService {
       return UpdateService.prototype._singletonInstance;
     }
 
+    this.address = address;
     riot.observable(this);
     this.subscriptions = new Map();
     this.registry = new FinalizationRegistry((id) => {
@@ -68,10 +69,7 @@ export default class UpdateService {
           // Otherwise, treat it as a relative path
           this.url = new URL(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}${this.address.startsWith('/') ? this.address : '/' + this.address}`);
         }
-      } else if (veda.ticket) {
-        const addressCfg = await Backend.get_individual(veda.ticket, 'cfg:ClientUpdateServiceAddress', false);
-        this.address = addressCfg['rdf:value'] && addressCfg['rdf:value'][0].data;
-        // If address is a full URL (starts with ws:// or wss://), use it directly
+      } else if (this.address) {
         if (this.address.startsWith('ws://') || this.address.startsWith('wss://')) {
           this.url = new URL(this.address);
         } else {
@@ -79,7 +77,7 @@ export default class UpdateService {
           this.url = new URL(`${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}${this.address.startsWith('/') ? this.address : '/' + this.address}`);
         }
       } else {
-        throw new Error('Update service address not configured and no ticket available');
+        throw new Error('Update service address not configured');
       }
     } catch (error) {
       console.log(`CCUS address error, address = ${this.address}, url = ${this.url}`, error);

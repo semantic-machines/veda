@@ -4,7 +4,7 @@ const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default ({test, assert, Backend, Helpers, Constants, Util}) => {
   test('#046 ccus', async () => {
-    const updateService = new UpdateService();
+    const updateService = new UpdateService('ws://localhost:8088');
     await updateService.start();
 
     const ticket_user1 = (await Helpers.get_user1_ticket()).ticket;
