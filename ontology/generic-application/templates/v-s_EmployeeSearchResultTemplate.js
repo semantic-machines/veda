@@ -11,6 +11,7 @@ export const html = `
         <th><span about="rdfs:label" property="rdfs:label"></span></th>
         <th><span about="v-s:parentOrganization" property="rdfs:label"></span></th>
         <th class="orderby" data-orderby="v-s:hasAccount"><span about="v-s:login" property="rdfs:label"></span></th>
+        <th><span about="v-s:dateTo" property="rdfs:label"></span></th>
       </tr>
     </thead>
 
@@ -22,6 +23,9 @@ export const html = `
         <td property="rdfs:label"></td>
         <td rel="v-s:parentOrganization" data-template="v-ui:LabelTemplate"></td>
         <td rel="v-s:hasAccount" data-template="v-ui:LabelTemplate"></td>
+        <td rel="v-s:hasAccount">
+          <span property="v-s:dateTo"></span>
+        </td>
       </tr>
     </tbody>
   </table>
