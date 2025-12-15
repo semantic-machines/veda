@@ -479,3 +479,14 @@ d:WorkKindInWorkPermit_34
   v-s:hasRequiredFieldInWorkKind v-s:hasSafetyWorkAction_1_3;
   v-s:hasRequiredFieldInWorkKind v-s:hasSafetyWorkAction_13;
 . 
+d:WorkKindInWorkPermit_35
+  a v-s:WorkKindInWorkPermit;
+  v-s:parentUnit d:WorkKindInWorkPermit_6;
+  rdfs:label "Работы с паяльной лампой"^^xsd:string;
+  v-s:hasVisibleFieldInWorkKind v-s:hasSafetyWorkAction_1_3;
+  v-s:hasVisibleFieldInWorkKind v-s:hasSafetyWorkAction_8;
+  v-s:hasRequiredFieldInWorkKind v-s:hasWorkingOperations ;
+  v-s:hasRequiredFieldInWorkKind v-s:hasWorkPermitMainRisks ;
+  v-s:hasRequiredFieldInWorkKind v-s:hasSafetyWorkAction_1_3;
+  v-s:hasRequiredFieldInWorkKind v-s:hasSafetyWorkAction_8;  
+. 
