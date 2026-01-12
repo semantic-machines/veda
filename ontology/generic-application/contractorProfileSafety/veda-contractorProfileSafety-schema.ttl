@@ -354,7 +354,13 @@ v-s:hasGasCertificate
   rdfs:label "Operation of gas distribution and gas consumption networks certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
-
+v-s:hasFireFightingInstructionCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Целевой противопожарный инструктаж"@ru ;
+  rdfs:label "Targeted fire-fighting instruction"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
 
 
 v-s:PS_ContractorProfileSafety_Files
