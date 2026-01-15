@@ -28,8 +28,7 @@ use v_individual_model::onto::individual::RawObj;
 use v_individual_model::onto::individual2turtle::to_turtle_with_counter_refs;
 use v_individual_model::onto::onto_impl::Onto;
 use v_individual_model::onto::onto_index::OntoIndex;
-use v_common::storage::common::StorageMode;
-use v_common::v_api::obj::ResultCode;
+use v_storage::{StorageMode, StorageResult};
 use v_common::v_queue::consumer::Consumer;
 
 mod common;
@@ -98,7 +97,7 @@ fn main() -> Result<()> {
 
     for id in onto_index.data.keys() {
         let mut rindv: Individual = Individual::default();
-        if backend.storage.get_individual(id, &mut rindv) == ResultCode::Ok {
+        if backend.storage.get_individual(id, &mut rindv).is_ok() {
             rindv.parse_all();
 
             update_prefix(&mut ctx, &mut rindv);
@@ -191,21 +190,24 @@ fn prepare_element_id(backend: &mut Backend, ctx: &mut Context, queue_element: &
         return Ok(true);
     }
 
-    let res = backend.storage.get_individual(id, &mut indv);
-    if res == ResultCode::Ok {
-        indv.parse_all();
+    match backend.storage.get_individual(id, &mut indv) {
+        StorageResult::Ok(()) => {
+            indv.parse_all();
 
-        if indv_types.is_none() {
-            indv_types = indv.get_literals("rdf:type");
-            if indv_types.is_some() && !is_exportable(indv_types, ctx) {
-                return Ok(true);
+            if indv_types.is_none() {
+                indv_types = indv.get_literals("rdf:type");
+                if indv_types.is_some() && !is_exportable(indv_types, ctx) {
+                    return Ok(true);
+                }
             }
-        }
 
-        insert_individual_states(&mut indv, ctx)?;
-    } else if res == ResultCode::NotReady {
-        error!("failed to read individual {}", id);
-        return Ok(false);
+            insert_individual_states(&mut indv, ctx)?;
+        }
+        StorageResult::NotReady => {
+            error!("failed to read individual {}", id);
+            return Ok(false);
+        }
+        _ => {}
     }
 
     Ok(true)

@@ -15,9 +15,8 @@ use v_common::module::module_impl::{get_cmd, get_inner_binobj_as_individual, ini
 use v_common::module::veda_backend::Backend;
 use v_individual_model::onto::individual::Individual;
 use v_individual_model::onto::individual2msgpack::to_msgpack;
-use v_common::storage::common::{StorageId, StorageMode, VStorage};
+use v_storage::{StorageConfig, StorageId, StorageMode, StorageResult, VStorage};
 use v_common::v_api::api_client::IndvOp;
-use v_common::v_api::obj::ResultCode;
 use v_common::v_queue::consumer::Consumer;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -208,7 +207,7 @@ fn prepare(_module: &mut Backend, ctx: &mut Context, queue_element: &mut Individ
             }
 
             if cmd == IndvOp::Remove {
-                if ctx.storage.remove(StorageId::Individuals, &id) {
+                if ctx.storage.remove_value(StorageId::Individuals, &id).is_ok() {
                     info!("{}, {} id={}", op_id, cmd.as_string(), id);
                 } else {
                     error!("failed to remove individual, id = {id}, op_id={op_id}");
@@ -223,8 +222,8 @@ fn prepare(_module: &mut Backend, ctx: &mut Context, queue_element: &mut Individ
 
                 let new_counter = queue_indv_new_state.get_first_integer("v-s:updateCounter").unwrap_or(-1);
 
-                if ctx.storage.put_kv_raw(StorageId::Individuals, queue_indv_new_state.get_id(), raw1) {
-                    info!("op_id={op_id}, {} id={}, counter={new_counter}, date={}", cmd.as_string(), queue_indv_new_state.get_id(), &Utc.timestamp(date, 0));
+                if ctx.storage.put_raw_value(StorageId::Individuals, queue_indv_new_state.get_id(), raw1).is_ok() {
+                    info!("op_id={op_id}, {} id={}, counter={new_counter}, date={}", cmd.as_string(), queue_indv_new_state.get_id(), Utc.timestamp_opt(date, 0).single().unwrap_or_default());
                 } else {
                     error!("failed to update individual, id = {}", queue_indv_new_state.get_id());
                     return Err(PrepareError::Fatal);
@@ -247,8 +246,15 @@ fn get_storage_with_url(db_connection_url: &str, storage_mode: StorageMode) -> V
             if url.scheme() == "file" {
                 let path = url.as_str().strip_prefix("file://").unwrap_or_default();
                 info!("lmdb={:?}", path);
-                let mut storage = VStorage::new_lmdb(path, storage_mode, None);
-                info!("total count: {}", storage.count(StorageId::Individuals));
+                let config = StorageConfig::Lmdb {
+                    path: path.to_string(),
+                    mode: storage_mode,
+                    max_read_counter_reopen: None,
+                };
+                let mut storage = VStorage::from_config(config).expect("failed to create lmdb storage");
+                if let StorageResult::Ok(count) = storage.count(StorageId::Individuals) {
+                    info!("total count: {}", count);
+                }
                 storage
             } else {
                 let host = url.host_str().unwrap_or("127.0.0.1");
@@ -256,7 +262,12 @@ fn get_storage_with_url(db_connection_url: &str, storage_mode: StorageMode) -> V
                 let user = url.username();
                 let pass = url.password().unwrap_or("123");
                 info!("Trying to connect to Tarantool, host: {}, port: {}, user: {}, password: {}", host, port, user, pass);
-                VStorage::new_tt(format!("{host}:{port}"), user, pass)
+                let config = StorageConfig::Tarantool {
+                    uri: format!("{host}:{port}"),
+                    login: user.to_string(),
+                    password: pass.to_string(),
+                };
+                VStorage::from_config(config).expect("failed to create tarantool storage")
             }
         },
         Err(e) => {
@@ -271,7 +282,7 @@ fn check(op_id: i64, id: &str, queue_indv: &mut Individual, check_cmd: &Option<C
     if let Some(check_cmd) = &check_cmd {
         let mut storage_indv = Individual::default();
 
-        let exist = ctx.storage.get_individual(id, &mut storage_indv) == ResultCode::Ok;
+        let exist = ctx.storage.get_individual(id, &mut storage_indv).is_ok();
 
         if *check_cmd == CheckCmd::IsExist && !exist {
             //error!("NOT FOUND, {}", id);

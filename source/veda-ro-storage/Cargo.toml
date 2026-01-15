@@ -9,5 +9,6 @@ log = "0.4"
 nng = "1.0.0"
 
 #v_common = { package = "v-common", path = "../../../v-common" }
-v_common = { package = "v-common", version = "=0.13.7", features = ["tokio_0_2", "tt_2", "awc_2"] }
-v-individual-model = "0.1.1"
+v_common = { package = "v-common", version = "0.17.2", features = ["tokio_1", "awc_3"] }
+v-storage = "0.1"
+v-individual-model = "0.2"

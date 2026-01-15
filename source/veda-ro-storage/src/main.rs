@@ -7,8 +7,7 @@ use v_common::module::module_impl::init_log;
 use v_common::module::module_impl::Module;
 use v_common::module::veda_backend::get_storage_use_prop;
 use v_individual_model::onto::individual::Individual;
-use v_common::storage::common::{StorageId, StorageMode, VStorage};
-use v_common::v_api::obj::ResultCode;
+use v_storage::{StorageId, StorageMode, StorageResult, VStorage};
 
 /**
  * storage service
@@ -25,7 +24,7 @@ fn main() -> std::io::Result<()> {
     let ro_storage_url = Module::get_property::<String>("ro_storage_url").expect("param [ro_storage_url] not found in veda.properties");
     let mut storage = get_storage_use_prop(StorageMode::ReadOnly);
 
-    info!("total count: {}", storage.count(StorageId::Individuals));
+    info!("total count: {:?}", storage.count(StorageId::Individuals));
 
     let server = Socket::new(Protocol::Rep0)?;
     if let Err(e) = server.listen(&ro_storage_url) {
@@ -71,7 +70,7 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
             match rel[0] {
                 "T" | "I" => {
                     let mut indv = Individual::default();
-                    if storage.get_individual_from_db(db_id, rel[1], &mut indv) == ResultCode::Ok {
+                    if storage.get_individual_from_db(db_id, rel[1], &mut indv).is_ok() {
                         indv.parse_all();
                         return Message::from(indv.get_obj().as_json().to_string().as_bytes());
                     } else {
@@ -80,7 +79,7 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
                 }
                 "F" => {
                     let mut indv = Individual::default();
-                    if storage.get_individual_from_db(StorageId::Individuals, rel[1], &mut indv) == ResultCode::Ok {
+                    if storage.get_individual_from_db(StorageId::Individuals, rel[1], &mut indv).is_ok() {
                         if let Some(ffs) = filters {
                             for f in ffs {
                                 indv.get_literals(f);
@@ -92,11 +91,13 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
                     }
                 }
                 "t" | "i" => {
-                    let binobj = storage.get_raw_value(db_id, rel[1]);
-                    if binobj.is_empty() {
-                        return Message::from("[]".as_bytes());
+                    if let StorageResult::Ok(binobj) = storage.get_raw_value(db_id, rel[1]) {
+                        if binobj.is_empty() {
+                            return Message::from("[]".as_bytes());
+                        }
+                        return Message::from(binobj.as_slice());
                     }
-                    return Message::from(binobj.as_slice());
+                    return Message::from("[]".as_bytes());
                 }
                 _ => error!("invalid query: {}", s),
             }
