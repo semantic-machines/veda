@@ -20,7 +20,7 @@ build_module () {
 }
 
 BUILD_PATH=$PWD
-LIBRARY_PATH = "/usr/local/lib"
+export LIBRARY_PATH="/usr/local/lib"
 
 #!/bin/sh
 rm *.log
