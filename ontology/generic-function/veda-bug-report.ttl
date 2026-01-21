@@ -74,6 +74,7 @@ v-s:BugReport_permission
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate true ;
   rdfs:label "C. Право всем пользователям на создание индивидов типа v-s:BugReport" ;
+  v-s:deleted "true"^^xsd:boolean;
 .
 
 #--------------------------------------------
