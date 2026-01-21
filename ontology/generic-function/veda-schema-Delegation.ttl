@@ -238,6 +238,28 @@ v-s:Perm_DelegationUser_AllUsersGroup_C
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "Все пользователи имеют право создавать Заявку на делегирование" ;
+  v-s:deleted "true"^^xsd:boolean;
+.
+v-s:Perm_DelegationUser_RU1121003135_C
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:RequestDelegationUser ;
+  v-s:permissionSubject d:org_RU1121003135_group ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "АО СЛПК имеют право создавать Заявку на делегирование" ;
+.
+v-s:Perm_DelegationUser_OrganizationsWithoutLimitedClassTypes_C
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:RequestDelegationUser ;
+  v-s:permissionSubject v-s:OrganizationsWithoutLimitedClassTypes ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "Группа компаний особо вовлеченных имеют право создавать Заявку на делегирование" ;
+.
+v-s:Perm_DelegationUser_OrganizationsWithLimitedClassTypes_C
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:RequestDelegationUser ;
+  v-s:permissionSubject v-s:OrganizationsWithLimitedClassTypes ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "Компании с ограниченным доступом к просмотру документов имеют право создавать Заявку на делегирование" ;
 .
 #R
 v-s:Perm_DelegationUser_AllUsersGroup_R
@@ -246,6 +268,28 @@ v-s:Perm_DelegationUser_AllUsersGroup_R
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "Все пользователи имеют право просматривать все Заявки на делегирование" ;
+  v-s:deleted "true"^^xsd:boolean;
+.
+v-s:Perm_DelegationUser_RU1121003135_R
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:RequestDelegation_group ;
+  v-s:permissionSubject d:org_RU1121003135_group ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "АО СЛПК имеют право просматривать все Заявки на делегирование" ;
+.
+v-s:Perm_DelegationUser_OrganizationsWithoutLimitedClassTypes_R
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:RequestDelegation_group ;
+  v-s:permissionSubject v-s:OrganizationsWithoutLimitedClassTypes ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "Группа компаний особо вовлеченных имеют право просматривать все Заявки на делегирование" ;
+.
+v-s:Perm_DelegationUser_OrganizationsWithLimitedClassTypes_R
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:RequestDelegation_group ;
+  v-s:permissionSubject v-s:OrganizationsWithLimitedClassTypes ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "Компании с ограниченным доступом к просмотру документов имеют право просматривать все Заявки на делегирование" ;
 .
 #RUD
 v-s:Perm_DelegationUser_AllUsersGroup_RUD
