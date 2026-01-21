@@ -151,6 +151,7 @@ v-s:CountOfUsersTasks_Report_Parameters_permission1
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "Отдел Количество задач. Отчет v-s:CountOfUsersTasks_Report" ;
+  v-s:deleted "true"^^xsd:boolean;
 .
 
 v-s:CompletedTasksCount_Report_Parameters_permission1
@@ -160,4 +161,20 @@ v-s:CompletedTasksCount_Report_Parameters_permission1
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "Отдел Количество выполненных задач. Отчет v-s:CompletedTasksCount_Reportы" ;
+  v-s:deleted "true"^^xsd:boolean;
+.
+
+v-s:CountOfUsersTasks_Report_Parameters_permission
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:CountOfUsersTasks_Report_Parameters ;
+  v-s:permissionSubject d:org_RU1121003135_group ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "АО СЛПК C отчет по количеству задач" ;
+.
+v-s:CompletedTasksCount_Report_Parameters_permission
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:CompletedTasksCount_Report_Parameters ;
+  v-s:permissionSubject d:org_RU1121003135_group ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "АО СЛПК C отчет по количеству выполненных задач" ;
 .
