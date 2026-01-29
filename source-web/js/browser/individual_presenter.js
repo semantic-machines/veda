@@ -242,7 +242,7 @@ function renderTemplate (individual, container, templateString, name, mode, extr
           template.setAttribute('data-mode', mode);
           const pre_result = pre ? pre.call(individual, individual, template, container, mode, extra) : undefined;
           return Promise.resolve(pre_result)
-            .then(() => processTemplate(individual, container, wrapper, mode))
+            .then(() => processTemplate(individual, container, wrapper, mode, extra))
             .then((processed) => {
               if (toAppend) {
                 container.appendChild(processed);
@@ -274,7 +274,7 @@ function renderTemplate (individual, container, templateString, name, mode, extr
  * @this Individual
  * @return {Promise}
  */
-function processTemplate (individual, container, wrapper, templateMode) {
+function processTemplate (individual, container, wrapper, templateMode, extra) {
   let mode = templateMode;
 
   const template = wrapper.firstElementChild;
@@ -686,7 +686,7 @@ function processTemplate (individual, container, wrapper, templateMode) {
               delete prev_rendered[value.id];
               return;
             }
-            return renderRelationValue({about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded, toAppend: false})
+            return renderRelationValue({about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded, extra, toAppend: false})
               .then((renderedTemplate) => {
                 curr_rendered[value.id] = i;
                 return renderedTemplate;
@@ -853,6 +853,9 @@ function processTemplate (individual, container, wrapper, templateMode) {
     }, true);
     validation.embeddedState = embedded.reduce((acc, embeddedTemplate) => {
       const embeddedValidation = embeddedTemplate.getAttribute('data-valid') === 'true';
+      // if (!embeddedValidation) {
+      //   console.log('embeddedValidation is false', embeddedTemplate);
+      // }
       return acc && embeddedValidation;
     }, true);
     validation.state = validation.state && validation.embeddedState;
@@ -1067,8 +1070,8 @@ function renderPropertyValues (about, isAbout, property_uri, propertyContainer, 
  * @param {Boolean} toAppend - flag defining either to append or replace the relContainer's content with rendered value template
  * @return {void}
  */
-function renderRelationValue ({about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded, toAppend}) {
-  return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined, undefined, toAppend).then((rendered) => {
+function renderRelationValue ({about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded, extra, toAppend}) {
+  return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined, extra, toAppend).then((rendered) => {
     if (!Array.isArray(rendered)) {
       rendered = [rendered];
     }

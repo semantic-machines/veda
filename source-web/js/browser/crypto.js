@@ -33,6 +33,7 @@ async function createSignatureFileIndividual (signature, name, parent, thumbprin
   fileIndividual['v-s:canUpdate'] = [true];
   fileIndividual['v-s:canDelete'] = [true];
   fileIndividual['v-s:backwardProperty'] = ['v-s:digitalSignature'];
+  fileIndividual['v-s:backwardPrepend'] = [true];
   try {
     await uploadSignatureFile(signature, path, uri);
     await fileIndividual.save();
@@ -100,7 +101,9 @@ async function signData (dataToSign, thumbprint, individual) {
   const certificate = await cryptoPro.certificateInfo(thumbprint);
   const signature = await cryptoPro.signData(dataToSign, certificate.Thumbprint);
   const signatureFileIndividual = await createSignatureFileIndividual(signature, certificate.Name, individual, thumbprint);
-  individual.addValue('v-s:digitalSignature', signatureFileIndividual);
+  // using backwardPrepend
+  individual['v-s:digitalSignature'] = [signatureFileIndividual].concat(individual['v-s:digitalSignature']);
+  // individual.addValue('v-s:digitalSignature', signatureFileIndividual);
   return true;
 }
 

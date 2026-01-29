@@ -15,13 +15,17 @@ export const post = function (individual, template, container, mode, extra) {
   const self = individual;
   const objectContainer = $('#object-container', template);
   const object = self.object;
-
+  if (extra) {
+    for (const property_uri in extra) {
+      object[property_uri] = extra[property_uri];
+    }
+  }
   const _class = object['rdf:type'][0];
 
   _class.rights.then(function (rights) {
     if (rights.hasValue('v-s:canCreate', true)) {
       const object_template = self.get('v-fc:targetTemplate')[0];
-      object.present(objectContainer, object_template, 'edit').then(function (objectTemplate) {
+      object.present(objectContainer, object_template, 'edit', extra).then(function (objectTemplate) {
         objectTemplate = $(objectTemplate);
         objectTemplate.one('kancel', cancelHandler);
         object.one('afterSave', saveHandler);
