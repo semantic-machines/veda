@@ -123,9 +123,12 @@ WorkflowUtil.WorkItemResult = function (_work_item_result) {
     for (const item of this.work_item_result) {
       const wirv = item?.[var_name];
       const itemDecisionClassUri = wirv?.[0]?.data;
-      const itemDecisionSuperClassesUris = veda.ontology.classTree[itemDecisionClassUri].superClasses;
-      if (itemDecisionClassUri && (itemDecisionClassUri === decisionClassUri || itemDecisionSuperClassesUris.indexOf(decisionClassUri) >= 0)) {
-        count_taken++;
+      if (itemDecisionClassUri) {
+        const classIndividual = get_individual(this.ticket, itemDecisionClassUri);
+        const superClassesUris = classIndividual?.['rdfs:subClassOf'].map(i => {return i.data});
+        if (itemDecisionClassUri === decisionClassUri || superClassesUris.indexOf(decisionClassUri) >= 0) {
+          count_taken++;
+        }
       }
     }
 
@@ -157,9 +160,12 @@ WorkflowUtil.WorkItemResult = function (_work_item_result) {
     for (const item of this.work_item_result) {
       const wirv = item?.[var_name];
       const itemDecisionClassUri = wirv?.[0]?.data;
-      const itemDecisionSuperClassesUris = veda.ontology.classTree[itemDecisionClassUri].superClasses;
-      if (itemDecisionClassUri && (itemDecisionClassUri === decisionClassUri || itemDecisionSuperClassesUris.indexOf(decisionClassUri) >= 0)) {
-        return true;
+      if (itemDecisionClassUri) {
+        const classIndividual = get_individual(this.ticket, itemDecisionClassUri);
+        const superClassesUris = classIndividual?.['rdfs:subClassOf'].map(i => {return i.data});
+        if (itemDecisionClassUri === decisionClassUri || superClassesUris.indexOf(decisionClassUri) >= 0) {
+          return true;
+        }
       }
     }
 
