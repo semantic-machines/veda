@@ -16,6 +16,10 @@ export async function getMobileCode (event, loginForm) {
   try {
     // Нормализация номера телефона
     const normalizedPhone = normalizePhone(phone);
+    if (!normalizedPhone) {
+      showSmsErrorMessage('Неверный формат номера телефона', loginForm);
+      return null;
+    }
     
     // Генерация параметров для подписи
     const timestamp = Math.floor(Date.now() / 1000);
@@ -45,14 +49,14 @@ export async function getMobileCode (event, loginForm) {
       },
       body: JSON.stringify(requestData)
     });
-    
     if (!response.ok) {
+      showSmsErrorMessage(`Возникла ошибка при отправке запроса. Обратитесь в службу поддержки.`, loginForm);
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
     console.error('SMS request error:', error);
-    showSmsErrorMessage(error.message);
+    showSmsErrorMessage(error.message, loginForm);
   }
 }
 
@@ -63,13 +67,13 @@ export async function verifySmsCode (event, loginForm) {
   const code = codeInput.value.trim();
   
   if (!code || code.length !== 6) {
-    showSmsErrorMessage('Введите 6-значный код из SMS');
+    showSmsErrorMessage('Введите 6-значный код из SMS', loginForm);
     return;
   }
   
   const token = sessionStorage.getItem('sms_auth_token');
   if (!token) {
-    showSmsErrorMessage('Сессия истекла. Запросите код повторно.');
+    showSmsErrorMessage('Сессия истекла. Запросите код повторно.', loginForm);
     return;
   }
   
@@ -92,6 +96,7 @@ export async function verifySmsCode (event, loginForm) {
     
     if (!response.ok) {
       if (response.status === 473) {
+        showSmsErrorMessage('Неверный код. Попробуйте еще раз.', loginForm);
         throw new Error('Неверный код. Попробуйте еще раз.');
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -100,7 +105,7 @@ export async function verifySmsCode (event, loginForm) {
     return await response.json();
   } catch (error) {
     console.error('SMS verify error:', error);
-    showSmsErrorMessage(error.message);
+    showSmsErrorMessage(error.message, loginForm);
     codeInput.value = ''; // Очистить поле ввода
   }
 }
@@ -169,8 +174,8 @@ function normalizePhone(phone) {
     // 999 123 45 67 -> 79991234567
     return '7' + digits;
   }
-  
-  throw new Error('Неверный формат номера телефона');
+  console.log('Неверный формат номера телефона');
+  return null;
 }
 
 /**
@@ -218,13 +223,13 @@ function showSmsSuccessMessage(message) {
  * @param {string} message - error message
  * @return {void}
  */
-function showSmsErrorMessage(message) {
+function showSmsErrorMessage(message, loginForm) {
   console.log(`showSmsErrorMessage : ${message}`);
-  // const smsErrorMessage = loginForm.querySelector('#sms-error-message');
-  // if (smsErrorMessage) {
-  //   smsErrorMessage.textContent = message;
-  //   show(smsErrorMessage);
-  //   // Hide after 10 seconds
-  //   setTimeout(() => hide(smsErrorMessage), 10000);
-  // }
+  const smsErrorMessage = loginForm.querySelector('#sms-error-message');
+  if (smsErrorMessage) {
+    smsErrorMessage.textContent = message;
+    smsErrorMessage.style.display = 'block';
+    // Hide after 10 seconds
+    setTimeout(() => smsErrorMessage.style.display = 'none', 10000);
+  }
 }

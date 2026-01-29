@@ -82,6 +82,48 @@ const submitLoginPassword = spinnerDecorator(function (event) {
 const loginForm = document.getElementById('login-form');
 
 loginForm.querySelector('#submit-login-password').addEventListener('click', submitLoginPassword);
+
+function blockTimer(){
+  const getCodeButton = loginForm.querySelector('#get-code');
+  const timerSection = loginForm.querySelector('#timer-section');
+
+  if (!getCodeButton || !timerSection) {
+    console.warn('Required elements not found for blockTimer');
+    return;
+  }
+
+  // Блокируем кнопку
+  getCodeButton.disabled = true;
+
+  // Показываем блок таймера
+  timerSection.style.display = 'block';
+
+  let timeLeft = 120; // 120 секунд
+
+  // Функция обновления таймера
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    // Обновляем отображение времени (предполагаем, что есть элемент для отображения)
+    const timerDisplay = timerSection.querySelector('.timer-display') || timerSection;
+    timerDisplay.textContent = timeString;
+
+    if (timeLeft > 0) {
+      timeLeft--;
+      setTimeout(updateTimer, 1000);
+    } else {
+      // Время истекло
+      getCodeButton.disabled = false;
+      timerSection.style.display = 'none';
+    }
+  }
+
+  // Запускаем таймер
+  updateTimer();
+}
+
 if (loginForm.querySelector('#get-code') != null) {
   hide(loginForm.querySelector('#enter-login-password'));
   loginForm.querySelector('#get-code').addEventListener('click', spinnerDecorator(async function (e) {
@@ -91,6 +133,7 @@ if (loginForm.querySelector('#get-code') != null) {
 
     // Сохранение токена для последующей верификации
     if (result && result.token) {
+      blockTimer();
       sessionStorage.setItem('sms_auth_token', result.token);
     }
   }));
@@ -104,7 +147,11 @@ if (loginForm.querySelector('#get-code') != null) {
 
     // Обработка успешной аутентификации
     if (result &&result.id && result.user_uri) {
-      await handleLoginSuccess(result);
+      await handleLoginSuccess({
+        ticket: result.id,
+        user_uri: result.user_uri,
+        end_time: Math.floor((result.end_time - 621355968000000000) / 10000),
+      });
     } else {
       throw new Error('Неверный ответ сервера');
     }
