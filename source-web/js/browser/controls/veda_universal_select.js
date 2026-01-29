@@ -8,7 +8,7 @@ import Util from '../../common/util.js';
 
 import {interpolate, ftQuery, ftQueryWithDeleted, storedQuery, renderValue, convertToCyrillic, sanitizeInput} from './veda_control_util.js';
 
-$.fn.veda_link = async function ( options ) {
+$.fn.veda_universal_select = async function ( options ) {
   const self = this;
   const opts = {...defaults, ...options};
   const control = $(opts.template);
@@ -29,6 +29,7 @@ $.fn.veda_link = async function ( options ) {
   const sort = this.attr('data-sort') || ( spec && spec.hasValue('v-ui:sort') && spec['v-ui:sort'][0].toString() );
   let isSingle = this.attr('data-single') || ( spec && spec.hasValue('v-ui:maxCardinality') ? spec['v-ui:maxCardinality'][0] === 1 : true );
   let withDeleted = this.attr('data-deleted') || false;
+  const filledProperty = this.attr('data-fill-with') || undefined;
 
   let storedQueryId = spec && spec.hasValue('v-s:storedQuery') ? spec['v-s:storedQuery'][0] : undefined;
   if (this.attr('data-stored-query')) {
@@ -44,143 +45,6 @@ $.fn.veda_link = async function ( options ) {
 
   if (template) {
     this.removeAttr('data-template');
-  }
-
-  // Select value
-  const select = function (values) {
-    values = values instanceof Array ? values : [values];
-    if (isSingle) {
-      individual.set(rel_uri, [values[0]]);
-    } else {
-      const filtered = values.filter((i) => {
-        return individual.get(rel_uri).indexOf(i) < 0;
-      });
-      individual.set(rel_uri, individual.get(rel_uri).concat(filtered));
-    }
-  };
-
-  const createValue = function () {
-    const newVal = new IndividualModel();
-    newVal['rdf:type'] = rangeRestriction ? [rangeRestriction] : [(new IndividualModel(rel_uri))['rdfs:range'][0]];
-    newVal['v-s:backwardTarget'] = [individual];
-    newVal['v-s:backwardProperty'] = [rel_uri];
-    newVal['v-s:parent'] = [individual];
-    newVal['v-s:canRead'] = [true];
-    newVal['v-s:canUpdate'] = [true];
-    newVal['v-s:canDelete'] = [true];
-    return newVal;
-  };
-
-  // Create feature
-  const create = $('.create', control);
-  if ( this.hasClass('create') || this.hasClass('full') ) {
-    const inModal = this.hasClass('create-modal');
-    const rel_range = rangeRestriction ? rangeRestriction : (new IndividualModel(rel_uri))['rdfs:range'][0];
-    rel_range.rights.then((rights) => {
-      if ( !rights.hasValue('v-s:canCreate', true) && opts.mode !== 'search' ) {
-        create.addClass('disabled');
-        create.off('click keyup');
-      } else {
-        create.on('click keydown', function (ev) {
-          if (ev.type !== 'click' && ev.which !== 13 && ev.which !== 32) {
-            return;
-          }
-          ev.preventDefault();
-          ev.stopPropagation();
-          const newVal = createValue();
-          if ( inModal ) {
-            let modal = $('#individual-modal-template').html();
-            modal = $(modal).modal({'show': false});
-            $('body').append(modal);
-            modal.modal('show');
-            const ok = $('#ok', modal).click(() => {
-              select(newVal);
-            });
-            $('.close', modal).click(() => {
-              newVal.delete();
-            });
-            const cntr = $('.modal-body', modal);
-            newVal.one('beforeReset', function () {
-              modal.modal('hide').remove();
-            });
-            newVal.one('afterSave', function () {
-              select(newVal);
-              modal.modal('hide').remove();
-            });
-            newVal.present(cntr, undefined, 'edit').then((tmpl) => {
-              tmpl = $(tmpl);
-              $('.action', tmpl).remove();
-              const isValid = tmpl.attr('data-valid');
-              if ( isValid === 'true' ) {
-                ok.removeAttr('disabled');
-              } else {
-                ok.attr('disabled', 'disabled');
-              }
-              tmpl.on('internal-validated', function (e) {
-                const validation = e.detail;
-                if (validation.state) {
-                  ok.removeAttr('disabled');
-                } else {
-                  ok.attr('disabled', 'disabled');
-                }
-              });
-            });
-          } else {
-            select(newVal);
-          }
-        });
-      }
-    });
-
-    // Hide create button for single value relations if value exists
-    if (isSingle) {
-      const singleValueHandler = function (values) {
-        if (values.length) {
-          create.hide();
-        } else {
-          create.show();
-        }
-      };
-      individual.on(rel_uri, singleValueHandler);
-      self.one('remove', function () {
-        individual.off(rel_uri, singleValueHandler);
-      });
-      singleValueHandler(individual.get(rel_uri));
-    }
-  } else {
-    create.remove();
-  }
-
-  // Tree feature
-  const tree = $('.tree', control);
-  if ( this.hasClass('tree') || this.hasClass('full') ) {
-    const treeTmpl = new IndividualModel('v-ui:TreeTemplate');
-    const modal = $('#individual-modal-template').html();
-    tree.on('click keydown', function (e) {
-      if (e.type !== 'click' && e.which !== 13 && e.which !== 32) {
-        return;
-      }
-      e.preventDefault();
-      e.stopPropagation();
-      const $modal = $(modal);
-      const cntr = $('.modal-body', $modal);
-      $modal.on('hidden.bs.modal', () => {
-        $modal.remove();
-      });
-      $modal.modal();
-      $('body').append($modal);
-
-      const extra = {
-        target: individual,
-        target_rel_uri: rel_uri,
-        isSingle: isSingle,
-        withDeleted: withDeleted,
-        sort: sort,
-      };
-      spec.present(cntr, treeTmpl, undefined, extra);
-    });
-  } else {
-    tree.remove();
   }
 
   // Predefined lists feature
@@ -504,14 +368,21 @@ $.fn.veda_link = async function ( options ) {
       e.preventDefault();
     });
 
-    const clickHandler = function (e) {
+    const clickHandler = async function (e) {
       e.preventDefault();
       const tmpl = $(e.target);
       const suggestion_uri = tmpl.attr('resource');
       if (!suggestion_uri) {
         return;
       }
-      const suggestion = new IndividualModel(suggestion_uri);
+      let suggestion;
+      if (filledProperty) {
+        suggestion = await new IndividualModel(suggestion_uri).load();
+        suggestion = suggestion.get(filledProperty)[0];
+      } else {
+        suggestion = new IndividualModel(suggestion_uri);
+      }
+      //const suggestion = new IndividualModel(suggestion_uri);
       tmpl.toggleClass('selected');
       if (isSingle) {
         tmpl.siblings().removeClass('selected');
@@ -593,19 +464,27 @@ $.fn.veda_link = async function ( options ) {
       }
     };
 
-    const propertyModifiedHandler = function () {
+    const propertyModifiedHandler = function (a, b, c) {
       if ( isSingle && individual.hasValue(rel_uri) ) {
-        individual.get(rel_uri)[0].load()
-          .then((value) => renderValue(value, template))
-          .then((rendered) => {
+        const val = individual.get(rel_uri)[0];
+        if (val instanceof IndividualModel) {
+            val.load()
+            .then((value) => renderValue(value, template))
+            .then((rendered) => {
+                const inputValue = fulltext.val();
+                if (inputValue != rendered) {
+                fulltext.val(rendered);
+                }
+            })
+            .catch((error) => {
+                console.log('Error rendering value', error);
+            });
+        } else {
             const inputValue = fulltext.val();
-            if (inputValue != rendered) {
-              fulltext.val(rendered);
+            if (inputValue != val) {
+                fulltext.val(val);
             }
-          })
-          .catch((error) => {
-            console.log('Error rendering value', error);
-          });
+        }
       } else {
         fulltext.val('');
       }
@@ -614,9 +493,16 @@ $.fn.veda_link = async function ( options ) {
         .removeClass('selected')
         .each(function () {
           const item = $(this);
-          const resource = item.attr('resource');
-          if (individual.hasValue(rel_uri, resource)) {
-            item.addClass('selected');
+          if (filledProperty == undefined) {
+            const resource = item.attr('resource');
+            if (individual.hasValue(rel_uri, resource)) {
+                item.addClass('selected');
+            }
+          } else {
+            const value = item.text()
+            if (individual.hasValue(rel_uri, value)) {
+                item.addClass('selected');
+            }
           }
         });
     };
@@ -771,19 +657,17 @@ const defaults = {
   template: `
 <div class="link-control">
   <div class="input-group">
-    <div class="input-group-addon btn btn-default tree" tabindex="0">
-      <i class="fa fa-sitemap"></i>
-    </div>
     <textarea rows="1" class="form-control fulltext"></textarea>
+    <!-- <div class="info-icons" style="position: absolute;top: 50%;right: 15px;transform: translateY(-50%);">
+      <i class="fa fa-exclamation" aria-hidden="true"></i>
+      <i class="fa fa-question" aria-hidden="true"></i>
+    </div> -->
     <div class="input-group-addon btn btn-default clear" tabindex="0">&#10005;</div>
     <div class="input-group-addon btn btn-default dropdown" tabindex="0">
       <i class="caret"></i>
     </div>
     <div class="input-group-addon btn btn-default favorite" tabindex="0">
       <i class="caret"></i>
-    </div>
-    <div class="input-group-addon btn btn-default create" tabindex="0">
-      <i class="glyphicon glyphicon-plus"></i>
     </div>
     <div class="input-group-addon btn btn-default list" tabindex="0">
       <i class="fa fa-bars"></i>

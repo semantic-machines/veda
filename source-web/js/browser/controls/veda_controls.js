@@ -22,3 +22,4 @@ import './veda_string.js';
 import './veda_text.js';
 import './veda_uri.js';
 import './veda_worktime.js';
+import './veda_universal_select.js';
