@@ -162,6 +162,9 @@ export const html = `
             <span about="@" property="v-s:middleName"></span>
           </div>
         </div>
+        <div about="@" rel="v-s:hasDelegationPurpose">
+          <span about="@" property="rdfs:label"></span>
+        </div>
         <div class="for-trunc" about="@" rel="v-s:occupation" data-template="v-ui:LabelTemplate"></div>
         <div class="absenceBlock" about="@" rel="v-s:employee">
           <div>

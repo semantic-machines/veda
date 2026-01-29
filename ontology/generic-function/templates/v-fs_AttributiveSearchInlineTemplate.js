@@ -204,14 +204,19 @@ export const post = function (individual, template, container, mode) {
       // Show/hide result table columns & update resultTemplate accordingly
       function checkHandler () {
         individual.resultTemplate = $(individual.resultTemplate);
+        const rows = $('tr', resultContainer);
         if ( $(this).is(':checked') ) {
           th.removeClass('hidden');
-          $('tr td:nth-child(' + (index + 1) + ')', resultContainer).removeClass('hidden');
+          rows.each(function () {
+            $(this).find('td:not(.no-wrapper.no-export)').eq(index).removeClass('hidden');
+          });
           individual.resultTemplate.not('script').children().eq(index).removeClass('hidden');
           delete individual.hiddenColumns[index];
         } else {
           th.addClass('hidden');
-          $('tr td:nth-child(' + (index + 1) + ')', resultContainer).addClass('hidden');
+          rows.each(function () {
+            $(this).find('td:not(.no-wrapper.no-export)').eq(index).addClass('hidden');
+          })
           individual.resultTemplate.not('script').children().eq(index).addClass('hidden');
           individual.hiddenColumns[index] = true;
         }

@@ -54,6 +54,18 @@ export const post = function (individual, template, container, mode, extra) {
     };
     return function (table, name, exportAs) {
       if (!table.nodeType) table = document.getElementById(table);
+      console.log(table.querySelectorAll('td[rel]'));
+      table.querySelectorAll('td[rel]').forEach(td => {
+        const values = td.querySelectorAll('[resource]');
+        if (values.length > 1) {
+          const textContent = [];
+          values.forEach(v => {
+            textContent.push(`"${v.textContent.trim()}"`);
+          });
+          td.innerHTML = `<span>=${textContent.join('&СИМВОЛ(10)&')}</span>`;
+        }
+      })
+
       const ctx = {
         worksheet: name || 'Worksheet',
         table: table.innerHTML,

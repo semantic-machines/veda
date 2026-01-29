@@ -306,13 +306,36 @@ export const post = function (individual, template, container, mode, extra) {
     const wherePart = "WHERE v_s_parentUnit_str=['" + parentUri + "'] AND v_s_deleted_int=[0]";
     const endingPart = " group by id, rdfs_label_str having sum(sign) > 0 order by arraySort(x -> endsWith(lowerUTF8(x), '@en'), rdfs_label_str) asc";
     const queryDepartments = selectPart + 'FROM veda_tt.`v-s:Department` FINAL ' + wherePart + endingPart;
-    let queryAppointment =
-      selectPart +
-      'FROM veda_tt.`v-s:Appointment` FINAL ' +
-      "WHERE v_s_parentUnit_str=['" +
-      parentUri +
-      "'] AND v_s_deleted_int=[0] AND v_s_official_int=[1] AND NOT(lowerUTF8(arrayStringConcat(v_s_origin_str, '')) LIKE '%group%')" +
-      endingPart;
+    // let queryAppointment =
+    //   selectPart +
+    //   'FROM veda_tt.`v-s:Appointment` FINAL ' +
+    //   "WHERE v_s_parentUnit_str=['" +
+    //   parentUri +
+    //   "'] AND v_s_deleted_int=[0] AND v_s_official_int=[1] AND NOT(lowerUTF8(arrayStringConcat(v_s_origin_str, '')) LIKE '%group%')" +
+    //   endingPart;
+    let queryAppointment = `
+SELECT DISTINCT t1.id
+FROM veda_tt.\`v-s:Appointment\` t1
+  LEFT JOIN veda_tt.\`v-s:Department\` t2 
+  ON t2.v_s_hasChiefDetail_str[1]=t1.id 
+  AND t2.v_s_deleted_int != [1] 
+  AND t2.id = '${parentUri}'
+WHERE
+	t1.v_s_parentUnit_str =['${parentUri}']
+	AND t1.v_s_deleted_int = [0]
+	AND t1.v_s_official_int = [1]
+	AND NOT(lowerUTF8(arrayStringConcat(t1.v_s_origin_str, '')) LIKE '%group%')
+group by
+	t1.id,
+	t1.version,
+	t1.rdfs_label_str,
+	t2.id,
+	t2.version
+having
+	sum(t1.sign) > 0
+order by
+	t2.id desc, arrayFilter(x -> x like '%@RU',t1.rdfs_label_str) asc
+`;
     let queryPositions =
       selectPart +
       'FROM veda_tt.`v-s:Position` FINAL ' +

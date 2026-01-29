@@ -1,7 +1,7 @@
 export const pre = function (individual, template, container, mode, extra) {
   template = $(template);
   container = $(container);
-  if (individual.hasValue('v-s:hasVisualStatus', 'v-s:StatusNotActualForView')) {
+  if (!individual.hasValue('v-s:hasVisualStatus', 'v-s:StatusActualForView')) {
     $('a', template).remove();
   }
 }
