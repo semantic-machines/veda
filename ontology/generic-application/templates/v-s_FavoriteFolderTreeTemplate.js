@@ -44,7 +44,7 @@ export const post = async function (individual, template, container, mode, extra
     const parentFolder = new IndividualModel(parentFolderUri);
     const folderUri = this.closest('[resource]').getAttribute('resource');
     const folder = new IndividualModel(folderUri);
-    if (confirm('Вы дествительно хотите удалить объект?')) {
+    if (confirm('Вы действительно хотите удалить объект?')) {
       try {
         await parentFolder.removeValue(undefined, folder);
         await parentFolder.save();
