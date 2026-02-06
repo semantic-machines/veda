@@ -135,7 +135,7 @@ Util.createReport = function (report, params) {
 
     const form = document.createElement('form');
     form.setAttribute('method', 'post');
-    form.setAttribute('action', jasperServerAddress + 'flow.html?_flowId=viewReportFlow&reportUnit=' + encodeURIComponent(reportIndividual['v-s:reportPath'][0]) + '&output=' + encodeURIComponent(reportIndividual['v-s:reportFormat'][0]) + '&documentId=' + encodeURIComponent(params.id) + '&ticket=' + veda.ticket);
+    form.setAttribute('action', jasperServerAddress + 'flow.html?_flowId=viewReportFlow&reportUnit=' + encodeURIComponent(reportIndividual['v-s:reportPath'][0]) + '&output=' + encodeURIComponent(reportIndividual['v-s:reportFormat'][0]) + '&documentId=' + encodeURIComponent(params.id));
     form.setAttribute('target', 'Report');
 
     Object.getOwnPropertyNames(params.properties).forEach((key) => {
@@ -189,7 +189,7 @@ Util.createReportToFile = function (report, params) {
 
     const form = document.createElement('form');
     form.setAttribute('method', 'post');
-    form.setAttribute('action', jasperServerAddress + 'flow.html?_flowId=viewReportFlow&reportUnit=' + encodeURIComponent(reportIndividual['v-s:reportPath'][0]) + '&output=' + encodeURIComponent(reportIndividual['v-s:reportFormat'][0]) + '&documentId=' + encodeURIComponent(dataObj.id) + '&ticket=' + veda.ticket);
+    form.setAttribute('action', jasperServerAddress + 'flow.html?_flowId=viewReportFlow&reportUnit=' + encodeURIComponent(reportIndividual['v-s:reportPath'][0]) + '&output=' + encodeURIComponent(reportIndividual['v-s:reportFormat'][0]) + '&documentId=' + encodeURIComponent(dataObj.id));
     form.setAttribute('target', 'Report');
     
     Object.getOwnPropertyNames(dataObj.properties).forEach((key) => {
@@ -352,7 +352,7 @@ Util.startProcess = function (processDefinition, document) {
  */
 Util.send = function (individual, template, transformId, _modal, startFormTemplate) {
   if ( transformId ) {
-    return (!individual.isSync() ? template[0].veda.save() : Backend.get_individual(veda.ticket, individual.id).catch(() => template[0].veda.save()))
+    return (!individual.isSync() ? template[0].veda.save() : Backend.get_individual(individual.id).catch(() => template[0].veda.save()))
       .then(() => {
         const transform = new IndividualModel(transformId);
         return transform.load().then(() => {
@@ -414,9 +414,9 @@ Util.buildStartFormByTransformation = function (individual, transformation) {
  * @param {string} uri
  * @return {Object} - individual properties object
  */
-function getSync (ticket, uri) {
+function getSync (uri) {
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', 'get_individual?uri=' + uri + '&ticket=' + ticket, false);
+  xhr.open('GET', 'get_individual?uri=' + uri, false);
   xhr.send();
   if (xhr.status === 200) {
     return JSON.parse(xhr.responseText);
@@ -442,7 +442,7 @@ Util.transformation = function (individuals, transform) {
     return Promise.resolve();
   }
 
-  return Backend.get_individuals(veda.ticket, rulesUris).then((rules) => {
+  return Backend.get_individuals(rulesUris).then((rules) => {
     const out_data0 = {};
 
     let out_data0_el = {};
@@ -702,12 +702,12 @@ Util.transformation = function (individuals, transform) {
 
               let curelem;
 
-              curelem = getSync(veda.ticket, element_uri);
+              curelem = getSync(element_uri);
 
               for (let i = 0; i < path.length - 1; i++) {
                 if (!curelem || !curelem[path[i]]) return;
                 const uri = Array.isArray(curelem[path[i]]) && curelem[path[i]][0].data ? curelem[path[i]][0].data : curelem[path[i]];
-                curelem = getSync(veda.ticket, uri);
+                curelem = getSync(uri);
               }
               if (!curelem || !curelem[path[path.length - 1]]) return;
 

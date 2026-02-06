@@ -12,7 +12,7 @@ export const pre = async function (individual, template, container, mode, extra)
 
   const editLink = $('a.edit-link', template);
   if (await individual.canUpdate()) {
-    const base = `${location.origin}/webdav/${veda.ticket}`;
+    const base = `${location.origin}/webdav/_`;
     if ('docx|odt'.includes(ext)) {
       editLink.attr('href', `ms-word:ofe|u|${base}/${individual.id.replace(':', '_')}/${fn}`);
     } else if ('xlsx|ods'.includes(ext)) {

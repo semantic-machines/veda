@@ -40,7 +40,6 @@ export const post = function (individual, template, container, mode, extra) {
   }
 
   const promise_spec = Backend.query({
-    ticket: veda.ticket,
     sql: "SELECT id FROM veda_tt.`v-s:Position` FINAL WHERE lowerUTF8(arrayStringConcat(v_s_origin_str, ' ')) LIKE '%spec%' and `v_s_hasCommunicationMean_str`[1]!='' and `v_s_deleted_int`[1]!=1 ORDER BY `rdfs_label_str`[1]",
     from: 0,
     top: 100,
@@ -49,7 +48,6 @@ export const post = function (individual, template, container, mode, extra) {
   });
 
   const promise_group = Backend.query({
-    ticket: veda.ticket,
     sql: "SELECT DISTINCT id FROM veda_tt.`v-s:Position` FINAL WHERE lowerUTF8(arrayStringConcat(v_s_origin_str, ' ')) LIKE '%group%' and lowerUTF8(arrayStringConcat(v_s_origin_str, ' ')) not LIKE '%spec%' and `v_s_hasCommunicationMean_str`[1]!='' and `v_s_deleted_int`[1]!=1 and id!='d:GLAV_DISP_position' and id!='d:SYK-SKDG_position' and id!='d:RU1121003135_pos_OptiF1C' and id!='d:SYK-RTISI_position' ORDER BY `rdfs_label_str`[1]",
     from: 0,
     top: 400,

@@ -299,9 +299,9 @@ export const post = function (individual, template, container, mode, extra) {
   function addInLinks (id, queryStr) {
     let q = queryStr || "'*'=='{id}'";
     q = q.replace('{id}', id);
-    return Backend.query(veda.ticket, q).then(function (queryResult) {
+    return Backend.query(q).then(function (queryResult) {
       const uris = queryResult.result;
-      return Backend.get_individuals(veda.ticket, uris).then(function (individualsJSONs) {
+      return Backend.get_individuals(uris).then(function (individualsJSONs) {
         individualsJSONs.forEach(function (individualJSON) {
           const res = new IndividualModel(individualJSON);
           addNode(res);

@@ -55,10 +55,10 @@ proto.init = function () {
       throw error;
     });
   } else {
-    return Backend.query(veda.ticket, "'rdf:type' == 'owl:Ontology' || 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'v-ui:PropertySpecification' || 'rdf:type' == 'v-ui:ClassModel'")
+    return Backend.query("'rdf:type' == 'owl:Ontology' || 'rdf:type' == 'rdfs:Class' || 'rdf:type' == 'rdf:Property' || 'rdf:type' == 'rdfs:Datatype' || 'rdf:type' == 'v-ui:PropertySpecification' || 'rdf:type' == 'v-ui:ClassModel'")
       .then((queryResult) => {
         const ontology_uris = queryResult.result;
-        return Backend.get_individuals(veda.ticket, ontology_uris);
+        return Backend.get_individuals(ontology_uris);
       })
       .then((ontology) => {
         this.ontology = ontology;

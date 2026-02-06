@@ -8,20 +8,20 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     const group_B = 'g:group_B' + Util.guid();
     const group_C = 'g:group_C' + Util.guid();
 
-    await Helpers.addToGroup(ticket_admin.ticket, group_A, group_B);
+    await Helpers.addToGroup(group_A, group_B);
 
-    await Helpers.addToGroup(ticket_admin.ticket, group_B, group_C);
+    await Helpers.addToGroup(group_B, group_C);
 
-    await Helpers.addToGroup(ticket_admin.ticket, group_C, group_A);
+    await Helpers.addToGroup(group_C, group_A);
 
-    await Helpers.addToGroup(ticket_admin.ticket, group_C, new_test_doc1['@']);
+    await Helpers.addToGroup(group_C, new_test_doc1['@']);
 
-    const res = await Helpers.addRight(ticket_admin.ticket, group_C, new_test_doc1['@'], ['v-s:canRead']);
+    const res = await Helpers.addRight(group_C, new_test_doc1['@'], ['v-s:canRead']);
     assert(await Backend.wait_module(Constants.m_acl, res[1].op_id));
 
-    await Helpers.check_rights_success(ticket_admin.ticket, new_test_doc1['@'], ['v-s:canRead']);
+    await Helpers.check_rights_success(new_test_doc1['@'], ['v-s:canRead']);
 
-    await Backend.remove_individual(ticket_admin.ticket, new_test_doc1['@']);
-    await Helpers.test_fail_read(ticket_admin, new_test_doc1);
+    await Backend.remove_individual(new_test_doc1['@']);
+    await Helpers.test_fail_read(new_test_doc1);
   });
 };

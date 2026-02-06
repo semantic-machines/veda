@@ -42,7 +42,6 @@ export const post = function (individual, template, container, mode, extra) {
     const isRead = individual.hasValue('v-wf:read', true);
     toggleRead(!isRead);
     Backend.set_in_individual({
-      ticket: veda.ticket,
       individual: {
         '@': individual.id,
         'v-wf:read': [

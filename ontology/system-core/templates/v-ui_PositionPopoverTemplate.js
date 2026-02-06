@@ -7,7 +7,7 @@ export const pre = function (individual, template, container, mode, extra) {
   template = $(template);
   container = $(container);
 
-  return Backend.query(veda.ticket, "'rdf:type'==='v-s:Appointment' && 'v-s:occupation'=='" + individual.id + "'")
+  return Backend.query("'rdf:type'==='v-s:Appointment' && 'v-s:occupation'=='" + individual.id + "'")
     .then(function (queryResult) {
       const promises = queryResult.result.map(function (uri) {
         return new IndividualModel(uri).load();

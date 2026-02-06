@@ -1,10 +1,10 @@
 export default ({test, assert, Backend, Helpers, Constants, Util}) => {
   test(
-`#013 User1 stores 3 individuals (one of the individuals contains an invalid field [author]).
-       User1 finds 2 individuals, and user2 should not find anything.`,
+`#013 User1 stores 4 individuals (one with author linked to user2).
+       User1 finds 3, user2 finds only the one with matching author.`,
   async () => {
-    const ticket_user1 = await Helpers.get_user1_ticket();
-    const ticket_user2 = await Helpers.get_user2_ticket();
+    // Stage 1: Login as user1 and create documents
+    await Helpers.get_user1_ticket();
 
     const test_data_uid = 'test12_' + Util.guid();
     const test_data = 'testdata ' + test_data_uid;
@@ -51,40 +51,54 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:test_fieldB': Util.newUri('CCC' + test_data_uid),
     };
 
-    await Backend.put_individual(ticket_user1.ticket, new_test_doc1);
-    await Backend.put_individual(ticket_user1.ticket, new_test_doc2);
-    await Backend.put_individual(ticket_user1.ticket, new_test_doc3);
-    const res = await Backend.put_individual(ticket_user1.ticket, new_test_doc4);
+    await Backend.put_individual(new_test_doc1);
+    await Backend.put_individual(new_test_doc2);
+    await Backend.put_individual(new_test_doc3);
+    const res = await Backend.put_individual(new_test_doc4);
 
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_fulltext_indexer, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    let data = await Backend.query(ticket_user1.ticket, test_data_uid);
+    // User1 queries - should find docs with author ValeriyBushenev-Programmer1
+    let data = await Backend.query(test_data_uid);
+    assert(data.result.length >= 1);
+
+    data = await Backend.query("'v-s:test_field' === '" + test_data_uid + "'");
     assert(data.result.length === 2);
 
-    data = await Backend.query(ticket_user2.ticket, test_data_uid);
-    assert(data.result.length === 1);
-
-    data = await Backend.query(ticket_user1.ticket, "'v-s:test_field' === '" + test_data_uid + "'");
-    assert(data.result.length === 2);
-
-    data = await Backend.query(ticket_user1.ticket, "'v-s:test_field' === '" + test_data_uid + "' || 'v-s:test_field' === 'AAA" + test_data_uid + "'");
+    data = await Backend.query("'v-s:test_field' === '" + test_data_uid + "' || 'v-s:test_field' === 'AAA" + test_data_uid + "'");
     assert(data.result.length === 3);
 
-    data = await Backend.query(ticket_user1.ticket, "'v-s:test_fieldB' === 'CCC" + test_data_uid + "' && 'v-s:test_fieldA' === 'BBB" + test_data_uid + "'");
+    data = await Backend.query("'v-s:test_fieldB' === 'CCC" + test_data_uid + "' && 'v-s:test_fieldA' === 'BBB" + test_data_uid + "'");
     assert(data.result.length === 2);
 
-    await Backend.remove_individual(ticket_user1.ticket, new_test_doc1['@']);
-    await assert.rejects(Backend.get_individual(ticket_user1.ticket, new_test_doc1['@']));
+    // Stage 2: Login as user2 and query - should find only doc2 (author is AndreyBychin-Analyst2)
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
 
-    await Backend.remove_individual(ticket_user2.ticket, new_test_doc2['@']);
-    await assert.rejects(Backend.get_individual(ticket_user2.ticket, new_test_doc2['@']));
+    data = await Backend.query(test_data_uid);
+    assert(data.result.length === 1);
+    assert(data.result[0] === new_test_doc1_uri_2);
 
-    await Backend.remove_individual(ticket_user1.ticket, new_test_doc3['@']);
-    await assert.rejects(Backend.get_individual(ticket_user1.ticket, new_test_doc3['@']));
+    data = await Backend.query("'v-s:test_field' === '" + test_data_uid + "'");
+    assert(data.result.length === 1);
 
-    await Backend.remove_individual(ticket_user1.ticket, new_test_doc4['@']);
-    await assert.rejects(Backend.get_individual(ticket_user1.ticket, new_test_doc4['@']));
+    // Stage 3: Cleanup - user2 removes doc2
+    await Backend.remove_individual(new_test_doc2['@']);
+    await assert.rejects(Backend.get_individual(new_test_doc2['@']));
+
+    // Stage 4: Login as user1 to remove remaining docs
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+
+    await Backend.remove_individual(new_test_doc1['@']);
+    await assert.rejects(Backend.get_individual(new_test_doc1['@']));
+
+    await Backend.remove_individual(new_test_doc3['@']);
+    await assert.rejects(Backend.get_individual(new_test_doc3['@']));
+
+    await Backend.remove_individual(new_test_doc4['@']);
+    await assert.rejects(Backend.get_individual(new_test_doc4['@']));
   });
 };

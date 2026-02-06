@@ -8,7 +8,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
 
     const new_idividuals = [A, B, C];
 
-    const res = await Backend.get_individuals(ticket.ticket, [A['@'], B['@'], C['@']]);
+    const res = await Backend.get_individuals([A['@'], B['@'], C['@']]);
     assert(res.length == 3);
 
     for (let idx = 0; idx < 3; idx++) {
@@ -19,13 +19,13 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       }
     }
 
-    await Backend.remove_individual(ticket.ticket, A['@']);
-    await Helpers.test_fail_read(ticket, A);
+    await Backend.remove_individual(A['@']);
+    await Helpers.test_fail_read(A);
 
-    await Backend.remove_individual(ticket.ticket, B['@']);
-    await Helpers.test_fail_read(ticket, B);
+    await Backend.remove_individual(B['@']);
+    await Helpers.test_fail_read(B);
 
-    await Backend.remove_individual(ticket.ticket, C['@']);
-    await Helpers.test_fail_read(ticket, C);
+    await Backend.remove_individual(C['@']);
+    await Helpers.test_fail_read(C);
   });
 };

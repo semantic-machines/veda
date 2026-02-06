@@ -50,7 +50,6 @@ export const pre = function (individual, template, container, mode, extra) {
     return !inPropertiesUrisQuery || allowedTypeUri === 'v-s:Link' ?
       Promise.resolve([]) :
       Backend.query({
-        ticket: veda.ticket,
         query: q,
         limit: 500,
         async: true,

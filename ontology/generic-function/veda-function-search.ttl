@@ -371,7 +371,6 @@ v-fs:AttributiveSearchModel
   function performQuery(query) {
     var self = this;
     var params = {
-      ticket: veda.ticket,
       sort: this["v-fs:sortOrder"][0],
       top: this["v-fs:top"][0] || veda.user.preferences.displayedElements || 10,
       limit: this["v-fs:limit"][0] || 10000,

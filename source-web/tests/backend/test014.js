@@ -15,12 +15,12 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     };
 
     let res;
-    res = await Backend.put_individual(ticket_user1.ticket, new_test_doc1);
+    res = await Backend.put_individual(new_test_doc1);
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
     let read_individual;
-    read_individual = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri);
+    read_individual = await Backend.get_individual(new_test_doc1_uri);
     assert(Helpers.compare(new_test_doc1, read_individual));
 
     // add_to_individual
@@ -37,7 +37,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
         }],
     };
 
-    res = await Backend.add_to_individual(ticket_user1.ticket, new_test_add1);
+    res = await Backend.add_to_individual(new_test_add1);
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
@@ -61,7 +61,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:test_field': Util.newStr('test data', 'EN'),
     };
 
-    read_individual = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri);
+    read_individual = await Backend.get_individual(new_test_doc1_uri);
     assert(Helpers.compare(new_test_doc1_add1, read_individual));
 
     // set_in_individual
@@ -70,7 +70,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:author': Util.newUri('td:test-e1'),
     };
 
-    await Backend.set_in_individual(ticket_user1.ticket, new_test_set1);
+    await Backend.set_in_individual(new_test_set1);
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
@@ -82,7 +82,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:test_field': Util.newStr('test data', 'EN'),
     };
 
-    read_individual = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri);
+    read_individual = await Backend.get_individual(new_test_doc1_uri);
     assert(Helpers.compare(new_test_doc1_set1, read_individual));
 
     // add_to_individual (2)
@@ -91,7 +91,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:author': Util.newUri('td:test-e2'),
     };
 
-    await Backend.add_to_individual(ticket_user1.ticket, new_test_set1);
+    await Backend.add_to_individual(new_test_set1);
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
@@ -103,7 +103,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:test_field': Util.newStr('test data', 'EN'),
     };
 
-    read_individual = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri);
+    read_individual = await Backend.get_individual(new_test_doc1_uri);
     assert(Helpers.compare(new_test_doc1_set1, read_individual));
 
     // add_to_individual (3)
@@ -112,7 +112,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:author': Util.newUri('td:test-e3'),
     };
 
-    res = await Backend.add_to_individual(ticket_user1.ticket, new_test_set1);
+    res = await Backend.add_to_individual(new_test_set1);
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
@@ -124,7 +124,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:test_field': Util.newStr('test data', 'EN'),
     };
 
-    read_individual = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri);
+    read_individual = await Backend.get_individual(new_test_doc1_uri);
     assert(Helpers.compare(new_test_doc1_set1, read_individual));
 
 
@@ -134,11 +134,11 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:author': Util.newUri('td:test-e2'),
     };
 
-    res = await Backend.remove_from_individual(ticket_user1.ticket, new_test_remove_from2);
+    res = await Backend.remove_from_individual(new_test_remove_from2);
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    read_individual = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri);
+    read_individual = await Backend.get_individual(new_test_doc1_uri);
 
     const new_test_doc1_remove_from1 = {
       '@': new_test_doc1_uri,
@@ -149,7 +149,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     };
     assert(Helpers.compare(new_test_doc1_remove_from1, read_individual));
 
-    await Backend.remove_individual(ticket_user1.ticket, new_test_doc1['@']);
-    await assert.rejects(Backend.get_individual(ticket_user1.ticket, new_test_doc1['@']));
+    await Backend.remove_individual(new_test_doc1['@']);
+    await assert.rejects(Backend.get_individual(new_test_doc1['@']));
   });
 };

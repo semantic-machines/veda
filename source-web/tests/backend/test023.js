@@ -2,7 +2,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
   test(`#023 Check get_rights_origin`, async () => {
     const ticket_admin = await Helpers.get_admin_ticket();
 
-    let res = await Backend.get_rights_origin(ticket_admin.ticket, 'td:RomanKarpov_pref');
+    let res = await Backend.get_rights_origin('td:RomanKarpov_pref');
     let result_rights = 0;
     res.forEach(function (item, i) {
       if (res[i]['v-s:canCreate']) {
@@ -16,7 +16,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       }
     });
 
-    res = await Backend.get_rights(ticket_admin.ticket, 'td:RomanKarpov_pref');
+    res = await Backend.get_rights('td:RomanKarpov_pref');
     let expected_rights = 0;
     if (res['v-s:canCreate']) {
       expected_rights |= 1;

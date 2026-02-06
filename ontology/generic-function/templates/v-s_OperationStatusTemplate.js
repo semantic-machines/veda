@@ -13,7 +13,7 @@ export const pre = function (individual, template, container, mode, extra) {
     individual.save();
   });
   $('#stop', template).click(function () {
-    Backend.set_in_individual(veda.ticket, {
+    Backend.set_in_individual({
       '@': individual.id,
       'v-s:hasStatus': [
         {

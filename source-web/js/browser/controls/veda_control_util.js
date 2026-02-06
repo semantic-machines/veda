@@ -45,7 +45,6 @@ function ftQuery (prefix, input, sort, queryPattern = "'*'=='{}'") {
     .then((results) => {
       results = Util.unique( results );
       return Backend.get_individuals({
-        ticket: veda.ticket,
         uris: results,
       });
     })
@@ -91,7 +90,6 @@ function ftQueryWithDeleted (prefix, input, sort, queryPattern = "'*'=='{}'") {
     .then((results) => {
       results = Util.unique( results );
       return Backend.get_individuals({
-        ticket: veda.ticket,
         uris: results,
       });
     })
@@ -110,7 +108,6 @@ function ftQueryWithDeleted (prefix, input, sort, queryPattern = "'*'=='{}'") {
 function incrementalSearchRegular (queryString, sort, results = [], cursor = 0, limit = 100) {
   const sortSuffix = (veda.user.getLanguage()[0] ? '_' + veda.user.getLanguage()[0].toLowerCase() : '');
   return Backend.query({
-    ticket: veda.ticket,
     query: queryString,
     sort: sort || "'rdfs:label" + sortSuffix + "' asc",
     from: cursor,
@@ -135,7 +132,7 @@ async function storedQuery (query, input = '', sort = '') {
   queryParams.set('v-s:resultFormat', 'cols');
   queryParams.set('v-s:content', '%' + input + '%');
 
-  const allData = await Backend.stored_query(veda.ticket, queryParams.properties);
+  const allData = await Backend.stored_query(queryParams.properties);
   if (allData.id) {
     return allData.id.map((id) => new IndividualModel(id));
   } else {

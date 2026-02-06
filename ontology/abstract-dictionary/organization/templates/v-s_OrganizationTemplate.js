@@ -63,7 +63,7 @@ export const pre = function (individual, template, container, mode, extra) {
         prevTaxId = newTaxId;
       }
       if (result['v-s:taxId'].state) {
-        Backend.query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").then(function (queryResult) {
+        Backend.query("'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").then(function (queryResult) {
           result['v-s:taxId'] = {
             state: !queryResult.result.length || queryResult.result[0] === individual.id,
             cause: ['v-s:NonUniqueTaxId'],

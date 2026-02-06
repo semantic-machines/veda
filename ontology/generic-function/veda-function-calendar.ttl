@@ -55,7 +55,6 @@ this.getEvents = function (start, end) {
   );
   var sort = this["v-cal:sortOrder"][0];
   return veda.Backend.query({
-    ticket: veda.ticket,
     query: q,
     sort: sort
   })

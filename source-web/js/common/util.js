@@ -111,7 +111,6 @@ Util.processQuery = function (vql, sql, sort, limit, queryDelta, processDelta, p
   const fetchResult = function (cursor) {
     const from = cursor || 0;
     Backend.query({
-      ticket: veda.ticket,
       query: vql,
       sql: sql,
       sort: sort || '\'v-s:created\' desc',

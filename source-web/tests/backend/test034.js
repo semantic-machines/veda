@@ -38,12 +38,12 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
 
     let res;
 
-    res = await Backend.put_individuals(ticket_user1.ticket, [new_test_doc1, new_test_doc2, new_test_doc3]);
+    res = await Backend.put_individuals([new_test_doc1, new_test_doc2, new_test_doc3]);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
-    const read_individual1 = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri_1);
-    const read_individual2 = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri_2);
-    const read_individual3 = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri_3);
+    const read_individual1 = await Backend.get_individual(new_test_doc1_uri_1);
+    const read_individual2 = await Backend.get_individual(new_test_doc1_uri_2);
+    const read_individual3 = await Backend.get_individual(new_test_doc1_uri_3);
 
     assert(
       Helpers.compare(new_test_doc1, read_individual1) &&
@@ -62,9 +62,9 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:created': Util.newDate(new Date()),
       'v-s:test_field': Util.newUri(test_data),
     };
-    res = await Backend.put_individual(ticket_user2.ticket, new_test_doc4);
+    res = await Backend.put_individual(new_test_doc4);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    await assert.rejects(Backend.put_individuals(ticket_user1.ticket, [new_test_doc1, new_test_doc2, new_test_doc3, new_test_doc4]), {code: 472});
+    await assert.rejects(Backend.put_individuals([new_test_doc1, new_test_doc2, new_test_doc3, new_test_doc4]), {code: 472});
   });
 };

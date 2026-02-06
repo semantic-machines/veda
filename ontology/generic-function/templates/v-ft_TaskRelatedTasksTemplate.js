@@ -17,7 +17,7 @@ export const pre = async function (individual, template, container, mode, extra)
     // Найти все назначения пользователя
     const delegatePositions = [];
     const queryAppointments = "'rdf:type'=='v-s:Appointment' && 'v-s:employee'=='" + personId + "'";
-    const response = await veda.Backend.query(veda.ticket, queryAppointments);
+    const response = await veda.Backend.query(queryAppointments);
     if (response.result.length > 0) {
       for (const appointmentUri of response.result) {
         const appointment = new veda.IndividualModel(appointmentUri);
@@ -42,7 +42,7 @@ export const pre = async function (individual, template, container, mode, extra)
     ].join(' && ');
 
     // Проверяем есть ли результаты по запросу
-    const checkResults = await veda.Backend.query(veda.ticket, queryStr);
+    const checkResults = await veda.Backend.query(queryStr);
     if (checkResults.result.length > 0) {
       relatedTasks['v-fs:fulltextQuery'] = [queryStr];
       template.html(html);

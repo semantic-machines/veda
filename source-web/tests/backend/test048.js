@@ -1,6 +1,6 @@
 export default ({test, assert, Backend, Helpers, Constants, Util}) => {
   test.skip('#048 File upload, webdav editing', async () => {
-    const {ticket} = await Helpers.get_user1_ticket();
+    const ticket = await Helpers.get_user1_ticket();
 
     const test_file_uri = Util.guid();
     const test_file_individual_uri = 'test-file:' + Util.guid();
@@ -19,13 +19,14 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     const path = '/1970/01/01';
     const uri = test_file_uri;
     const content = '000';
-    await uploadFile(ticket, path, uri, content);
+    await uploadFile(path, uri, content);
 
-    const res = await Backend.put_individual(ticket, test_file_individual);
+    const res = await Backend.put_individual(test_file_individual);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    const url = `${location.origin}/webdav/${ticket}/${test_file_individual_uri}/test.txt`;
+    // Using _ placeholder for cookie-based auth
+    const url = `${location.origin}/webdav/_/${test_file_individual_uri}/test.txt`;
     const editedContent = Math.floor(900 * Math.random() + 100).toString();
 
     // Эмулируем серию запросов WebDAV
@@ -41,7 +42,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
 };
 
 // Функция загрузки файла на сервер
-async function uploadFile (ticket, path, uri, content) {
+async function uploadFile (path, uri, content) {
   try {
     const boundary = '----WebKitFormBoundaryi6f7ZW0xH8ivVwZr';
     let formData = `--${boundary}\r\nContent-Disposition: form-data; name="path"\r\n\r\n${path}\r\n`;
@@ -54,8 +55,8 @@ async function uploadFile (ticket, path, uri, content) {
       body: formData,
       headers: {
         'Content-Type': `multipart/form-data; boundary=${boundary}`,
-        'Cookie': `ticket=${ticket}`,
       },
+      credentials: 'same-origin',
     });
 
     if (!response.ok) {
@@ -92,6 +93,7 @@ async function propfindRequest (url) {
           </D:prop>
         </D:propfind>
       `,
+      credentials: 'same-origin',
     });
 
     const data = await response.text();
@@ -104,7 +106,7 @@ async function propfindRequest (url) {
 // Функция для эмулирования запроса OPTIONS
 async function optionsRequest (url) {
   try {
-    const response = await fetch(url, {method: 'OPTIONS'});
+    const response = await fetch(url, {method: 'OPTIONS', credentials: 'same-origin'});
 
     const data = await response.text();
     console.log('Ответ OPTIONS:', data);
@@ -116,7 +118,7 @@ async function optionsRequest (url) {
 // Функция для эмулирования запроса GET
 async function getRequest (url) {
   try {
-    const response = await fetch(url, {method: 'GET'});
+    const response = await fetch(url, {method: 'GET', credentials: 'same-origin'});
 
     const data = await response.text();
     console.log('Ответ GET:', data);
@@ -136,6 +138,7 @@ async function putRequest (url, content) {
         'Content-Length': content.length,
       },
       body: content,
+      credentials: 'same-origin',
     });
 
     console.log('Ответ PUT:', response.status);

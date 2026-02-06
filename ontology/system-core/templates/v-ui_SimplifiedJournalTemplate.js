@@ -20,7 +20,6 @@ export const pre = function (individual, template, container, mode, extra) {
     renderedCount = 0;
     tbody.empty();
     Backend.query({
-      ticket: veda.ticket,
       query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
       sort: "'v-s:created' desc",
     })
@@ -28,7 +27,6 @@ export const pre = function (individual, template, container, mode, extra) {
         const tasks_uris = query_res.result;
         if (tasks_uris.length) {
           return Backend.get_individuals({
-            ticket: veda.ticket,
             uris: tasks_uris,
           });
         }

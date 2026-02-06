@@ -364,7 +364,6 @@ order by
     const queries = queryStringArray.map(function (queryString) {
       if (queryString == null) return Promise.resolve({result: []});
       return Backend.query({
-        ticket: veda.ticket,
         sql: queryString,
         sort: sort,
         from: 0,
@@ -701,7 +700,6 @@ order by
     // TODO если в консоли не появляется то удалить
     if (objType == 'phone' || objType == 'email') console.log('This is search ', objType);
     const searchObj = {
-      ticket: veda.ticket,
       sql: queryString,
       sort: sort,
       from: from,

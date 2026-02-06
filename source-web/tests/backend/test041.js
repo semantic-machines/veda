@@ -1,25 +1,38 @@
 export default ({test, assert, Backend, Helpers, Constants, Util}) => {
   test(`#041 Check PermissionStatement dropCount`, async () => {
+    // Get user URIs
     const ticket_user = await Helpers.get_user1_ticket();
     const user = ticket_user.user_uri;
-    const ticket_admin = await Helpers.get_admin_ticket();
-    const doc = await Helpers.create_test_document1(ticket_admin);
+    
+    // Switch to admin for setup
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
+    
+    const doc = await Helpers.create_test_document1({user_uri: user});
 
     let res;
 
     // R - 3, U - 2, D - 2
-    res = await Helpers.addRight(ticket_admin.ticket, user, doc['@'], ['v-s:canRead', 'v-s:canUpdate', 'v-s:canDelete']);
+    res = await Helpers.addRight(user, doc['@'], ['v-s:canRead', 'v-s:canUpdate', 'v-s:canDelete']);
     const right1 = res[0];
     assert(await Backend.wait_module(Constants.m_acl, res[1].op_id));
 
-    res = await Helpers.addRight(ticket_admin.ticket, user, doc['@'], ['v-s:canRead', 'v-s:canUpdate', 'v-s:canDelete']);
+    res = await Helpers.addRight(user, doc['@'], ['v-s:canRead', 'v-s:canUpdate', 'v-s:canDelete']);
     assert(await Backend.wait_module(Constants.m_acl, res[1].op_id));
 
-    res = await Helpers.addRight(ticket_admin.ticket, user, doc['@'], ['v-s:canRead']);
+    res = await Helpers.addRight(user, doc['@'], ['v-s:canRead']);
     assert(await Backend.wait_module(Constants.m_acl, res[1].op_id));
 
+    // Switch to user1 to check rights
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+    
     // User RUD doc
-    await Helpers.check_rights_success(ticket_user.ticket, doc['@'], ['v-s:canRead', 'v-s:canUpdate', 'v-s:canDelete']);
+    await Helpers.check_rights_success(doc['@'], ['v-s:canRead', 'v-s:canUpdate', 'v-s:canDelete']);
+
+    // Switch to admin for permission changes
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
 
     // 3R2U2D -> 3R2U0D (забираем D)
     const test_perm1_dropCount_uri = Util.genUri();
@@ -32,11 +45,19 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:canDelete': Util.newBool(true),
       'v-s:deleted': Util.newBool(true),
     };
-    res = await Backend.put_individual(ticket_admin.ticket, test_perm1_dropCount);
+    res = await Backend.put_individual(test_perm1_dropCount);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    await Helpers.check_rights_success(ticket_user.ticket, doc['@'], ['v-s:canRead', 'v-s:canUpdate']);
-    await Helpers.check_rights_fail(ticket_user.ticket, doc['@'], ['v-s:canDelete']);
+    // Switch to user1 to check rights
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+
+    await Helpers.check_rights_success(doc['@'], ['v-s:canRead', 'v-s:canUpdate']);
+    await Helpers.check_rights_fail(doc['@'], ['v-s:canDelete']);
+
+    // Switch to admin
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
 
     // 3R2U0D -> 3R1U0D (забираем U и ставим U=1)
     const test_perm2_dropCount_uri = Util.genUri();
@@ -48,18 +69,34 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:permissionSubject': Util.newUri(user),
       'v-s:canUpdate': Util.newBool(true),
     };
-    res = await Backend.put_individual(ticket_admin.ticket, test_perm2_dropCount);
+    res = await Backend.put_individual(test_perm2_dropCount);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    await Helpers.check_rights_success(ticket_user.ticket, doc['@'], ['v-s:canRead', 'v-s:canUpdate']);
-    await Helpers.check_rights_fail(ticket_user.ticket, doc['@'], ['v-s:canDelete']);
+    // Switch to user1 to check rights
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+
+    await Helpers.check_rights_success(doc['@'], ['v-s:canRead', 'v-s:canUpdate']);
+    await Helpers.check_rights_fail(doc['@'], ['v-s:canDelete']);
+
+    // Switch to admin
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
 
     // 3R1U0D -> 2R0U0D
-    res = await Backend.remove_individual(ticket_admin.ticket, right1['@']);
+    res = await Backend.remove_individual(right1['@']);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    await Helpers.check_rights_success(ticket_user.ticket, doc['@'], ['v-s:canRead']);
-    await Helpers.check_rights_fail(ticket_user.ticket, doc['@'], ['v-s:canUpdate', 'v-s:canDelete']);
+    // Switch to user1 to check rights
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+
+    await Helpers.check_rights_success(doc['@'], ['v-s:canRead']);
+    await Helpers.check_rights_fail(doc['@'], ['v-s:canUpdate', 'v-s:canDelete']);
+
+    // Switch to admin
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
 
     // В предыдущий Perm добавляем мощности и v-s:deleted=true, пытаемся обнулить
     test_perm2_dropCount = {
@@ -73,13 +110,20 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:canDelete': Util.newBool(true),
       'v-s:deleted': Util.newBool(true),
     };
-    res = await Backend.put_individual(ticket_admin.ticket, test_perm2_dropCount);
+    res = await Backend.put_individual(test_perm2_dropCount);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    // (права на R должны остаться)
-    await Helpers.check_rights_success(ticket_user.ticket, doc['@'], ['v-s:canRead']);
+    // Switch to user1 to check rights
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
 
-    await Helpers.check_rights_fail(ticket_user.ticket, doc['@'], ['v-s:canUpdate', 'v-s:canDelete']);
+    // (права на R должны остаться)
+    await Helpers.check_rights_success(doc['@'], ['v-s:canRead']);
+    await Helpers.check_rights_fail(doc['@'], ['v-s:canUpdate', 'v-s:canDelete']);
+
+    // Switch to admin
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
 
     // 2R0U0 ->
     const test_perm3_dropCount_uri = Util.genUri();
@@ -88,14 +132,18 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'rdf:type': Util.newUri('v-s:PermissionStatement'),
       'v-s:dropCount': Util.newBool(true),
       'v-s:permissionObject': Util.newUri(doc['@']),
-      'v-s:permissionSubject': Util.newUri(ticket_user.user_uri),
+      'v-s:permissionSubject': Util.newUri(user),
       'v-s:canRead': Util.newBool(true),
       'v-s:canUpdate': Util.newBool(true),
       'v-s:deleted': Util.newBool(true),
     };
-    res = await Backend.put_individual(ticket_admin.ticket, test_perm3_dropCount);
+    res = await Backend.put_individual(test_perm3_dropCount);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    await Helpers.check_rights_fail(ticket_user.ticket, doc['@'], ['v-s:canRead', 'v-s:canUpdate', 'v-s:canDelete']);
+    // Switch to user1 to check rights
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+
+    await Helpers.check_rights_fail(doc['@'], ['v-s:canRead', 'v-s:canUpdate', 'v-s:canDelete']);
   });
 };

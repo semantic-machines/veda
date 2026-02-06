@@ -27,12 +27,11 @@ export const pre = function (individual, template, container, mode, extra) {
   }
 
   return Backend.query({
-    ticket: veda.ticket,
     query: "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + veda.user.id + "')",
   })
     .then(function (queryResult) {
       const appointments_uris = queryResult.result;
-      return Backend.get_individuals(veda.ticket, appointments_uris);
+      return Backend.get_individuals(appointments_uris);
     })
     .then(function (appointments) {
       const filtered = appointments.reduce(

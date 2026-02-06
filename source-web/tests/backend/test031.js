@@ -1,8 +1,15 @@
 export default ({test, assert, Backend, Helpers, Constants, Util}) => {
   test(`#031 Check rights filter`, async () => {
+    // Get user URIs first, then work under specific users
     const ticket_user1 = await Helpers.get_user1_ticket();
+    const user1_uri = ticket_user1.user_uri;
+
     const ticket_user2 = await Helpers.get_user2_ticket();
-    const ticket_admin = await Helpers.get_admin_ticket();
+    const user2_uri = ticket_user2.user_uri;
+
+    // Switch to user1 to create document
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
 
     const new_test_doc1_uri = 'test31:' + Util.guid();
     const new_test_doc1 = {
@@ -15,18 +22,35 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
 
     let res;
 
-    res = await Backend.put_individual(ticket_user1.ticket, new_test_doc1);
+    // User1 creates document
+    res = await Backend.put_individual(new_test_doc1);
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    await Helpers.test_success_read(ticket_user1, new_test_doc1);
-    await Helpers.test_fail_read(ticket_user2, new_test_doc1);
+    // User1 can read, user2 cannot
+    await Helpers.test_success_read(new_test_doc1);
 
-    res = await Helpers.addRight(ticket_user1.ticket, ticket_user2.user_uri, new_test_doc1_uri, ['v-s:canRead', 'v-s:canUpdate']);
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
+    await Helpers.test_fail_read(new_test_doc1);
+
+    // User1 (as document owner) adds rights for user2
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+
+    res = await Helpers.addRight(user2_uri, new_test_doc1_uri, ['v-s:canRead', 'v-s:canUpdate']);
     assert(await Backend.wait_module(Constants.m_acl, res[1].op_id));
 
-    await Helpers.test_success_update(ticket_user1, new_test_doc1);
-    await Helpers.test_success_update(ticket_user2, new_test_doc1);
+    // Both can update now
+    await Helpers.test_success_update(new_test_doc1);
+
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
+    await Helpers.test_success_update(new_test_doc1);
+
+    // Switch to user1 to create permission filter
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
 
     const new_permission_filter_uri = 'test31-pf:' + Util.guid();
     const new_permission_filter = {
@@ -37,32 +61,59 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       'v-s:resource': Util.newUri(new_permission_filter_uri + 'xxx'),
       'v-s:canRead': Util.newBool(true),
     };
-    res = await Backend.put_individual(ticket_user1.ticket, new_permission_filter);
+    res = await Backend.put_individual(new_permission_filter);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
-    await Helpers.test_fail_update(ticket_user1, new_test_doc1);
-    await Helpers.test_fail_update(ticket_user2, new_test_doc1);
-    await Helpers.test_success_read(ticket_user1, new_test_doc1);
-    await Helpers.test_success_read(ticket_user2, new_test_doc1);
+    // After filter: both can only read, not update
+    await Helpers.test_fail_update(new_test_doc1);
+    await Helpers.test_success_read(new_test_doc1);
 
-    let res1 = await Helpers.addRight(ticket_admin.ticket, ticket_user2.user_uri, new_test_doc1_uri, ['v-s:canUpdate'], [], new_permission_filter_uri + 'xxx');
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
+    await Helpers.test_fail_update(new_test_doc1);
+    await Helpers.test_success_read(new_test_doc1);
+
+    // Switch to admin to add filtered permission for user2
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
+
+    let res1 = await Helpers.addRight(user2_uri, new_test_doc1_uri, ['v-s:canUpdate'], [], new_permission_filter_uri + 'xxx');
     const new_permission1 = res1[0];
+    assert(await Backend.wait_module(Constants.m_acl, res1[1].op_id));
 
-    await Helpers.test_fail_update(ticket_user1, new_test_doc1);
-    await Helpers.test_success_update(ticket_user2, new_test_doc1);
+    // User1 still cannot update, but user2 CAN (has filtered permission)
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+    await Helpers.test_fail_update(new_test_doc1);
 
-    // disable permission with filter
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
+    await Helpers.test_success_update(new_test_doc1);
+
+    // Switch to admin to disable permission with filter
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
+
     new_permission1['v-s:deleted'] = Util.newBool(true);
-    res1 = await Backend.put_individual(ticket_admin.ticket, new_permission1);
+    res1 = await Backend.put_individual(new_permission1);
     assert(await Backend.wait_module(Constants.m_acl, res1.op_id));
 
-    await Helpers.test_fail_update(ticket_user2, new_test_doc1);
+    // User2 cannot update anymore
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
+    await Helpers.test_fail_update(new_test_doc1);
 
-    // disable filter
+    // Switch to admin to disable filter
+    await Backend.logout();
+    await Helpers.get_admin_ticket();
+
     new_permission_filter['v-s:deleted'] = Util.newBool(true);
-    const res2 = await Backend.put_individual(ticket_admin.ticket, new_permission_filter);
+    const res2 = await Backend.put_individual(new_permission_filter);
     assert(await Backend.wait_module(Constants.m_acl, res2.op_id));
 
-    await Helpers.test_success_update(ticket_user2, new_test_doc1);
+    // User2 can update again (original rights restored)
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
+    await Helpers.test_success_update(new_test_doc1);
   });
 };

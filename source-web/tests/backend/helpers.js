@@ -7,14 +7,20 @@ const Util = {...ServerUtil, ...CommonUtil};
 
 export default class Helpers {
   static async get_admin_ticket () {
+    // Reset cookie jar before authenticating to ensure clean session
+    if (globalThis.resetCookieJar) globalThis.resetCookieJar();
     return Backend.authenticate('karpovrt', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
   }
 
   static async get_user1_ticket () {
+    // Reset cookie jar before authenticating to ensure clean session
+    if (globalThis.resetCookieJar) globalThis.resetCookieJar();
     return Backend.authenticate('bushenevvt', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
   }
 
   static async get_user2_ticket () {
+    // Reset cookie jar before authenticating to ensure clean session
+    if (globalThis.resetCookieJar) globalThis.resetCookieJar();
     return Backend.authenticate('BychinAt', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
   }
 
@@ -139,7 +145,7 @@ export default class Helpers {
       new_test_doc1['@'] = prefix + new_test_doc1['@'];
     }
 
-    const res = await Backend.put_individual(ticket.ticket, new_test_doc1);
+    const res = await Backend.put_individual(new_test_doc1);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     return new_test_doc1;
@@ -152,7 +158,7 @@ export default class Helpers {
       new_test_doc2['@'] = prefix + new_test_doc2['@'];
     }
 
-    const res = await Backend.put_individual(ticket.ticket, new_test_doc2);
+    const res = await Backend.put_individual(new_test_doc2);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     return new_test_doc2;
@@ -160,7 +166,7 @@ export default class Helpers {
 
   static async create_test_document3 (ticket) {
     const new_test_doc3 = Helpers.generate_test_document3(ticket);
-    const res = await Backend.put_individual(ticket.ticket, new_test_doc3);
+    const res = await Backend.put_individual(new_test_doc3);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     return new_test_doc3;
@@ -168,7 +174,7 @@ export default class Helpers {
 
   static async create_test_document4 (ticket) {
     const new_test_doc4 = Helpers.generate_test_document4(ticket);
-    const res = await Backend.put_individual(ticket.ticket, new_test_doc4);
+    const res = await Backend.put_individual(new_test_doc4);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     return new_test_doc4;
@@ -176,7 +182,7 @@ export default class Helpers {
 
   static async create_test_membership1 (ticket, doc_group) {
     const new_test_membership1 = Helpers.generate_test_membership1(ticket, doc_group);
-    const res = await Backend.put_individual(ticket.ticket, new_test_membership1);
+    const res = await Backend.put_individual(new_test_membership1);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     return new_test_membership1;
@@ -184,14 +190,14 @@ export default class Helpers {
 
   static async create_test_membership2 (ticket, doc_group) {
     const new_test_membership2 = Helpers.generate_test_membership2(ticket, doc_group);
-    const res = await Backend.put_individual(ticket.ticket, new_test_membership2);
+    const res = await Backend.put_individual(new_test_membership2);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     return new_test_membership2;
   }
 
   static async check_rights (ticket, uri, expected_rights) {
-    const rights = await Backend.get_rights(ticket, uri);
+    const rights = await Backend.get_rights(uri);
     let result = true;
     for (const expected of expected_rights) {
       if (expected === Constants.can_create) {
@@ -281,7 +287,7 @@ export default class Helpers {
     return result;
   }
 
-  static async addToGroup (ticket, group, resource, allow, deny) {
+  static async addToGroup (group, resource, allow, deny) {
     const new_membership_uri = Util.genUri() + '-mbh';
     const new_membership = {
       '@': new_membership_uri,
@@ -298,11 +304,11 @@ export default class Helpers {
       new_membership[right] = Util.newBool(false);
     });
 
-    const res = await Backend.put_individual(ticket, new_membership);
+    const res = await Backend.put_individual(new_membership);
     return [new_membership, res];
   }
 
-  static async removeFromGroup (ticket, group, resource) {
+  static async removeFromGroup (group, resource) {
     const membership_uri = Util.genUri() + '-mbh';
     const membership = {
       '@': membership_uri,
@@ -312,11 +318,11 @@ export default class Helpers {
       'v-s:deleted': Util.newBool(true),
     };
 
-    const res = await Backend.put_individual(ticket, membership);
+    const res = await Backend.put_individual(membership);
     return [membership, res];
   }
 
-  static async addRight (ticket, subj_uri, obj_uri, allow, deny, filter) {
+  static async addRight (subj_uri, obj_uri, allow, deny, filter) {
     const permission_uri = Util.genUri() + '-r';
     const permission = {
       '@': permission_uri,
@@ -337,39 +343,39 @@ export default class Helpers {
       permission['v-s:useFilter'] = Util.newUri(filter);
     }
 
-    const res = await Backend.put_individual(ticket, permission);
+    const res = await Backend.put_individual(permission);
     return [permission, res];
   }
 
-  static async test_success_read (ticket, original_individual) {
-    const server_individual = await Backend.get_individual(ticket.ticket, original_individual['@']);
+  static async test_success_read (original_individual) {
+    const server_individual = await Backend.get_individual(original_individual['@']);
     assert(Helpers.compare(server_individual, original_individual));
   }
 
-  static async test_fail_read (ticket, original_individual) {
-    await assert.rejects(Backend.get_individual(ticket.ticket, original_individual['@']));
+  static async test_fail_read (original_individual) {
+    await assert.rejects(Backend.get_individual(original_individual['@']));
   }
 
-  static async test_success_update (ticket, indvidual) {
-    await Backend.put_individual(ticket.ticket, indvidual);
+  static async test_success_update (indvidual) {
+    await Backend.put_individual(indvidual);
   }
 
-  static async test_fail_update (ticket, indvidual) {
-    await assert.rejects(Backend.put_individual(ticket.ticket, indvidual));
+  static async test_fail_update (indvidual) {
+    await assert.rejects(Backend.put_individual(indvidual));
   }
 
-  static async check_rights_success (ticket, uri, expected_rights) {
-    const res = await Helpers.check_rights(ticket, uri, expected_rights);
+  static async check_rights_success (uri, expected_rights) {
+    const res = await Helpers.check_rights(uri, expected_rights);
     assert(res === true);
   }
 
-  static async check_rights_fail (ticket, uri, expected_rights) {
-    const res = await Helpers.check_rights(ticket, uri, expected_rights);
+  static async check_rights_fail (uri, expected_rights) {
+    const res = await Helpers.check_rights(uri, expected_rights);
     assert(res === false);
   }
 
-  static async check_rights (ticket, uri, expected_rights) {
-    const rights = await Backend.get_rights(ticket, uri);
+  static async check_rights (uri, expected_rights) {
+    const rights = await Backend.get_rights(uri);
 
     let result = true;
 

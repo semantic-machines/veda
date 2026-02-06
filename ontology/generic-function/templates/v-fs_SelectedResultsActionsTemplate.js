@@ -33,7 +33,6 @@ export const pre = function (individual, template, container, mode, extra) {
     const singleTemplate = "<span about='@' href='#' property='rdfs:label'></span>";
     let applicableOps = self['v-fs:applicableOperation'];
     return Backend.query({
-      ticket: veda.ticket,
       query: "'rdf:type' === 'owl:Class' && 'rdfs:subClassOf' === 'v-s:GenericOperation'",
     })
       .then(function (response) {

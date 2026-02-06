@@ -3,7 +3,7 @@ import veda from '/js/common/veda.js';
 
 
 export const pre = async function (individual, template, container, mode, extra) {
-  const feedbacks = await Backend.query(veda.ticket, `'rdf:type' == 'v-s:Feedback' && 'v-s:hasLinkedObject' == '${individual.id}'`);
+  const feedbacks = await Backend.query(`'rdf:type' == 'v-s:Feedback' && 'v-s:hasLinkedObject' == '${individual.id}'`);
   individual['v-s:hasReaction'] = feedbacks.result;
 }
 

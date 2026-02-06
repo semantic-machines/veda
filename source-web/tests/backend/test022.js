@@ -5,7 +5,6 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     const A = await Helpers.create_test_document1(ticket);
 
     const params_q1 = {
-      ticket: ticket.ticket,
       query: "(('rdf:type' == 'v-s:Department')) && ('*' == '.;u*')",
       sort: '',
       top: 3,
@@ -15,7 +14,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     const res = await Backend.query(params_q1);
     assert(res.result.length === 0);
 
-    await Backend.remove_individual(ticket.ticket, A['@']);
-    await Helpers.test_fail_read(ticket, A);
+    await Backend.remove_individual(A['@']);
+    await Helpers.test_fail_read(A);
   });
 };

@@ -42,7 +42,7 @@ export const pre = function (individual, template, container, mode, extra) {
         "' && 'v-s:firstName'=='" +
         individual['v-s:firstName'][0] +
         "'";
-      Backend.query(veda.ticket, queryString).then(function (queryResult) {
+      Backend.query(queryString).then(function (queryResult) {
         const tmp = queryResult.result;
         if (tmp.length == 0) {
           $('#warningPersonFIO').addClass('hidden');
@@ -54,7 +54,7 @@ export const pre = function (individual, template, container, mode, extra) {
     if (individual.hasValue('v-s:tabNumber') && individual.isNew()) {
       const queryString =
         "'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'v-s:tabNumber'=='" + individual['v-s:tabNumber'][0] + "'";
-      Backend.query(veda.ticket, queryString).then(function (queryResult) {
+      Backend.query(queryString).then(function (queryResult) {
         const tmp = queryResult.result;
         if (tmp.length == 0) {
           $('#warningTN').addClass('hidden');

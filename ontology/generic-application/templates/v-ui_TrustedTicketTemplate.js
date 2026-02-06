@@ -18,9 +18,8 @@ export const post = function (individual, template, container, mode, extra) {
     if (useLogin == undefined || useLogin == '') {
       return;
     }
-    Backend.get_ticket_trusted(veda.ticket, useLogin).then(function (authResult) {
+    Backend.get_ticket_trusted(useLogin).then(function (authResult) {
       veda.end_time = localStorage.end_time = authResult.end_time;
-      veda.ticket = localStorage.ticket = authResult.ticket;
       veda.user_uri = localStorage.user_uri = authResult.user_uri;
       location.assign(location.origin);
     });

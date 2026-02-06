@@ -1,5 +1,9 @@
 /**
  * @module Authentication
+ * 
+ * Authentication module for Veda platform.
+ * Uses HttpOnly cookies for secure session management - ticket is stored in 
+ * server-side cookie and is not accessible from JavaScript (XSS protection).
  */
 
 import veda from '../common/veda.js';
@@ -92,21 +96,20 @@ function blockTimer(){
     return;
   }
 
-  // Блокируем кнопку
+  // Block button
   getCodeButton.disabled = true;
 
-  // Показываем блок таймера
+  // Show timer section
   timerSection.style.display = 'block';
 
-  let timeLeft = 120; // 120 секунд
+  let timeLeft = 120; // 120 seconds
 
-  // Функция обновления таймера
+  // Timer update function
   function updateTimer() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-    // Обновляем отображение времени (предполагаем, что есть элемент для отображения)
     const timerDisplay = timerSection.querySelector('.timer-display') || timerSection;
     timerDisplay.textContent = timeString;
 
@@ -114,13 +117,13 @@ function blockTimer(){
       timeLeft--;
       setTimeout(updateTimer, 1000);
     } else {
-      // Время истекло
+      // Time expired
       getCodeButton.disabled = false;
       timerSection.style.display = 'none';
     }
   }
 
-  // Запускаем таймер
+  // Start timer
   updateTimer();
 }
 
@@ -131,7 +134,7 @@ if (loginForm.querySelector('#get-code') != null) {
     const result = await getMobileCode(e, loginForm);
     console.log('SMS Response:', result);
 
-    // Сохранение токена для последующей верификации
+    // Save token for subsequent verification
     if (result && result.token) {
       blockTimer();
       sessionStorage.setItem('sms_auth_token', result.token);
@@ -142,18 +145,17 @@ if (loginForm.querySelector('#get-code') != null) {
     const result = await verifySmsCode(e, loginForm);
     console.log('SMS Verify response:', result);
 
-    // Очистка токена из сессии
+    // Clear token from session
     sessionStorage.removeItem('sms_auth_token');
 
-    // Обработка успешной аутентификации
-    if (result &&result.id && result.user_uri) {
+    // Handle successful authentication
+    if (result && result.user_uri) {
       await handleLoginSuccess({
-        ticket: result.id,
         user_uri: result.user_uri,
         end_time: Math.floor((result.end_time - 621355968000000000) / 10000),
       });
     } else {
-      throw new Error('Неверный ответ сервера');
+      throw new Error('Invalid server response');
     }
   }));
 }
@@ -169,14 +171,17 @@ delegateHandler(loginForm, 'keyup', '#sms-code', async function (e) {
     const result = await verifySmsCode(e, loginForm);
     console.log('SMS Verify response:', result);
 
-    // Очистка токена из сессии
+    // Clear token from session
     sessionStorage.removeItem('sms_auth_token');
 
-    // Обработка успешной аутентификации
-    if (result &&result.id && result.user_uri) {
-      await handleLoginSuccess(result);
+    // Handle successful authentication
+    if (result && result.user_uri) {
+      await handleLoginSuccess({
+        user_uri: result.user_uri,
+        end_time: Math.floor((result.end_time - 621355968000000000) / 10000),
+      });
     } else {
-      throw new Error('Неверный ответ сервера');
+      throw new Error('Invalid server response');
     }
   }
 });
@@ -503,7 +508,7 @@ async function handleLoginError (error) {
 
 /**
  * Handles login success
- * @param {Object} authResult - The authentication result
+ * @param {Object} authResult - The authentication result (user_uri, end_time)
  * @return {void}
  */
 async function handleLoginSuccess (authResult) {
@@ -517,19 +522,6 @@ async function handleLoginSuccess (authResult) {
   await initWithCredentials(authResult);
 }
 
-function getCookie (name) {
-  const cookies = new Map(document.cookie.split('; ').map((v)=>v.split(/=(.*)/s).map(decodeURIComponent)));
-  return cookies.get(name);
-}
-
-function setCookie (name, value, expires) {
-  document.cookie = `${name}=${value}; expires=${new Date(parseInt(expires)).toGMTString()}; samesite=strict; path=/; ${window.location.protocol === 'https:' ? 'secure;' : ''}`;
-}
-
-function delCookie (name) {
-  setCookie(name, null, 0);
-}
-
 /**
  * Handles authentication errors
  * @return {void}
@@ -538,10 +530,9 @@ const handleAuthError = spinnerDecorator(function () {
   const appContainer = document.getElementById('app');
   clear(appContainer);
 
-  storage.removeItem('ticket');
+  // Clear stored session data (no ticket stored anymore)
   storage.removeItem('user_uri');
   storage.removeItem('end_time');
-  delCookie('ticket');
 
   if (storage.getItem('logout')) {
     show(loginForm);
@@ -596,19 +587,19 @@ let refreshInterval;
 
 /**
  * Handles authentication success
- * @param {Object} authResult - The authentication result
+ * @param {Object} authResult - The authentication result (user_uri, end_time)
  * @param {boolean} [isBroadcast=false] - Indicates if the authentication result is from a broadcast message
  * @return {void}
  */
 function handleAuthSuccess (authResult, isBroadcast = false) {
   if (!isBroadcast) bc.postMessage(authResult);
-  veda.ticket = authResult.ticket;
-  storage.setItem('ticket', veda.ticket);
+  
+  // Store only non-sensitive session data (ticket is in HttpOnly cookie)
   veda.user_uri = authResult.user_uri;
   storage.setItem('user_uri', veda.user_uri);
   veda.end_time = authResult.end_time;
   storage.setItem('end_time', veda.end_time);
-  setCookie('ticket', veda.ticket, veda.end_time);
+  
   // Re-login on ticket expiration
   if ( veda.end_time ) {
     const granted = Date.now();
@@ -617,7 +608,7 @@ function handleAuthSuccess (authResult, isBroadcast = false) {
     const hh = Math.floor(lifetime / 1000 / 60 / 60);
     const mm = Math.floor((lifetime % (1000 * 60 * 60)) / 1000 / 60);
     const ss = Math.floor((lifetime % (1000 * 60)) / 1000);
-    console.log(`Ticket will expire in ${hh < 10 ? '0' + hh : hh}:${mm < 10 ? '0' + mm : mm}:${ss < 10 ? '0' + ss : ss}`);
+    console.log(`Session will expire in ${hh < 10 ? '0' + hh : hh}:${mm < 10 ? '0' + mm : mm}:${ss < 10 ? '0' + ss : ss}`);
 
     clearInterval(refreshInterval);
     refreshInterval = setInterval(() => {
@@ -626,12 +617,13 @@ function handleAuthSuccess (authResult, isBroadcast = false) {
       const expiresSoon = expires - lifetime * 0.2 <= Date.now() && !expired;
       if (expired || almostExpired) {
         clearInterval(refreshInterval);
-        console.log('Ticket expired, re-login.');
+        console.log('Session expired, re-login.');
         handleAuthError();
       } else if (expiresSoon && granted < Number(localStorage.lastActivity)) {
         clearInterval(refreshInterval);
-        console.log('Refresh ticket in background.');
-        Backend.get_ticket_trusted(veda.ticket).then(handleAuthSuccess).catch(handleAuthError);
+        console.log('Refresh session in background.');
+        // get_ticket_trusted will read ticket from HttpOnly cookie
+        Backend.get_ticket_trusted().then(handleAuthSuccess).catch(handleAuthError);
       }
     }, Math.ceil(lifetime / 10 || 10000));
   }
@@ -651,22 +643,13 @@ const initWithCredentials = spinnerDecorator(async function (authResult) {
 
 // Logout handler
 delegateHandler(document.body, 'click', '#logout, .logout', spinnerDecorator(async function () {
-  await Backend.logout(veda.ticket).catch((error) => console.log('Logout failed', error));
-  storage.removeItem('ticket');
+  // logout will clear HttpOnly cookie on server
+  await Backend.logout().catch((error) => console.log('Logout failed', error));
   storage.removeItem('user_uri');
   storage.removeItem('end_time');
-  delCookie('ticket');
   storage.setItem('logout', true);
   window.location.reload();
 }));
-
-function adjustTicket ({id, user_uri, end_time}) {
-  return {
-    ticket: id,
-    user_uri,
-    end_time,
-  };
-}
 
 /**
  * Initializes the authentication flow
@@ -674,34 +657,22 @@ function adjustTicket ({id, user_uri, end_time}) {
  * @return {Promise<void>}
  */
 export default spinnerDecorator(async function auth (manifest) {
-  // Try to get auth result from cookie
-  try {
-    let authResult = getCookie('auth');
-    if (authResult) {
-      authResult = adjustTicket(JSON.parse(atob(authResult)));
-      Object.entries(authResult).forEach(([key, value]) => storage.setItem(key, value));
-      delCookie('auth');
-    }
-  } catch (error) {
-    console.log(error);
-    delCookie('auth');
-  }
-
-  // Check if ticket is valid
-  const ticket = storage.getItem('ticket');
+  // Check if session is valid (ticket is in HttpOnly cookie)
   const user_uri = storage.getItem('user_uri');
   const end_time = parseInt(storage.getItem('end_time'));
+  
   try {
-    if (ticket && user_uri && Date.now() < end_time && await Backend.is_ticket_valid(ticket)) {
-      await initWithCredentials({ticket, user_uri, end_time});
+    // is_ticket_valid reads ticket from HttpOnly cookie
+    if (user_uri && Date.now() < end_time && await Backend.is_ticket_valid()) {
+      await initWithCredentials({user_uri, end_time});
     } else {
       // Check if authentication is required
       const authRequired = manifest?.veda_auth_required !== false; // Default to true if not specified
       if (!authRequired) {
         // Guest access allowed - authenticate as guest
         try {
-          const {ticket, user_uri, end_time} = await Backend.authenticate('guest', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
-          await initWithCredentials({ticket, user_uri, end_time});
+          const {user_uri, end_time} = await Backend.authenticate('guest', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+          await initWithCredentials({user_uri, end_time});
         } catch (guestError) {
           console.error('Guest auth failed');
           // If guest auth fails, show login form directly to avoid infinite retry loop

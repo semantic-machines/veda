@@ -189,10 +189,10 @@ export const post = function (individual, template, container, mode, extra) {
         "' && '@'!='" +
         individual.id +
         "'";
-      Backend.query({ticket: veda.ticket, query: queryString}).then(function (queryResult) {
+      Backend.query({query: queryString}).then(function (queryResult) {
         const appointmentsUris = queryResult.result;
         if (appointmentsUris.length > 0) {
-          Backend.get_individuals(veda.ticket, appointmentsUris).then(function (appointmentsJSONs) {
+          Backend.get_individuals(appointmentsUris).then(function (appointmentsJSONs) {
             appointmentsJSONs.forEach(function (appointmentJSON) {
               const label = $('<label></label>');
               const radio = $('<input type="radio" name="defaultAppointment"/>').attr('value', appointmentJSON['@']);

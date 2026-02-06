@@ -2,7 +2,7 @@ import requests from './test050-requests.js';
 
 export default ({test, assert, Backend, Helpers, Constants, Util}) => {
   test.skip('#050 File upload, webdav editing (LibreOffice)', async () => {
-    const {ticket} = await Helpers.get_user1_ticket();
+    const ticket = await Helpers.get_user1_ticket();
 
     const test_file_uri = Util.guid();
     const test_file_individual_uri = 'test-file:' + Util.guid();
@@ -21,17 +21,18 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     const path = '/1970/01/01';
     const uri = test_file_uri;
     const content = '000';
-    await uploadFile(ticket, path, uri, content);
+    await uploadFile(path, uri, content);
 
-    const res = await Backend.put_individual(ticket, test_file_individual);
+    const res = await Backend.put_individual(test_file_individual);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    const base = `${location.origin}/webdav/${ticket}/${test_file_individual_uri}`;
+    // Using _ placeholder for cookie-based auth
+    const base = `${location.origin}/webdav/_/${test_file_individual_uri}`;
 
     await requests.reduce(async (p, {request, response}) => {
       await p;
-      const result = await fetch(`${base}${request.path}`, request);
+      const result = await fetch(`${base}${request.path}`, {...request, credentials: 'same-origin'});
       try {
         try {
           assert(result.status.toString() === response.status.toString());
@@ -63,7 +64,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
   });
 };
 
-async function uploadFile (ticket, path, uri, content) {
+async function uploadFile (path, uri, content) {
   try {
     const boundary = '----WebKitFormBoundaryi6f7ZW0xH8ivVwZr';
     let formData = `--${boundary}\r\nContent-Disposition: form-data; name="path"\r\n\r\n${path}\r\n`;
@@ -76,8 +77,8 @@ async function uploadFile (ticket, path, uri, content) {
       body: formData,
       headers: {
         'Content-Type': `multipart/form-data; boundary=${boundary}`,
-        'Cookie': `ticket=${ticket}`,
       },
+      credentials: 'same-origin',
     });
 
     if (!response.ok) {

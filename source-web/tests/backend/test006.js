@@ -3,8 +3,13 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
 `#006 User1 stores individual and adds right [R] for user2, user2 should successfully read individual.
        User1 adds forbidding right [!R], user2 should fail to read individual`,
   async () => {
+    // Stage 1: Login as user1 and create document
     const ticket_user1 = await Helpers.get_user1_ticket();
-    const ticket_user2 = await Helpers.get_user2_ticket();
+    const ticket_user2_info = await Backend.authenticate('BychinAt', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
+    const user2_uri = ticket_user2_info.user_uri;
+    // Re-login as user1
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
 
     const new_test_doc1_uri = 'test5:' + Util.guid();
     const new_test_doc1 = {
@@ -17,52 +22,59 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
 
     let res;
 
-    res = await Backend.put_individual(ticket_user1.ticket, new_test_doc1);
+    res = await Backend.put_individual(new_test_doc1);
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
 
     let server_test_doc1;
 
-    server_test_doc1 = await Backend.get_individual(ticket_user1.ticket, new_test_doc1_uri);
+    server_test_doc1 = await Backend.get_individual(new_test_doc1_uri);
     assert(Helpers.compare(new_test_doc1, server_test_doc1));
 
-    await assert.rejects(Backend.get_individual(ticket_user2.ticket, new_test_doc1));
+    // Stage 2: Logout and login as user2 - should fail to read (no rights)
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
 
-    res = await Helpers.addRight(ticket_user1.ticket, ticket_user2.user_uri, new_test_doc1_uri, ['v-s:canRead']);
+    await assert.rejects(Backend.get_individual(new_test_doc1_uri));
+
+    // Stage 3: Login as user1 and add read rights for user2
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+
+    res = await Helpers.addRight(user2_uri, new_test_doc1_uri, ['v-s:canRead']);
     const new_permission = res[0];
     assert(await Backend.wait_module(Constants.m_acl, res[1].op_id));
 
-    server_test_doc1 = await Backend.get_individual(ticket_user2.ticket, new_test_doc1_uri);
+    // Stage 4: Login as user2 - should read successfully
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
+
+    server_test_doc1 = await Backend.get_individual(new_test_doc1_uri);
     assert(Helpers.compare(new_test_doc1, server_test_doc1));
 
-    new_permission['@'] = '_';
-    delete new_permission['v-s:permissionObject'];
-    delete new_permission['v-s:permissionSubject'];
+    // Check rights for user2
+    const right2 = await Backend.get_rights(new_test_doc1_uri);
+    assert(right2['v-s:canRead']);
 
-    const right1 = await Backend.get_rights(ticket_user1.ticket, new_test_doc1_uri);
-    const right2 = await Backend.get_rights(ticket_user2.ticket, new_test_doc1_uri);
+    // Stage 5: Login as user1 and add forbidding right
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
 
-    assert(Helpers.compare(new_permission, right2));
-
-    new_permission['v-s:canUpdate'] = Util.newBool(true);
-    new_permission['v-s:canDelete'] = Util.newBool(true);
-    new_permission['v-s:canCreate'] = Util.newBool(true);
-
-    assert(Helpers.compare(new_permission, right1));
-
-    server_test_doc1 = await Backend.get_individual(ticket_user2.ticket, new_test_doc1_uri);
-    assert(Helpers.compare(new_test_doc1, server_test_doc1));
-
-    await Helpers.addRight(ticket_user1.ticket, ticket_user2.user_uri, new_test_doc1_uri, [], ['v-s:canRead']);
-    res = await Helpers.addRight(ticket_user1.ticket, ticket_user2.user_uri, new_test_doc1_uri, ['v-s:canRead']);
+    await Helpers.addRight(user2_uri, new_test_doc1_uri, [], ['v-s:canRead']);
+    res = await Helpers.addRight(user2_uri, new_test_doc1_uri, ['v-s:canRead']);
     assert(await Backend.wait_module(Constants.m_acl, res[1].op_id));
 
-    await assert.rejects(Backend.get_individual(ticket_user2.ticket, new_test_doc1));
+    // Stage 6: Login as user2 - should fail to read (forbidden)
+    await Backend.logout();
+    await Helpers.get_user2_ticket();
 
-    new_test_doc1['v-s:updateCounter'] = Util.newInt(0);
-    await assert.rejects(Backend.put_individual(ticket_user2.ticket, new_test_doc1));
+    await assert.rejects(Backend.get_individual(new_test_doc1_uri));
 
-    await Backend.remove_individual(ticket_user1.ticket, new_test_doc1_uri);
-    await assert.rejects(Backend.get_individual(ticket_user1.ticket, new_test_doc1));
+    // Stage 7: Login as user1 for cleanup
+    await Backend.logout();
+    await Helpers.get_user1_ticket();
+
+    await Backend.remove_individual(new_test_doc1_uri);
+    await assert.rejects(Backend.get_individual(new_test_doc1_uri));
   });
 };

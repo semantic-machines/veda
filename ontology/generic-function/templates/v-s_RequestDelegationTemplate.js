@@ -67,9 +67,9 @@ export const post = function (individual, template, container, mode, extra) {
       const delegator = values[0];
       const queryStr = "( 'rdf:type' === 'v-s:Appointment' && 'v-s:hasDelegationPurpose'!='d:delegate_Control' && 'v-s:employee' == '" + delegator.id + "' )";
       const delegatedPositions = [];
-      Backend.query(veda.ticket, queryStr)
+      Backend.query(queryStr)
         .then(function (queryResult) {
-          return Backend.get_individuals(veda.ticket, queryResult.result);
+          return Backend.get_individuals(queryResult.result);
         })
         .then(function (appointments) {
           const positions_ids = appointments.map(function (appointment_json) {
@@ -82,7 +82,7 @@ export const post = function (individual, template, container, mode, extra) {
           return positions_ids;
         })
         .then(function (positions_ids) {
-          return Backend.get_individuals(veda.ticket, positions_ids);
+          return Backend.get_individuals(positions_ids);
         })
         .then(function (positions) {
           positions.map(function (position_json) {

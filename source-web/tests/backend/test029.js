@@ -30,22 +30,22 @@ set_in_individual(ticket, document3, _event_id);
       'v-s:author': Util.newUri(ticket_admin.user_uri),
     };
 
-    const res = await Backend.put_individual(ticket_admin.ticket, new_test_script);
+    const res = await Backend.put_individual(new_test_script);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
     const doc = await Helpers.create_test_document2(ticket_admin);
 
-    await Backend.remove_individual(ticket_admin.ticket, new_test_script['@']);
+    await Backend.remove_individual(new_test_script['@']);
 
     doc['v-s:test_datetime0'] = Util.newDate(new Date('2017-01-03'));
     doc['v-s:test_ArArObj'] = Util.newInt(20000001);
     doc['v-s:test_Obj'] = Util.newDate(new Date('2017-03-03'));
     doc['v-s:created'] = Util.newDate(new Date('2017-03-03'));
 
-    await Helpers.test_success_read(ticket_admin, doc);
+    await Helpers.test_success_read(doc);
 
-    await Backend.remove_individual(ticket_admin.ticket, doc['@']);
-    await Helpers.test_fail_read(ticket_admin, doc);
+    await Backend.remove_individual(doc['@']);
+    await Helpers.test_fail_read(doc);
   });
 };

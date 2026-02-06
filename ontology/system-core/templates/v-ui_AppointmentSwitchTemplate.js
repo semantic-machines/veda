@@ -9,7 +9,6 @@ export const post = function (individual, template, container, mode, extra) {
   container = $(container);
 
   return Backend.query({
-    ticket: veda.ticket,
     query: "'rdf:type'==='v-s:Appointment' && 'v-s:official'==true && 'v-s:employee'==='" + individual.id + "'",
   }).then(function (result) {
     const apps = result.result;

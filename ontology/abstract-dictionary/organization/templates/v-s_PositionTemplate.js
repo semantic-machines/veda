@@ -47,7 +47,7 @@ export const pre = function (individual, template, container, mode, extra) {
     if (individual.hasValue('rdfs:label') && individual.hasValue('v-s:parentOrganization') && individual.isNew()) {
       const queryString =
         "'rdf:type'==='v-s:Position' && 'v-s:parentUnit'=='" + individual['v-s:parentUnit'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "'";
-      Backend.query(veda.ticket, queryString).then(function (queryResult) {
+      Backend.query(queryString).then(function (queryResult) {
         const tmp = queryResult.result;
         if (tmp.length == 0) {
           $('#warningOccupationName').addClass('hide');
@@ -63,7 +63,7 @@ export const pre = function (individual, template, container, mode, extra) {
         "' && 'v-s:subjectCode'=='" +
         individual['v-s:subjectCode'][0] +
         "'";
-      Backend.query(veda.ticket, queryString).then(function (queryResult) {
+      Backend.query(queryString).then(function (queryResult) {
         const tmp = queryResult.result;
         if (tmp.length == 0) {
           $('#warningOccupationSubCode').addClass('hide');

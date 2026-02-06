@@ -20,7 +20,7 @@ veda.one('started', () => {
  */
 async function checkNotification () {
   await timeout(Math.round(Math.random() * 60 * 1000));
-  const serverNotification = await Backend.get_individual(veda.ticket, 'cfg:ClientNotification', false);
+  const serverNotification = await Backend.get_individual('cfg:ClientNotification', false);
   const userGroups = await veda.user.memberOf();
   let clientNotification = localStorage.notification;
   if (!clientNotification) {

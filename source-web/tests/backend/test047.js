@@ -37,51 +37,51 @@ put_individual(ticket, output);
       'test:isFullState': Util.newBool(true),
     }
 
-    let res = await Backend.put_individual(ticket_admin.ticket, script);
+    let res = await Backend.put_individual(script);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    res = await Backend.put_individual(ticket_admin.ticket, output);
+    res = await Backend.put_individual(output);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    res = await Backend.put_individual(ticket_admin.ticket, individual);
+    res = await Backend.put_individual(individual);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    const output1 = await Backend.get_individual(ticket_admin.ticket, output['@']);
+    const output1 = await Backend.get_individual(output['@']);
     assert(Util.hasValue(output1, 'rdfs:label', {data: 'NOT DELETED', type: 'String'}));
     assert(Util.hasValue(output1, 'test:isFullState', {data: true, type: 'Boolean'}));
 
     individual['v-s:deleted'] = Util.newBool(true);
-    res = await Backend.put_individual(ticket_admin.ticket, individual);
+    res = await Backend.put_individual(individual);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    const output2 = await Backend.get_individual(ticket_admin.ticket, output['@']);
+    const output2 = await Backend.get_individual(output['@']);
     assert(Util.hasValue(output2, 'rdfs:label', {data: 'DELETED', type: 'String'}));
     assert(Util.hasValue(output2, 'test:isFullState', {data: true, type: 'Boolean'}));
 
     delete individual['v-s:deleted'];
-    res = await Backend.put_individual(ticket_admin.ticket, individual);
+    res = await Backend.put_individual(individual);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    const output3 = await Backend.get_individual(ticket_admin.ticket, output['@']);
+    const output3 = await Backend.get_individual(output['@']);
     assert(Util.hasValue(output3, 'rdfs:label', {data: 'NOT DELETED', type: 'String'}));
     assert(Util.hasValue(output3, 'test:isFullState', {data: true, type: 'Boolean'}));
 
-    res = await Backend.remove_individual(ticket_admin.ticket, individual['@']);
+    res = await Backend.remove_individual(individual['@']);
     assert(await Backend.wait_module(Constants.m_acl, res.op_id));
     assert(await Backend.wait_module(Constants.m_scripts, res.op_id));
 
-    const output4 = await Backend.get_individual(ticket_admin.ticket, output['@']);
+    const output4 = await Backend.get_individual(output['@']);
     assert(Util.hasValue(output4, 'rdfs:label', {data: 'DELETED', type: 'String'}));
     assert(Util.hasValue(output4, 'test:isFullState', {data: true, type: 'Boolean'}));
 
     // Clean up
-    await Backend.remove_individual(ticket_admin.ticket, script['@']);
-    await Backend.remove_individual(ticket_admin.ticket, output['@']);
-    await Backend.remove_individual(ticket_admin.ticket, individual['@']);
+    await Backend.remove_individual(script['@']);
+    await Backend.remove_individual(output['@']);
+    await Backend.remove_individual(individual['@']);
   });
 };

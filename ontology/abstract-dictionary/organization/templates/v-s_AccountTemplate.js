@@ -35,7 +35,7 @@ export const pre = function (individual, template, container, mode, extra) {
 
     if (individual.hasValue('v-s:login')) {
       const queryString = "'rdf:type'==='v-s:Account'" + " && 'v-s:login'=='" + individual['v-s:login'][0] + "'";
-      Backend.query(veda.ticket, queryString).then(function (queryResult) {
+      Backend.query(queryString).then(function (queryResult) {
         const tmp = queryResult.result;
         if (tmp.length == 0) {
           $('#warningAccount').addClass('hide');

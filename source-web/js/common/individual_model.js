@@ -318,7 +318,7 @@ Object.defineProperty(proto, 'membership', {
       this._.membership = new IndividualModel({cache: false});
       return Promise.resolve(this._.membership);
     }
-    return Backend.get_membership(veda.ticket, this.id)
+    return Backend.get_membership(this.id)
       .then((membershipJSON) => {
         this._.membership = new IndividualModel({uri: membershipJSON, cache: false});
         return this._.membership;
@@ -353,7 +353,7 @@ Object.defineProperty(proto, 'rights', {
       this._.rights['v-s:canDelete'] = [true];
       return Promise.resolve(this._.rights);
     }
-    return Backend.get_rights(veda.ticket, this.id).then((rightsJSON) => {
+    return Backend.get_rights(this.id).then((rightsJSON) => {
       this._.rights = new IndividualModel(rightsJSON, false);
       return this._.rights;
     }).catch((error) => {
@@ -385,7 +385,7 @@ proto.canDelete = function () {
 
 Object.defineProperty(proto, 'rightsOrigin', {
   get: function () {
-    return Backend.get_rights_origin(veda.ticket, this.id).then((rightsOriginArr) => {
+    return Backend.get_rights_origin(this.id).then((rightsOriginArr) => {
       this._.rightsOrigin = Promise.all(rightsOriginArr.map((item) => {
         return new IndividualModel(item, false);
       }));
@@ -437,7 +437,7 @@ proto.load = function () {
         } else if (this.isLoaded() && veda.status === 'limited') {
           return this.reset();
         } else {
-          return Backend.get_individual(veda.ticket, this.id).then((data) => {
+          return Backend.get_individual(this.id).then((data) => {
             this.isSync(true);
             this.isLoaded(true);
             this.properties = data;
@@ -487,11 +487,11 @@ proto.save = function (isAtomic) {
         const delta = Util.diff(this.properties, original);
 
         return (this.isNew() || isAtomic ?
-          Backend.put_individual(veda.ticket, this.properties) :
+          Backend.put_individual(this.properties) :
           Promise.all([
-            delta.added && Object.keys(delta.added).length ? (delta.added['@'] = this.id, Backend.add_to_individual(veda.ticket, delta.added)) : undefined,
-            delta.differ && Object.keys(delta.differ).length ? (delta.differ['@'] = this.id, Backend.set_in_individual(veda.ticket, delta.differ)) : undefined,
-            delta.missing && Object.keys(delta.missing).length? (delta.missing['@'] = this.id, Backend.remove_from_individual(veda.ticket, delta.missing)) : undefined,
+            delta.added && Object.keys(delta.added).length ? (delta.added['@'] = this.id, Backend.add_to_individual(delta.added)) : undefined,
+            delta.differ && Object.keys(delta.differ).length ? (delta.differ['@'] = this.id, Backend.set_in_individual(delta.differ)) : undefined,
+            delta.missing && Object.keys(delta.missing).length? (delta.missing['@'] = this.id, Backend.remove_from_individual(delta.missing)) : undefined,
           ])
         ).then(() => {
           this.original = JSON.stringify(this.properties);
@@ -545,7 +545,7 @@ proto.saveAll = function (parent, acc, visited) {
       }
       return Promise.all(children);
     })
-    .then(() => !parent && Promise.all(acc).then((acc) => acc.length && Backend.put_individuals(veda.ticket, acc)))
+    .then(() => !parent && Promise.all(acc).then((acc) => acc.length && Backend.put_individuals(acc)))
     .then(() => !parent && acc.forEach((props) => {
       const individual = new IndividualModel(props['@']);
       individual.original = JSON.stringify(props);
@@ -586,7 +586,7 @@ proto.reset = function () {
   };
   this._newLinkValues = new Set();
   return this.trigger('beforeReset')
-    .then(() => !this.isNew() ? Backend.get_individual(veda.ticket, this.id, false).then(mergeServerState) : null)
+    .then(() => !this.isNew() ? Backend.get_individual(this.id, false).then(mergeServerState) : null)
     .then(() => this.trigger('afterReset'))
     .then(() => {
       this.watch();
@@ -670,7 +670,7 @@ proto.remove = function () {
       .then(() => {
         IndividualModel.cache.delete(this.id);
         if (this.isNew()) return;
-        return Backend.remove_individual(veda.ticket, this.id);
+        return Backend.remove_individual(this.id);
       })
       .then(() => this.trigger('afterRemove'))
       .then(() => {
@@ -1178,7 +1178,7 @@ function prefetch (result, depth, uris, ...allowed_props) {
     if (cached && loaded && result.indexOf(cached) < 0) result.push(cached);
     return !cached || !loaded;
   });
-  return (getUris.length ? Backend.get_individuals(veda.ticket, getUris) : Promise.resolve([])).then((jsonList) => {
+  return (getUris.length ? Backend.get_individuals(getUris) : Promise.resolve([])).then((jsonList) => {
     jsonList.forEach((json) => {
       const individual = new IndividualModel(json);
       if (result.indexOf(individual) < 0) result.push(individual);

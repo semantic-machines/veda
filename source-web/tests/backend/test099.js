@@ -77,10 +77,8 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     console.log('  [test099.1] Testing valid authentication...');
     try {
       const ticket = await Backend.authenticate('bushenevvt', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3');
-      console.log(`  [test099.1] Ticket received: ${ticket.ticket.substring(0, 20)}...`);
       console.log(`  [test099.1] User URI: ${ticket.user_uri}`);
       console.log(`  [test099.1] End time: ${new Date(ticket.end_time).toISOString()}`);
-      assert(ticket.ticket.length > 0, 'Valid authentication should succeed');
       assert(ticket.end_time > Date.now(), 'Ticket should have valid end time');
       console.log('  [test099.1] ✓ Valid authentication works correctly');
     } catch (e) {

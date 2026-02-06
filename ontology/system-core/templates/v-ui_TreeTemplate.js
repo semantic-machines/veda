@@ -396,7 +396,6 @@ export const pre = function (individual, template, container, mode, extra) {
     const order = sort || "'rdfs:label_ru' asc, 'rdfs:label_en' asc, 'rdfs:label' asc";
     let unique;
     return Backend.query({
-      ticket: veda.ticket,
       query: q,
       sort: order,
       async: true,
@@ -405,7 +404,6 @@ export const pre = function (individual, template, container, mode, extra) {
       if (withDeleted) {
         q = q + " && ( 'v-s:deleted'== true )";
         return Backend.query({
-          ticket: veda.ticket,
           query: q,
           sort: order,
           async: true,

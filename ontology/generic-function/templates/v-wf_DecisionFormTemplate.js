@@ -9,7 +9,6 @@ export const post = function (individual, template, container, mode, extra) {
   individual.canUpdate().then(function (canUpdate) {
     if (canUpdate && !individual.hasValue('v-wf:read', true)) {
       return Backend.set_in_individual({
-        ticket: veda.ticket,
         individual: {
           '@': individual.id,
           'v-wf:read': [

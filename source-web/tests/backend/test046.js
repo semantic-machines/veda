@@ -7,7 +7,7 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
     const updateService = new UpdateService('ws://localhost:8088');
     await updateService.start();
 
-    const ticket_user1 = (await Helpers.get_user1_ticket()).ticket;
+    const ticket_user1 = await Helpers.get_user1_ticket();
 
     const new_test_doc1_uri = 'test3:' + Util.guid();
     const new_test_doc1 = {
@@ -27,18 +27,18 @@ export default ({test, assert, Backend, Helpers, Constants, Util}) => {
       }
     ]);
 
-    await Backend.put_individual(ticket_user1, new_test_doc1);
+    await Backend.put_individual(new_test_doc1);
     await timeout(1500);
     assert(testUpdateCounter === 1);
 
-    await Backend.put_individual(ticket_user1, new_test_doc1);
+    await Backend.put_individual(new_test_doc1);
     await timeout(1500);
     assert(testUpdateCounter === 2);
 
     updateService.unsubscribe(new_test_doc1_uri);
     updateService.stop();
 
-    await Backend.remove_individual(ticket_user1, new_test_doc1_uri);
-    await assert.rejects(Backend.get_individual(ticket_user1, new_test_doc1_uri));
+    await Backend.remove_individual(new_test_doc1_uri);
+    await assert.rejects(Backend.get_individual(new_test_doc1_uri));
   });
 };

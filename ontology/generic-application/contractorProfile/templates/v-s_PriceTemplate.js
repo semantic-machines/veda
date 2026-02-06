@@ -15,7 +15,6 @@ export const post = function (individual, template, container, mode, extra) {
   function handler (property_uri) {
     if ((property_uri === 'v-s:sum' || property_uri === 'v-s:hasCurrency') && individual.hasValue('v-s:sum') && individual.hasValue('v-s:hasCurrency')) {
       Backend.query({
-        ticket: veda.ticket,
         query:
           "'rdf:type'==='v-s:CurrencyExchangeRate' && 'v-s:hasCurrencySource'=='" +
           individual['v-s:hasCurrency'][0].id +

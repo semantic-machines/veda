@@ -175,7 +175,7 @@ export default class UpdateService {
     function openedHandler (event) {
       reconnectDelay = reconnectDelayInitial;
       console.log('client: websocket opened', event.target.url);
-      this.sendMessage('ccus=' + veda.ticket);
+      this.sendMessage('ccus=');
       self.restore();
       self.onLine = true;
       self.trigger('online');

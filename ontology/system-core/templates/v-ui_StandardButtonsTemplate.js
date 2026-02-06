@@ -58,7 +58,7 @@ export const pre = function (individual, template, container, mode, extra) {
       });
     } else if (action === 'delete') {
       const queryString = "'rdf:type'==='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + individual.id + "' && 'v-wf:isCompleted'==false";
-      Backend.query(veda.ticket, queryString).then(function (queryResult) {
+      Backend.query(queryString).then(function (queryResult) {
         const tmp = queryResult.result;
         if (tmp.length == 0) {
           const warning = new IndividualModel('v-s:AreYouSure');
