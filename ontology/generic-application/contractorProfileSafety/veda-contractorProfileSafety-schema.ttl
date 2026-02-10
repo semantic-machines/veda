@@ -99,7 +99,7 @@ v-s:isResponsibleForFireSafety
 .
 v-s:attachDocumentsForFireSafety
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Распорядительный документ о назначении лиц, ответственных за соблюдение требований пожарной безопасности на территории АО «Монди СЛПК». "@ru ;
+  rdfs:label "Распорядительный документ о назначении лиц, ответственных за соблюдение требований пожарной безопасности на территории АО «СЛПК». "@ru ;
   rdfs:label "Disposal documents for the right to organize "@en ;
   rdfs:range v-s:ContractorProfileFile;
   rdfs:domain v-s:ContractorProfileSafety;
@@ -113,7 +113,7 @@ v-s:isResponsibleForIndustrialSafety
 .
 v-s:attachDocumentsForIndustrialSafety
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Распорядительный документ о назначении лиц, ответственных за организацию и осуществление производственного контроля за соблюдением требований промышленной безопасности при эксплуатации на территории АО «Монди СЛПК» опасных производственных объектов или технических устройств, на которые распространяются федеральные нормы и правила в области промышленной безопасности. "@ru ;
+  rdfs:label "Распорядительный документ о назначении лиц, ответственных за организацию и осуществление производственного контроля за соблюдением требований промышленной безопасности при эксплуатации на территории АО «СЛПК» опасных производственных объектов или технических устройств, на которые распространяются федеральные нормы и правила в области промышленной безопасности. "@ru ;
   rdfs:label "Disposal documents for the right to organize "@en ;
   rdfs:range v-s:ContractorProfileFile;
   rdfs:domain v-s:ContractorProfileSafety;
