@@ -7,17 +7,18 @@ use lettre::transport::smtp::PoolConfig;
 use lettre::{Address, Message, SmtpTransport, Transport};
 use std::collections::HashMap;
 use std::error::Error;
+use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::str::FromStr;
 use std::time::Duration;
 use v_common::module::common::load_onto;
 use v_common::module::info::ModuleInfo;
 use v_common::module::module_impl::{get_cmd, get_inner_binobj_as_individual, init_log, wait_load_ontology, Module, PrepareError};
 use v_common::module::veda_backend::Backend;
-use v_common::onto::individual::Individual;
-use v_common::onto::onto_impl::Onto;
 use v_common::search::common::FTQuery;
-use v_common::v_api::obj::ResultCode;
+use v_common::v_api::common_type::ResultCode;
 use v_common::v_queue::consumer::Consumer;
+use v_individual_model::onto::individual::Individual;
+use v_individual_model::onto::onto_impl::Onto;
 
 const ATTACHMENTS_DB_PATH: &str = "data/files";
 
@@ -106,15 +107,21 @@ fn prepare(backend: &mut Backend, ctx: &mut Context, queue_element: &mut Individ
     }
 
     if let Some(types) = new_state.get_literals("rdf:type") {
-        let is_version = types.contains(&"v-s:Version".to_owned());
+        let is_version = types.iter().any(|t: &String| t == "v-s:Version");
         if is_version {
             info!("individual {} is version, ignore", new_state.get_id());
             return Ok(true);
         }
 
-        for itype in types {
-            if ctx.onto.is_some_entered(&itype, &["v-s:Deliverable"]) {
-                prepare_deliverable(&mut new_state, backend, ctx);
+        for itype in types.iter() {
+            if ctx.onto.is_some_entered(itype, &["v-s:Deliverable"]) {
+                let uri = new_state.get_id().to_string();
+                let result = catch_unwind(AssertUnwindSafe(|| {
+                    prepare_deliverable(&mut new_state, backend, ctx)
+                }));
+                if let Err(e) = result {
+                    error!("panic while processing deliverable, uri = {}, op_id = {}, queue_element = {}: {:?}", uri, op_id, queue_element.get_id(), e);
+                }
                 break;
             }
         }
@@ -253,7 +260,7 @@ fn prepare_deliverable(msg_indv: &mut Individual, backend: &mut Backend, ctx: &m
             msg_indv.get_id(),
             subject,
             message_body.is_some(),
-            attachments.as_ref().map(|a| a.len())
+            attachments.as_ref().map(|a: &Vec<String>| a.len())
         );
     }
 
@@ -305,7 +312,7 @@ fn prepare_deliverable(msg_indv: &mut Individual, backend: &mut Backend, ctx: &m
             let mut builder = MultiPart::mixed().build();
 
             // Добавляем тело письма
-            if let Some(ref body) = message_body {
+            if let Some(body) = &message_body {
                 let is_html = body.to_lowercase().contains("<html>");
                 if debug_logging {
                     info!(
@@ -323,12 +330,12 @@ fn prepare_deliverable(msg_indv: &mut Individual, backend: &mut Backend, ctx: &m
                     SinglePart::builder()
                         .header(header::ContentType::parse("text/html; charset=utf-8").unwrap())
                         .header(header::ContentTransferEncoding::QuotedPrintable)
-                        .body(body.clone())
+                        .body(body.to_string())
                 } else {
                     SinglePart::builder()
                         .header(header::ContentType::parse("text/plain; charset=utf-8").unwrap())
                         .header(header::ContentTransferEncoding::QuotedPrintable)
-                        .body(body.clone())
+                        .body(body.to_string())
                 };
                 builder = builder.singlepart(body_part);
             }
@@ -384,7 +391,7 @@ fn prepare_deliverable(msg_indv: &mut Individual, backend: &mut Backend, ctx: &m
             }
 
             message_builder.multipart(builder)
-        } else if let Some(ref body) = message_body {
+        } else if let Some(body) = &message_body {
             let is_html = body.to_lowercase().contains("<html>");
             if debug_logging {
                 info!(
@@ -402,12 +409,12 @@ fn prepare_deliverable(msg_indv: &mut Individual, backend: &mut Backend, ctx: &m
                 message_builder
                     .header(header::ContentType::parse("text/html; charset=utf-8").unwrap())
                     .header(header::ContentTransferEncoding::QuotedPrintable)
-                    .body(body.clone())
+                    .body(body.to_string())
             } else {
                 message_builder
                     .header(header::ContentType::parse("text/plain; charset=utf-8").unwrap())
                     .header(header::ContentTransferEncoding::QuotedPrintable)
-                    .body(body.clone())
+                    .body(body.to_string())
             }
         } else {
             if debug_logging {
@@ -549,7 +556,8 @@ fn get_emails_from_appointment(has_message_type: &Option<String>, ap: &mut Indiv
 
     if let Some(has_message_type) = has_message_type {
         if let Some(preference_uri) = prs.get_first_literal("v-ui:hasPreferences") {
-            if let Some(preference) = backend.get_individual(&preference_uri, &mut Individual::default()) {
+            let preference_uri_str: &str = &preference_uri;
+            if let Some(preference) = backend.get_individual(preference_uri_str, &mut Individual::default()) {
                 info!("found preferences, uri = {}, has message type = {}", p_uri, has_message_type);
 
                 let mut need_send = true;
@@ -677,7 +685,7 @@ fn connect_to_smtp(ctx: &mut Context, module: &mut Backend) -> bool {
             for el in v {
                 let mut connection = Individual::default();
 
-                if module.storage.get_individual(&el, &mut connection) == ResultCode::Ok && !connection.is_exists_bool("v-s:delete", true) {
+                if module.storage.get_individual(&el, &mut connection).is_ok() && !connection.is_exists_bool("v-s:delete", true) {
                     if let Some(transport) = connection.get_first_literal("v-s:transport") {
                         if transport == "smtp" {
                             info!("found connection configuration for smtp server, uri = {}", connection.get_id());
