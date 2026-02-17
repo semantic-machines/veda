@@ -2,14 +2,19 @@
 #[macro_use]
 extern crate log;
 
+use configparser::ini::Ini;
 use lettre::message::{header, Mailbox, MultiPart, SinglePart};
 use lettre::transport::smtp::PoolConfig;
 use lettre::{Address, Message, SmtpTransport, Transport};
 use std::collections::HashMap;
 use std::error::Error;
+use std::fs::{self, OpenOptions};
+use std::io::{BufRead, BufReader, Write};
 use std::panic::{catch_unwind, AssertUnwindSafe};
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use std::time::Duration;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use serde::{Deserialize, Serialize};
 use v_common::module::common::load_onto;
 use v_common::module::info::ModuleInfo;
 use v_common::module::module_impl::{get_cmd, get_inner_binobj_as_individual, init_log, wait_load_ontology, Module, PrepareError};
@@ -21,6 +26,80 @@ use v_individual_model::onto::individual::Individual;
 use v_individual_model::onto::onto_impl::Onto;
 
 const ATTACHMENTS_DB_PATH: &str = "data/files";
+const RETRY_CONFIG_CANDIDATES: [&str; 4] = [
+    "../../config/veda-fanout-email.ini",
+    "../config/veda-fanout-email.ini",
+    "./config/veda-fanout-email.ini",
+    "config/veda-fanout-email.ini",
+];
+
+#[derive(Debug, Clone)]
+struct RetryConfig {
+    enabled: bool,
+    retry_on_transient_only: bool,
+    base_delay: u64,
+    max_delay: u64,
+    max_attempts: u32,
+    max_total: u64,
+    heartbeat_check: u64,
+}
+
+impl Default for RetryConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            retry_on_transient_only: true,
+            base_delay: 60,
+            max_delay: 3600,
+            max_attempts: 24,
+            max_total: 172800,
+            heartbeat_check: 5,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+struct RetryStorageConfig {
+    pending_file_path: String,
+    dead_letter_file_path: String,
+    temp_file_path: String,
+    max_record_size_bytes: usize,
+    max_pending_records: usize,
+}
+
+impl Default for RetryStorageConfig {
+    fn default() -> Self {
+        Self {
+            pending_file_path: "./data/email-retry-pending.jsonl".to_string(),
+            dead_letter_file_path: "./data/email-retry-dead-letter.jsonl".to_string(),
+            temp_file_path: "./data/email-retry-pending.tmp".to_string(),
+            max_record_size_bytes: 1024 * 1024,
+            max_pending_records: 10_000,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct PendingEmailRecord {
+    msg_uri: String,
+    from: String,
+    to: Vec<String>,
+    subject: Option<String>,
+    body: Option<String>,
+    attachments: Vec<String>,
+    attempt_count: u32,
+    first_failed_at: u64,
+    next_retry_at: u64,
+    last_error: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct DeadLetterRecord {
+    moved_at: u64,
+    reason: String,
+    raw_line: Option<String>,
+    record: Option<PendingEmailRecord>,
+}
 
 pub struct Context {
     onto: Onto,
@@ -29,12 +108,28 @@ pub struct Context {
     always_use_mail_sender: bool,
     sys_ticket: String,
     module_info: ModuleInfo,
+    retry_config: RetryConfig,
+    retry_storage: RetryStorageConfig,
+    last_retry_check_ts: u64,
 }
 
 fn main() -> Result<(), i32> {
     init_log("FANOUT_EMAIL");
 
     wait_load_ontology();
+
+    let (retry_config, retry_storage) = load_retry_settings();
+    info!("Email retry config loaded: enabled={}, base_delay={}, max_delay={}, max_attempts={}, max_total={}",
+        retry_config.enabled,
+        retry_config.base_delay,
+        retry_config.max_delay,
+        retry_config.max_attempts,
+        retry_config.max_total
+    );
+    info!(
+        "Email retry storage loaded: pending_file_path={}, dead_letter_file_path={}",
+        retry_storage.pending_file_path, retry_storage.dead_letter_file_path
+    );
 
     let mut queue_consumer = Consumer::new("./data/queue", "fanout_email0", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
@@ -55,6 +150,9 @@ fn main() -> Result<(), i32> {
         always_use_mail_sender: false,
         sys_ticket: systicket.unwrap_or_default(),
         module_info: module_info.unwrap(),
+        retry_config,
+        retry_storage,
+        last_retry_check_ts: 0,
     };
 
     connect_to_smtp(&mut ctx, &mut backend);
@@ -75,7 +173,8 @@ fn main() -> Result<(), i32> {
     Ok(())
 }
 
-fn heartbeat(_module: &mut Backend, _ctx: &mut Context) -> Result<(), PrepareError> {
+fn heartbeat(module: &mut Backend, ctx: &mut Context) -> Result<(), PrepareError> {
+    process_retry_queue(module, ctx);
     Ok(())
 }
 
@@ -85,6 +184,291 @@ fn before_batch(_module: &mut Backend, _ctx: &mut Context, _size_batch: u32) -> 
 
 fn after_batch(_module: &mut Backend, _ctx: &mut Context, _prepared_batch_size: u32) -> Result<bool, PrepareError> {
     Ok(false)
+}
+
+fn now_ts() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or_default()
+}
+
+fn parse_bool(v: Option<String>, default: bool) -> bool {
+    v.and_then(|s| s.parse::<bool>().ok()).unwrap_or(default)
+}
+
+fn parse_u64(v: Option<String>, default: u64) -> u64 {
+    v.and_then(|s| s.parse::<u64>().ok()).unwrap_or(default)
+}
+
+fn parse_duration(v: Option<String>, default: u64) -> u64 {
+    let Some(raw) = v else {
+        return default;
+    };
+    let trimmed = raw.trim();
+    if trimmed.is_empty() {
+        return default;
+    }
+
+    let mut normalized = String::with_capacity(trimmed.len() + 8);
+    let mut prev_is_alpha = false;
+    for ch in trimmed.chars() {
+        let is_digit = ch.is_ascii_digit();
+        if prev_is_alpha && is_digit {
+            normalized.push(' ');
+        }
+        normalized.push(ch);
+        prev_is_alpha = ch.is_ascii_alphabetic();
+    }
+
+    match humantime::parse_duration(&normalized) {
+        Ok(d) => d.as_secs(),
+        Err(e) => {
+            error!(
+                "Failed to parse duration '{}', using default {} seconds: {}",
+                raw, default, e
+            );
+            default
+        },
+    }
+}
+
+fn parse_usize(v: Option<String>, default: usize) -> usize {
+    v.and_then(|s| s.parse::<usize>().ok()).unwrap_or(default)
+}
+
+fn load_retry_settings() -> (RetryConfig, RetryStorageConfig) {
+    let mut retry_config = RetryConfig::default();
+    let mut retry_storage = RetryStorageConfig::default();
+
+    let cfg_path = RETRY_CONFIG_CANDIDATES
+        .iter()
+        .find(|p| Path::new(p).exists())
+        .map(|p| p.to_string());
+
+    let Some(cfg_path) = cfg_path else {
+        warn!(
+            "Retry config file not found in known paths: {:?}, using defaults",
+            RETRY_CONFIG_CANDIDATES
+        );
+        return (retry_config, retry_storage);
+    };
+
+    info!("Using retry config file: {}", cfg_path);
+    let mut ini = Ini::new();
+    match ini.load(&cfg_path) {
+        Ok(_) => {
+            retry_config.enabled = parse_bool(ini.get("retry", "enabled"), retry_config.enabled);
+            retry_config.retry_on_transient_only = parse_bool(
+                ini.get("retry", "retry_on_transient_only"),
+                retry_config.retry_on_transient_only,
+            );
+            retry_config.base_delay = parse_duration(
+                ini.get("retry", "base_delay"),
+                retry_config.base_delay,
+            );
+            retry_config.max_delay = parse_duration(
+                ini.get("retry", "max_delay"),
+                retry_config.max_delay,
+            );
+            retry_config.max_attempts =
+                parse_u64(ini.get("retry", "max_attempts"), retry_config.max_attempts as u64) as u32;
+            retry_config.max_total = parse_duration(
+                ini.get("retry", "max_total"),
+                retry_config.max_total,
+            );
+            retry_config.heartbeat_check = parse_duration(
+                ini.get("retry", "heartbeat_check"),
+                retry_config.heartbeat_check,
+            );
+
+            retry_storage.pending_file_path = ini
+                .get("retry_storage", "pending_file_path")
+                .unwrap_or(retry_storage.pending_file_path);
+            retry_storage.dead_letter_file_path = ini
+                .get("retry_storage", "dead_letter_file_path")
+                .unwrap_or(retry_storage.dead_letter_file_path);
+            retry_storage.temp_file_path = ini
+                .get("retry_storage", "temp_file_path")
+                .unwrap_or(retry_storage.temp_file_path);
+            retry_storage.max_record_size_bytes = parse_usize(
+                ini.get("retry_storage", "max_record_size_bytes"),
+                retry_storage.max_record_size_bytes,
+            );
+            retry_storage.max_pending_records = parse_usize(
+                ini.get("retry_storage", "max_pending_records"),
+                retry_storage.max_pending_records,
+            );
+        },
+        Err(e) => {
+            error!("Failed to read retry config {}: {}", cfg_path, e);
+        },
+    }
+
+    (retry_config, retry_storage)
+}
+
+fn ensure_parent_dir(file_path: &str) {
+    let parent_dir: Option<PathBuf> = Path::new(file_path).parent().map(|p| p.to_path_buf());
+    if let Some(parent) = parent_dir {
+        if !parent.as_os_str().is_empty() && !parent.exists() {
+            if let Err(e) = fs::create_dir_all(&parent) {
+                error!("Failed to create directory {}: {}", parent.display(), e);
+            }
+        }
+    }
+}
+
+fn append_dead_letter(storage: &RetryStorageConfig, reason: String, record: Option<PendingEmailRecord>, raw_line: Option<String>) {
+    ensure_parent_dir(&storage.dead_letter_file_path);
+    let dead = DeadLetterRecord {
+        moved_at: now_ts(),
+        reason,
+        raw_line,
+        record,
+    };
+
+    match serde_json::to_string(&dead) {
+        Ok(line) => {
+            match OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&storage.dead_letter_file_path)
+            {
+                Ok(mut file) => {
+                    if let Err(e) = writeln!(file, "{}", line) {
+                        error!("Failed to append dead-letter record: {}", e);
+                    }
+                },
+                Err(e) => error!(
+                    "Failed to open dead-letter file {}: {}",
+                    storage.dead_letter_file_path, e
+                ),
+            }
+        },
+        Err(e) => error!("Failed to serialize dead-letter record: {}", e),
+    }
+}
+
+fn load_pending_records(storage: &RetryStorageConfig) -> Vec<PendingEmailRecord> {
+    if !Path::new(&storage.pending_file_path).exists() {
+        return Vec::new();
+    }
+
+    let file = match fs::File::open(&storage.pending_file_path) {
+        Ok(f) => f,
+        Err(e) => {
+            error!("Failed to read pending file {}: {}", storage.pending_file_path, e);
+            return Vec::new();
+        },
+    };
+
+    let mut records = Vec::new();
+    for line_result in BufReader::new(file).lines() {
+        let line = match line_result {
+            Ok(l) => l,
+            Err(e) => {
+                error!("Failed to read pending line: {}", e);
+                continue;
+            },
+        };
+
+        if line.trim().is_empty() {
+            continue;
+        }
+
+        if line.len() > storage.max_record_size_bytes {
+            append_dead_letter(
+                storage,
+                format!("record_too_large: {} bytes", line.len()),
+                None,
+                Some(line),
+            );
+            continue;
+        }
+
+        match serde_json::from_str::<PendingEmailRecord>(&line) {
+            Ok(r) => records.push(r),
+            Err(e) => {
+                append_dead_letter(
+                    storage,
+                    format!("invalid_record_json: {}", e),
+                    None,
+                    Some(line),
+                );
+            },
+        }
+    }
+
+    records
+}
+
+fn save_pending_records_atomic(storage: &RetryStorageConfig, records: &[PendingEmailRecord]) {
+    ensure_parent_dir(&storage.pending_file_path);
+    ensure_parent_dir(&storage.temp_file_path);
+
+    let mut tmp = match fs::File::create(&storage.temp_file_path) {
+        Ok(f) => f,
+        Err(e) => {
+            error!("Failed to create temp pending file {}: {}", storage.temp_file_path, e);
+            return;
+        },
+    };
+
+    for record in records {
+        match serde_json::to_string(record) {
+            Ok(line) => {
+                if let Err(e) = writeln!(tmp, "{}", line) {
+                    error!("Failed to write pending temp line: {}", e);
+                    return;
+                }
+            },
+            Err(e) => {
+                error!("Failed to serialize pending record: {}", e);
+            },
+        }
+    }
+
+    if let Err(e) = fs::rename(&storage.temp_file_path, &storage.pending_file_path) {
+        error!(
+            "Failed to replace pending file {} from {}: {}",
+            storage.pending_file_path, storage.temp_file_path, e
+        );
+    }
+}
+
+fn compute_next_retry_at(now: u64, attempt_count: u32, cfg: &RetryConfig) -> u64 {
+    let power = attempt_count.saturating_sub(1).min(31);
+    let delay = cfg
+        .base_delay
+        .saturating_mul(2u64.saturating_pow(power))
+        .min(cfg.max_delay);
+    now.saturating_add(delay)
+}
+
+fn enqueue_failed_email(ctx: &Context, mut record: PendingEmailRecord) {
+    if !ctx.retry_config.enabled {
+        return;
+    }
+
+    let mut records = load_pending_records(&ctx.retry_storage);
+    if records.len() >= ctx.retry_storage.max_pending_records {
+        append_dead_letter(
+            &ctx.retry_storage,
+            "pending_capacity_exceeded".to_string(),
+            Some(record),
+            None,
+        );
+        return;
+    }
+
+    if record.next_retry_at == 0 {
+        let now = now_ts();
+        record.next_retry_at = now.saturating_add(ctx.retry_config.base_delay);
+    }
+
+    records.push(record);
+    save_pending_records_atomic(&ctx.retry_storage, &records);
 }
 
 fn prepare(backend: &mut Backend, ctx: &mut Context, queue_element: &mut Individual, _my_consumer: &Consumer) -> Result<bool, PrepareError> {
@@ -464,6 +848,7 @@ fn prepare_deliverable(msg_indv: &mut Individual, backend: &mut Backend, ctx: &m
                         },
                         Err(e) => {
                             error!("Failed to send email, uri = {}, error details: {:?}", msg_indv.get_id(), e);
+                            let is_transient = e.is_transient();
 
                             // Определяем тип ошибки и выводим соответствующую информацию
                             if e.is_permanent() {
@@ -506,6 +891,29 @@ fn prepare_deliverable(msg_indv: &mut Individual, backend: &mut Backend, ctx: &m
                                 mail_addreses.rr_email_to_hash.values().map(|m| m.email.to_string()).collect::<Vec<_>>(),
                                 subject
                             );
+
+                            if ctx.retry_config.enabled
+                                && (!ctx.retry_config.retry_on_transient_only || is_transient)
+                            {
+                                let now = now_ts();
+                                let failed_record = PendingEmailRecord {
+                                    msg_uri: msg_indv.get_id().to_string(),
+                                    from: mail_addreses.email_from.email.to_string(),
+                                    to: mail_addreses
+                                        .rr_email_to_hash
+                                        .values()
+                                        .map(|m| m.email.to_string())
+                                        .collect(),
+                                    subject: subject.clone(),
+                                    body: message_body.clone(),
+                                    attachments: attachments.clone().unwrap_or_default(),
+                                    attempt_count: 1,
+                                    first_failed_at: now,
+                                    next_retry_at: now.saturating_add(ctx.retry_config.base_delay),
+                                    last_error: e.to_string(),
+                                };
+                                enqueue_failed_email(ctx, failed_record);
+                            }
                         },
                     }
                 } else {
@@ -529,6 +937,226 @@ fn prepare_deliverable(msg_indv: &mut Individual, backend: &mut Backend, ctx: &m
     }
 
     ResultCode::InternalServerError
+}
+
+fn build_email_message(
+    mail_from: &str,
+    recipients: &[String],
+    subject: &Option<String>,
+    message_body: &Option<String>,
+    attachments: &[String],
+    backend: &mut Backend,
+    log_id: &str,
+) -> Result<Message, String> {
+    let from_address = Address::from_str(mail_from)
+        .map_err(|e| format!("invalid sender email {}: {}", mail_from, e))?;
+    let from_mailbox = Mailbox::new(Some("Veda System".to_string()), from_address);
+
+    let mut message_builder = Message::builder()
+        .from(from_mailbox)
+        .header(header::ContentTransferEncoding::QuotedPrintable);
+
+    let mut valid_recipients = 0usize;
+    for recipient in recipients {
+        match Address::from_str(recipient) {
+            Ok(address) => {
+                message_builder = message_builder.to(Mailbox::new(Some("Recipient".to_string()), address));
+                valid_recipients += 1;
+            },
+            Err(e) => {
+                error!("Invalid recipient {} for {}: {}", recipient, log_id, e);
+            },
+        }
+    }
+
+    if valid_recipients == 0 {
+        return Err("no valid recipients".to_string());
+    }
+
+    if let Some(s) = subject {
+        message_builder = message_builder.subject(s.clone());
+    }
+
+    if !attachments.is_empty() {
+        let mut builder = MultiPart::mixed().build();
+
+        if let Some(body) = message_body {
+            let is_html = body.to_lowercase().contains("<html>");
+            let body_part = if is_html {
+                SinglePart::builder()
+                    .header(header::ContentType::parse("text/html; charset=utf-8").map_err(|e| e.to_string())?)
+                    .header(header::ContentTransferEncoding::QuotedPrintable)
+                    .body(body.to_string())
+            } else {
+                SinglePart::builder()
+                    .header(header::ContentType::parse("text/plain; charset=utf-8").map_err(|e| e.to_string())?)
+                    .header(header::ContentTransferEncoding::QuotedPrintable)
+                    .body(body.to_string())
+            };
+            builder = builder.singlepart(body_part);
+        }
+
+        for id in attachments {
+            if let Some(file_info) = backend.get_individual(id, &mut Individual::default()) {
+                if let (Some(path), Some(file_uri), Some(file_name)) = (
+                    file_info.get_first_literal("v-s:filePath"),
+                    file_info.get_first_literal("v-s:fileUri"),
+                    file_info.get_first_literal("v-s:fileName"),
+                ) {
+                    if !path.is_empty() {
+                        let full_path = format!("{}/{}/{}", ATTACHMENTS_DB_PATH, path, file_uri);
+                        match std::fs::read(&full_path) {
+                            Ok(content) => {
+                                let mime = mime_guess::from_path(&file_name).first_or_octet_stream();
+                                let content_type = header::ContentType::parse(mime.essence_str())
+                                    .unwrap_or_else(|_| header::ContentType::parse("application/octet-stream").unwrap());
+
+                                let attachment = SinglePart::builder()
+                                    .header(content_type)
+                                    .header(header::ContentDisposition::attachment(&file_name))
+                                    .header(header::ContentTransferEncoding::Base64)
+                                    .body(content);
+                                builder = builder.singlepart(attachment);
+                            },
+                            Err(e) => {
+                                error!("Failed to read attachment {} for {}: {}", full_path, log_id, e);
+                            },
+                        }
+                    }
+                }
+            }
+        }
+
+        message_builder.multipart(builder).map_err(|e| e.to_string())
+    } else if let Some(body) = message_body {
+        let is_html = body.to_lowercase().contains("<html>");
+        if is_html {
+            message_builder
+                .header(header::ContentType::parse("text/html; charset=utf-8").map_err(|e| e.to_string())?)
+                .header(header::ContentTransferEncoding::QuotedPrintable)
+                .body(body.to_string())
+                .map_err(|e| e.to_string())
+        } else {
+            message_builder
+                .header(header::ContentType::parse("text/plain; charset=utf-8").map_err(|e| e.to_string())?)
+                .header(header::ContentTransferEncoding::QuotedPrintable)
+                .body(body.to_string())
+                .map_err(|e| e.to_string())
+        }
+    } else {
+        message_builder
+            .header(header::ContentType::parse("text/plain; charset=utf-8").map_err(|e| e.to_string())?)
+            .header(header::ContentTransferEncoding::QuotedPrintable)
+            .body(String::new())
+            .map_err(|e| e.to_string())
+    }
+}
+
+fn process_retry_queue(backend: &mut Backend, ctx: &mut Context) {
+    if !ctx.retry_config.enabled {
+        return;
+    }
+
+    let now = now_ts();
+    if ctx.last_retry_check_ts > 0
+        && now.saturating_sub(ctx.last_retry_check_ts) < ctx.retry_config.heartbeat_check
+    {
+        return;
+    }
+    ctx.last_retry_check_ts = now;
+
+    let mut records = load_pending_records(&ctx.retry_storage);
+    if records.is_empty() {
+        return;
+    }
+
+    let mut kept_records = Vec::new();
+    for mut record in records.drain(..) {
+        if record.next_retry_at > now {
+            kept_records.push(record);
+            continue;
+        }
+
+        if record.attempt_count >= ctx.retry_config.max_attempts {
+            append_dead_letter(
+                &ctx.retry_storage,
+                "max_attempts_reached".to_string(),
+                Some(record),
+                None,
+            );
+            continue;
+        }
+
+        if now.saturating_sub(record.first_failed_at) >= ctx.retry_config.max_total {
+            append_dead_letter(
+                &ctx.retry_storage,
+                "max_total_time_reached".to_string(),
+                Some(record),
+                None,
+            );
+            continue;
+        }
+
+        let msg = match build_email_message(
+            &record.from,
+            &record.to,
+            &record.subject,
+            &record.body,
+            &record.attachments,
+            backend,
+            &record.msg_uri,
+        ) {
+            Ok(m) => m,
+            Err(e) => {
+                append_dead_letter(
+                    &ctx.retry_storage,
+                    format!("build_failed: {}", e),
+                    Some(record),
+                    None,
+                );
+                continue;
+            },
+        };
+
+        let mailer = match &ctx.smtp_client {
+            Some(m) => m,
+            None => {
+                record.attempt_count = record.attempt_count.saturating_add(1);
+                record.last_error = "mailer_not_found".to_string();
+                record.next_retry_at = compute_next_retry_at(now, record.attempt_count, &ctx.retry_config);
+                kept_records.push(record);
+                continue;
+            },
+        };
+
+        match mailer.send(&msg) {
+            Ok(_) => {
+                info!(
+                    "Retry email sent successfully: msg_uri={}, attempt_count={}",
+                    record.msg_uri, record.attempt_count
+                );
+            },
+            Err(e) => {
+                record.attempt_count = record.attempt_count.saturating_add(1);
+                record.last_error = e.to_string();
+                if record.attempt_count >= ctx.retry_config.max_attempts
+                    || now.saturating_sub(record.first_failed_at) >= ctx.retry_config.max_total
+                {
+                    append_dead_letter(
+                        &ctx.retry_storage,
+                        format!("retry_failed: {}", record.last_error),
+                        Some(record),
+                        None,
+                    );
+                } else {
+                    record.next_retry_at = compute_next_retry_at(now, record.attempt_count, &ctx.retry_config);
+                    kept_records.push(record);
+                }
+            },
+        }
+    }
+
+    save_pending_records_atomic(&ctx.retry_storage, &kept_records);
 }
 
 fn get_emails_from_appointment(has_message_type: &Option<String>, ap: &mut Individual, backend: &mut Backend) -> Vec<Mailbox> {
