@@ -206,6 +206,15 @@ delegateHandler(loginForm, 'input', '#new-password, #confirm-new-password, #secr
 
 const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.{8,})/;
 
+function getCookie (name) {
+  const cookies = new Map(document.cookie.split('; ').map((v) => v.split(/=(.*)/s).map(decodeURIComponent)));
+  return cookies.get(name);
+}
+
+function delCookie (name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=strict; path=/;`;
+}
+
 /**
  * Show element
  * @param {HTMLElement} el
@@ -657,6 +666,20 @@ delegateHandler(document.body, 'click', '#logout, .logout', spinnerDecorator(asy
  * @return {Promise<void>}
  */
 export default spinnerDecorator(async function auth (manifest) {
+  // Extract user info from MFA callback cookie (ticket is in separate HttpOnly cookie)
+  try {
+    const authCookie = getCookie('auth');
+    if (authCookie) {
+      const authResult = JSON.parse(atob(authCookie));
+      if (authResult.user_uri) storage.setItem('user_uri', authResult.user_uri);
+      if (authResult.end_time) storage.setItem('end_time', authResult.end_time);
+      delCookie('auth');
+    }
+  } catch (error) {
+    console.log('Failed to parse auth cookie:', error);
+    delCookie('auth');
+  }
+
   // Check if session is valid (ticket is in HttpOnly cookie)
   const user_uri = storage.getItem('user_uri');
   const end_time = parseInt(storage.getItem('end_time'));
