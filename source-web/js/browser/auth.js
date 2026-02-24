@@ -11,6 +11,7 @@ import Backend from '../common/backend.js';
 import Sha256 from '../common/lib/sha256.js';
 import {delegateHandler, clear, spinnerDecorator} from '../browser/dom_helpers.js';
 import {getMobileCode, verifySmsCode} from './auth_mobile.js';
+import {handleOAuthCallback, OAuthAuthentication} from './auth_oauth.js';
 import Captcha from 'captcha';
 
 /**
@@ -158,31 +159,50 @@ if (loginForm.querySelector('#get-code') != null) {
       throw new Error('Invalid server response');
     }
   }));
+
+  delegateHandler(loginForm, 'keyup', '#sms-code', async function (e) {
+    if (e.key === 'Enter') {
+      const result = await verifySmsCode(e, loginForm);
+      console.log('SMS Verify response:', result);
+
+      // Clear token from session
+      sessionStorage.removeItem('sms_auth_token');
+
+      // Handle successful authentication
+      if (result && result.user_uri) {
+        await handleLoginSuccess({
+          user_uri: result.user_uri,
+          end_time: Math.floor((result.end_time - 621355968000000000) / 10000),
+        });
+      } else {
+        throw new Error('Invalid server response');
+      }
+    }
+  });
+
+  loginForm.querySelector('#saby-auth').addEventListener('click', spinnerDecorator(async function (e) {
+    e.preventDefault();
+    try {
+      const authResult = await OAuthAuthentication();
+      await initWithCredentials(authResult);
+    } catch (error) {
+      console.error('Ошибка OAuth авторизации:', error);
+      const smsErrorMessage = loginForm.querySelector('#oauth-error-message');
+      if (smsErrorMessage) {
+        smsErrorMessage.textContent = 'Ошибка OAuth авторизации';
+        smsErrorMessage.style.display = 'block';
+        // Hide after 10 seconds
+        setTimeout(() => smsErrorMessage.style.display = 'none', 10000);
+      }
+      throw new Error('Invalid server response');
+      //handleLoginError(error);
+    }
+  }));
 }
 
 delegateHandler(loginForm, 'keyup', '#login, #password', function (e) {
   if (e.key === 'Enter') {
     submitLoginPassword(e);
-  }
-});
-
-delegateHandler(loginForm, 'keyup', '#sms-code', async function (e) {
-  if (e.key === 'Enter') {
-    const result = await verifySmsCode(e, loginForm);
-    console.log('SMS Verify response:', result);
-
-    // Clear token from session
-    sessionStorage.removeItem('sms_auth_token');
-
-    // Handle successful authentication
-    if (result && result.user_uri) {
-      await handleLoginSuccess({
-        user_uri: result.user_uri,
-        end_time: Math.floor((result.end_time - 621355968000000000) / 10000),
-      });
-    } else {
-      throw new Error('Invalid server response');
-    }
   }
 });
 
@@ -552,7 +572,7 @@ const handleAuthError = spinnerDecorator(function () {
   // Check if authentication is required
   const manifest = veda.manifest;
   const authRequired = manifest?.veda_auth_required !== false; // Default to true if not specified
-
+  const autoLoginOAuth = manifest?.auto_login_oauth === true; // Default to false if not specified
   if (!authRequired) {
     // Guest access allowed - authenticate as guest
     return Backend.authenticate('guest', 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855')
@@ -563,17 +583,36 @@ const handleAuthError = spinnerDecorator(function () {
       });
   }
 
-  // Auto login using NTLM if configured in manifest
-  const ntlmProviderPath = manifest?.veda_ntlm_provider;
-  if (ntlmProviderPath) {
-    return ntlmAuth(ntlmProviderPath)
-      .then(initWithCredentials)
-      .catch((err) => {
-        console.error('NTLM auth failed');
-        show(loginForm);
-      });
+  if (!autoLoginOAuth) {
+    // Auto login using NTLM if configured in manifest
+    const ntlmProviderPath = manifest?.veda_ntlm_provider;
+    if (ntlmProviderPath) {
+      return ntlmAuth(ntlmProviderPath)
+        .then(initWithCredentials)
+        .catch((err) => {
+          console.error('NTLM auth failed');
+          show(loginForm);
+        });
+    } else {
+      show(loginForm);
+    }
   } else {
     show(loginForm);
+    // Auto login using OAuth
+    //return OAuthAuthentication()
+    //  .then(initWithCredentials)
+    //  .catch(handleLoginError);
+    // try {
+    //   const authResult = await OAuthAuthentication();
+    //   await initWithCredentials(authResult);
+    // } catch (error) {
+    //   console.error('Ошибка OAuth авторизации:', error);
+    //   await handleLoginError(error);
+    // }
+    // return OAuthAuthentication(handleLoginSuccess).catch((error) => {
+    //   console.log('OAuth error:', error.message);
+    //   show(loginForm);
+    // });
   }
 });
 
@@ -666,6 +705,8 @@ delegateHandler(document.body, 'click', '#logout, .logout', spinnerDecorator(asy
  * @return {Promise<void>}
  */
 export default spinnerDecorator(async function auth (manifest) {
+  // Handle OAuth callback if exists
+  handleOAuthCallback();
   // Extract user info from MFA callback cookie (ticket is in separate HttpOnly cookie)
   try {
     const authCookie = getCookie('auth');
