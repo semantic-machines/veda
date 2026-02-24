@@ -534,7 +534,7 @@ impl VedaQueueModule for TTIndexer {
     }
 
     fn before_start(&mut self) {
-        info!("start module TT");
+        info!("start module TT, db_name={}, batch_size={}, block_limit={}", self.db_name, self.batch_size, self.block_limit);
     }
 
     fn before_exit(&mut self) {
