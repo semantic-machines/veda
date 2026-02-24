@@ -63,6 +63,8 @@ pub struct TTIndexer {
     typed_batch: TypedBatch,
     stats: Stats,
     module_info: ModuleInfo,
+    batch_size: u32,
+    block_limit: usize,
 }
 
 impl TTIndexer {
@@ -167,8 +169,8 @@ impl TTIndexer {
             }
 
             for (type_name, batch) in self.typed_batch.iter_mut() {
-                while batch.len() > BLOCK_LIMIT {
-                    let mut slice = batch.drain(0..BLOCK_LIMIT).collect();
+                while batch.len() > self.block_limit {
+                    let mut slice = batch.drain(0..self.block_limit).collect();
                     TTIndexer::process_batch(&self.db_name, &type_name, &mut slice, client, db_type_tables, stats, &mut committed_types_ops, &batch_log_file).await?;
                 }
                 TTIndexer::process_batch(&self.db_name, &type_name, batch, client, db_type_tables, stats, &mut committed_types_ops, &batch_log_file).await?;
@@ -507,7 +509,7 @@ impl TTIndexer {
 
 impl VedaQueueModule for TTIndexer {
     fn before_batch(&mut self, _size_batch: u32) -> Option<u32> {
-        Some(BATCH_SIZE)
+        Some(self.batch_size)
     }
 
     fn prepare(&mut self, queue_element: &mut Individual) -> Result<bool, PrepareError> {
@@ -554,6 +556,18 @@ fn get_value_from_args(param: &str) -> Option<String> {
     None
 }
 
+fn get_u32_from_args(param: &str, default: u32) -> u32 {
+    get_value_from_args(param)
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(default)
+}
+
+fn get_usize_from_args(param: &str, default: usize) -> usize {
+    get_value_from_args(param)
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(default)
+}
+
 fn main() -> Result<(), Error> {
     let mut module = Module::new_with_name("search_index_tt");
 
@@ -567,6 +581,8 @@ fn main() -> Result<(), Error> {
     let mut pool = Pool::new(url.to_string());
 
     let db_name = get_value_from_args("db_name").unwrap_or("veda_tt".to_owned());
+    let batch_size = get_u32_from_args("batch_size", BATCH_SIZE);
+    let block_limit = get_usize_from_args("block_limit", BLOCK_LIMIT);
 
     println!("connecting to clickhouse...");
     loop {
@@ -598,6 +614,8 @@ fn main() -> Result<(), Error> {
         typed_batch,
         stats,
         module_info: module_info.unwrap(),
+        batch_size,
+        block_limit,
     };
 
     module.prepare_queue(&mut tt_indexer);

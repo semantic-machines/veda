@@ -18,3 +18,6 @@ serde = "1.0"
 
 v_common = { package = "v-common", version = "=0.10.6" }
 #v_common = { package = "v-common", path = "../../../v-common" }
+
+# pin rmp to avoid incompatibility with rmp-serde 0.14 / rmpv 0.4 (read_data_* was renamed in rmp 0.8.14+)
+rmp = "=0.8.10"
