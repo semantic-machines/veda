@@ -39,6 +39,7 @@ pub struct Stats {
     total_insert_duration: usize,
     total_rows: usize,
     insert_count: usize,
+    skip_count: usize,
     started: Instant,
     last: Instant,
 }
@@ -73,6 +74,7 @@ impl TTIndexer {
 
         if cmd.is_none() {
             error!("queue message cmd is none, skip");
+            self.stats.skip_count += 1;
             return;
         }
 
@@ -87,6 +89,7 @@ impl TTIndexer {
                 let is_version = types.contains(&"v-s:Version".to_owned());
                 if is_version {
                     info!("skip version, uri = {}", id);
+                    self.stats.skip_count += 1;
                     return;
                 }
                 for type_name in types {
@@ -115,10 +118,12 @@ impl TTIndexer {
                 let is_version = types.contains(&"v-s:Version".to_owned());
                 if is_version {
                     info!("skip version, uri = {}", id);
+                    self.stats.skip_count += 1;
                     return;
                 }
                 if types.contains(&"v-s:Credential".to_owned()) {
                     info!("skip v-s:Credential, uri = {}", id);
+                    self.stats.skip_count += 1;
                     return;
                 }
                 for type_name in types {
@@ -227,6 +232,7 @@ impl TTIndexer {
                 committed_ops.insert(signed_op);
             } else {
                 info!("skip already exported individual, uri = {}, type = {}, op_id = {}", individual.get_id(), type_name, signed_op);
+                stats.skip_count += 1;
             }
         }
 
@@ -278,8 +284,9 @@ impl TTIndexer {
         let uptime_cps = (stats.total_rows * 1000 / uptime_ms) as f64;
 
         info!(
-            "total rows inserted = {}, total prepare duration = {} ms, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}, inserts count = {}",
+            "total rows inserted = {}, total skipped = {}, total prepare duration = {} ms, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}, inserts count = {}",
             stats.total_rows,
+            stats.skip_count,
             stats.total_prepare_duration,
             stats.total_insert_duration,
             total_cps,
@@ -603,6 +610,7 @@ fn main() -> Result<(), Error> {
         total_insert_duration: 0,
         total_rows: 0,
         insert_count: 0,
+        skip_count: 0,
         started: Instant::now(),
         last: Instant::now(),
     };
