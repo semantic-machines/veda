@@ -13,7 +13,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fs::{File, OpenOptions};
-use std::io::{BufReader, BufWriter};
+use std::io::{BufReader, Seek, SeekFrom, Write};
 use std::time::{Duration, Instant};
 use std::{env, fs, process, thread};
 use v_common::module::info::ModuleInfo;
@@ -33,6 +33,8 @@ const BATCH_SIZE: u32 = 3_000_000;
 const BLOCK_LIMIT: usize = 20_000;
 const BATCH_LOG_FILE_NAME: &str = "data/batch-log-index-tt";
 const DEFAULT_CONNECTION_URL: &str = "tcp://default:123@127.0.0.1:9000/?connection_timeout=10s";
+const INSERT_RETRY_COUNT: u32 = 5;
+const INSERT_RETRY_DELAY_SECS: u64 = 30;
 
 pub struct Stats {
     total_prepare_duration: usize,
@@ -44,6 +46,7 @@ pub struct Stats {
     last: Instant,
 }
 
+#[derive(Clone)]
 enum ColumnData {
     Str(Vec<Vec<String>>),
     Date(Vec<Vec<DateTime<Tz>>>),
@@ -149,7 +152,7 @@ impl TTIndexer {
             let stats = &mut self.stats;
 
             let f = OpenOptions::new().read(true).write(true).create(true).truncate(false).open(BATCH_LOG_FILE_NAME)?;
-            let batch_log_file = f.try_clone()?;
+            let mut batch_log_file = f.try_clone()?;
             let mut reader = BufReader::new(f);
             let mut committed_types_ops: CommittedTypesOps = HashMap::new();
             loop {
@@ -176,9 +179,9 @@ impl TTIndexer {
             for (type_name, batch) in self.typed_batch.iter_mut() {
                 while batch.len() > self.block_limit {
                     let mut slice = batch.drain(0..self.block_limit).collect();
-                    TTIndexer::process_batch(&self.db_name, &type_name, &mut slice, client, db_type_tables, stats, &mut committed_types_ops, &batch_log_file).await?;
+                    TTIndexer::process_batch(&self.db_name, &type_name, &mut slice, client, db_type_tables, stats, &mut committed_types_ops, &mut batch_log_file).await?;
                 }
-                TTIndexer::process_batch(&self.db_name, &type_name, batch, client, db_type_tables, stats, &mut committed_types_ops, &batch_log_file).await?;
+                TTIndexer::process_batch(&self.db_name, &type_name, batch, client, db_type_tables, stats, &mut committed_types_ops, &mut batch_log_file).await?;
             }
             fs::remove_file(BATCH_LOG_FILE_NAME)?;
             self.typed_batch.clear();
@@ -196,7 +199,7 @@ impl TTIndexer {
         db_type_tables: &mut HashMap<String, HashMap<String, String>>,
         stats: &mut Stats,
         committed_types_ops: &mut CommittedTypesOps,
-        batch_log_file: &File,
+        batch_log_file: &mut File,
     ) -> Result<(), Error> {
         let now = Instant::now();
 
@@ -244,20 +247,80 @@ impl TTIndexer {
 
         let rows = id_column.len();
 
-        let block = TTIndexer::mk_block(db_name, type_name, id_column, sign_column, version_column, (text_column, &mut columns), client, db_type_tables).await?;
-
-        if block.row_count() == 0 {
+        if rows == 0 {
             info!("block is empty! nothing to insert");
             return Ok(());
         }
 
         let table = format!("{}.`{}`", db_name, type_name);
 
-        client.insert(table, block).await?;
+        for attempt in 0..=INSERT_RETRY_COUNT {
+            let mut columns_clone = columns.clone();
+            let block = TTIndexer::mk_block(
+                db_name,
+                type_name,
+                id_column.clone(),
+                sign_column.clone(),
+                version_column.clone(),
+                (text_column.clone(), &mut columns_clone),
+                client,
+                db_type_tables,
+            )
+            .await?;
+            match client.insert(table.clone(), block).await {
+                Ok(()) => break,
+                Err(e) => {
+                    error!(
+                        "insert failed (attempt {}/{}), retry in {}s: {:?}",
+                        attempt + 1,
+                        INSERT_RETRY_COUNT + 1,
+                        INSERT_RETRY_DELAY_SECS,
+                        e
+                    );
+                    if attempt < INSERT_RETRY_COUNT {
+                        thread::sleep(Duration::from_secs(INSERT_RETRY_DELAY_SECS));
+                    } else {
+                        return Err(e);
+                    }
+                }
+            }
+        }
 
         stats.insert_count += 1;
 
-        serialize_into(&mut BufWriter::new(batch_log_file), &type_ops).unwrap();
+        let mut buf = Vec::new();
+        if let Err(e) = serialize_into(&mut buf, &type_ops) {
+            error!("failed to serialize type_ops: {:?}", e);
+            process::exit(101);
+        }
+        let pos = batch_log_file.seek(SeekFrom::Current(0)).map_err(|e| {
+            error!("failed to get batch_log file position: {:?}", e);
+            e
+        });
+        let pos = match pos {
+            Ok(p) => p,
+            Err(_) => process::exit(101),
+        };
+        let mut written = false;
+        for _ in 0..3 {
+            if batch_log_file.write_all(&buf).is_ok() && batch_log_file.flush().is_ok() {
+                written = true;
+                break;
+            }
+            if let Err(e) = batch_log_file.seek(SeekFrom::Start(pos)) {
+                error!("failed to seek batch_log: {:?}", e);
+                process::exit(101);
+            }
+            if let Err(e) = batch_log_file.set_len(pos) {
+                error!("failed to truncate batch_log: {:?}", e);
+                process::exit(101);
+            }
+            thread::sleep(Duration::from_millis(100));
+        }
+        if !written {
+            error!("failed to write batch_log after 3 retries");
+            process::exit(101);
+        }
 
         let mut insert_duration = now.elapsed().as_millis() as usize;
         if insert_duration == 0 {
