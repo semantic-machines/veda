@@ -53,8 +53,8 @@ jobs:
           sleep 2
           ./control-start.sh
           sleep 200
-          tail -n +1 ./data/tarantool/tarantool.log || true
-          tail -n +1 ./logs/*.log || true
+          #tail -n +1 ./data/tarantool/tarantool.log
+          #tail -n +1 ./logs/*.log
           cd ./source-web && npm test
         continue-on-error: false
 

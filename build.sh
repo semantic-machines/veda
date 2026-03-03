@@ -90,7 +90,7 @@ if [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] || [ $1 == "a
     build_module "veda-search-index-pt"
 fi
 
-if [ $1 == "search-query" ] || [ $1 == "veda-search-query" ] || [ $1 == "all" ]; then
+if [ $1 == "search-query" ] || [ $1 == "veda-search-query" ] || [ $1 == "basic" ] || [ $1 == "all" ]; then
     build_module "veda-search-query"
 fi
 
