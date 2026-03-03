@@ -53,14 +53,14 @@ jobs:
           sleep 2
           ./control-start.sh
           sleep 200
-          #tail -n +1 ./data/tarantool/tarantool.log
-          #tail -n +1 ./logs/*.log
+          tail -n +1 ./data/tarantool/tarantool.log || true
+          tail -n +1 ./logs/*.log || true
           cd ./source-web && npm test
         continue-on-error: false
 
       # Загружаем скриншоты как артефакты (если они есть)
       - name: Upload TestCafe screenshots
-        if: failure()  # Выполняется только при сбое тестов
+        if: always()  # Выполняется всегда
         uses: actions/upload-artifact@v4
         with:
           name: testcafe-screenshots
@@ -68,7 +68,7 @@ jobs:
 
       # Prepare logs for upload
       - name: Prepare logs for upload
-        if: failure()
+        if: always()
         run: |
           mkdir sanitized_logs
           for file in ./logs/*; do
@@ -78,7 +78,7 @@ jobs:
           done
       # Upload sanitized logs as artifacts
       - name: Upload logs
-        if: failure()  # Runs only when tests fail
+        if: always()  # Runs always
         uses: actions/upload-artifact@v4
         with:
           name: logs
