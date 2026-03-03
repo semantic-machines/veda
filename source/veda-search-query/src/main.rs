@@ -9,8 +9,7 @@ use v_common::module::module_impl::{init_log, Module};
 use v_common::module::veda_backend::Backend;
 use v_common::search::clickhouse_client::CHClient;
 use v_common::search::common::FTQuery;
-use v_common::v_api::obj::OptAuthorize;
-use v_common::v_api::obj::*;
+use v_common::v_api::common_type::{OptAuthorize, ResultCode};
 
 fn main() {
     init_log("SEARCH_QUERY");

@@ -1,6 +1,6 @@
 [package]
 name = "veda-search-index-tt"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Roman Karpov <roman.karpov@gmail.com>"]
 edition = "2021"
 
