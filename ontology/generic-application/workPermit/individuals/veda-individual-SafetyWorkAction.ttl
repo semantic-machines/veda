@@ -375,6 +375,15 @@ d:SafetyWorkAction_1_3_24
   v-s:parentUnit d:SafetyWorkAction_1_3;
   rdfs:label "* при выполнении работ: земляных, с оборудованием высокого давления, водолазных, по демонтажу зданий и сооружений, на электрооборудовании с напряжением 380В и выше, с асбестом, в замкнутом заполнить приложение А"^^xsd:string.
 
+d:SafetyWorkAction_1_3_25
+  a v-s:SafetyWorkAction;
+  v-s:parentUnit d:SafetyWorkAction_1_3;
+  rdfs:label "выполнение работ согласно листу безопасности на химикат"^^xsd:string.
+d:SafetyWorkAction_1_3_26
+  a v-s:SafetyWorkAction;
+  v-s:parentUnit d:SafetyWorkAction_1_3;
+  rdfs:label "выполнение работ при включенной исправной вентиляции"^^xsd:string.
+
 
 
 d:SafetyWorkAction_6
